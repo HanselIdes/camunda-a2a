@@ -14,6 +14,7 @@ The official [a2a-tck](https://github.com/a2aproject/a2a-tck) is the acceptance 
 | The agent | AI Agent sub-process on a local Ollama model, with three basic tools |
 | Agent Card | Webhook start event (`a2a-card`), generated from the tools so it cannot drift |
 | ListTasks | Tasks carry tags (`a2a`, `ctx-<contextId>`, `task-<taskId>`); the handler searches by tag, asks every task for its state in parallel (`a2a-fetch-task`), then filters, sorts and pages |
+| Runtime card | `a2a-card-runtime` (`/inbound/a2a-card-runtime`) parses the skills out of the deployed `a2a-task` XML on each request and returns the same skills as the generated card (checked by an integration test) |
 | Push notifications | Optional (`A2A_PUSH_ENABLED=true`): configs live in the task, delivery is a fire-and-forget process (`a2a-push-notify`) |
 
 ## How a request flows
@@ -67,7 +68,8 @@ SendMessage call returns the task in state `TASK_STATE_WORKING` after 25 seconds
 ## Layout
 
 ```
-bpmn/        a2a-card, a2a-rpc, a2a-task, a2a-correlate, a2a-publish-reply, a2a-fetch-task, a2a-push-notify
+bpmn/        a2a-card, a2a-rpc, a2a-task, a2a-correlate, a2a-publish-reply, a2a-fetch-task, a2a-push-notify,
+             a2a-card-runtime
 dmn/         a2a-validate, a2a-classify, capitals
 tools/       bpmn_gen/ (generator for the files above), gen_card.py (Agent Card from the agent's tools)
 tests/       Maven module: CPT process tests, DMN tests, connector integration tests, Ollama tests
@@ -255,6 +257,19 @@ Recorded while building, each one decided something.
 | Secrets in webhook `resultExpression` | Not resolved there (they are in `responseExpression` and in outbound connector inputs), so the push switch is read by an outbound HTTP JSON call that asks the engine to evaluate a FEEL string containing the secret. |
 | `Testcontainers.exposeHostPorts` | Breaks later CPT runtimes in the same JVM. The push integration test reaches its receiver through `host.docker.internal` instead. |
 | Testcontainers | The Ryuk reaper maps a random host port that once collided with an unrelated local listener, so the reaper is disabled in the test run. |
+
+## Stretch items
+
+Beyond the seven goal conditions. Each one is evidence-backed or stopped at a recorded blocker.
+
+| Item | Status | Evidence |
+|------|--------|----------|
+| S1 SHOULD and MAY tests | Done | `tck/run-extra.sh`: SHOULD 7 of 7 and MAY 4 of 4 PASS on JSON-RPC, after adding `Cache-Control`, `ETag` and `Last-Modified` to the card response. The AUTH-* SHOULD requirements are not exercised by the TCK. |
+| S2 Real ListTasks | Done | `ListTasksTest` (CPT) and `WebhookIntegrationTest#listTasksFindsTasksThroughTheEngineSearchAndFetchesEachOne` (real connectors): filter, sort, cursor paging, `includeArtifacts`, `historyLength`. |
+| S3 Push notifications | Done, off by default | `tck/run-push.sh`: PUSH-CREATE, GET, LIST, DEL and DELIVER requirements all PASS with `A2A_PUSH_ENABLED=true`. `PushTest` and `PushIntegrationTest` cover operations, delivery with `Authorization`, cancel, and failed deliveries that never fail the task. |
+| S4 Custom JSON-RPC inbound connector | Not built | It would turn invalid JSON into -32700 instead of an empty HTTP 500 (`WebhookIntegrationTest#invalidJsonBodyIsAnEmptyServerErrorFromTheWebhookConnector` records today's behavior). No MUST test sends invalid JSON and the out-of-the-box webhook passes every MUST test, so the plan's condition for promoting it is not met. It also needs a custom connector runtime image next to the bundle. |
+| S5 Extra edge cases | Done | `EdgeCaseTest` (ids of every type, batches, unicode, 200 KB messages, 12 concurrent requests, concurrent follow-ups) and concurrency, headers and 405 checks in `WebhookIntegrationTest`. |
+| S6 Runtime card builder | Done | `a2a-card-runtime`, compared with the generated card by an integration test. |
 
 ## Known limits
 
