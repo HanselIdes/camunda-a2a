@@ -74,6 +74,9 @@ class WebhookIntegrationTest {
   void agentCardIsServedWithThePublicUrlAndTheToolSkills() throws Exception {
     final var response = get(base + "/inbound/a2a-card");
     assertThat(response.headers().firstValue("content-type").orElse("")).startsWith("application/json");
+    assertThat(response.headers().firstValue("cache-control")).hasValueSatisfying(v -> assertThat(v).contains("max-age"));
+    assertThat(response.headers().firstValue("etag")).isPresent();
+    assertThat(response.headers().firstValue("last-modified")).isPresent();
     final var card = Harness.map(response.body());
     @SuppressWarnings("unchecked")
     final var interfaces = (List<Map<String, Object>>) card.get("supportedInterfaces");
@@ -134,5 +137,37 @@ class WebhookIntegrationTest {
     rpc("SendMessage", "{\"message\":{\"messageId\":\"tck-complete-task-1\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"x\"}]}}");
     rpc("GetTask", "{\"id\":\"missing\"}");
     assertThat(client.newIncidentSearchRequest().send().join().items()).isEmpty();
+  }
+
+  @Test
+  void twelveConcurrentRequestsAllAnswerThroughTheRealConnectors() throws Exception {
+    final var futures = new java.util.ArrayList<java.util.concurrent.CompletableFuture<Map<String, Object>>>();
+    for (int i = 0; i < 12; i++) {
+      final int n = i;
+      futures.add(java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+        try {
+          return rpc("SendMessage", "{\"message\":{\"messageId\":\"tck-complete-task-c" + n
+              + "\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"x\"}]}}");
+        } catch (final Exception e) {
+          throw new IllegalStateException(e);
+        }
+      }));
+    }
+    for (final var f : futures) {
+      assertThat(Harness.state(Harness.task(f.join()))).isEqualTo("TASK_STATE_COMPLETED");
+    }
+  }
+
+  /** Known limit, kept as a test so a connector change is noticed: invalid JSON never reaches the process. */
+  @Test
+  void invalidJsonBodyIsAnEmptyServerErrorFromTheWebhookConnector() throws Exception {
+    final var response = post("{not json", "application/json");
+    assertThat(response.statusCode()).isEqualTo(500);
+    assertThat(response.body()).isEmpty();
+  }
+
+  @Test
+  void aGetOnTheRpcWebhookIsMethodNotAllowed() throws Exception {
+    assertThat(get(base + "/inbound/a2a").statusCode()).isEqualTo(405);
   }
 }

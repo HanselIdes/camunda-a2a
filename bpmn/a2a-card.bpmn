@@ -9,7 +9,7 @@
           <zeebe:property name="inbound.context" value="a2a-card" />
           <zeebe:property name="inbound.shouldValidateHmac" value="disabled" />
           <zeebe:property name="inbound.auth.type" value="NONE" />
-          <zeebe:property name="inbound.responseExpression" value="={statusCode: 200, headers: {&#34;Content-Type&#34;: &#34;application/json&#34;}, body: context merge([correlation.variables.card, {supportedInterfaces: [{url: &#34;{{secrets.A2A_PUBLIC_URL}}/a2a&#34;, protocolBinding: &#34;JSONRPC&#34;, protocolVersion: &#34;1.0&#34;}]}])}" />
+          <zeebe:property name="inbound.responseExpression" value="={statusCode: 200, headers: {&#34;Content-Type&#34;: &#34;application/json&#34;, &#34;Cache-Control&#34;: &#34;public, max-age=300&#34;, &#34;ETag&#34;: &#34;\&#34;6d5d7edbd7a94166\&#34;&#34;, &#34;Last-Modified&#34;: &#34;Thu, 15 Oct 2026 12:00:00 GMT&#34;}, body: context merge([correlation.variables.card, {supportedInterfaces: [{url: &#34;{{secrets.A2A_PUBLIC_URL}}/a2a&#34;, protocolBinding: &#34;JSONRPC&#34;, protocolVersion: &#34;1.0&#34;}]}])}" />
           <zeebe:property name="consumeUnmatchedEvents" value="true" />
           <zeebe:property name="synchronousResponse" value="true" />
           <zeebe:property name="deduplicationModeManualFlag" value="false" />

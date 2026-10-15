@@ -220,10 +220,12 @@ def handler():
 def card_proc():
     sys.path.insert(0, os.path.join(ROOT, "tools"))
     import gen_card
+    skills = gen_card.skills_from_bpmn()
+    feel_quote = gen_card.feel_str
     p = Proc("a2a-card", "A2A Agent Card")
     p.start("CardRequested", "Agent Card requested", 150, 102)
     p.script("BuildCard", "Build Agent Card", 250, 80,
-             gen_card.card_expression(gen_card.skills_from_bpmn()), "card")
+             gen_card.card_expression(skills), "card")
     p.end("CardReady", "Agent Card ready", 420, 102)
     p.flow("CardRequested", "BuildCard")
     p.flow("BuildCard", "CardReady")
@@ -232,9 +234,11 @@ def card_proc():
     apply(path, HOOK, "CardRequested", [
         ("inbound.context", "a2a-card"), ("inbound.method", "get"), ("synchronousResponse", "true"),
         ("resultExpression", "={}"),
-        ("inbound.responseExpression", one("""={statusCode: 200, headers: {"Content-Type": "application/json"},
+        ("inbound.responseExpression", one("""={statusCode: 200, headers: {"Content-Type": "application/json",
+          "Cache-Control": "public, max-age=300", "ETag": %s, "Last-Modified": "%s"},
           body: context merge([correlation.variables.card, {supportedInterfaces: [{url: "{{secrets.A2A_PUBLIC_URL}}/a2a",
-          protocolBinding: "JSONRPC", protocolVersion: "1.0"}]}])}"""))])
+          protocolBinding: "JSONRPC", protocolVersion: "1.0"}]}])}""" % (
+              feel_quote(gen_card.card_etag(skills)), gen_card.CARD_LAST_MODIFIED)))])
 
 
 # ---------------------------------------------------------------------------------------------

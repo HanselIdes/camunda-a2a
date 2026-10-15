@@ -79,6 +79,15 @@ def card_expression(skills):
       skills: %s}""" % skills_feel(skills)).strip()
 
 
+CARD_LAST_MODIFIED = "Thu, 15 Oct 2026 12:00:00 GMT"
+
+
+def card_etag(skills):
+    """Strong validator that changes whenever the generated card changes."""
+    import hashlib
+    return '"%s"' % hashlib.sha256(card_expression(skills).encode()).hexdigest()[:16]
+
+
 def committed_expression():
     root = ET.parse(CARD).getroot()
     for el in root.iter("{%s}script" % NS["z"]):
