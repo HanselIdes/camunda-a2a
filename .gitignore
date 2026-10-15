@@ -1,6 +1,7 @@
 target/
 reports/
 .env
+.env.smoke
 *.log
 .venv/
 .idea/

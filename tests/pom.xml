@@ -74,6 +74,11 @@
           <excludedGroups>${excluded.groups}</excludedGroups>
           <groups>${included.groups}</groups>
           <rerunFailingTestsCount>${rerun.count}</rerunFailingTestsCount>
+          <environmentVariables>
+            <!-- Ryuk's random host port can collide with an unrelated local listener (seen on 51501);
+                 CPT stops its own containers after each class, so the reaper is not needed. -->
+            <TESTCONTAINERS_RYUK_DISABLED>true</TESTCONTAINERS_RYUK_DISABLED>
+          </environmentVariables>
           <systemPropertyVariables>
             <user.timezone>UTC</user.timezone>
           </systemPropertyVariables>
