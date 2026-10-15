@@ -65,6 +65,8 @@ Ollama notes: the agent needs 2 or more model calls per turn plus a cold load, s
 30 seconds. `blueprint/smoke.sh` warms the model up and pins it with `keep_alive`. When the model is slow the
 SendMessage call returns the task in state `TASK_STATE_WORKING` after 25 seconds and the client polls GetTask.
 
+Step-by-step checks you can run by hand are in [MANUAL-VERIFICATION.md](MANUAL-VERIFICATION.md).
+
 ## Layout
 
 ```
