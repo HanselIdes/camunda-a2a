@@ -42,7 +42,7 @@ class WebhookIntegrationTest {
   @BeforeEach
   void deployAndWait() {
     final var cmd = client.newDeployResourceCommand();
-    for (final String r : List.of("bpmn/a2a-card.bpmn", "bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn",
+    for (final String r : List.of("bpmn/a2a-card.bpmn", "bpmn/a2a-card-runtime.bpmn", "bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn",
         "bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn",
         "dmn/capitals.dmn")) {
       cmd.addResourceFromClasspath(r);
@@ -183,5 +183,15 @@ class WebhookIntegrationTest {
       assertThat(list).containsEntry("totalSize", 3).containsEntry("pageSize", 2).containsEntry("nextPageToken", "2");
       assertThat((List<?>) list.get("tasks")).hasSize(2);
     });
+  }
+
+  @Test
+  void runtimeCardReadsTheSkillsFromTheDeployedDefinitionAndMatchesTheGeneratedCard() throws Exception {
+    Awaitility.await().atMost(Duration.ofSeconds(60)).pollInterval(Duration.ofSeconds(1))
+        .until(() -> get(base + "/inbound/a2a-card-runtime").statusCode() == 200);
+    final var runtime = Harness.map(get(base + "/inbound/a2a-card-runtime").body());
+    final var generated = Harness.map(get(base + "/inbound/a2a-card").body());
+    assertThat(runtime.get("skills")).isEqualTo(generated.get("skills"));
+    assertThat(runtime).containsKeys("name", "capabilities", "supportedInterfaces");
   }
 }

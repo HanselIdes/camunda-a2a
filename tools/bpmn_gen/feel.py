@@ -127,3 +127,24 @@ def list_response():
          tasks: for t in page return if ctx.includeArtifacts then t else context(get entries(t)[item.key != "artifacts"]),
          nextPageToken: if listReq.start + listReq.size < count(found) then string(listReq.start + listReq.size) else "",
          pageSize: listReq.size, totalSize: count(found)}})[1][1][1][1]""")
+
+
+# --- runtime card: skills read from the deployed process definition XML --------------------------------
+def _unescape(expr):
+    for old, new in (("&quot;", '\\"'), ("&#34;", '\\"'), ("&apos;", "'"), ("&#39;", "'"), ("&lt;", "<"), ("&gt;", ">"), ("&amp;", "&")):
+        expr = 'replace(%s, "%s", "%s")' % (expr, old, new.replace("\\", "\\\\") if False else new)
+    return expr
+
+
+def runtime_skills():
+    """FEEL that parses the tools (direct children of the ad-hoc sub-process) out of the XML in `xml`."""
+    doc = _unescape('substring before(substring after(part, "<bpmn:documentation>"), "</bpmn:documentation>")')
+    ex = _unescape('substring before(substring after(part, "name=\\"a2a:examples\\" value=\\""), "\\"")')
+    return one("""(for inner in [substring before(substring after(xml, "<bpmn:adHocSubProcess "), "</bpmn:adHocSubProcess>")] return
+      for parts in [sublist(split(inner, "<bpmn:(scriptTask|serviceTask|businessRuleTask|userTask|callActivity|subProcess) id=\\""), 2)] return
+      for part in parts return
+        {id: substring before(part, "\\""),
+         name: substring before(substring after(part, "name=\\""), "\\""),
+         description: %s,
+         tags: split(substring before(substring after(part, "name=\\"a2a:tags\\" value=\\""), "\\""), ","),
+         examples: split(%s, "[|]")})[1][1]""" % (doc, ex))

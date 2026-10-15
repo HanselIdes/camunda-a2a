@@ -69,14 +69,14 @@ def skills_feel(skills):
     return "[%s]" % ", ".join(items)
 
 
-def card_expression(skills):
+def card_expression(skills, skills_expr=None):
     """FEEL expression of the card without supportedInterfaces, which the webhook adds from the public URL."""
     return re.sub(r"\s+", " ", """={name: "camunda-a2a",
       description: "An A2A 1.0 agent implemented in BPMN with out-of-the-box Camunda connectors",
       version: "1.0.0", provider: {organization: "camunda-a2a", url: "https://github.com/HanselIdes/camunda-a2a"},
       capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
       defaultInputModes: ["text/plain", "application/json"], defaultOutputModes: ["text/plain", "application/json"],
-      skills: %s}""" % skills_feel(skills)).strip()
+      skills: %s}""" % (skills_expr or skills_feel(skills))).strip()
 
 
 CARD_LAST_MODIFIED = "Thu, 15 Oct 2026 12:00:00 GMT"

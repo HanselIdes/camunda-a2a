@@ -59,6 +59,39 @@ def publish_reply():
              'variables: {replyResult: replyResult, replyError: replyError}}'))
 
 
+def card_runtime():
+    """A second card whose skills are read from the deployed definition of a2a-task when the card is requested."""
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import gen_card
+    p = Proc("a2a-card-runtime", "A2A Agent Card from the deployed agent")
+    p.start("RuntimeCardRequested", "Runtime Agent Card requested", 150, 102)
+    p.node("serviceTask", "FindAgentDefinition", "Find agent definition", 250, 80)
+    p.node("serviceTask", "ReadAgentDefinition", "Read agent definition XML", 410, 80)
+    p.script("BuildRuntimeCard", "Build Agent Card from XML", 570, 80,
+             gen_card.card_expression([], skills_expr=feel.runtime_skills()), "card")
+    p.end("RuntimeCardReady", "Agent Card ready", 730, 102)
+    p.flow("RuntimeCardRequested", "FindAgentDefinition")
+    p.flow("FindAgentDefinition", "ReadAgentDefinition")
+    p.flow("ReadAgentDefinition", "BuildRuntimeCard")
+    p.flow("BuildRuntimeCard", "RuntimeCardReady")
+    path = "bpmn/a2a-card-runtime.bpmn"
+    write(path, p.xml())
+    http(path, "FindAgentDefinition", "/v2/process-definitions/search",
+         '={filter: {processDefinitionId: "a2a-task", isLatestVersion: true}}')
+    apply(path, HTTP, "FindAgentDefinition", [
+        ("resultExpression", '={definitionKey: string(response.body.items[1].processDefinitionKey)}')])
+    http(path, "ReadAgentDefinition", "/v2/process-definitions/", "=null", method="GET")
+    apply(path, HTTP, "ReadAgentDefinition", [
+        ("url", '="{{secrets.ENGINE_URL}}/v2/process-definitions/" + definitionKey + "/xml"'),
+        ("documentReturnFormat.choice", "TEXT"), ("resultExpression", "={xml: response.body}")])
+    apply(path, HOOK, "RuntimeCardRequested", [
+        ("inbound.context", "a2a-card-runtime"), ("inbound.method", "get"), ("synchronousResponse", "true"),
+        ("resultExpression", "={}"),
+        ("inbound.responseExpression", one("""={statusCode: 200, headers: {"Content-Type": "application/json"},
+          body: context merge([correlation.variables.card, {supportedInterfaces: [{url: "{{secrets.A2A_PUBLIC_URL}}/a2a",
+          protocolBinding: "JSONRPC", protocolVersion: "1.0"}]}])}"""))])
+
+
 def push_notify():
     p = Proc("a2a-push-notify", "A2A push notification delivery")
     p.error_codes = {"PushFailed": "PUSH_FAILED"}
@@ -690,6 +723,7 @@ def main():
     handler()
     task()
     card_proc()
+    card_runtime()
     print("generated")
 
 
