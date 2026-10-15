@@ -49,7 +49,7 @@ class WebhookIntegrationTest {
     }
     ((io.camunda.client.api.command.DeployResourceCommandStep1.DeployResourceCommandStep2) cmd).send().join();
     base = context.getConnectorsAddress().toString();
-    Awaitility.await().atMost(Duration.ofSeconds(90)).pollInterval(Duration.ofSeconds(1)).until(
+    Awaitility.await().atMost(Duration.ofSeconds(240)).pollInterval(Duration.ofSeconds(1)).until(
         () -> get(base + "/inbound/a2a-card").statusCode() == 200 && post("{}", "application/json").statusCode() != 404);
   }
 

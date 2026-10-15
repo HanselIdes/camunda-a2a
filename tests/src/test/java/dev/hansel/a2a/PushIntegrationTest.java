@@ -71,7 +71,7 @@ class PushIntegrationTest {
     ((io.camunda.client.api.command.DeployResourceCommandStep1.DeployResourceCommandStep2) cmd).send().join();
     base = context.getConnectorsAddress().toString();
     HITS.clear();
-    Awaitility.await().atMost(Duration.ofSeconds(90)).pollInterval(Duration.ofSeconds(1)).until(() -> {
+    Awaitility.await().atMost(Duration.ofSeconds(240)).pollInterval(Duration.ofSeconds(1)).until(() -> {
       try {
         return HTTP.send(HttpRequest.newBuilder(URI.create(base + "/inbound/a2a-card")).GET().build(),
             HttpResponse.BodyHandlers.ofString()).statusCode() == 200

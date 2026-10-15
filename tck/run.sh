@@ -48,8 +48,12 @@ one_run() {
 
 mkdir -p reports; : > reports/results.txt
 prepare_tck
-stack_up
 status=0
+if [ "$MODE" != "--once" ]; then
+  echo "Starting from a fresh stack: down -v, up"
+  "${COMPOSE[@]}" down -v
+fi
+stack_up
 if [ "$MODE" = "--once" ]; then
   one_run run-1 || status=1
 else
