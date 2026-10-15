@@ -27,7 +27,8 @@ def q(s):
 
 
 class Node:
-    def __init__(self, kind, id, name, x, y, w, h, parent, ext, attrs, inner):
+    def __init__(self, kind, id, name, x, y, w, h, parent, ext, attrs, inner, doc=""):
+        self.doc = doc
         self.kind, self.id, self.name = kind, id, name
         self.x, self.y, self.w, self.h = x, y, w, h
         self.parent, self.ext, self.attrs, self.inner = parent, ext, attrs, inner
@@ -51,9 +52,9 @@ class Proc:
         return mid
 
     def node(self, kind, id, name="", x=0, y=0, w=None, h=None, parent=None,
-             ext="", attrs="", inner=""):
+             ext="", attrs="", inner="", doc=""):
         dw, dh = SIZES.get(kind, (100, 80))
-        n = Node(kind, id, name, x, y, w or dw, h or dh, parent, ext, attrs, inner)
+        n = Node(kind, id, name, x, y, w or dw, h or dh, parent, ext, attrs, inner, doc)
         self.nodes[id] = n
         self.order.append(id)
         return id
@@ -104,8 +105,8 @@ class Proc:
         return self.node("boundaryEvent", id, name, x, y, attrs="attachedToRef=%s" % q(host),
                          inner=inner, **kw)
 
-    def sub(self, id, name, x, y, w, h, **kw):
-        return self.node("subProcess", id, name, x, y, w=w, h=h, **kw)
+    def sub(self, id, name, x, y, w, h, kind="subProcess", **kw):
+        return self.node(kind, id, name, x, y, w=w, h=h, **kw)
 
     def flow(self, src, tgt, name="", cond=None, default=False, route=None, id=None):
         fid = id or "Flow_%s_%s" % (src, tgt)
@@ -125,6 +126,8 @@ class Proc:
             if f.default and f.src == n.id:
                 a += " default=%s" % q(f.id)
         out = [sp + "<bpmn:%s %s>" % (n.kind, a)]
+        if n.doc:
+            out.append(sp + "  <bpmn:documentation>%s</bpmn:documentation>" % esc(n.doc))
         if n.ext:
             out.append(sp + "  <bpmn:extensionElements>%s</bpmn:extensionElements>" % n.ext)
         for fid in n.incoming:
@@ -133,7 +136,7 @@ class Proc:
             out.append(sp + "  <bpmn:outgoing>%s</bpmn:outgoing>" % fid)
         if n.inner:
             out.append(sp + "  " + n.inner)
-        if n.kind == "subProcess":
+        if n.kind in ("subProcess", "adHocSubProcess"):
             for cid in self.order:
                 c = self.nodes[cid]
                 if c.parent == n.id:
@@ -188,7 +191,7 @@ class Proc:
     def xml(self):
         out = ['<?xml version="1.0" encoding="UTF-8"?>',
                '<bpmn:definitions %s id="Definitions_%s" targetNamespace="http://bpmn.io/schema/bpmn" '
-               'modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">'
+               'modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">'
                % (NS, self.pid.replace("-", "_"))]
         for mid, (name, key) in self.messages.items():
             sub = ""
@@ -214,7 +217,7 @@ class Proc:
         for nid in self.order:
             n = self.nodes[nid]
             extra = ""
-            if n.kind == "subProcess":
+            if n.kind in ("subProcess", "adHocSubProcess"):
                 extra = ' isExpanded="true"'
             out.append('      <bpmndi:BPMNShape id=%s bpmnElement=%s%s>' % (q(nid + "_di"), q(nid), extra))
             out.append('        <dc:Bounds x="%d" y="%d" width="%d" height="%d" />' % (n.x, n.y, n.w, n.h))

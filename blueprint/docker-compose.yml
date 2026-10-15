@@ -39,6 +39,7 @@ services:
       - SECRET_ENGINE_URL=http://camunda:8080
       - SECRET_A2A_PUBLIC_URL=${A2A_PUBLIC_URL:-http://localhost:18090}
       - SECRET_OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      - SECRET_OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3-coder-30b-64k}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

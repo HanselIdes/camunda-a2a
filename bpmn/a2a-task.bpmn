@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_a2a_task" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
-  <bpmn:message id="Msg_get" name="a2a-get"><bpmn:extensionElements><zeebe:subscription correlationKey="=taskId" /></bpmn:extensionElements></bpmn:message>
-  <bpmn:message id="Msg_cancel" name="a2a-cancel"><bpmn:extensionElements><zeebe:subscription correlationKey="=taskId" /></bpmn:extensionElements></bpmn:message>
-  <bpmn:message id="Msg_send" name="a2a-send"><bpmn:extensionElements><zeebe:subscription correlationKey="=taskId" /></bpmn:extensionElements></bpmn:message>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_a2a_task" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <bpmn:message id="Msg_get" name="a2a-get">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=taskId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Msg_cancel" name="a2a-cancel">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=taskId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="Msg_send" name="a2a-send">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=taskId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:error id="AgentFailed" name="AgentFailed" errorCode="AGENT_FAILED" />
   <bpmn:process id="a2a-task" name="A2A task" isExecutable="true">
     <bpmn:startEvent id="TaskSubmitted" name="Task submitted">
       <bpmn:outgoing>Flow_TaskSubmitted_CreateTaskState</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:scriptTask id="CreateTaskState" name="Create task">
-      <bpmn:extensionElements><zeebe:script expression='= {id: taskId, contextId: contextId, status: {state: "TASK_STATE_SUBMITTED", timestamp: substring(string(now()), 1, 19) + "Z"}, artifacts: [], history: [put(put(req.message, "taskId", taskId), "contextId", contextId)]}' resultVariable="task" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="= {id: taskId, contextId: contextId, status: {state: &#34;TASK_STATE_SUBMITTED&#34;, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: [], history: [put(put(req.message, &#34;taskId&#34;, taskId), &#34;contextId&#34;, contextId)]}" resultVariable="task" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_TaskSubmitted_CreateTaskState</bpmn:incoming>
       <bpmn:outgoing>Flow_CreateTaskState_SetPending</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="SetPending" name="Set reply pending">
-      <bpmn:extensionElements><zeebe:script expression="=req.blocking" resultVariable="pending" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="=req.blocking" resultVariable="pending" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_CreateTaskState_SetPending</bpmn:incoming>
       <bpmn:outgoing>Flow_SetPending_ReturnImmediately</bpmn:outgoing>
     </bpmn:scriptTask>
@@ -23,12 +40,21 @@
       <bpmn:outgoing>Flow_ReturnImmediately_InitDone</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:scriptTask id="BuildInitialReply" name="Build initial reply">
-      <bpmn:extensionElements><zeebe:script expression='=(for v in [(for h in [if req.hl = null or req.hl &gt;= count(task.history) then task.history else if req.hl &lt;= 0 then [] else sublist(task.history, count(task.history) - req.hl + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &gt; 0 then task.artifacts else null, history: if count(h) &gt; 0 then h else null})[item.value != null]))[1]] return if "task" = "task" then {task: v} else v)[1]' resultVariable="initialReply" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="=(for v in [(for h in [if req.hl = null or req.hl &#62;= count(task.history) then task.history else if req.hl &#60;= 0 then [] else sublist(task.history, count(task.history) - req.hl + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if &#34;task&#34; = &#34;task&#34; then {task: v} else v)[1]" resultVariable="initialReply" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_ReturnImmediately_BuildInitialReply</bpmn:incoming>
       <bpmn:outgoing>Flow_BuildInitialReply_PublishInitialReply</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:callActivity id="PublishInitialReply" name="Publish initial reply">
-      <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=req.corrId" target="corrId" /><zeebe:input source="=initialReply" target="replyResult" /><zeebe:input source="=null" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=req.corrId" target="corrId" />
+          <zeebe:input source="=initialReply" target="replyResult" />
+          <zeebe:input source="=null" target="replyError" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_BuildInitialReply_PublishInitialReply</bpmn:incoming>
       <bpmn:outgoing>Flow_PublishInitialReply_InitDone</bpmn:outgoing>
     </bpmn:callActivity>
@@ -49,32 +75,47 @@
         <bpmn:outgoing>Flow_ClassifyJoin_ClassifyMessage</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:businessRuleTask id="ClassifyMessage" name="Classify message">
-        <bpmn:extensionElements><zeebe:calledDecision decisionId="a2a-classify" resultVariable="sc" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:calledDecision decisionId="a2a-classify" resultVariable="sc" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_ClassifyJoin_ClassifyMessage</bpmn:incoming>
-        <bpmn:outgoing>Flow_ClassifyMessage_ApplyScenario</bpmn:outgoing>
+        <bpmn:outgoing>Flow_ClassifyMessage_ModeGw</bpmn:outgoing>
       </bpmn:businessRuleTask>
       <bpmn:scriptTask id="ApplyScenario" name="Apply scenario">
-        <bpmn:extensionElements><zeebe:script expression='= (for m in [if sc.statusText != null then {messageId: uuid(), contextId: task.contextId, taskId: task.id, role: "ROLE_AGENT", parts: [{text: sc.statusText}]} else if sc.echo then {messageId: uuid(), contextId: task.contextId, taskId: task.id, role: "ROLE_AGENT", parts: [{text: "Unhandled messageId prefix: " + req.message.messageId}]} else null] return for a in [if sc.artifact = null then null else {artifactId: uuid(), name: "output", parts: if sc.artifact = "text" then [{text: "Generated text content"}] else if sc.artifact = "file" then [{raw: "dGNr", mediaType: "text/plain", filename: "output.txt"}] else if sc.artifact = "file-url" then [{url: "https://example.com/output.txt", mediaType: "text/plain", filename: "output.txt"}] else [{data: {key: "value", count: 42}}]}] return {id: task.id, contextId: task.contextId, status: context(get entries({state: sc.state, message: m, timestamp: substring(string(now()), 1, 19) + "Z"})[item.value != null]), artifacts: if a = null then task.artifacts else append(task.artifacts, a), history: if m != null then append(task.history, m) else task.history})[1][1]' resultVariable="task" /></bpmn:extensionElements>
-        <bpmn:incoming>Flow_ClassifyMessage_ApplyScenario</bpmn:incoming>
-        <bpmn:outgoing>Flow_ApplyScenario_IsPending</bpmn:outgoing>
+        <bpmn:extensionElements>
+          <zeebe:script expression="= (for m in [if sc.statusText != null then {messageId: uuid(), contextId: task.contextId, taskId: task.id, role: &#34;ROLE_AGENT&#34;, parts: [{text: sc.statusText}]} else if sc.echo then {messageId: uuid(), contextId: task.contextId, taskId: task.id, role: &#34;ROLE_AGENT&#34;, parts: [{text: &#34;Unhandled messageId prefix: &#34; + req.message.messageId}]} else null] return for a in [if sc.artifact = null then null else {artifactId: uuid(), name: &#34;output&#34;, parts: if sc.artifact = &#34;text&#34; then [{text: &#34;Generated text content&#34;}] else if sc.artifact = &#34;file&#34; then [{raw: &#34;dGNr&#34;, mediaType: &#34;text/plain&#34;, filename: &#34;output.txt&#34;}] else if sc.artifact = &#34;file-url&#34; then [{url: &#34;https://example.com/output.txt&#34;, mediaType: &#34;text/plain&#34;, filename: &#34;output.txt&#34;}] else [{data: {key: &#34;value&#34;, count: 42}}]}] return {id: task.id, contextId: task.contextId, status: context(get entries({state: sc.state, message: m, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;})[item.value != null]), artifacts: if a = null then task.artifacts else append(task.artifacts, a), history: if m != null then append(task.history, m) else task.history})[1][1]" resultVariable="task" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_ModeGw_ApplyScenario</bpmn:incoming>
+        <bpmn:outgoing>Flow_ApplyScenario_WorkDone</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:exclusiveGateway id="IsPending" name="Reply pending?" default="Flow_IsPending_ReplyHandled">
-        <bpmn:incoming>Flow_ApplyScenario_IsPending</bpmn:incoming>
+        <bpmn:incoming>Flow_WorkDone_IsPending</bpmn:incoming>
         <bpmn:outgoing>Flow_IsPending_BuildReply</bpmn:outgoing>
         <bpmn:outgoing>Flow_IsPending_ReplyHandled</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:scriptTask id="BuildReply" name="Build reply">
-        <bpmn:extensionElements><zeebe:script expression='=(for v in [(for h in [if req.hl = null or req.hl &gt;= count(task.history) then task.history else if req.hl &lt;= 0 then [] else sublist(task.history, count(task.history) - req.hl + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &gt; 0 then task.artifacts else null, history: if count(h) &gt; 0 then h else null})[item.value != null]))[1]] return if "task" = "task" then {task: v} else v)[1]' resultVariable="workReply" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:script expression="=(for v in [(for h in [if req.hl = null or req.hl &#62;= count(task.history) then task.history else if req.hl &#60;= 0 then [] else sublist(task.history, count(task.history) - req.hl + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if &#34;task&#34; = &#34;task&#34; then {task: v} else v)[1]" resultVariable="workReply" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_IsPending_BuildReply</bpmn:incoming>
         <bpmn:outgoing>Flow_BuildReply_PublishReply</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:callActivity id="PublishReply" name="Publish reply">
-        <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=req.corrId" target="corrId" /><zeebe:input source="=workReply" target="replyResult" /><zeebe:input source="=null" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=req.corrId" target="corrId" />
+            <zeebe:input source="=workReply" target="replyResult" />
+            <zeebe:input source="=null" target="replyError" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_BuildReply_PublishReply</bpmn:incoming>
         <bpmn:outgoing>Flow_PublishReply_MarkReplied</bpmn:outgoing>
       </bpmn:callActivity>
       <bpmn:scriptTask id="MarkReplied" name="Mark replied">
-        <bpmn:extensionElements><zeebe:script expression="=false" resultVariable="pending" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:script expression="=false" resultVariable="pending" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_PublishReply_MarkReplied</bpmn:incoming>
         <bpmn:outgoing>Flow_MarkReplied_ReplyHandled</bpmn:outgoing>
       </bpmn:scriptTask>
@@ -97,7 +138,11 @@
         <bpmn:outgoing>Flow_FollowJoin_FollowUpArrives</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:intermediateCatchEvent id="FollowUpArrives" name="Follow-up arrives">
-        <bpmn:extensionElements><zeebe:ioMapping><zeebe:output source="=sendReq" target="followReq" /></zeebe:ioMapping></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:output source="=sendReq" target="followReq" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_FollowJoin_FollowUpArrives</bpmn:incoming>
         <bpmn:outgoing>Flow_FollowUpArrives_ContextMatches</bpmn:outgoing>
         <bpmn:messageEventDefinition id="FollowUpArrives_def" messageRef="Msg_send" />
@@ -108,42 +153,173 @@
         <bpmn:outgoing>Flow_ContextMatches_BuildContextMismatch</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:scriptTask id="BuildContextMismatch" name="Build context mismatch error">
-        <bpmn:extensionElements><zeebe:script expression='={code: -32602, message: "contextId does not match the task"}' resultVariable="mismatchError" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:script expression="={code: -32602, message: &#34;contextId does not match the task&#34;}" resultVariable="mismatchError" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_ContextMatches_BuildContextMismatch</bpmn:incoming>
         <bpmn:outgoing>Flow_BuildContextMismatch_PublishMismatch</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:callActivity id="PublishMismatch" name="Publish mismatch error">
-        <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=followReq.corrId" target="corrId" /><zeebe:input source="=null" target="replyResult" /><zeebe:input source="=mismatchError" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+          <zeebe:ioMapping>
+            <zeebe:input source="=followReq.corrId" target="corrId" />
+            <zeebe:input source="=null" target="replyResult" />
+            <zeebe:input source="=mismatchError" target="replyError" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_BuildContextMismatch_PublishMismatch</bpmn:incoming>
         <bpmn:outgoing>Flow_PublishMismatch_FollowJoin</bpmn:outgoing>
       </bpmn:callActivity>
       <bpmn:scriptTask id="RecordUserMessage" name="Record user message">
-        <bpmn:extensionElements><zeebe:script expression='= {id: task.id, contextId: task.contextId, status: {state: "TASK_STATE_WORKING", timestamp: substring(string(now()), 1, 19) + "Z"}, artifacts: task.artifacts, history: append(task.history, put(put(followReq.message, "taskId", task.id), "contextId", task.contextId))}' resultVariable="task" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:script expression="= {id: task.id, contextId: task.contextId, status: {state: &#34;TASK_STATE_WORKING&#34;, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: task.artifacts, history: append(task.history, put(put(followReq.message, &#34;taskId&#34;, task.id), &#34;contextId&#34;, task.contextId))}" resultVariable="task" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_ContextMatches_RecordUserMessage</bpmn:incoming>
         <bpmn:outgoing>Flow_RecordUserMessage_SetRequest</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:scriptTask id="SetRequest" name="Set current request">
-        <bpmn:extensionElements><zeebe:script expression='={corrId: followReq.corrId, blocking: true, hl: followReq.historyLength, message: followReq.message, wrap: "task"}' resultVariable="req" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:script expression="={corrId: followReq.corrId, blocking: true, hl: followReq.historyLength, message: followReq.message, wrap: &#34;task&#34;}" resultVariable="req" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_RecordUserMessage_SetRequest</bpmn:incoming>
         <bpmn:outgoing>Flow_SetRequest_SetPendingAgain</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:scriptTask id="SetPendingAgain" name="Set reply pending again">
-        <bpmn:extensionElements><zeebe:script expression="=true" resultVariable="pending" /></bpmn:extensionElements>
+        <bpmn:extensionElements>
+          <zeebe:script expression="=true" resultVariable="pending" />
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_SetRequest_SetPendingAgain</bpmn:incoming>
         <bpmn:outgoing>Flow_SetPendingAgain_ClassifyJoin</bpmn:outgoing>
       </bpmn:scriptTask>
+      <bpmn:exclusiveGateway id="ModeGw" name="Scripted or agent?" default="Flow_ModeGw_ApplyScenario">
+        <bpmn:incoming>Flow_ClassifyMessage_ModeGw</bpmn:incoming>
+        <bpmn:outgoing>Flow_ModeGw_ApplyScenario</bpmn:outgoing>
+        <bpmn:outgoing>Flow_ModeGw_AgentTools</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:adHocSubProcess id="AgentTools" name="Agent with tools" zeebe:modelerTemplate="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda.agenticai:aiagent:subprocess:2" retries="0" />
+          <zeebe:ioMapping>
+            <zeebe:input source="openai" target="provider.type" />
+            <zeebe:input source="completions" target="provider.openai.api.type" />
+            <zeebe:input source="custom" target="provider.openai.backend.type" />
+            <zeebe:input source="{{secrets.OLLAMA_BASE_URL}}" target="provider.openai.backend.custom.endpoint" />
+            <zeebe:input source="none" target="provider.openai.backend.custom.authentication.type" />
+            <zeebe:input source="PT180S" target="provider.openai.timeouts.timeout" />
+            <zeebe:input source="{{secrets.OLLAMA_MODEL}}" target="provider.openai.model.model" />
+            <zeebe:input source="modelDefault" target="provider.openai.api.completions.effort" />
+            <zeebe:input source="=0" target="provider.openai.api.completions.temperature" />
+            <zeebe:input source="=&#34;You are a helpful assistant exposed through the A2A protocol. Answer the user concisely in plain text. Use the available tools whenever they help. If you cannot answer without more information from the user, start your reply with the exact marker NEED_INPUT: followed by your question, and call no tool.&#34;" target="data.systemPrompt.prompt" />
+            <zeebe:input source="=string join(for part in req.message.parts return if part.text != null then part.text else &#34;&#34;, &#34; &#34;)" target="data.userPrompt.prompt" />
+            <zeebe:input target="agentContext" />
+            <zeebe:input source="in-process" target="data.memory.storage.type" />
+            <zeebe:input source="=20" target="data.memory.contextWindowSize" />
+            <zeebe:input source="=8" target="data.limits.maxModelCalls" />
+            <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
+            <zeebe:input source="text" target="data.response.format.type" />
+            <zeebe:input source="=false" target="data.response.format.parseJson" />
+            <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
+            <zeebe:input source="true" target="data.response.includeAgentContext" />
+            <zeebe:input target="agent" />
+            <zeebe:output source="=agent" target="agent" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="elementTemplateVersion" value="1" />
+            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" />
+            <zeebe:header key="errorExpression" value="=if error != null then bpmnError(&#34;AGENT_FAILED&#34;, string(error.message)) else null" />
+            <zeebe:header key="retryBackoff" value="PT30S" />
+          </zeebe:taskHeaders>
+          <zeebe:properties>
+            <zeebe:property name="io.camunda.agenticai.toolContainer" value="true" />
+          </zeebe:properties>
+          <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult,&#10;  completedAt: now()&#10;}" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_ModeGw_AgentTools</bpmn:incoming>
+        <bpmn:outgoing>Flow_AgentTools_ApplyAgentResponse</bpmn:outgoing>
+        <bpmn:scriptTask id="get_current_time" name="Get current time">
+          <bpmn:documentation>Returns the current date and time in UTC. Use it whenever the user asks what time or date it is. Takes no arguments.</bpmn:documentation>
+          <bpmn:extensionElements>
+            <zeebe:properties>
+              <zeebe:property name="a2a:tags" value="time,clock,date" />
+              <zeebe:property name="a2a:examples" value="What time is it?|What is today&#39;s date?" />
+            </zeebe:properties>
+            <zeebe:script expression="={utcTime: substring(string(now()), 1, 19) + &#34;Z&#34;}" resultVariable="toolCallResult" />
+          </bpmn:extensionElements>
+        </bpmn:scriptTask>
+        <bpmn:scriptTask id="convert_temperature" name="Convert temperature">
+          <bpmn:documentation>Converts a temperature between Celsius and Fahrenheit. Use it when the user gives a temperature and wants it in the other unit. Arguments: the numeric value and the unit it is given in.</bpmn:documentation>
+          <bpmn:extensionElements>
+            <zeebe:properties>
+              <zeebe:property name="a2a:tags" value="temperature,conversion" />
+              <zeebe:property name="a2a:examples" value="Convert 100 celsius to fahrenheit|What is 50 fahrenheit in celsius?" />
+            </zeebe:properties>
+            <zeebe:ioMapping>
+              <zeebe:input source="=fromAi(toolCall.degrees, &#34;The temperature value to convert&#34;, &#34;number&#34;)" target="degrees" />
+              <zeebe:input source="=fromAi(toolCall.unit, &#34;The unit of the given value: celsius or fahrenheit&#34;, &#34;string&#34;)" target="unit" />
+            </zeebe:ioMapping>
+            <zeebe:script expression="=if lower case(unit) = &#34;celsius&#34; then {value: round half up(degrees * 9 / 5 + 32, 1), unit: &#34;fahrenheit&#34;} else {value: round half up((degrees - 32) * 5 / 9, 1), unit: &#34;celsius&#34;}" resultVariable="toolCallResult" />
+          </bpmn:extensionElements>
+        </bpmn:scriptTask>
+        <bpmn:businessRuleTask id="capital_of" name="Look up capital city">
+          <bpmn:documentation>Looks up the capital city of a country. Use it when the user asks for the capital of a country. Argument: the country name in English.</bpmn:documentation>
+          <bpmn:extensionElements>
+            <zeebe:properties>
+              <zeebe:property name="a2a:tags" value="geography,capital" />
+              <zeebe:property name="a2a:examples" value="What is the capital of France?|Capital of Japan?" />
+            </zeebe:properties>
+            <zeebe:ioMapping>
+              <zeebe:input source="=fromAi(toolCall.country, &#34;The country name in English&#34;, &#34;string&#34;)" target="country" />
+            </zeebe:ioMapping>
+            <zeebe:calledDecision decisionId="capitals" resultVariable="toolCallResult" />
+          </bpmn:extensionElements>
+        </bpmn:businessRuleTask>
+      </bpmn:adHocSubProcess>
+      <bpmn:boundaryEvent id="AgentError" name="Agent failed" attachedToRef="AgentTools">
+        <bpmn:outgoing>Flow_AgentError_MarkAgentFailed</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="AgentError_def" errorRef="AgentFailed" />
+      </bpmn:boundaryEvent>
+      <bpmn:scriptTask id="ApplyAgentResponse" name="Apply agent response">
+        <bpmn:extensionElements>
+          <zeebe:script expression="= (for t in [if starts with((if agent.responseText instance of string then trim(agent.responseText) else &#34;The agent produced no answer.&#34;), &#34;NEED_INPUT:&#34;) then trim(substring((if agent.responseText instance of string then trim(agent.responseText) else &#34;The agent produced no answer.&#34;), 12)) else (if agent.responseText instance of string then trim(agent.responseText) else &#34;The agent produced no answer.&#34;)] return for a in [(for calls in [flatten(for m in agent.context.conversation.messages[item.role = &#34;assistant&#34; and item.toolCalls != null] return for tc in m.toolCalls return {name: tc.name, arguments: tc.arguments})] return if count(calls) = 0 then null else {artifactId: uuid(), name: &#34;tool-trace&#34;, parts: [{data: {toolCalls: calls}}]})[1]] return for m in [{messageId: uuid(), contextId: task.contextId, taskId: task.id, role: &#34;ROLE_AGENT&#34;, parts: [{text: t}]}] return {id: task.id, contextId: task.contextId, status: {state: if starts with((if agent.responseText instance of string then trim(agent.responseText) else &#34;The agent produced no answer.&#34;), &#34;NEED_INPUT:&#34;) then &#34;TASK_STATE_INPUT_REQUIRED&#34; else &#34;TASK_STATE_COMPLETED&#34;, message: m, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: if a = null then task.artifacts else append(task.artifacts[item.name != &#34;tool-trace&#34;], a), history: append(task.history, m)})[1][1][1]" resultVariable="task" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_AgentTools_ApplyAgentResponse</bpmn:incoming>
+        <bpmn:outgoing>Flow_ApplyAgentResponse_WorkDone</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:scriptTask id="MarkAgentFailed" name="Mark task failed">
+        <bpmn:extensionElements>
+          <zeebe:script expression="= (for m in [{messageId: uuid(), contextId: task.contextId, taskId: task.id, role: &#34;ROLE_AGENT&#34;, parts: [{text: &#34;The agent could not complete the request.&#34;}]}] return {id: task.id, contextId: task.contextId, status: {state: &#34;TASK_STATE_FAILED&#34;, message: m, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: task.artifacts, history: append(task.history, m)})[1]" resultVariable="task" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_AgentError_MarkAgentFailed</bpmn:incoming>
+        <bpmn:outgoing>Flow_MarkAgentFailed_WorkDone</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:exclusiveGateway id="WorkDone" name="Work done">
+        <bpmn:incoming>Flow_ApplyScenario_WorkDone</bpmn:incoming>
+        <bpmn:incoming>Flow_ApplyAgentResponse_WorkDone</bpmn:incoming>
+        <bpmn:incoming>Flow_MarkAgentFailed_WorkDone</bpmn:incoming>
+        <bpmn:outgoing>Flow_WorkDone_IsPending</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
       <bpmn:subProcess id="ActiveGet" name="Answer GetTask" triggeredByEvent="true">
         <bpmn:startEvent id="GetWhileActive" name="GetTask while active" isInterrupting="false">
           <bpmn:outgoing>Flow_GetWhileActive_BuildActiveView</bpmn:outgoing>
           <bpmn:messageEventDefinition id="GetWhileActive_def" messageRef="Msg_get" />
         </bpmn:startEvent>
         <bpmn:scriptTask id="BuildActiveView" name="Build task view">
-          <bpmn:extensionElements><zeebe:script expression='=(for v in [(for h in [if getReq.historyLength = null or getReq.historyLength &gt;= count(task.history) then task.history else if getReq.historyLength &lt;= 0 then [] else sublist(task.history, count(task.history) - getReq.historyLength + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &gt; 0 then task.artifacts else null, history: if count(h) &gt; 0 then h else null})[item.value != null]))[1]] return if getReq.wrap = "task" then {task: v} else v)[1]' resultVariable="getView" /></bpmn:extensionElements>
+          <bpmn:extensionElements>
+            <zeebe:script expression="=(for v in [(for h in [if getReq.historyLength = null or getReq.historyLength &#62;= count(task.history) then task.history else if getReq.historyLength &#60;= 0 then [] else sublist(task.history, count(task.history) - getReq.historyLength + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if getReq.wrap = &#34;task&#34; then {task: v} else v)[1]" resultVariable="getView" />
+          </bpmn:extensionElements>
           <bpmn:incoming>Flow_GetWhileActive_BuildActiveView</bpmn:incoming>
           <bpmn:outgoing>Flow_BuildActiveView_PublishActiveView</bpmn:outgoing>
         </bpmn:scriptTask>
         <bpmn:callActivity id="PublishActiveView" name="Publish task view">
-          <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=getReq.corrId" target="corrId" /><zeebe:input source="=getView" target="replyResult" /><zeebe:input source="=null" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+          <bpmn:extensionElements>
+            <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+            <zeebe:ioMapping>
+              <zeebe:input source="=getReq.corrId" target="corrId" />
+              <zeebe:input source="=getView" target="replyResult" />
+              <zeebe:input source="=null" target="replyError" />
+            </zeebe:ioMapping>
+          </bpmn:extensionElements>
           <bpmn:incoming>Flow_BuildActiveView_PublishActiveView</bpmn:incoming>
           <bpmn:outgoing>Flow_PublishActiveView_ActiveViewPublished</bpmn:outgoing>
         </bpmn:callActivity>
@@ -160,17 +336,28 @@
           <bpmn:messageEventDefinition id="CancelWhileActive_def" messageRef="Msg_cancel" />
         </bpmn:startEvent>
         <bpmn:scriptTask id="MarkCanceled" name="Mark canceled">
-          <bpmn:extensionElements><zeebe:script expression='= {id: task.id, contextId: task.contextId, status: {state: "TASK_STATE_CANCELED", timestamp: substring(string(now()), 1, 19) + "Z"}, artifacts: task.artifacts, history: task.history}' resultVariable="task" /></bpmn:extensionElements>
+          <bpmn:extensionElements>
+            <zeebe:script expression="= {id: task.id, contextId: task.contextId, status: {state: &#34;TASK_STATE_CANCELED&#34;, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: task.artifacts, history: task.history}" resultVariable="task" />
+          </bpmn:extensionElements>
           <bpmn:incoming>Flow_CancelWhileActive_MarkCanceled</bpmn:incoming>
           <bpmn:outgoing>Flow_MarkCanceled_BuildCancelView</bpmn:outgoing>
         </bpmn:scriptTask>
         <bpmn:scriptTask id="BuildCancelView" name="Build canceled task view">
-          <bpmn:extensionElements><zeebe:script expression='=(for v in [(for h in [if null = null or null &gt;= count(task.history) then task.history else if null &lt;= 0 then [] else sublist(task.history, count(task.history) - null + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &gt; 0 then task.artifacts else null, history: if count(h) &gt; 0 then h else null})[item.value != null]))[1]] return if cancelReq.wrap = "task" then {task: v} else v)[1]' resultVariable="cancelView" /></bpmn:extensionElements>
+          <bpmn:extensionElements>
+            <zeebe:script expression="=(for v in [(for h in [if null = null or null &#62;= count(task.history) then task.history else if null &#60;= 0 then [] else sublist(task.history, count(task.history) - null + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if cancelReq.wrap = &#34;task&#34; then {task: v} else v)[1]" resultVariable="cancelView" />
+          </bpmn:extensionElements>
           <bpmn:incoming>Flow_MarkCanceled_BuildCancelView</bpmn:incoming>
           <bpmn:outgoing>Flow_BuildCancelView_PublishCancelView</bpmn:outgoing>
         </bpmn:scriptTask>
         <bpmn:callActivity id="PublishCancelView" name="Publish canceled task">
-          <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=cancelReq.corrId" target="corrId" /><zeebe:input source="=cancelView" target="replyResult" /><zeebe:input source="=null" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+          <bpmn:extensionElements>
+            <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+            <zeebe:ioMapping>
+              <zeebe:input source="=cancelReq.corrId" target="corrId" />
+              <zeebe:input source="=cancelView" target="replyResult" />
+              <zeebe:input source="=null" target="replyError" />
+            </zeebe:ioMapping>
+          </bpmn:extensionElements>
           <bpmn:incoming>Flow_BuildCancelView_PublishCancelView</bpmn:incoming>
           <bpmn:outgoing>Flow_PublishCancelView_CancelPublished</bpmn:outgoing>
         </bpmn:callActivity>
@@ -184,26 +371,35 @@
       </bpmn:subProcess>
       <bpmn:sequenceFlow id="Flow_MessageAccepted_ClassifyJoin" sourceRef="MessageAccepted" targetRef="ClassifyJoin" />
       <bpmn:sequenceFlow id="Flow_ClassifyJoin_ClassifyMessage" sourceRef="ClassifyJoin" targetRef="ClassifyMessage" />
-      <bpmn:sequenceFlow id="Flow_ClassifyMessage_ApplyScenario" sourceRef="ClassifyMessage" targetRef="ApplyScenario" />
-      <bpmn:sequenceFlow id="Flow_ApplyScenario_IsPending" sourceRef="ApplyScenario" targetRef="IsPending" />
-      <bpmn:sequenceFlow id="Flow_IsPending_BuildReply" sourceRef="IsPending" targetRef="BuildReply" name="yes">
+      <bpmn:sequenceFlow id="Flow_ClassifyMessage_ModeGw" sourceRef="ClassifyMessage" targetRef="ModeGw" />
+      <bpmn:sequenceFlow id="Flow_ModeGw_ApplyScenario" name="scripted" sourceRef="ModeGw" targetRef="ApplyScenario" />
+      <bpmn:sequenceFlow id="Flow_ModeGw_AgentTools" name="agent" sourceRef="ModeGw" targetRef="AgentTools">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=sc.route = "agent"</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_ApplyScenario_WorkDone" sourceRef="ApplyScenario" targetRef="WorkDone" />
+      <bpmn:sequenceFlow id="Flow_AgentTools_ApplyAgentResponse" sourceRef="AgentTools" targetRef="ApplyAgentResponse" />
+      <bpmn:sequenceFlow id="Flow_AgentError_MarkAgentFailed" sourceRef="AgentError" targetRef="MarkAgentFailed" />
+      <bpmn:sequenceFlow id="Flow_ApplyAgentResponse_WorkDone" sourceRef="ApplyAgentResponse" targetRef="WorkDone" />
+      <bpmn:sequenceFlow id="Flow_MarkAgentFailed_WorkDone" sourceRef="MarkAgentFailed" targetRef="WorkDone" />
+      <bpmn:sequenceFlow id="Flow_WorkDone_IsPending" sourceRef="WorkDone" targetRef="IsPending" />
+      <bpmn:sequenceFlow id="Flow_IsPending_BuildReply" name="yes" sourceRef="IsPending" targetRef="BuildReply">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pending = true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_IsPending_ReplyHandled" sourceRef="IsPending" targetRef="ReplyHandled" name="no" />
+      <bpmn:sequenceFlow id="Flow_IsPending_ReplyHandled" name="no" sourceRef="IsPending" targetRef="ReplyHandled" />
       <bpmn:sequenceFlow id="Flow_BuildReply_PublishReply" sourceRef="BuildReply" targetRef="PublishReply" />
       <bpmn:sequenceFlow id="Flow_PublishReply_MarkReplied" sourceRef="PublishReply" targetRef="MarkReplied" />
       <bpmn:sequenceFlow id="Flow_MarkReplied_ReplyHandled" sourceRef="MarkReplied" targetRef="ReplyHandled" />
       <bpmn:sequenceFlow id="Flow_ReplyHandled_InputRequired" sourceRef="ReplyHandled" targetRef="InputRequired" />
-      <bpmn:sequenceFlow id="Flow_InputRequired_WorkFinished" sourceRef="InputRequired" targetRef="WorkFinished" name="no" />
-      <bpmn:sequenceFlow id="Flow_InputRequired_FollowJoin" sourceRef="InputRequired" targetRef="FollowJoin" name="yes">
+      <bpmn:sequenceFlow id="Flow_InputRequired_WorkFinished" name="no" sourceRef="InputRequired" targetRef="WorkFinished" />
+      <bpmn:sequenceFlow id="Flow_InputRequired_FollowJoin" name="yes" sourceRef="InputRequired" targetRef="FollowJoin">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=task.status.state = "TASK_STATE_INPUT_REQUIRED"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:sequenceFlow id="Flow_FollowJoin_FollowUpArrives" sourceRef="FollowJoin" targetRef="FollowUpArrives" />
       <bpmn:sequenceFlow id="Flow_FollowUpArrives_ContextMatches" sourceRef="FollowUpArrives" targetRef="ContextMatches" />
-      <bpmn:sequenceFlow id="Flow_ContextMatches_RecordUserMessage" sourceRef="ContextMatches" targetRef="RecordUserMessage" name="yes">
+      <bpmn:sequenceFlow id="Flow_ContextMatches_RecordUserMessage" name="yes" sourceRef="ContextMatches" targetRef="RecordUserMessage">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=followReq.message.contextId = null or followReq.message.contextId = task.contextId</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
-      <bpmn:sequenceFlow id="Flow_ContextMatches_BuildContextMismatch" sourceRef="ContextMatches" targetRef="BuildContextMismatch" name="no" />
+      <bpmn:sequenceFlow id="Flow_ContextMatches_BuildContextMismatch" name="no" sourceRef="ContextMatches" targetRef="BuildContextMismatch" />
       <bpmn:sequenceFlow id="Flow_BuildContextMismatch_PublishMismatch" sourceRef="BuildContextMismatch" targetRef="PublishMismatch" />
       <bpmn:sequenceFlow id="Flow_PublishMismatch_FollowJoin" sourceRef="PublishMismatch" targetRef="FollowJoin" />
       <bpmn:sequenceFlow id="Flow_RecordUserMessage_SetRequest" sourceRef="RecordUserMessage" targetRef="SetRequest" />
@@ -230,12 +426,21 @@
       <bpmn:messageEventDefinition id="TerminalGet_def" messageRef="Msg_get" />
     </bpmn:intermediateCatchEvent>
     <bpmn:scriptTask id="BuildTerminalView" name="Build task view">
-      <bpmn:extensionElements><zeebe:script expression='=(for v in [(for h in [if getReq.historyLength = null or getReq.historyLength &gt;= count(task.history) then task.history else if getReq.historyLength &lt;= 0 then [] else sublist(task.history, count(task.history) - getReq.historyLength + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &gt; 0 then task.artifacts else null, history: if count(h) &gt; 0 then h else null})[item.value != null]))[1]] return if getReq.wrap = "task" then {task: v} else v)[1]' resultVariable="terminalView" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="=(for v in [(for h in [if getReq.historyLength = null or getReq.historyLength &#62;= count(task.history) then task.history else if getReq.historyLength &#60;= 0 then [] else sublist(task.history, count(task.history) - getReq.historyLength + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if getReq.wrap = &#34;task&#34; then {task: v} else v)[1]" resultVariable="terminalView" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_TerminalGet_BuildTerminalView</bpmn:incoming>
       <bpmn:outgoing>Flow_BuildTerminalView_PublishTerminalView</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:callActivity id="PublishTerminalView" name="Publish task view">
-      <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=getReq.corrId" target="corrId" /><zeebe:input source="=terminalView" target="replyResult" /><zeebe:input source="=null" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=getReq.corrId" target="corrId" />
+          <zeebe:input source="=terminalView" target="replyResult" />
+          <zeebe:input source="=null" target="replyError" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_BuildTerminalView_PublishTerminalView</bpmn:incoming>
       <bpmn:outgoing>Flow_PublishTerminalView_TerminalJoin</bpmn:outgoing>
     </bpmn:callActivity>
@@ -245,12 +450,21 @@
       <bpmn:messageEventDefinition id="TerminalCancel_def" messageRef="Msg_cancel" />
     </bpmn:intermediateCatchEvent>
     <bpmn:scriptTask id="BuildNotCancelable" name="Build not cancelable error">
-      <bpmn:extensionElements><zeebe:script expression='={code: -32002, message: "Task cannot be canceled in its current state", reason: "TASK_NOT_CANCELABLE"}' resultVariable="cancelError" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="={code: -32002, message: &#34;Task cannot be canceled in its current state&#34;, reason: &#34;TASK_NOT_CANCELABLE&#34;}" resultVariable="cancelError" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_TerminalCancel_BuildNotCancelable</bpmn:incoming>
       <bpmn:outgoing>Flow_BuildNotCancelable_PublishNotCancelable</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:callActivity id="PublishNotCancelable" name="Publish not cancelable error">
-      <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=cancelReq.corrId" target="corrId" /><zeebe:input source="=null" target="replyResult" /><zeebe:input source="=cancelError" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=cancelReq.corrId" target="corrId" />
+          <zeebe:input source="=null" target="replyResult" />
+          <zeebe:input source="=cancelError" target="replyError" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_BuildNotCancelable_PublishNotCancelable</bpmn:incoming>
       <bpmn:outgoing>Flow_PublishNotCancelable_TerminalJoin</bpmn:outgoing>
     </bpmn:callActivity>
@@ -260,19 +474,30 @@
       <bpmn:messageEventDefinition id="TerminalSend_def" messageRef="Msg_send" />
     </bpmn:intermediateCatchEvent>
     <bpmn:scriptTask id="BuildTerminalSendError" name="Build terminal state error">
-      <bpmn:extensionElements><zeebe:script expression='={code: -32004, message: "Task is in a terminal state and cannot accept messages", reason: "UNSUPPORTED_OPERATION"}' resultVariable="sendError" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="={code: -32004, message: &#34;Task is in a terminal state and cannot accept messages&#34;, reason: &#34;UNSUPPORTED_OPERATION&#34;}" resultVariable="sendError" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_TerminalSend_BuildTerminalSendError</bpmn:incoming>
       <bpmn:outgoing>Flow_BuildTerminalSendError_PublishTerminalSendError</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:callActivity id="PublishTerminalSendError" name="Publish terminal state error">
-      <bpmn:extensionElements><zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=sendReq.corrId" target="corrId" /><zeebe:input source="=null" target="replyResult" /><zeebe:input source="=sendError" target="replyError" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=sendReq.corrId" target="corrId" />
+          <zeebe:input source="=null" target="replyResult" />
+          <zeebe:input source="=sendError" target="replyError" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_BuildTerminalSendError_PublishTerminalSendError</bpmn:incoming>
       <bpmn:outgoing>Flow_PublishTerminalSendError_TerminalJoin</bpmn:outgoing>
     </bpmn:callActivity>
     <bpmn:intermediateCatchEvent id="TaskExpires" name="Task expires">
       <bpmn:incoming>Flow_AwaitTerminal_TaskExpires</bpmn:incoming>
       <bpmn:outgoing>Flow_TaskExpires_TaskExpired</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TaskExpires_def"><bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT1H"</bpmn:timeDuration></bpmn:timerEventDefinition>
+      <bpmn:timerEventDefinition id="TaskExpires_def">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT1H"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
     </bpmn:intermediateCatchEvent>
     <bpmn:endEvent id="TaskExpired" name="Task expired">
       <bpmn:incoming>Flow_TaskExpires_TaskExpired</bpmn:incoming>
@@ -280,10 +505,10 @@
     <bpmn:sequenceFlow id="Flow_TaskSubmitted_CreateTaskState" sourceRef="TaskSubmitted" targetRef="CreateTaskState" />
     <bpmn:sequenceFlow id="Flow_CreateTaskState_SetPending" sourceRef="CreateTaskState" targetRef="SetPending" />
     <bpmn:sequenceFlow id="Flow_SetPending_ReturnImmediately" sourceRef="SetPending" targetRef="ReturnImmediately" />
-    <bpmn:sequenceFlow id="Flow_ReturnImmediately_BuildInitialReply" sourceRef="ReturnImmediately" targetRef="BuildInitialReply" name="yes">
+    <bpmn:sequenceFlow id="Flow_ReturnImmediately_BuildInitialReply" name="yes" sourceRef="ReturnImmediately" targetRef="BuildInitialReply">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=req.blocking = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_ReturnImmediately_InitDone" sourceRef="ReturnImmediately" targetRef="InitDone" name="no" />
+    <bpmn:sequenceFlow id="Flow_ReturnImmediately_InitDone" name="no" sourceRef="ReturnImmediately" targetRef="InitDone" />
     <bpmn:sequenceFlow id="Flow_BuildInitialReply_PublishInitialReply" sourceRef="BuildInitialReply" targetRef="PublishInitialReply" />
     <bpmn:sequenceFlow id="Flow_PublishInitialReply_InitDone" sourceRef="PublishInitialReply" targetRef="InitDone" />
     <bpmn:sequenceFlow id="Flow_InitDone_Active" sourceRef="InitDone" targetRef="Active" />
@@ -315,7 +540,7 @@
       <bpmndi:BPMNShape id="SetPending_di" bpmnElement="SetPending">
         <dc:Bounds x="380" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ReturnImmediately_di" bpmnElement="ReturnImmediately">
+      <bpmndi:BPMNShape id="ReturnImmediately_di" bpmnElement="ReturnImmediately" isMarkerVisible="true">
         <dc:Bounds x="530" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildInitialReply_di" bpmnElement="BuildInitialReply">
@@ -324,68 +549,92 @@
       <bpmndi:BPMNShape id="PublishInitialReply_di" bpmnElement="PublishInitialReply">
         <dc:Bounds x="760" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="InitDone_di" bpmnElement="InitDone">
+      <bpmndi:BPMNShape id="InitDone_di" bpmnElement="InitDone" isMarkerVisible="true">
         <dc:Bounds x="920" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Active_di" bpmnElement="Active" isExpanded="true">
-        <dc:Bounds x="1010" y="20" width="2020" height="1100" />
+        <dc:Bounds x="1010" y="20" width="2260" height="1100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MessageAccepted_di" bpmnElement="MessageAccepted">
         <dc:Bounds x="1050" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClassifyJoin_di" bpmnElement="ClassifyJoin">
+      <bpmndi:BPMNShape id="ClassifyJoin_di" bpmnElement="ClassifyJoin" isMarkerVisible="true">
         <dc:Bounds x="1120" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClassifyMessage_di" bpmnElement="ClassifyMessage">
         <dc:Bounds x="1210" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyScenario_di" bpmnElement="ApplyScenario">
-        <dc:Bounds x="1370" y="260" width="100" height="80" />
+        <dc:Bounds x="1440" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="IsPending_di" bpmnElement="IsPending">
-        <dc:Bounds x="1530" y="275" width="50" height="50" />
+      <bpmndi:BPMNShape id="IsPending_di" bpmnElement="IsPending" isMarkerVisible="true">
+        <dc:Bounds x="1690" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildReply_di" bpmnElement="BuildReply">
-        <dc:Bounds x="1620" y="140" width="100" height="80" />
+        <dc:Bounds x="1780" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishReply_di" bpmnElement="PublishReply">
-        <dc:Bounds x="1760" y="140" width="100" height="80" />
+        <dc:Bounds x="1920" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkReplied_di" bpmnElement="MarkReplied">
-        <dc:Bounds x="1900" y="140" width="100" height="80" />
+        <dc:Bounds x="2060" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ReplyHandled_di" bpmnElement="ReplyHandled">
-        <dc:Bounds x="2040" y="275" width="50" height="50" />
+      <bpmndi:BPMNShape id="ReplyHandled_di" bpmnElement="ReplyHandled" isMarkerVisible="true">
+        <dc:Bounds x="2200" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired">
-        <dc:Bounds x="2130" y="275" width="50" height="50" />
+      <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired" isMarkerVisible="true">
+        <dc:Bounds x="2290" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WorkFinished_di" bpmnElement="WorkFinished">
-        <dc:Bounds x="2250" y="282" width="36" height="36" />
+        <dc:Bounds x="2410" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="FollowJoin_di" bpmnElement="FollowJoin">
-        <dc:Bounds x="2190" y="435" width="50" height="50" />
+      <bpmndi:BPMNShape id="FollowJoin_di" bpmnElement="FollowJoin" isMarkerVisible="true">
+        <dc:Bounds x="2350" y="435" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpArrives_di" bpmnElement="FollowUpArrives">
-        <dc:Bounds x="2270" y="442" width="36" height="36" />
+        <dc:Bounds x="2430" y="442" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ContextMatches_di" bpmnElement="ContextMatches">
-        <dc:Bounds x="2370" y="435" width="50" height="50" />
+      <bpmndi:BPMNShape id="ContextMatches_di" bpmnElement="ContextMatches" isMarkerVisible="true">
+        <dc:Bounds x="2530" y="435" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildContextMismatch_di" bpmnElement="BuildContextMismatch">
-        <dc:Bounds x="2470" y="560" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PublishMismatch_di" bpmnElement="PublishMismatch">
         <dc:Bounds x="2630" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishMismatch_di" bpmnElement="PublishMismatch">
+        <dc:Bounds x="2790" y="560" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RecordUserMessage_di" bpmnElement="RecordUserMessage">
-        <dc:Bounds x="2480" y="380" width="100" height="80" />
+        <dc:Bounds x="2640" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SetRequest_di" bpmnElement="SetRequest">
-        <dc:Bounds x="2620" y="380" width="100" height="80" />
+        <dc:Bounds x="2780" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SetPendingAgain_di" bpmnElement="SetPendingAgain">
-        <dc:Bounds x="2760" y="380" width="100" height="80" />
+        <dc:Bounds x="2920" y="380" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ModeGw_di" bpmnElement="ModeGw" isMarkerVisible="true">
+        <dc:Bounds x="1350" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AgentTools_di" bpmnElement="AgentTools" isExpanded="true">
+        <dc:Bounds x="1420" y="420" width="720" height="300" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="get_current_time_di" bpmnElement="get_current_time">
+        <dc:Bounds x="1450" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="convert_temperature_di" bpmnElement="convert_temperature">
+        <dc:Bounds x="1600" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="capital_of_di" bpmnElement="capital_of">
+        <dc:Bounds x="1750" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ApplyAgentResponse_di" bpmnElement="ApplyAgentResponse">
+        <dc:Bounds x="2200" y="500" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MarkAgentFailed_di" bpmnElement="MarkAgentFailed">
+        <dc:Bounds x="2200" y="640" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WorkDone_di" bpmnElement="WorkDone" isMarkerVisible="true">
+        <dc:Bounds x="1590" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ActiveGet_di" bpmnElement="ActiveGet" isExpanded="true">
         <dc:Bounds x="1050" y="800" width="560" height="220" />
@@ -402,6 +651,18 @@
       <bpmndi:BPMNShape id="ActiveViewPublished_di" bpmnElement="ActiveViewPublished">
         <dc:Bounds x="1490" y="882" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_GetWhileActive_BuildActiveView_di" bpmnElement="Flow_GetWhileActive_BuildActiveView">
+        <di:waypoint x="1126" y="900" />
+        <di:waypoint x="1170" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildActiveView_PublishActiveView_di" bpmnElement="Flow_BuildActiveView_PublishActiveView">
+        <di:waypoint x="1270" y="900" />
+        <di:waypoint x="1330" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishActiveView_ActiveViewPublished_di" bpmnElement="Flow_PublishActiveView_ActiveViewPublished">
+        <di:waypoint x="1430" y="900" />
+        <di:waypoint x="1490" y="900" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ActiveCancel_di" bpmnElement="ActiveCancel" isExpanded="true">
         <dc:Bounds x="1690" y="800" width="760" height="220" />
       </bpmndi:BPMNShape>
@@ -420,57 +681,6 @@
       <bpmndi:BPMNShape id="CancelPublished_di" bpmnElement="CancelPublished">
         <dc:Bounds x="2290" y="882" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TerminalJoin_di" bpmnElement="TerminalJoin">
-        <dc:Bounds x="3110" y="275" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="AwaitTerminal_di" bpmnElement="AwaitTerminal">
-        <dc:Bounds x="3210" y="275" width="50" height="50" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TerminalGet_di" bpmnElement="TerminalGet">
-        <dc:Bounds x="3320" y="142" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BuildTerminalView_di" bpmnElement="BuildTerminalView">
-        <dc:Bounds x="3410" y="120" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PublishTerminalView_di" bpmnElement="PublishTerminalView">
-        <dc:Bounds x="3560" y="120" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TerminalCancel_di" bpmnElement="TerminalCancel">
-        <dc:Bounds x="3320" y="282" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BuildNotCancelable_di" bpmnElement="BuildNotCancelable">
-        <dc:Bounds x="3410" y="260" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PublishNotCancelable_di" bpmnElement="PublishNotCancelable">
-        <dc:Bounds x="3560" y="260" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TerminalSend_di" bpmnElement="TerminalSend">
-        <dc:Bounds x="3320" y="422" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BuildTerminalSendError_di" bpmnElement="BuildTerminalSendError">
-        <dc:Bounds x="3410" y="400" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PublishTerminalSendError_di" bpmnElement="PublishTerminalSendError">
-        <dc:Bounds x="3560" y="400" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TaskExpires_di" bpmnElement="TaskExpires">
-        <dc:Bounds x="3320" y="562" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="TaskExpired_di" bpmnElement="TaskExpired">
-        <dc:Bounds x="3420" y="562" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_GetWhileActive_BuildActiveView_di" bpmnElement="Flow_GetWhileActive_BuildActiveView">
-        <di:waypoint x="1126" y="900" />
-        <di:waypoint x="1170" y="900" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildActiveView_PublishActiveView_di" bpmnElement="Flow_BuildActiveView_PublishActiveView">
-        <di:waypoint x="1270" y="900" />
-        <di:waypoint x="1330" y="900" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PublishActiveView_ActiveViewPublished_di" bpmnElement="Flow_PublishActiveView_ActiveViewPublished">
-        <di:waypoint x="1430" y="900" />
-        <di:waypoint x="1490" y="900" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CancelWhileActive_MarkCanceled_di" bpmnElement="Flow_CancelWhileActive_MarkCanceled">
         <di:waypoint x="1766" y="900" />
         <di:waypoint x="1810" y="900" />
@@ -487,6 +697,9 @@
         <di:waypoint x="2230" y="900" />
         <di:waypoint x="2290" y="900" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="AgentError_di" bpmnElement="AgentError">
+        <dc:Bounds x="2100" y="702" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_MessageAccepted_ClassifyJoin_di" bpmnElement="Flow_MessageAccepted_ClassifyJoin">
         <di:waypoint x="1086" y="300" />
         <di:waypoint x="1120" y="300" />
@@ -495,91 +708,166 @@
         <di:waypoint x="1170" y="300" />
         <di:waypoint x="1210" y="300" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClassifyMessage_ApplyScenario_di" bpmnElement="Flow_ClassifyMessage_ApplyScenario">
+      <bpmndi:BPMNEdge id="Flow_ClassifyMessage_ModeGw_di" bpmnElement="Flow_ClassifyMessage_ModeGw">
         <di:waypoint x="1310" y="300" />
-        <di:waypoint x="1370" y="300" />
+        <di:waypoint x="1350" y="300" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ApplyScenario_IsPending_di" bpmnElement="Flow_ApplyScenario_IsPending">
-        <di:waypoint x="1470" y="300" />
-        <di:waypoint x="1530" y="300" />
+      <bpmndi:BPMNEdge id="Flow_ModeGw_ApplyScenario_di" bpmnElement="Flow_ModeGw_ApplyScenario">
+        <di:waypoint x="1400" y="300" />
+        <di:waypoint x="1440" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ModeGw_AgentTools_di" bpmnElement="Flow_ModeGw_AgentTools">
+        <di:waypoint x="1375" y="325" />
+        <di:waypoint x="1375" y="570" />
+        <di:waypoint x="1420" y="570" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ApplyScenario_WorkDone_di" bpmnElement="Flow_ApplyScenario_WorkDone">
+        <di:waypoint x="1540" y="300" />
+        <di:waypoint x="1590" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentTools_ApplyAgentResponse_di" bpmnElement="Flow_AgentTools_ApplyAgentResponse">
+        <di:waypoint x="2140" y="570" />
+        <di:waypoint x="2170" y="570" />
+        <di:waypoint x="2170" y="540" />
+        <di:waypoint x="2200" y="540" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentError_MarkAgentFailed_di" bpmnElement="Flow_AgentError_MarkAgentFailed">
+        <di:waypoint x="2118" y="738" />
+        <di:waypoint x="2118" y="680" />
+        <di:waypoint x="2200" y="680" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ApplyAgentResponse_WorkDone_di" bpmnElement="Flow_ApplyAgentResponse_WorkDone">
+        <di:waypoint x="2250" y="580" />
+        <di:waypoint x="2250" y="730" />
+        <di:waypoint x="1615" y="730" />
+        <di:waypoint x="1615" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MarkAgentFailed_WorkDone_di" bpmnElement="Flow_MarkAgentFailed_WorkDone">
+        <di:waypoint x="2250" y="720" />
+        <di:waypoint x="2250" y="950" />
+        <di:waypoint x="1615" y="950" />
+        <di:waypoint x="1615" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WorkDone_IsPending_di" bpmnElement="Flow_WorkDone_IsPending">
+        <di:waypoint x="1640" y="300" />
+        <di:waypoint x="1690" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPending_BuildReply_di" bpmnElement="Flow_IsPending_BuildReply">
-        <di:waypoint x="1555" y="275" />
-        <di:waypoint x="1555" y="180" />
-        <di:waypoint x="1620" y="180" />
+        <di:waypoint x="1715" y="275" />
+        <di:waypoint x="1715" y="180" />
+        <di:waypoint x="1780" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPending_ReplyHandled_di" bpmnElement="Flow_IsPending_ReplyHandled">
-        <di:waypoint x="1580" y="300" />
-        <di:waypoint x="2040" y="300" />
+        <di:waypoint x="1740" y="300" />
+        <di:waypoint x="2200" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildReply_PublishReply_di" bpmnElement="Flow_BuildReply_PublishReply">
-        <di:waypoint x="1720" y="180" />
-        <di:waypoint x="1760" y="180" />
+        <di:waypoint x="1880" y="180" />
+        <di:waypoint x="1920" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishReply_MarkReplied_di" bpmnElement="Flow_PublishReply_MarkReplied">
-        <di:waypoint x="1860" y="180" />
-        <di:waypoint x="1900" y="180" />
+        <di:waypoint x="2020" y="180" />
+        <di:waypoint x="2060" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkReplied_ReplyHandled_di" bpmnElement="Flow_MarkReplied_ReplyHandled">
-        <di:waypoint x="1950" y="220" />
-        <di:waypoint x="1950" y="300" />
-        <di:waypoint x="2040" y="300" />
+        <di:waypoint x="2110" y="220" />
+        <di:waypoint x="2110" y="300" />
+        <di:waypoint x="2200" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReplyHandled_InputRequired_di" bpmnElement="Flow_ReplyHandled_InputRequired">
-        <di:waypoint x="2090" y="300" />
-        <di:waypoint x="2130" y="300" />
+        <di:waypoint x="2250" y="300" />
+        <di:waypoint x="2290" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_WorkFinished_di" bpmnElement="Flow_InputRequired_WorkFinished">
-        <di:waypoint x="2180" y="300" />
-        <di:waypoint x="2250" y="300" />
+        <di:waypoint x="2340" y="300" />
+        <di:waypoint x="2410" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_FollowJoin_di" bpmnElement="Flow_InputRequired_FollowJoin">
-        <di:waypoint x="2155" y="325" />
-        <di:waypoint x="2155" y="460" />
-        <di:waypoint x="2190" y="460" />
+        <di:waypoint x="2315" y="325" />
+        <di:waypoint x="2315" y="460" />
+        <di:waypoint x="2350" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowJoin_FollowUpArrives_di" bpmnElement="Flow_FollowJoin_FollowUpArrives">
-        <di:waypoint x="2240" y="460" />
-        <di:waypoint x="2270" y="460" />
+        <di:waypoint x="2400" y="460" />
+        <di:waypoint x="2430" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUpArrives_ContextMatches_di" bpmnElement="Flow_FollowUpArrives_ContextMatches">
-        <di:waypoint x="2306" y="460" />
-        <di:waypoint x="2370" y="460" />
+        <di:waypoint x="2466" y="460" />
+        <di:waypoint x="2530" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ContextMatches_RecordUserMessage_di" bpmnElement="Flow_ContextMatches_RecordUserMessage">
-        <di:waypoint x="2395" y="435" />
-        <di:waypoint x="2395" y="420" />
-        <di:waypoint x="2480" y="420" />
+        <di:waypoint x="2555" y="435" />
+        <di:waypoint x="2555" y="420" />
+        <di:waypoint x="2640" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ContextMatches_BuildContextMismatch_di" bpmnElement="Flow_ContextMatches_BuildContextMismatch">
-        <di:waypoint x="2395" y="485" />
-        <di:waypoint x="2395" y="600" />
-        <di:waypoint x="2470" y="600" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildContextMismatch_PublishMismatch_di" bpmnElement="Flow_BuildContextMismatch_PublishMismatch">
-        <di:waypoint x="2570" y="600" />
+        <di:waypoint x="2555" y="485" />
+        <di:waypoint x="2555" y="600" />
         <di:waypoint x="2630" y="600" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildContextMismatch_PublishMismatch_di" bpmnElement="Flow_BuildContextMismatch_PublishMismatch">
+        <di:waypoint x="2730" y="600" />
+        <di:waypoint x="2790" y="600" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishMismatch_FollowJoin_di" bpmnElement="Flow_PublishMismatch_FollowJoin">
-        <di:waypoint x="2680" y="640" />
-        <di:waypoint x="2680" y="680" />
-        <di:waypoint x="2215" y="680" />
-        <di:waypoint x="2215" y="485" />
+        <di:waypoint x="2840" y="640" />
+        <di:waypoint x="2840" y="680" />
+        <di:waypoint x="2375" y="680" />
+        <di:waypoint x="2375" y="485" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RecordUserMessage_SetRequest_di" bpmnElement="Flow_RecordUserMessage_SetRequest">
-        <di:waypoint x="2580" y="420" />
-        <di:waypoint x="2620" y="420" />
+        <di:waypoint x="2740" y="420" />
+        <di:waypoint x="2780" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SetRequest_SetPendingAgain_di" bpmnElement="Flow_SetRequest_SetPendingAgain">
-        <di:waypoint x="2720" y="420" />
-        <di:waypoint x="2760" y="420" />
+        <di:waypoint x="2880" y="420" />
+        <di:waypoint x="2920" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SetPendingAgain_ClassifyJoin_di" bpmnElement="Flow_SetPendingAgain_ClassifyJoin">
-        <di:waypoint x="2810" y="460" />
-        <di:waypoint x="2810" y="660" />
+        <di:waypoint x="2970" y="460" />
+        <di:waypoint x="2970" y="660" />
         <di:waypoint x="1145" y="660" />
         <di:waypoint x="1145" y="325" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TerminalJoin_di" bpmnElement="TerminalJoin" isMarkerVisible="true">
+        <dc:Bounds x="3350" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AwaitTerminal_di" bpmnElement="AwaitTerminal">
+        <dc:Bounds x="3450" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TerminalGet_di" bpmnElement="TerminalGet">
+        <dc:Bounds x="3560" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BuildTerminalView_di" bpmnElement="BuildTerminalView">
+        <dc:Bounds x="3650" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishTerminalView_di" bpmnElement="PublishTerminalView">
+        <dc:Bounds x="3800" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TerminalCancel_di" bpmnElement="TerminalCancel">
+        <dc:Bounds x="3560" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BuildNotCancelable_di" bpmnElement="BuildNotCancelable">
+        <dc:Bounds x="3650" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishNotCancelable_di" bpmnElement="PublishNotCancelable">
+        <dc:Bounds x="3800" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TerminalSend_di" bpmnElement="TerminalSend">
+        <dc:Bounds x="3560" y="422" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BuildTerminalSendError_di" bpmnElement="BuildTerminalSendError">
+        <dc:Bounds x="3650" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishTerminalSendError_di" bpmnElement="PublishTerminalSendError">
+        <dc:Bounds x="3800" y="400" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskExpires_di" bpmnElement="TaskExpires">
+        <dc:Bounds x="3560" y="562" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskExpired_di" bpmnElement="TaskExpired">
+        <dc:Bounds x="3660" y="562" width="36" height="36" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_TaskSubmitted_CreateTaskState_di" bpmnElement="Flow_TaskSubmitted_CreateTaskState">
         <di:waypoint x="186" y="300" />
         <di:waypoint x="230" y="300" />
@@ -617,79 +905,79 @@
         <di:waypoint x="1010" y="570" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Active_TerminalJoin_di" bpmnElement="Flow_Active_TerminalJoin">
-        <di:waypoint x="3030" y="570" />
-        <di:waypoint x="3070" y="570" />
-        <di:waypoint x="3070" y="300" />
-        <di:waypoint x="3110" y="300" />
+        <di:waypoint x="3270" y="570" />
+        <di:waypoint x="3310" y="570" />
+        <di:waypoint x="3310" y="300" />
+        <di:waypoint x="3350" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TerminalJoin_AwaitTerminal_di" bpmnElement="Flow_TerminalJoin_AwaitTerminal">
-        <di:waypoint x="3160" y="300" />
-        <di:waypoint x="3210" y="300" />
+        <di:waypoint x="3400" y="300" />
+        <di:waypoint x="3450" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalGet_di" bpmnElement="Flow_AwaitTerminal_TerminalGet">
-        <di:waypoint x="3235" y="275" />
-        <di:waypoint x="3235" y="160" />
-        <di:waypoint x="3320" y="160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalCancel_di" bpmnElement="Flow_AwaitTerminal_TerminalCancel">
-        <di:waypoint x="3260" y="300" />
-        <di:waypoint x="3320" y="300" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalSend_di" bpmnElement="Flow_AwaitTerminal_TerminalSend">
-        <di:waypoint x="3235" y="325" />
-        <di:waypoint x="3235" y="440" />
-        <di:waypoint x="3320" y="440" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TaskExpires_di" bpmnElement="Flow_AwaitTerminal_TaskExpires">
-        <di:waypoint x="3235" y="325" />
-        <di:waypoint x="3235" y="580" />
-        <di:waypoint x="3320" y="580" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_TerminalGet_BuildTerminalView_di" bpmnElement="Flow_TerminalGet_BuildTerminalView">
-        <di:waypoint x="3356" y="160" />
-        <di:waypoint x="3410" y="160" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildTerminalView_PublishTerminalView_di" bpmnElement="Flow_BuildTerminalView_PublishTerminalView">
-        <di:waypoint x="3510" y="160" />
+        <di:waypoint x="3475" y="275" />
+        <di:waypoint x="3475" y="160" />
         <di:waypoint x="3560" y="160" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PublishTerminalView_TerminalJoin_di" bpmnElement="Flow_PublishTerminalView_TerminalJoin">
-        <di:waypoint x="3610" y="120" />
-        <di:waypoint x="3610" y="40" />
-        <di:waypoint x="3135" y="40" />
-        <di:waypoint x="3135" y="275" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_TerminalCancel_BuildNotCancelable_di" bpmnElement="Flow_TerminalCancel_BuildNotCancelable">
-        <di:waypoint x="3356" y="300" />
-        <di:waypoint x="3410" y="300" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildNotCancelable_PublishNotCancelable_di" bpmnElement="Flow_BuildNotCancelable_PublishNotCancelable">
-        <di:waypoint x="3510" y="300" />
+      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalCancel_di" bpmnElement="Flow_AwaitTerminal_TerminalCancel">
+        <di:waypoint x="3500" y="300" />
         <di:waypoint x="3560" y="300" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PublishNotCancelable_TerminalJoin_di" bpmnElement="Flow_PublishNotCancelable_TerminalJoin">
-        <di:waypoint x="3610" y="340" />
-        <di:waypoint x="3610" y="420" />
-        <di:waypoint x="3135" y="420" />
-        <di:waypoint x="3135" y="325" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_TerminalSend_BuildTerminalSendError_di" bpmnElement="Flow_TerminalSend_BuildTerminalSendError">
-        <di:waypoint x="3356" y="440" />
-        <di:waypoint x="3410" y="440" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildTerminalSendError_PublishTerminalSendError_di" bpmnElement="Flow_BuildTerminalSendError_PublishTerminalSendError">
-        <di:waypoint x="3510" y="440" />
+      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalSend_di" bpmnElement="Flow_AwaitTerminal_TerminalSend">
+        <di:waypoint x="3475" y="325" />
+        <di:waypoint x="3475" y="440" />
         <di:waypoint x="3560" y="440" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TaskExpires_di" bpmnElement="Flow_AwaitTerminal_TaskExpires">
+        <di:waypoint x="3475" y="325" />
+        <di:waypoint x="3475" y="580" />
+        <di:waypoint x="3560" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TerminalGet_BuildTerminalView_di" bpmnElement="Flow_TerminalGet_BuildTerminalView">
+        <di:waypoint x="3596" y="160" />
+        <di:waypoint x="3650" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildTerminalView_PublishTerminalView_di" bpmnElement="Flow_BuildTerminalView_PublishTerminalView">
+        <di:waypoint x="3750" y="160" />
+        <di:waypoint x="3800" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishTerminalView_TerminalJoin_di" bpmnElement="Flow_PublishTerminalView_TerminalJoin">
+        <di:waypoint x="3850" y="120" />
+        <di:waypoint x="3850" y="40" />
+        <di:waypoint x="3375" y="40" />
+        <di:waypoint x="3375" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TerminalCancel_BuildNotCancelable_di" bpmnElement="Flow_TerminalCancel_BuildNotCancelable">
+        <di:waypoint x="3596" y="300" />
+        <di:waypoint x="3650" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildNotCancelable_PublishNotCancelable_di" bpmnElement="Flow_BuildNotCancelable_PublishNotCancelable">
+        <di:waypoint x="3750" y="300" />
+        <di:waypoint x="3800" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishNotCancelable_TerminalJoin_di" bpmnElement="Flow_PublishNotCancelable_TerminalJoin">
+        <di:waypoint x="3850" y="340" />
+        <di:waypoint x="3850" y="420" />
+        <di:waypoint x="3375" y="420" />
+        <di:waypoint x="3375" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TerminalSend_BuildTerminalSendError_di" bpmnElement="Flow_TerminalSend_BuildTerminalSendError">
+        <di:waypoint x="3596" y="440" />
+        <di:waypoint x="3650" y="440" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildTerminalSendError_PublishTerminalSendError_di" bpmnElement="Flow_BuildTerminalSendError_PublishTerminalSendError">
+        <di:waypoint x="3750" y="440" />
+        <di:waypoint x="3800" y="440" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishTerminalSendError_TerminalJoin_di" bpmnElement="Flow_PublishTerminalSendError_TerminalJoin">
-        <di:waypoint x="3610" y="480" />
-        <di:waypoint x="3610" y="620" />
-        <di:waypoint x="3135" y="620" />
-        <di:waypoint x="3135" y="325" />
+        <di:waypoint x="3850" y="480" />
+        <di:waypoint x="3850" y="620" />
+        <di:waypoint x="3375" y="620" />
+        <di:waypoint x="3375" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskExpires_TaskExpired_di" bpmnElement="Flow_TaskExpires_TaskExpired">
-        <di:waypoint x="3356" y="580" />
-        <di:waypoint x="3420" y="580" />
+        <di:waypoint x="3596" y="580" />
+        <di:waypoint x="3660" y="580" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

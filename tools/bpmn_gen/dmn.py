@@ -11,7 +11,7 @@ def table(decision_id, name, inputs, outputs, rules, hit="FIRST", x=150, y=100):
            'xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" '
            'xmlns:modeler="http://camunda.org/schema/modeler/1.0" '
            'id=%s name=%s namespace="http://camunda.org/schema/1.0/dmn" '
-           'modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">'
+           'modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">'
            % (q("Definitions_" + decision_id.replace("-", "_")), q(name)),
            '  <decision id=%s name=%s>' % (q(decision_id), q(name)),
            '    <decisionTable id=%s hitPolicy=%s>' % (q(decision_id + "_table"), q(hit))]

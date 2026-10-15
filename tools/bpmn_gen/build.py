@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from lib import Proc, q  # noqa: E402
 import dmn  # noqa: E402
 import feel  # noqa: E402
+from agent import AGENT, add_agent, agent_settings  # noqa: E402
 from feel import one, nn, TS  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -273,6 +274,15 @@ def decisions():
          ("artifact", "Artifact", "string"), ("echo", "Echo", "boolean"), ("route", "Route", "string")],
         rules))
 
+    caps = [("france", "Paris"), ("germany", "Berlin"), ("japan", "Tokyo"), ("italy", "Rome"), ("spain", "Madrid"),
+            ("canada", "Ottawa"), ("brazil", "Brasilia"), ("australia", "Canberra"), ("egypt", "Cairo"),
+            ("india", "New Delhi"), ("sweden", "Stockholm"), ("norway", "Oslo")]
+    write("dmn/capitals.dmn", dmn.table(
+        "capitals", "Capital city of a country", [("Country", "lower case(country)", "string")],
+        [("capital", "Capital", "string")],
+        [("", ['"%s"' % c], ['"%s"' % cap]) for c, cap in caps] +
+        [("Unknown country", ["-"], ['"unknown"'])]))
+
     t, f = "true", "false"
     streaming = '"SendStreamingMessage","SubscribeToTask"'
     push = ('"CreateTaskPushNotificationConfig","GetTaskPushNotificationConfig",'
@@ -341,7 +351,7 @@ def task():
 
     # --- Active scope ------------------------------------------------------------------------
     A = "Active"
-    p.sub(A, "Process task", 1010, 20, 2020, 1100)
+    p.sub(A, "Process task", 1010, 20, 2260, 1100)
     p.start("MessageAccepted", "Message accepted", 1050, 282, parent=A)
     p.xor("ClassifyJoin", "Classify next message", 1120, 275, parent=A)
     p.rule("ClassifyMessage", "Classify message", 1210, 260, "a2a-classify", "sc", parent=A)
@@ -354,38 +364,39 @@ def task():
         else if sc.artifact = "file" then [{raw: "dGNr", mediaType: "text/plain", filename: "output.txt"}]
         else if sc.artifact = "file-url" then [{url: "https://example.com/output.txt", mediaType: "text/plain", filename: "output.txt"}]
         else [{data: {key: "value", count: 42}}]}""")
-    p.script("ApplyScenario", "Apply scenario", 1370, 260, one("""=
+    p.script("ApplyScenario", "Apply scenario", 1440, 260, one("""=
       (for m in [%s] return for a in [%s] return
         {id: task.id, contextId: task.contextId,
          status: %s,
          artifacts: if a = null then task.artifacts else append(task.artifacts, a),
          history: if m != null then append(task.history, m) else task.history})[1][1]"""
         % (msg, art, nn('{state: sc.state, message: m, timestamp: %s}' % TS))), "task", parent=A)
-    p.xor("IsPending", "Reply pending?", 1530, 275, parent=A)
-    p.script("BuildReply", "Build reply", 1620, 140, "=" + feel.wrapped("req.hl", '"task"'), "workReply", parent=A)
-    p.call("PublishReply", "Publish reply", 1760, 140, "a2a-publish-reply",
+    p.xor("IsPending", "Reply pending?", 1690, 275, parent=A)
+    p.script("BuildReply", "Build reply", 1780, 140, "=" + feel.wrapped("req.hl", '"task"'), "workReply", parent=A)
+    p.call("PublishReply", "Publish reply", 1920, 140, "a2a-publish-reply",
            inputs=pub("req.corrId", "workReply", "null"), parent=A)
-    p.script("MarkReplied", "Mark replied", 1900, 140, "=false", "pending", parent=A)
-    p.xor("ReplyHandled", "Reply handled", 2040, 275, parent=A)
-    p.xor("InputRequired", "Input required?", 2130, 275, parent=A)
-    p.end("WorkFinished", "Work finished", 2250, 282, parent=A)
-    p.xor("FollowJoin", "Await follow-up", 2190, 435, parent=A)
-    p.catch_msg("FollowUpArrives", "Follow-up arrives", 2270, 442, "Msg_send", parent=A,
+    p.script("MarkReplied", "Mark replied", 2060, 140, "=false", "pending", parent=A)
+    p.xor("ReplyHandled", "Reply handled", 2200, 275, parent=A)
+    p.xor("InputRequired", "Input required?", 2290, 275, parent=A)
+    p.end("WorkFinished", "Work finished", 2410, 282, parent=A)
+    p.xor("FollowJoin", "Await follow-up", 2350, 435, parent=A)
+    p.catch_msg("FollowUpArrives", "Follow-up arrives", 2430, 442, "Msg_send", parent=A,
                 ext='<zeebe:ioMapping><zeebe:output source="=sendReq" target="followReq" /></zeebe:ioMapping>')
-    p.xor("ContextMatches", "Context matches?", 2370, 435, parent=A)
-    p.script("BuildContextMismatch", "Build context mismatch error", 2470, 560, "=" + feel.err(-32602,
+    p.xor("ContextMatches", "Context matches?", 2530, 435, parent=A)
+    p.script("BuildContextMismatch", "Build context mismatch error", 2630, 560, "=" + feel.err(-32602,
              "contextId does not match the task"), "mismatchError", parent=A)
-    p.call("PublishMismatch", "Publish mismatch error", 2630, 560, "a2a-publish-reply",
+    p.call("PublishMismatch", "Publish mismatch error", 2790, 560, "a2a-publish-reply",
            inputs=pub("followReq.corrId", "null", "mismatchError"), parent=A)
-    p.script("RecordUserMessage", "Record user message", 2480, 380, one("""=
+    p.script("RecordUserMessage", "Record user message", 2640, 380, one("""=
       {id: task.id, contextId: task.contextId,
        status: {state: "TASK_STATE_WORKING", timestamp: %s}, artifacts: task.artifacts,
        history: append(task.history, put(put(followReq.message, "taskId", task.id), "contextId", task.contextId))}""" % TS),
              "task", parent=A)
-    p.script("SetRequest", "Set current request", 2620, 380,
+    p.script("SetRequest", "Set current request", 2780, 380,
              "={corrId: followReq.corrId, blocking: true, hl: followReq.historyLength, message: followReq.message, wrap: \"task\"}",
              "req", parent=A)
-    p.script("SetPendingAgain", "Set reply pending again", 2760, 380, "=true", "pending", parent=A)
+    p.script("SetPendingAgain", "Set reply pending again", 2920, 380, "=true", "pending", parent=A)
+    add_agent(p, A)
     # event sub-process: GetTask while active
     G = "ActiveGet"
     p.sub(G, "Answer GetTask", 1050, 800, 560, 220, parent=A, attrs='triggeredByEvent="true"')
@@ -417,8 +428,15 @@ def task():
 
     p.flow("MessageAccepted", "ClassifyJoin")
     p.flow("ClassifyJoin", "ClassifyMessage")
-    p.flow("ClassifyMessage", "ApplyScenario")
-    p.flow("ApplyScenario", "IsPending")
+    p.flow("ClassifyMessage", "ModeGw")
+    p.flow("ModeGw", "ApplyScenario", "scripted", default=True)
+    p.flow("ModeGw", "AgentTools", "agent", cond='=sc.route = "agent"', route="down-in")
+    p.flow("ApplyScenario", "WorkDone")
+    p.flow("AgentTools", "ApplyAgentResponse")
+    p.flow("AgentError", "MarkAgentFailed")
+    p.flow("ApplyAgentResponse", "WorkDone", route="back:150")
+    p.flow("MarkAgentFailed", "WorkDone", route="back:230")
+    p.flow("WorkDone", "IsPending")
     p.flow("IsPending", "BuildReply", "yes", cond="=pending = true", route="up-in")
     p.flow("IsPending", "ReplyHandled", "no", default=True)
     p.flow("BuildReply", "PublishReply")
@@ -450,26 +468,26 @@ def task():
     p.flow("InitDone", A)
 
     # --- terminal loop ----------------------------------------------------------------------
-    p.xor("TerminalJoin", "Await terminal requests", 3110, 275)
-    p.node("eventBasedGateway", "AwaitTerminal", "Await requests or expiry", 3210, 275)
-    p.catch_msg("TerminalGet", "GetTask in terminal state", 3320, 142, "Msg_get")
-    p.script("BuildTerminalView", "Build task view", 3410, 120, "=" + feel.wrapped("getReq.historyLength", "getReq.wrap"),
+    p.xor("TerminalJoin", "Await terminal requests", 3350, 275)
+    p.node("eventBasedGateway", "AwaitTerminal", "Await requests or expiry", 3450, 275)
+    p.catch_msg("TerminalGet", "GetTask in terminal state", 3560, 142, "Msg_get")
+    p.script("BuildTerminalView", "Build task view", 3650, 120, "=" + feel.wrapped("getReq.historyLength", "getReq.wrap"),
              "terminalView")
-    p.call("PublishTerminalView", "Publish task view", 3560, 120, "a2a-publish-reply",
+    p.call("PublishTerminalView", "Publish task view", 3800, 120, "a2a-publish-reply",
            inputs=pub("getReq.corrId", "terminalView", "null"))
-    p.catch_msg("TerminalCancel", "CancelTask in terminal state", 3320, 282, "Msg_cancel")
-    p.script("BuildNotCancelable", "Build not cancelable error", 3410, 260,
+    p.catch_msg("TerminalCancel", "CancelTask in terminal state", 3560, 282, "Msg_cancel")
+    p.script("BuildNotCancelable", "Build not cancelable error", 3650, 260,
              "=" + feel.err(-32002, "Task cannot be canceled in its current state", "TASK_NOT_CANCELABLE"), "cancelError")
-    p.call("PublishNotCancelable", "Publish not cancelable error", 3560, 260, "a2a-publish-reply",
+    p.call("PublishNotCancelable", "Publish not cancelable error", 3800, 260, "a2a-publish-reply",
            inputs=pub("cancelReq.corrId", "null", "cancelError"))
-    p.catch_msg("TerminalSend", "SendMessage in terminal state", 3320, 422, "Msg_send")
-    p.script("BuildTerminalSendError", "Build terminal state error", 3410, 400,
+    p.catch_msg("TerminalSend", "SendMessage in terminal state", 3560, 422, "Msg_send")
+    p.script("BuildTerminalSendError", "Build terminal state error", 3650, 400,
              "=" + feel.err(-32004, "Task is in a terminal state and cannot accept messages", "UNSUPPORTED_OPERATION"),
              "sendError")
-    p.call("PublishTerminalSendError", "Publish terminal state error", 3560, 400, "a2a-publish-reply",
+    p.call("PublishTerminalSendError", "Publish terminal state error", 3800, 400, "a2a-publish-reply",
            inputs=pub("sendReq.corrId", "null", "sendError"))
-    p.catch_timer("TaskExpires", "Task expires", 3320, 562, '="PT1H"')
-    p.end("TaskExpired", "Task expired", 3420, 562)
+    p.catch_timer("TaskExpires", "Task expires", 3560, 562, '="PT1H"')
+    p.end("TaskExpired", "Task expired", 3660, 562)
     p.flow(A, "TerminalJoin")
     p.flow("TerminalJoin", "AwaitTerminal")
     p.flow("AwaitTerminal", "TerminalGet", route="up-in")
@@ -487,6 +505,7 @@ def task():
     p.flow("PublishTerminalSendError", "TerminalJoin", route="back:140")
     p.flow("TaskExpires", "TaskExpired")
     write("bpmn/a2a-task.bpmn", p.xml())
+    apply("bpmn/a2a-task.bpmn", AGENT, "AgentTools", agent_settings())
 
 
 def main():

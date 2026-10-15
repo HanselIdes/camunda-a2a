@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_capitals" name="Capital city of a country" namespace="http://camunda.org/schema/1.0/dmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <decision id="capitals" name="Capital city of a country">
+    <decisionTable id="capitals_table" hitPolicy="FIRST">
+      <input id="In_0" label="Country">
+        <inputExpression id="InExpr_0" typeRef="string"><text>lower case(country)</text></inputExpression>
+      </input>
+      <output id="Out_0" label="Capital" name="capital" typeRef="string" />
+      <rule id="Rule_1">
+        <inputEntry id="Rule_1_in_0"><text>"france"</text></inputEntry>
+        <outputEntry id="Rule_1_out_0"><text>"Paris"</text></outputEntry>
+      </rule>
+      <rule id="Rule_2">
+        <inputEntry id="Rule_2_in_0"><text>"germany"</text></inputEntry>
+        <outputEntry id="Rule_2_out_0"><text>"Berlin"</text></outputEntry>
+      </rule>
+      <rule id="Rule_3">
+        <inputEntry id="Rule_3_in_0"><text>"japan"</text></inputEntry>
+        <outputEntry id="Rule_3_out_0"><text>"Tokyo"</text></outputEntry>
+      </rule>
+      <rule id="Rule_4">
+        <inputEntry id="Rule_4_in_0"><text>"italy"</text></inputEntry>
+        <outputEntry id="Rule_4_out_0"><text>"Rome"</text></outputEntry>
+      </rule>
+      <rule id="Rule_5">
+        <inputEntry id="Rule_5_in_0"><text>"spain"</text></inputEntry>
+        <outputEntry id="Rule_5_out_0"><text>"Madrid"</text></outputEntry>
+      </rule>
+      <rule id="Rule_6">
+        <inputEntry id="Rule_6_in_0"><text>"canada"</text></inputEntry>
+        <outputEntry id="Rule_6_out_0"><text>"Ottawa"</text></outputEntry>
+      </rule>
+      <rule id="Rule_7">
+        <inputEntry id="Rule_7_in_0"><text>"brazil"</text></inputEntry>
+        <outputEntry id="Rule_7_out_0"><text>"Brasilia"</text></outputEntry>
+      </rule>
+      <rule id="Rule_8">
+        <inputEntry id="Rule_8_in_0"><text>"australia"</text></inputEntry>
+        <outputEntry id="Rule_8_out_0"><text>"Canberra"</text></outputEntry>
+      </rule>
+      <rule id="Rule_9">
+        <inputEntry id="Rule_9_in_0"><text>"egypt"</text></inputEntry>
+        <outputEntry id="Rule_9_out_0"><text>"Cairo"</text></outputEntry>
+      </rule>
+      <rule id="Rule_10">
+        <inputEntry id="Rule_10_in_0"><text>"india"</text></inputEntry>
+        <outputEntry id="Rule_10_out_0"><text>"New Delhi"</text></outputEntry>
+      </rule>
+      <rule id="Rule_11">
+        <inputEntry id="Rule_11_in_0"><text>"sweden"</text></inputEntry>
+        <outputEntry id="Rule_11_out_0"><text>"Stockholm"</text></outputEntry>
+      </rule>
+      <rule id="Rule_12">
+        <inputEntry id="Rule_12_in_0"><text>"norway"</text></inputEntry>
+        <outputEntry id="Rule_12_out_0"><text>"Oslo"</text></outputEntry>
+      </rule>
+      <rule id="Rule_13">
+        <description>Unknown country</description>
+        <inputEntry id="Rule_13_in_0"><text>-</text></inputEntry>
+        <outputEntry id="Rule_13_out_0"><text>"unknown"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1">
+      <dmndi:DMNShape id="capitals_di" dmnElementRef="capitals">
+        <dc:Bounds height="80" width="180" x="150" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>
