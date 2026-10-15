@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_a2a_classify" name="Classify A2A message" namespace="http://camunda.org/schema/1.0/dmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <decision id="a2a-classify" name="Classify A2A message">
+    <decisionTable id="a2a-classify_table" hitPolicy="FIRST">
+      <input id="In_0" label="Message id">
+        <inputExpression id="InExpr_0" typeRef="string"><text>req.message.messageId</text></inputExpression>
+      </input>
+      <output id="Out_0" label="State" name="state" typeRef="string" />
+      <output id="Out_1" label="Status text" name="statusText" typeRef="string" />
+      <output id="Out_2" label="Artifact" name="artifact" typeRef="string" />
+      <output id="Out_3" label="Echo" name="echo" typeRef="boolean" />
+      <output id="Out_4" label="Route" name="route" typeRef="string" />
+      <rule id="Rule_1">
+        <description>TCK: stay input-required</description>
+        <inputEntry id="Rule_1_in_0"><text>starts with(?, "tck-input-required")</text></inputEntry>
+        <outputEntry id="Rule_1_out_0"><text>"TASK_STATE_INPUT_REQUIRED"</text></outputEntry>
+        <outputEntry id="Rule_1_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_1_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_1_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_1_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_2">
+        <description>TCK: file artifact by url</description>
+        <inputEntry id="Rule_2_in_0"><text>starts with(?, "tck-artifact-file-url")</text></inputEntry>
+        <outputEntry id="Rule_2_out_0"><text>"TASK_STATE_COMPLETED"</text></outputEntry>
+        <outputEntry id="Rule_2_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_2_out_2"><text>"file-url"</text></outputEntry>
+        <outputEntry id="Rule_2_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_2_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_3">
+        <description>TCK: file artifact</description>
+        <inputEntry id="Rule_3_in_0"><text>starts with(?, "tck-artifact-file")</text></inputEntry>
+        <outputEntry id="Rule_3_out_0"><text>"TASK_STATE_COMPLETED"</text></outputEntry>
+        <outputEntry id="Rule_3_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_3_out_2"><text>"file"</text></outputEntry>
+        <outputEntry id="Rule_3_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_3_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_4">
+        <description>TCK: text artifact</description>
+        <inputEntry id="Rule_4_in_0"><text>starts with(?, "tck-artifact-text")</text></inputEntry>
+        <outputEntry id="Rule_4_out_0"><text>"TASK_STATE_COMPLETED"</text></outputEntry>
+        <outputEntry id="Rule_4_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_4_out_2"><text>"text"</text></outputEntry>
+        <outputEntry id="Rule_4_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_4_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_5">
+        <description>TCK: data artifact</description>
+        <inputEntry id="Rule_5_in_0"><text>starts with(?, "tck-artifact-data")</text></inputEntry>
+        <outputEntry id="Rule_5_out_0"><text>"TASK_STATE_COMPLETED"</text></outputEntry>
+        <outputEntry id="Rule_5_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_5_out_2"><text>"data"</text></outputEntry>
+        <outputEntry id="Rule_5_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_5_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_6">
+        <description>TCK: complete the task</description>
+        <inputEntry id="Rule_6_in_0"><text>starts with(?, "tck-complete-task")</text></inputEntry>
+        <outputEntry id="Rule_6_out_0"><text>"TASK_STATE_COMPLETED"</text></outputEntry>
+        <outputEntry id="Rule_6_out_1"><text>"Hello from TCK"</text></outputEntry>
+        <outputEntry id="Rule_6_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_6_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_6_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_7">
+        <description>TCK: any other tck- id echoes and completes</description>
+        <inputEntry id="Rule_7_in_0"><text>starts with(?, "tck-")</text></inputEntry>
+        <outputEntry id="Rule_7_out_0"><text>"TASK_STATE_COMPLETED"</text></outputEntry>
+        <outputEntry id="Rule_7_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_7_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_7_out_3"><text>true</text></outputEntry>
+        <outputEntry id="Rule_7_out_4"><text>"tck"</text></outputEntry>
+      </rule>
+      <rule id="Rule_8">
+        <description>Everything else goes to the agent</description>
+        <inputEntry id="Rule_8_in_0"><text>-</text></inputEntry>
+        <outputEntry id="Rule_8_out_0"><text>null</text></outputEntry>
+        <outputEntry id="Rule_8_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_8_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_8_out_3"><text>false</text></outputEntry>
+        <outputEntry id="Rule_8_out_4"><text>"agent"</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1">
+      <dmndi:DMNShape id="a2a-classify_di" dmnElementRef="a2a-classify">
+        <dc:Bounds height="80" width="180" x="150" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

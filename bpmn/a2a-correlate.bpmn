@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_a2a_correlate" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:error id="NotFound" name="NotFound" errorCode="NOT_FOUND" />
+  <bpmn:process id="a2a-correlate" name="A2A correlate message to task" isExecutable="true">
+    <bpmn:startEvent id="CorrelateRequested" name="Correlation requested">
+      <bpmn:outgoing>Flow_CorrelateRequested_ResetAttempts</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="ResetAttempts" name="Reset attempts">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=0" resultVariable="attempt" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CorrelateRequested_ResetAttempts</bpmn:incoming>
+      <bpmn:outgoing>Flow_ResetAttempts_TryJoin</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:exclusiveGateway id="TryJoin" name="Try correlation">
+      <bpmn:incoming>Flow_ResetAttempts_TryJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_WaitBeforeRetry_TryJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_TryJoin_CorrelateMessage</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="CorrelateMessage" name="Correlate message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="=&#34;{{secrets.ENGINE_URL}}/v2/messages/correlation&#34;" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=false" target="followRedirects" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={name: messageName, correlationKey: taskId, variables: payload}" target="body" />
+          <zeebe:input source="true" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="13" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={&#10;  myResponseBody: response.body&#10;  // Use FEEL to extract values, e.g.,:&#10;  // myUserId: response.body.post.userId&#10;}" />
+          <zeebe:header key="errorExpression" value="=if string(error.code) = &#34;404&#34; then bpmnError(&#34;NOT_FOUND&#34;, &#34;no message subscription&#34;) else null" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TryJoin_CorrelateMessage</bpmn:incoming>
+      <bpmn:outgoing>Flow_CorrelateMessage_MarkCorrelated</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="MarkCorrelated" name="Mark correlated">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=true" resultVariable="correlated" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CorrelateMessage_MarkCorrelated</bpmn:incoming>
+      <bpmn:outgoing>Flow_MarkCorrelated_Correlated</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="Correlated" name="Correlated">
+      <bpmn:incoming>Flow_MarkCorrelated_Correlated</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="NoSubscription" name="No subscription yet" attachedToRef="CorrelateMessage">
+      <bpmn:outgoing>Flow_NoSubscription_CountAttempt</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="NoSubscription_def" errorRef="NotFound" />
+    </bpmn:boundaryEvent>
+    <bpmn:scriptTask id="CountAttempt" name="Count attempt">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=attempt + 1" resultVariable="attempt" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_NoSubscription_CountAttempt</bpmn:incoming>
+      <bpmn:outgoing>Flow_CountAttempt_AttemptsLeft</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:exclusiveGateway id="AttemptsLeft" name="Attempts left?" default="Flow_AttemptsLeft_MarkNotCorrelated">
+      <bpmn:incoming>Flow_CountAttempt_AttemptsLeft</bpmn:incoming>
+      <bpmn:outgoing>Flow_AttemptsLeft_WaitBeforeRetry</bpmn:outgoing>
+      <bpmn:outgoing>Flow_AttemptsLeft_MarkNotCorrelated</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="WaitBeforeRetry" name="Wait before retry">
+      <bpmn:incoming>Flow_AttemptsLeft_WaitBeforeRetry</bpmn:incoming>
+      <bpmn:outgoing>Flow_WaitBeforeRetry_TryJoin</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="WaitBeforeRetry_def">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT0.3S"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:scriptTask id="MarkNotCorrelated" name="Mark not correlated">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=false" resultVariable="correlated" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AttemptsLeft_MarkNotCorrelated</bpmn:incoming>
+      <bpmn:outgoing>Flow_MarkNotCorrelated_NotCorrelated</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="NotCorrelated" name="Not correlated">
+      <bpmn:incoming>Flow_MarkNotCorrelated_NotCorrelated</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_CorrelateRequested_ResetAttempts" sourceRef="CorrelateRequested" targetRef="ResetAttempts" />
+    <bpmn:sequenceFlow id="Flow_ResetAttempts_TryJoin" sourceRef="ResetAttempts" targetRef="TryJoin" />
+    <bpmn:sequenceFlow id="Flow_TryJoin_CorrelateMessage" sourceRef="TryJoin" targetRef="CorrelateMessage" />
+    <bpmn:sequenceFlow id="Flow_CorrelateMessage_MarkCorrelated" sourceRef="CorrelateMessage" targetRef="MarkCorrelated" />
+    <bpmn:sequenceFlow id="Flow_MarkCorrelated_Correlated" sourceRef="MarkCorrelated" targetRef="Correlated" />
+    <bpmn:sequenceFlow id="Flow_NoSubscription_CountAttempt" sourceRef="NoSubscription" targetRef="CountAttempt" />
+    <bpmn:sequenceFlow id="Flow_CountAttempt_AttemptsLeft" sourceRef="CountAttempt" targetRef="AttemptsLeft" />
+    <bpmn:sequenceFlow id="Flow_AttemptsLeft_WaitBeforeRetry" name="yes" sourceRef="AttemptsLeft" targetRef="WaitBeforeRetry">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=attempt &lt; tries</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_AttemptsLeft_MarkNotCorrelated" name="no" sourceRef="AttemptsLeft" targetRef="MarkNotCorrelated" />
+    <bpmn:sequenceFlow id="Flow_WaitBeforeRetry_TryJoin" sourceRef="WaitBeforeRetry" targetRef="TryJoin" />
+    <bpmn:sequenceFlow id="Flow_MarkNotCorrelated_NotCorrelated" sourceRef="MarkNotCorrelated" targetRef="NotCorrelated" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-correlate">
+      <bpmndi:BPMNShape id="CorrelateRequested_di" bpmnElement="CorrelateRequested">
+        <dc:Bounds x="150" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ResetAttempts_di" bpmnElement="ResetAttempts">
+        <dc:Bounds x="230" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TryJoin_di" bpmnElement="TryJoin" isMarkerVisible="true">
+        <dc:Bounds x="360" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CorrelateMessage_di" bpmnElement="CorrelateMessage">
+        <dc:Bounds x="460" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MarkCorrelated_di" bpmnElement="MarkCorrelated">
+        <dc:Bounds x="620" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Correlated_di" bpmnElement="Correlated">
+        <dc:Bounds x="780" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CountAttempt_di" bpmnElement="CountAttempt">
+        <dc:Bounds x="460" y="230" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AttemptsLeft_di" bpmnElement="AttemptsLeft" isMarkerVisible="true">
+        <dc:Bounds x="620" y="245" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WaitBeforeRetry_di" bpmnElement="WaitBeforeRetry">
+        <dc:Bounds x="720" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MarkNotCorrelated_di" bpmnElement="MarkNotCorrelated">
+        <dc:Bounds x="595" y="350" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotCorrelated_di" bpmnElement="NotCorrelated">
+        <dc:Bounds x="780" y="372" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NoSubscription_di" bpmnElement="NoSubscription">
+        <dc:Bounds x="492" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_CorrelateRequested_ResetAttempts_di" bpmnElement="Flow_CorrelateRequested_ResetAttempts">
+        <di:waypoint x="186" y="120" />
+        <di:waypoint x="230" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ResetAttempts_TryJoin_di" bpmnElement="Flow_ResetAttempts_TryJoin">
+        <di:waypoint x="330" y="120" />
+        <di:waypoint x="360" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TryJoin_CorrelateMessage_di" bpmnElement="Flow_TryJoin_CorrelateMessage">
+        <di:waypoint x="410" y="120" />
+        <di:waypoint x="460" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CorrelateMessage_MarkCorrelated_di" bpmnElement="Flow_CorrelateMessage_MarkCorrelated">
+        <di:waypoint x="560" y="120" />
+        <di:waypoint x="620" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MarkCorrelated_Correlated_di" bpmnElement="Flow_MarkCorrelated_Correlated">
+        <di:waypoint x="720" y="120" />
+        <di:waypoint x="780" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NoSubscription_CountAttempt_di" bpmnElement="Flow_NoSubscription_CountAttempt">
+        <di:waypoint x="510" y="178" />
+        <di:waypoint x="510" y="270" />
+        <di:waypoint x="460" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CountAttempt_AttemptsLeft_di" bpmnElement="Flow_CountAttempt_AttemptsLeft">
+        <di:waypoint x="560" y="270" />
+        <di:waypoint x="620" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AttemptsLeft_WaitBeforeRetry_di" bpmnElement="Flow_AttemptsLeft_WaitBeforeRetry">
+        <di:waypoint x="670" y="270" />
+        <di:waypoint x="720" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AttemptsLeft_MarkNotCorrelated_di" bpmnElement="Flow_AttemptsLeft_MarkNotCorrelated">
+        <di:waypoint x="645" y="295" />
+        <di:waypoint x="645" y="390" />
+        <di:waypoint x="595" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WaitBeforeRetry_TryJoin_di" bpmnElement="Flow_WaitBeforeRetry_TryJoin">
+        <di:waypoint x="738" y="252" />
+        <di:waypoint x="738" y="25" />
+        <di:waypoint x="385" y="25" />
+        <di:waypoint x="385" y="95" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MarkNotCorrelated_NotCorrelated_di" bpmnElement="Flow_MarkNotCorrelated_NotCorrelated">
+        <di:waypoint x="695" y="390" />
+        <di:waypoint x="780" y="390" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

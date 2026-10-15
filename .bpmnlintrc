@@ -1,0 +1,6 @@
+{
+  "extends": [
+    "bpmnlint:recommended",
+    "plugin:camunda-compat/camunda-cloud-8-9"
+  ]
+}
