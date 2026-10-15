@@ -217,15 +217,13 @@ def handler():
           message: ctx.m, wrap: "task"}}, tags: ["a2a"]}"""))
 
 
-def card_proc(skills):
+def card_proc():
+    sys.path.insert(0, os.path.join(ROOT, "tools"))
+    import gen_card
     p = Proc("a2a-card", "A2A Agent Card")
     p.start("CardRequested", "Agent Card requested", 150, 102)
-    card = one("""{name: "camunda-a2a", description: "An A2A 1.0 agent implemented in BPMN with out-of-the-box Camunda connectors",
-      version: "1.0.0", provider: {organization: "camunda-a2a", url: "https://github.com/HanselIdes/camunda-a2a"},
-      capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
-      defaultInputModes: ["text/plain", "application/json"], defaultOutputModes: ["text/plain", "application/json"],
-      skills: %s}""" % skills)
-    p.script("BuildCard", "Build Agent Card", 250, 80, "=" + card, "card")
+    p.script("BuildCard", "Build Agent Card", 250, 80,
+             gen_card.card_expression(gen_card.skills_from_bpmn()), "card")
     p.end("CardReady", "Agent Card ready", 420, 102)
     p.flow("CardRequested", "BuildCard")
     p.flow("BuildCard", "CardReady")
@@ -237,11 +235,6 @@ def card_proc(skills):
         ("inbound.responseExpression", one("""={statusCode: 200, headers: {"Content-Type": "application/json"},
           body: context merge([correlation.variables.card, {supportedInterfaces: [{url: "{{secrets.A2A_PUBLIC_URL}}/a2a",
           protocolBinding: "JSONRPC", protocolVersion: "1.0"}]}])}"""))])
-
-
-def tool_skills():
-    return one("""[{id: "placeholder", name: "Placeholder", description: "Replaced by the generated tool skills",
-      tags: ["placeholder"]}]""")
 
 
 # ---------------------------------------------------------------------------------------------
@@ -430,7 +423,8 @@ def task():
     p.flow("ClassifyJoin", "ClassifyMessage")
     p.flow("ClassifyMessage", "ModeGw")
     p.flow("ModeGw", "ApplyScenario", "scripted", default=True)
-    p.flow("ModeGw", "AgentTools", "agent", cond='=sc.route = "agent"', route="down-in")
+    p.flow("ModeGw", "MarkWorking", "agent", cond='=sc.route = "agent"', route="down-in")
+    p.flow("MarkWorking", "AgentTools", route="down-in")
     p.flow("ApplyScenario", "WorkDone")
     p.flow("AgentTools", "ApplyAgentResponse")
     p.flow("AgentError", "MarkAgentFailed")
@@ -512,11 +506,11 @@ def main():
     os.makedirs(os.path.join(ROOT, "bpmn"), exist_ok=True)
     os.makedirs(os.path.join(ROOT, "dmn"), exist_ok=True)
     decisions()
-    card_proc(tool_skills())
     publish_reply()
     correlate()
     handler()
     task()
+    card_proc()
     print("generated")
 
 

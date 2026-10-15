@@ -141,4 +141,79 @@ final class Harness {
     m.put("params", parse(paramsJson));
     return m;
   }
+
+  // ---- A2A conveniences used by the process tests ------------------------------------------
+
+  static final String ALL_RESOURCES_NOTE = "see @TestDeployment on each test class";
+
+  Map<String, Object> send(final String messageId, final String text) {
+    return sendRaw(messageId, text, "");
+  }
+
+  /** extraMessageJson is spliced into the message object, for example ,"taskId":"t". */
+  Map<String, Object> sendRaw(final String messageId, final String text, final String extraMessageJson) {
+    return rpc(headers(), request("SendMessage", "{\"message\":{\"messageId\":\"" + messageId
+        + "\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"" + text + "\"}]" + extraMessageJson + "}}"));
+  }
+
+  Map<String, Object> sendWith(final String messageId, final String configurationJson) {
+    return rpc(headers(), request("SendMessage", "{\"message\":{\"messageId\":\"" + messageId
+        + "\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"x\"}]},\"configuration\":" + configurationJson + "}"));
+  }
+
+  Map<String, Object> followUp(final String taskId, final String messageId, final String text) {
+    return sendRaw(messageId, text, ",\"taskId\":\"" + taskId + "\"");
+  }
+
+  Map<String, Object> get(final String taskId) {
+    return rpc(headers(), request("GetTask", "{\"id\":\"" + taskId + "\"}"));
+  }
+
+  Map<String, Object> get(final String taskId, final int historyLength) {
+    return rpc(headers(), request("GetTask", "{\"id\":\"" + taskId + "\",\"historyLength\":" + historyLength + "}"));
+  }
+
+  Map<String, Object> cancel(final String taskId) {
+    return rpc(headers(), request("CancelTask", "{\"id\":\"" + taskId + "\"}"));
+  }
+
+  @SuppressWarnings("unchecked")
+  static Map<String, Object> result(final Map<String, Object> response) {
+    org.assertj.core.api.Assertions.assertThat(response).as("response %s", response).containsKey("result");
+    return (Map<String, Object>) response.get("result");
+  }
+
+  /** The task of a SendMessage response ({"task": ...}). */
+  @SuppressWarnings("unchecked")
+  static Map<String, Object> task(final Map<String, Object> response) {
+    return (Map<String, Object>) result(response).get("task");
+  }
+
+  /** The task of a GetTask or CancelTask response (a bare Task). */
+  static Map<String, Object> bareTask(final Map<String, Object> response) {
+    return result(response);
+  }
+
+  @SuppressWarnings("unchecked")
+  static String state(final Map<String, Object> task) {
+    return (String) ((Map<String, Object>) task.get("status")).get("state");
+  }
+
+  @SuppressWarnings("unchecked")
+  static List<Map<String, Object>> history(final Map<String, Object> task) {
+    final var h = (List<Map<String, Object>>) task.get("history");
+    return h == null ? List.of() : h;
+  }
+
+  @SuppressWarnings("unchecked")
+  static String statusText(final Map<String, Object> task) {
+    final var message = (Map<String, Object>) ((Map<String, Object>) task.get("status")).get("message");
+    return message == null ? null : (String) ((Map<String, Object>) ((List<?>) message.get("parts")).get(0)).get("text");
+  }
+
+  @SuppressWarnings("unchecked")
+  static int errorCode(final Map<String, Object> response) {
+    org.assertj.core.api.Assertions.assertThat(response).as("response %s", response).containsKey("error");
+    return ((Number) ((Map<String, Object>) response.get("error")).get("code")).intValue();
+  }
 }

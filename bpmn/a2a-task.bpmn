@@ -195,11 +195,11 @@
       <bpmn:exclusiveGateway id="ModeGw" name="Scripted or agent?" default="Flow_ModeGw_ApplyScenario">
         <bpmn:incoming>Flow_ClassifyMessage_ModeGw</bpmn:incoming>
         <bpmn:outgoing>Flow_ModeGw_ApplyScenario</bpmn:outgoing>
-        <bpmn:outgoing>Flow_ModeGw_AgentTools</bpmn:outgoing>
+        <bpmn:outgoing>Flow_ModeGw_MarkWorking</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:adHocSubProcess id="AgentTools" name="Agent with tools" zeebe:modelerTemplate="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
         <bpmn:extensionElements>
-          <zeebe:taskDefinition type="io.camunda.agenticai:aiagent:subprocess:2" retries="0" />
+          <zeebe:taskDefinition type="io.camunda.agenticai:aiagent:subprocess:2" retries="1" />
           <zeebe:ioMapping>
             <zeebe:input source="openai" target="provider.type" />
             <zeebe:input source="completions" target="provider.openai.api.type" />
@@ -235,7 +235,7 @@
           </zeebe:properties>
           <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult,&#10;  completedAt: now()&#10;}" />
         </bpmn:extensionElements>
-        <bpmn:incoming>Flow_ModeGw_AgentTools</bpmn:incoming>
+        <bpmn:incoming>Flow_MarkWorking_AgentTools</bpmn:incoming>
         <bpmn:outgoing>Flow_AgentTools_ApplyAgentResponse</bpmn:outgoing>
         <bpmn:scriptTask id="get_current_time" name="Get current time">
           <bpmn:documentation>Returns the current date and time in UTC. Use it whenever the user asks what time or date it is. Takes no arguments.</bpmn:documentation>
@@ -292,6 +292,13 @@
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_AgentError_MarkAgentFailed</bpmn:incoming>
         <bpmn:outgoing>Flow_MarkAgentFailed_WorkDone</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:scriptTask id="MarkWorking" name="Mark task working">
+        <bpmn:extensionElements>
+          <zeebe:script expression="= {id: task.id, contextId: task.contextId, status: {state: &#34;TASK_STATE_WORKING&#34;, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: task.artifacts, history: task.history}" resultVariable="task" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_ModeGw_MarkWorking</bpmn:incoming>
+        <bpmn:outgoing>Flow_MarkWorking_AgentTools</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:exclusiveGateway id="WorkDone" name="Work done">
         <bpmn:incoming>Flow_ApplyScenario_WorkDone</bpmn:incoming>
@@ -373,9 +380,10 @@
       <bpmn:sequenceFlow id="Flow_ClassifyJoin_ClassifyMessage" sourceRef="ClassifyJoin" targetRef="ClassifyMessage" />
       <bpmn:sequenceFlow id="Flow_ClassifyMessage_ModeGw" sourceRef="ClassifyMessage" targetRef="ModeGw" />
       <bpmn:sequenceFlow id="Flow_ModeGw_ApplyScenario" name="scripted" sourceRef="ModeGw" targetRef="ApplyScenario" />
-      <bpmn:sequenceFlow id="Flow_ModeGw_AgentTools" name="agent" sourceRef="ModeGw" targetRef="AgentTools">
+      <bpmn:sequenceFlow id="Flow_ModeGw_MarkWorking" name="agent" sourceRef="ModeGw" targetRef="MarkWorking">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=sc.route = "agent"</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_MarkWorking_AgentTools" sourceRef="MarkWorking" targetRef="AgentTools" />
       <bpmn:sequenceFlow id="Flow_ApplyScenario_WorkDone" sourceRef="ApplyScenario" targetRef="WorkDone" />
       <bpmn:sequenceFlow id="Flow_AgentTools_ApplyAgentResponse" sourceRef="AgentTools" targetRef="ApplyAgentResponse" />
       <bpmn:sequenceFlow id="Flow_AgentError_MarkAgentFailed" sourceRef="AgentError" targetRef="MarkAgentFailed" />
@@ -616,22 +624,25 @@
         <dc:Bounds x="1350" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AgentTools_di" bpmnElement="AgentTools" isExpanded="true">
-        <dc:Bounds x="1420" y="420" width="720" height="300" />
+        <dc:Bounds x="1560" y="470" width="720" height="300" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="get_current_time_di" bpmnElement="get_current_time">
-        <dc:Bounds x="1450" y="500" width="100" height="80" />
+        <dc:Bounds x="1590" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="convert_temperature_di" bpmnElement="convert_temperature">
-        <dc:Bounds x="1600" y="500" width="100" height="80" />
+        <dc:Bounds x="1740" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="capital_of_di" bpmnElement="capital_of">
-        <dc:Bounds x="1750" y="500" width="100" height="80" />
+        <dc:Bounds x="1890" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyAgentResponse_di" bpmnElement="ApplyAgentResponse">
-        <dc:Bounds x="2200" y="500" width="100" height="80" />
+        <dc:Bounds x="2340" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkAgentFailed_di" bpmnElement="MarkAgentFailed">
-        <dc:Bounds x="2200" y="640" width="100" height="80" />
+        <dc:Bounds x="2340" y="680" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MarkWorking_di" bpmnElement="MarkWorking">
+        <dc:Bounds x="1400" y="350" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WorkDone_di" bpmnElement="WorkDone" isMarkerVisible="true">
         <dc:Bounds x="1590" y="275" width="50" height="50" />
@@ -698,7 +709,7 @@
         <di:waypoint x="2290" y="900" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="AgentError_di" bpmnElement="AgentError">
-        <dc:Bounds x="2100" y="702" width="36" height="36" />
+        <dc:Bounds x="2240" y="752" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_MessageAccepted_ClassifyJoin_di" bpmnElement="Flow_MessageAccepted_ClassifyJoin">
         <di:waypoint x="1086" y="300" />
@@ -716,36 +727,41 @@
         <di:waypoint x="1400" y="300" />
         <di:waypoint x="1440" y="300" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ModeGw_AgentTools_di" bpmnElement="Flow_ModeGw_AgentTools">
+      <bpmndi:BPMNEdge id="Flow_ModeGw_MarkWorking_di" bpmnElement="Flow_ModeGw_MarkWorking">
         <di:waypoint x="1375" y="325" />
-        <di:waypoint x="1375" y="570" />
-        <di:waypoint x="1420" y="570" />
+        <di:waypoint x="1375" y="390" />
+        <di:waypoint x="1400" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MarkWorking_AgentTools_di" bpmnElement="Flow_MarkWorking_AgentTools">
+        <di:waypoint x="1450" y="430" />
+        <di:waypoint x="1450" y="620" />
+        <di:waypoint x="1560" y="620" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ApplyScenario_WorkDone_di" bpmnElement="Flow_ApplyScenario_WorkDone">
         <di:waypoint x="1540" y="300" />
         <di:waypoint x="1590" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AgentTools_ApplyAgentResponse_di" bpmnElement="Flow_AgentTools_ApplyAgentResponse">
-        <di:waypoint x="2140" y="570" />
-        <di:waypoint x="2170" y="570" />
-        <di:waypoint x="2170" y="540" />
-        <di:waypoint x="2200" y="540" />
+        <di:waypoint x="2280" y="620" />
+        <di:waypoint x="2310" y="620" />
+        <di:waypoint x="2310" y="600" />
+        <di:waypoint x="2340" y="600" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AgentError_MarkAgentFailed_di" bpmnElement="Flow_AgentError_MarkAgentFailed">
-        <di:waypoint x="2118" y="738" />
-        <di:waypoint x="2118" y="680" />
-        <di:waypoint x="2200" y="680" />
+        <di:waypoint x="2258" y="788" />
+        <di:waypoint x="2258" y="720" />
+        <di:waypoint x="2340" y="720" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ApplyAgentResponse_WorkDone_di" bpmnElement="Flow_ApplyAgentResponse_WorkDone">
-        <di:waypoint x="2250" y="580" />
-        <di:waypoint x="2250" y="730" />
-        <di:waypoint x="1615" y="730" />
+        <di:waypoint x="2390" y="640" />
+        <di:waypoint x="2390" y="790" />
+        <di:waypoint x="1615" y="790" />
         <di:waypoint x="1615" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkAgentFailed_WorkDone_di" bpmnElement="Flow_MarkAgentFailed_WorkDone">
-        <di:waypoint x="2250" y="720" />
-        <di:waypoint x="2250" y="950" />
-        <di:waypoint x="1615" y="950" />
+        <di:waypoint x="2390" y="760" />
+        <di:waypoint x="2390" y="990" />
+        <di:waypoint x="1615" y="990" />
         <di:waypoint x="1615" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WorkDone_IsPending_di" bpmnElement="Flow_WorkDone_IsPending">

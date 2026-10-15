@@ -23,8 +23,8 @@ def tool_ext(tags, examples, io="", script=""):
 def add_agent(p, A):
     """Adds the agent elements to process p inside scope A and returns nothing; flows are added by the caller."""
     p.xor("ModeGw", "Scripted or agent?", 1350, 275, parent=A)
-    p.sub("AgentTools", "Agent with tools", 1420, 420, 720, 300, kind="adHocSubProcess", parent=A)
-    p.node("scriptTask", "get_current_time", "Get current time", 1450, 500, parent="AgentTools",
+    p.sub("AgentTools", "Agent with tools", 1560, 470, 720, 300, kind="adHocSubProcess", parent=A)
+    p.node("scriptTask", "get_current_time", "Get current time", 1590, 550, parent="AgentTools",
            doc="Returns the current date and time in UTC. Use it whenever the user asks what time or date "
                "it is. Takes no arguments.",
            ext=tool_ext("time,clock,date", "What time is it?|What is today's date?",
@@ -32,7 +32,7 @@ def add_agent(p, A):
                         % q('={utcTime: substring(string(now()), 1, 19) + "Z"}')))
     conv = one("""=if lower case(unit) = "celsius" then {value: round half up(degrees * 9 / 5 + 32, 1), unit: "fahrenheit"}
                   else {value: round half up((degrees - 32) * 5 / 9, 1), unit: "celsius"}""")
-    p.node("scriptTask", "convert_temperature", "Convert temperature", 1600, 500, parent="AgentTools",
+    p.node("scriptTask", "convert_temperature", "Convert temperature", 1740, 550, parent="AgentTools",
            doc="Converts a temperature between Celsius and Fahrenheit. Use it when the user gives a temperature "
                "and wants it in the other unit. Arguments: the numeric value and the unit it is given in.",
            ext=tool_ext(
@@ -42,7 +42,7 @@ def add_agent(p, A):
                   % (q('=fromAi(toolCall.degrees, "The temperature value to convert", "number")'),
                      q('=fromAi(toolCall.unit, "The unit of the given value: celsius or fahrenheit", "string")')),
                script='<zeebe:script expression=%s resultVariable="toolCallResult" />' % q(conv)))
-    p.node("businessRuleTask", "capital_of", "Look up capital city", 1750, 500, parent="AgentTools",
+    p.node("businessRuleTask", "capital_of", "Look up capital city", 1890, 550, parent="AgentTools",
            doc="Looks up the capital city of a country. Use it when the user asks for the capital of a country. "
                "Argument: the country name in English.",
            ext=tool_ext(
@@ -51,7 +51,7 @@ def add_agent(p, A):
                   % q('=fromAi(toolCall.country, "The country name in English", "string")'),
                script='<zeebe:calledDecision decisionId="capitals" resultVariable="toolCallResult" />'))
     p.error_codes = {"AgentFailed": "AGENT_FAILED"}
-    p.boundary_error("AgentError", "Agent failed", "AgentTools", "AgentFailed", 2100, 702, parent=A)
+    p.boundary_error("AgentError", "Agent failed", "AgentTools", "AgentFailed", 2240, 752, parent=A)
 
     trace = one("""(for calls in [flatten(for m in agent.context.conversation.messages[item.role = "assistant" and item.toolCalls != null]
             return for tc in m.toolCalls return {name: tc.name, arguments: tc.arguments})] return
@@ -61,19 +61,22 @@ def add_agent(p, A):
     text = one("""if starts with(%s, "NEED_INPUT:") then trim(substring(%s, 12)) else %s""" % (reply, reply, reply))
     state = one("""if starts with(%s, "NEED_INPUT:") then "TASK_STATE_INPUT_REQUIRED"
         else "TASK_STATE_COMPLETED" """ % reply)
-    p.script("ApplyAgentResponse", "Apply agent response", 2200, 500, one("""=
+    p.script("ApplyAgentResponse", "Apply agent response", 2340, 560, one("""=
       (for t in [%s] return for a in [%s] return for m in [{messageId: uuid(), contextId: task.contextId,
           taskId: task.id, role: "ROLE_AGENT", parts: [{text: t}]}] return
         {id: task.id, contextId: task.contextId,
          status: {state: %s, message: m, timestamp: %s},
          artifacts: if a = null then task.artifacts else append(task.artifacts[item.name != "tool-trace"], a),
          history: append(task.history, m)})[1][1][1]""" % (text, trace, state, TS)), "task", parent=A)
-    p.script("MarkAgentFailed", "Mark task failed", 2200, 640, one("""=
+    p.script("MarkAgentFailed", "Mark task failed", 2340, 680, one("""=
       (for m in [{messageId: uuid(), contextId: task.contextId, taskId: task.id, role: "ROLE_AGENT",
           parts: [{text: "The agent could not complete the request."}]}] return
         {id: task.id, contextId: task.contextId,
          status: {state: "TASK_STATE_FAILED", message: m, timestamp: %s},
          artifacts: task.artifacts, history: append(task.history, m)})[1]""" % TS), "task", parent=A)
+    p.script("MarkWorking", "Mark task working", 1400, 350, one("""=
+      {id: task.id, contextId: task.contextId, status: {state: "TASK_STATE_WORKING", timestamp: %s},
+       artifacts: task.artifacts, history: task.history}""" % TS), "task", parent=A)
     p.xor("WorkDone", "Work done", 1590, 275, parent=A)
 
 
@@ -91,5 +94,5 @@ def agent_settings():
         ("data.response.includeAgentContext", "true"),
         ("errorExpression",
          '=if error != null then bpmnError("AGENT_FAILED", string(error.message)) else null'),
-        ("retries", "0"),
+        ("retries", "1"),
     ]
