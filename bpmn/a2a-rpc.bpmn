@@ -23,13 +23,13 @@
           <zeebe:property name="resultExpression" value="={rpc: request.body, hdr: request.headers}" />
         </zeebe:properties>
       </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_RpcReceived_ParseRequest</bpmn:outgoing>
+      <bpmn:outgoing>Flow_RpcReceived_IsPushMethod</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:scriptTask id="ParseRequest" name="Parse request">
       <bpmn:extensionElements>
-        <zeebe:script expression="={ r: if rpc instance of context then rpc else {}, p: if r.params instance of context then r.params else {}, m: if p.message instance of context then p.message else {}, cfg: if p.configuration instance of context then p.configuration else {}, ct: get value(hdr, &#34;content-type&#34;), ver: get value(hdr, &#34;a2a-version&#34;), supported: [&#34;text/plain&#34;, &#34;application/json&#34;], method: if r.method instance of string then r.method else null, id: r.id, versionOk: if ver instance of string then (ver = &#34;&#34; or ver = &#34;1&#34; or starts with(ver, &#34;1.&#34;)) else true, contentTypeOk: if ct instance of string then (starts with(lower case(ct), &#34;application/json&#34;) or starts with(lower case(ct), &#34;application/a2a+json&#34;)) else false, jsonrpcOk: r.jsonrpc = &#34;2.0&#34; and method != null, msgOk: p.message instance of context and m.messageId instance of string and m.role instance of string and m.parts instance of list, mediaOk: if m.parts instance of list then not(some part in m.parts satisfies part instance of context and part.mediaType != null and not(list contains(supported, part.mediaType))) else true, idOk: p.id instance of string and p.id != &#34;&#34;, taskId: if m.taskId instance of string and m.taskId != &#34;&#34; then m.taskId else null, contextId: if m.contextId instance of string and m.contextId != &#34;&#34; then m.contextId else null, messageId: if m.messageId instance of string then m.messageId else null, blocking: cfg.returnImmediately != true, hl: if cfg.historyLength instance of number then cfg.historyLength else if p.historyLength instance of number then p.historyLength else if p.history_length instance of number then p.history_length else null, pageSize: if p.pageSize instance of number then p.pageSize else if p.page_size instance of number then p.page_size else 50 }" resultVariable="ctx" />
+        <zeebe:script expression="={ r: if rpc instance of context then rpc else {}, p: if r.params instance of context then r.params else {}, m: if p.message instance of context then p.message else {}, cfg: if p.configuration instance of context then p.configuration else {}, ct: get value(hdr, &#34;content-type&#34;), ver: get value(hdr, &#34;a2a-version&#34;), supported: [&#34;text/plain&#34;, &#34;application/json&#34;], method: if r.method instance of string then r.method else null, id: r.id, versionOk: if ver instance of string then (ver = &#34;&#34; or ver = &#34;1&#34; or starts with(ver, &#34;1.&#34;)) else true, contentTypeOk: if ct instance of string then (starts with(lower case(ct), &#34;application/json&#34;) or starts with(lower case(ct), &#34;application/a2a+json&#34;)) else false, jsonrpcOk: r.jsonrpc = &#34;2.0&#34; and method != null, msgOk: p.message instance of context and m.messageId instance of string and m.role instance of string and m.parts instance of list, mediaOk: if m.parts instance of list then not(some part in m.parts satisfies part instance of context and part.mediaType != null and not(list contains(supported, part.mediaType))) else true, pushMethods: [&#34;CreateTaskPushNotificationConfig&#34;, &#34;GetTaskPushNotificationConfig&#34;, &#34;ListTaskPushNotificationConfigs&#34;, &#34;DeleteTaskPushNotificationConfig&#34;], pushRef: if p.task_id instance of string then p.task_id else if p.taskId instance of string then p.taskId else null, ref: if method != null and list contains(pushMethods, method) then pushRef else if p.id instance of string then p.id else null, idOk: ref instance of string and ref != &#34;&#34;, pushEnabled: pushEnabled = true, pushCfg: context(get entries({id: p.id, url: p.url, token: p.token, authentication: p.authentication})[item.value != null]), taskPush: if cfg.taskPushNotificationConfig instance of context then cfg.taskPushNotificationConfig else null, taskId: if m.taskId instance of string and m.taskId != &#34;&#34; then m.taskId else null, contextId: if m.contextId instance of string and m.contextId != &#34;&#34; then m.contextId else null, messageId: if m.messageId instance of string then m.messageId else null, blocking: cfg.returnImmediately != true, hl: if cfg.historyLength instance of number then cfg.historyLength else if p.historyLength instance of number then p.historyLength else if p.history_length instance of number then p.history_length else null, pageSize: if p.pageSize instance of number then p.pageSize else if p.page_size instance of number then p.page_size else 50, listContextId: if p.contextId instance of string and p.contextId != &#34;&#34; then p.contextId else if p.context_id instance of string and p.context_id != &#34;&#34; then p.context_id else null, listStatus: if p.status instance of string and p.status != &#34;&#34; then p.status else null, listAfter: if p.statusTimestampAfter instance of string then p.statusTimestampAfter else if p.status_timestamp_after instance of string then p.status_timestamp_after else null, pageToken: if p.pageToken instance of string then p.pageToken else if p.page_token instance of string then p.page_token else null, includeArtifacts: p.includeArtifacts = true or p.include_artifacts = true }" resultVariable="ctx" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_RpcReceived_ParseRequest</bpmn:incoming>
+      <bpmn:incoming>Flow_PushSettingKnown_ParseRequest</bpmn:incoming>
       <bpmn:outgoing>Flow_ParseRequest_ValidateRequest</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:businessRuleTask id="ValidateRequest" name="Validate request">
@@ -42,7 +42,7 @@
     <bpmn:exclusiveGateway id="RouteRequest" name="Route request" default="Flow_RouteRequest_PrepareLookup">
       <bpmn:incoming>Flow_ValidateRequest_RouteRequest</bpmn:incoming>
       <bpmn:outgoing>Flow_RouteRequest_BuildValidationError</bpmn:outgoing>
-      <bpmn:outgoing>Flow_RouteRequest_BuildTaskList</bpmn:outgoing>
+      <bpmn:outgoing>Flow_RouteRequest_PrepareList</bpmn:outgoing>
       <bpmn:outgoing>Flow_RouteRequest_BuildDirectMessage</bpmn:outgoing>
       <bpmn:outgoing>Flow_RouteRequest_PrepareNewTask</bpmn:outgoing>
       <bpmn:outgoing>Flow_RouteRequest_PrepareLookup</bpmn:outgoing>
@@ -57,11 +57,69 @@
     <bpmn:endEvent id="ValidationErrorReady" name="Error response ready">
       <bpmn:incoming>Flow_BuildValidationError_ValidationErrorReady</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:scriptTask id="BuildTaskList" name="Build empty task list">
+    <bpmn:scriptTask id="PrepareList" name="Prepare task list">
       <bpmn:extensionElements>
-        <zeebe:script expression="={jsonrpc: &#34;2.0&#34;, id: ctx.id, result: {tasks: [], nextPageToken: &#34;&#34;, pageSize: ctx.pageSize, totalSize: 0}}" resultVariable="rpcResponse" />
+        <zeebe:script expression="=(for s in [if ctx.listContextId != null then replace(ctx.listContextId, &#34;[^A-Za-z0-9_:.-]&#34;, &#34;_&#34;) else &#34;&#34;] return {ctxTag: if ctx.listContextId != null then &#34;ctx-&#34; + (if string length(s) &#62; 90 then substring(s, 1, 90) else s) else null, size: if ctx.pageSize &#60; 1 then 50 else if ctx.pageSize &#62; 100 then 100 else ctx.pageSize, start: if ctx.pageToken != null and number(ctx.pageToken) != null then number(ctx.pageToken) else 0})[1]" resultVariable="listReq" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_RouteRequest_BuildTaskList</bpmn:incoming>
+      <bpmn:incoming>Flow_RouteRequest_PrepareList</bpmn:incoming>
+      <bpmn:outgoing>Flow_PrepareList_SearchTasks</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="SearchTasks" name="Search task instances" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="=&#34;{{secrets.ENGINE_URL}}/v2/process-instances/search&#34;" target="url" />
+          <zeebe:input source="=false" target="followRedirects" />
+          <zeebe:input source="JSON" target="documentReturnFormat.choice" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={filter: {processDefinitionId: &#34;a2a-task&#34;, state: &#34;ACTIVE&#34;, tags: if listReq.ctxTag != null then [&#34;a2a&#34;, listReq.ctxTag] else [&#34;a2a&#34;]}, sort: [{field: &#34;startDate&#34;, order: &#34;DESC&#34;}], page: {limit: 100}}" target="body" />
+          <zeebe:input source="true" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={taskIds: for i in response.body.items return (for t in i.tags[starts with(item, &#34;task-&#34;)] return substring(t, 6))[1]}" />
+          <zeebe:header key="retryBackoff" value="PT30S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_PrepareList_SearchTasks</bpmn:incoming>
+      <bpmn:outgoing>Flow_SearchTasks_AnyTasks</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="AnyTasks" name="Any tasks found?" default="Flow_AnyTasks_ListJoin">
+      <bpmn:incoming>Flow_SearchTasks_AnyTasks</bpmn:incoming>
+      <bpmn:outgoing>Flow_AnyTasks_FetchTasks</bpmn:outgoing>
+      <bpmn:outgoing>Flow_AnyTasks_ListJoin</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:callActivity id="FetchTasks" name="Fetch each task">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-fetch-task" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=taskIdItem" target="taskId" />
+          <zeebe:input source="=ctx.hl" target="historyLength" />
+          <zeebe:output source="=if is defined(taskView) then taskView else null" target="taskView" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AnyTasks_FetchTasks</bpmn:incoming>
+      <bpmn:outgoing>Flow_FetchTasks_ListJoin</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=taskIds" inputElement="taskIdItem" outputCollection="taskViews" outputElement="=if is defined(taskView) then taskView else null" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="ListJoin" name="Tasks collected">
+      <bpmn:incoming>Flow_AnyTasks_ListJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_FetchTasks_ListJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_ListJoin_BuildTaskList</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="BuildTaskList" name="Build task list">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=(for views in [if is defined(taskViews) and taskViews != null then taskViews[item != null] else []] return for found in [sort(views[(ctx.listContextId = null or item.contextId = ctx.listContextId) and (ctx.listStatus = null or item.status.state = ctx.listStatus) and (ctx.listAfter = null or item.status.timestamp &#62; ctx.listAfter)], function(a, b) a.status.timestamp &#62; b.status.timestamp)] return for left in [count(found) - listReq.start] return for page in [if left &#60;= 0 then [] else sublist(found, listReq.start + 1, if left &#60; listReq.size then left else listReq.size)] return {jsonrpc: &#34;2.0&#34;, id: ctx.id, result: { tasks: for t in page return if ctx.includeArtifacts then t else context(get entries(t)[item.key != &#34;artifacts&#34;]), nextPageToken: if listReq.start + listReq.size &#60; count(found) then string(listReq.start + listReq.size) else &#34;&#34;, pageSize: listReq.size, totalSize: count(found)}})[1][1][1][1]" resultVariable="rpcResponse" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ListJoin_BuildTaskList</bpmn:incoming>
       <bpmn:outgoing>Flow_BuildTaskList_TaskListReady</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:endEvent id="TaskListReady" name="Task list ready">
@@ -79,7 +137,7 @@
     </bpmn:endEvent>
     <bpmn:scriptTask id="PrepareNewTask" name="Prepare new task">
       <bpmn:extensionElements>
-        <zeebe:script expression="={corrId: uuid(), phase: &#34;main&#34;, taskId: uuid(), contextId: if ctx.contextId != null then ctx.contextId else uuid(), wrap: &#34;task&#34;}" resultVariable="lookup" />
+        <zeebe:script expression="=(for cid in [if ctx.contextId != null then ctx.contextId else uuid()] return for s in [replace(cid, &#34;[^A-Za-z0-9_:.-]&#34;, &#34;_&#34;)] return {corrId: uuid(), phase: &#34;main&#34;, taskId: uuid(), contextId: cid, wrap: &#34;task&#34;, ctxTag: &#34;ctx-&#34; + (if string length(s) &#62; 90 then substring(s, 1, 90) else s)})[1][1]" resultVariable="lookup" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_RouteRequest_PrepareNewTask</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareNewTask_CreateTask</bpmn:outgoing>
@@ -95,13 +153,13 @@
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
-          <zeebe:input source="={processDefinitionId: &#34;a2a-task&#34;, variables: {taskId: lookup.taskId, contextId: lookup.contextId, req: {corrId: lookup.corrId, blocking: ctx.blocking, hl: ctx.hl, message: ctx.m, wrap: &#34;task&#34;}}, tags: [&#34;a2a&#34;]}" target="body" />
+          <zeebe:input source="={processDefinitionId: &#34;a2a-task&#34;, variables: {taskId: lookup.taskId, contextId: lookup.contextId, req: {corrId: lookup.corrId, blocking: ctx.blocking, hl: ctx.hl, message: ctx.m, wrap: &#34;task&#34;, pushConfig: ctx.taskPush}}, tags: [&#34;a2a&#34;, &#34;task-&#34; + lookup.taskId, lookup.ctxTag]}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="18" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-          <zeebe:header key="resultExpression" value="={&#10;  myResponseBody: response.body&#10;  // Use FEEL to extract values, e.g.,:&#10;  // myUserId: response.body.post.userId&#10;}" />
+          <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="retryBackoff" value="PT30S" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
@@ -110,7 +168,7 @@
     </bpmn:serviceTask>
     <bpmn:scriptTask id="PrepareLookup" name="Prepare lookup">
       <bpmn:extensionElements>
-        <zeebe:script expression="= (for c in [uuid()] return if ctx.method = &#34;GetTask&#34; then {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-get&#34;, taskId: ctx.p.id, tries: 3, payload: {getReq: context(get entries({corrId: c, wrap: &#34;bare&#34;, historyLength: ctx.hl})[item.value != null])}} else if ctx.method = &#34;CancelTask&#34; then {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-cancel&#34;, taskId: ctx.p.id, tries: 3, payload: {cancelReq: {corrId: c, wrap: &#34;bare&#34;}}} else {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-send&#34;, taskId: ctx.taskId, tries: 3, payload: {sendReq: context(get entries({corrId: c, wrap: &#34;task&#34;, message: ctx.m, historyLength: ctx.hl})[item.value != null])}})[1]" resultVariable="lookup" />
+        <zeebe:script expression="= (for c in [uuid()] return if ctx.method = &#34;GetTask&#34; then {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-get&#34;, taskId: ctx.ref, tries: 3, payload: {getReq: context(get entries({corrId: c, wrap: &#34;bare&#34;, historyLength: ctx.hl})[item.value != null])}} else if ctx.method = &#34;CancelTask&#34; then {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-cancel&#34;, taskId: ctx.ref, tries: 3, payload: {cancelReq: {corrId: c, wrap: &#34;bare&#34;}}} else if list contains(ctx.pushMethods, ctx.method) then {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-push&#34;, taskId: ctx.ref, tries: 3, payload: {pushReq: context(get entries({corrId: c, wrap: &#34;bare&#34;, op: ctx.method, configId: ctx.p.id, config: ctx.pushCfg, pageSize: ctx.pageSize})[item.value != null])}} else {corrId: c, phase: &#34;main&#34;, msgName: &#34;a2a-send&#34;, taskId: ctx.taskId, tries: 3, payload: {sendReq: context(get entries({corrId: c, wrap: &#34;task&#34;, message: ctx.m, historyLength: ctx.hl})[item.value != null])}})[1]" resultVariable="lookup" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_RouteRequest_PrepareLookup</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareLookup_CorrelateJoin</bpmn:outgoing>
@@ -231,15 +289,56 @@
       <bpmn:incoming>Flow_AlreadyProbed_PrepareTimeoutProbe</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareTimeoutProbe_CorrelateJoin</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:sequenceFlow id="Flow_RpcReceived_ParseRequest" sourceRef="RpcReceived" targetRef="ParseRequest" />
+    <bpmn:exclusiveGateway id="IsPushMethod" name="Push method?" default="Flow_IsPushMethod_PushSettingKnown">
+      <bpmn:incoming>Flow_RpcReceived_IsPushMethod</bpmn:incoming>
+      <bpmn:outgoing>Flow_IsPushMethod_ReadPushSetting</bpmn:outgoing>
+      <bpmn:outgoing>Flow_IsPushMethod_PushSettingKnown</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="ReadPushSetting" name="Read push setting" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="=&#34;{{secrets.ENGINE_URL}}/v2/expression/evaluation&#34;" target="url" />
+          <zeebe:input source="=false" target="followRedirects" />
+          <zeebe:input source="JSON" target="documentReturnFormat.choice" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+          <zeebe:input source="={expression: &#34;=\&#34;{{secrets.A2A_PUSH_ENABLED}}\&#34;&#34;}" target="body" />
+          <zeebe:input source="true" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={pushEnabled: response.body.result = &#34;true&#34;}" />
+          <zeebe:header key="retryBackoff" value="PT30S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_IsPushMethod_ReadPushSetting</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReadPushSetting_PushSettingKnown</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="PushSettingKnown" name="Push setting known">
+      <bpmn:incoming>Flow_IsPushMethod_PushSettingKnown</bpmn:incoming>
+      <bpmn:incoming>Flow_ReadPushSetting_PushSettingKnown</bpmn:incoming>
+      <bpmn:outgoing>Flow_PushSettingKnown_ParseRequest</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_ParseRequest_ValidateRequest" sourceRef="ParseRequest" targetRef="ValidateRequest" />
     <bpmn:sequenceFlow id="Flow_ValidateRequest_RouteRequest" sourceRef="ValidateRequest" targetRef="RouteRequest" />
     <bpmn:sequenceFlow id="Flow_RouteRequest_BuildValidationError" name="invalid" sourceRef="RouteRequest" targetRef="BuildValidationError">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=verdict.route = "error"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_RouteRequest_BuildTaskList" name="list" sourceRef="RouteRequest" targetRef="BuildTaskList">
+    <bpmn:sequenceFlow id="Flow_RouteRequest_PrepareList" name="list" sourceRef="RouteRequest" targetRef="PrepareList">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=verdict.route = "ListTasks"</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_PrepareList_SearchTasks" sourceRef="PrepareList" targetRef="SearchTasks" />
+    <bpmn:sequenceFlow id="Flow_SearchTasks_AnyTasks" sourceRef="SearchTasks" targetRef="AnyTasks" />
+    <bpmn:sequenceFlow id="Flow_AnyTasks_FetchTasks" name="tasks" sourceRef="AnyTasks" targetRef="FetchTasks">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=count(taskIds) &gt; 0</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_AnyTasks_ListJoin" name="none" sourceRef="AnyTasks" targetRef="ListJoin" />
+    <bpmn:sequenceFlow id="Flow_FetchTasks_ListJoin" sourceRef="FetchTasks" targetRef="ListJoin" />
+    <bpmn:sequenceFlow id="Flow_ListJoin_BuildTaskList" sourceRef="ListJoin" targetRef="BuildTaskList" />
     <bpmn:sequenceFlow id="Flow_RouteRequest_BuildDirectMessage" name="direct message" sourceRef="RouteRequest" targetRef="BuildDirectMessage">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=verdict.route = "SendMessage" and ctx.messageId != null and starts with(ctx.messageId, "tck-message-response")</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -282,6 +381,13 @@
     <bpmn:sequenceFlow id="Flow_AlreadyProbed_PrepareTimeoutProbe" name="no" sourceRef="AlreadyProbed" targetRef="PrepareTimeoutProbe" />
     <bpmn:sequenceFlow id="Flow_BuildTimeoutError_TimeoutReady" sourceRef="BuildTimeoutError" targetRef="TimeoutReady" />
     <bpmn:sequenceFlow id="Flow_PrepareTimeoutProbe_CorrelateJoin" sourceRef="PrepareTimeoutProbe" targetRef="CorrelateJoin" />
+    <bpmn:sequenceFlow id="Flow_RpcReceived_IsPushMethod" sourceRef="RpcReceived" targetRef="IsPushMethod" />
+    <bpmn:sequenceFlow id="Flow_IsPushMethod_ReadPushSetting" name="push method" sourceRef="IsPushMethod" targetRef="ReadPushSetting">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=rpc instance of context and rpc.method instance of string and list contains(["CreateTaskPushNotificationConfig", "GetTaskPushNotificationConfig", "ListTaskPushNotificationConfigs", "DeleteTaskPushNotificationConfig"], rpc.method)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_IsPushMethod_PushSettingKnown" name="other" sourceRef="IsPushMethod" targetRef="PushSettingKnown" />
+    <bpmn:sequenceFlow id="Flow_ReadPushSetting_PushSettingKnown" sourceRef="ReadPushSetting" targetRef="PushSettingKnown" />
+    <bpmn:sequenceFlow id="Flow_PushSettingKnown_ParseRequest" sourceRef="PushSettingKnown" targetRef="ParseRequest" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-rpc">
@@ -292,257 +398,325 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ParseRequest_di" bpmnElement="ParseRequest">
-        <dc:Bounds x="230" y="260" width="100" height="80" />
+        <dc:Bounds x="510" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ValidateRequest_di" bpmnElement="ValidateRequest">
-        <dc:Bounds x="390" y="260" width="100" height="80" />
+        <dc:Bounds x="670" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RouteRequest_di" bpmnElement="RouteRequest" isMarkerVisible="true">
-        <dc:Bounds x="550" y="275" width="50" height="50" />
+        <dc:Bounds x="830" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildValidationError_di" bpmnElement="BuildValidationError">
-        <dc:Bounds x="680" y="20" width="100" height="80" />
+        <dc:Bounds x="960" y="20" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ValidationErrorReady_di" bpmnElement="ValidationErrorReady">
-        <dc:Bounds x="840" y="42" width="36" height="36" />
+        <dc:Bounds x="1120" y="42" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareList_di" bpmnElement="PrepareList">
+        <dc:Bounds x="960" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SearchTasks_di" bpmnElement="SearchTasks">
+        <dc:Bounds x="1110" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AnyTasks_di" bpmnElement="AnyTasks" isMarkerVisible="true">
+        <dc:Bounds x="1270" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FetchTasks_di" bpmnElement="FetchTasks">
+        <dc:Bounds x="1370" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ListJoin_di" bpmnElement="ListJoin" isMarkerVisible="true">
+        <dc:Bounds x="1530" y="155" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTaskList_di" bpmnElement="BuildTaskList">
-        <dc:Bounds x="680" y="140" width="100" height="80" />
+        <dc:Bounds x="1620" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskListReady_di" bpmnElement="TaskListReady">
-        <dc:Bounds x="840" y="162" width="36" height="36" />
+        <dc:Bounds x="1780" y="162" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildDirectMessage_di" bpmnElement="BuildDirectMessage">
-        <dc:Bounds x="680" y="260" width="100" height="80" />
+        <dc:Bounds x="960" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DirectMessageReady_di" bpmnElement="DirectMessageReady">
-        <dc:Bounds x="840" y="282" width="36" height="36" />
+        <dc:Bounds x="1120" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareNewTask_di" bpmnElement="PrepareNewTask">
-        <dc:Bounds x="680" y="380" width="100" height="80" />
+        <dc:Bounds x="960" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CreateTask_di" bpmnElement="CreateTask">
-        <dc:Bounds x="830" y="380" width="100" height="80" />
+        <dc:Bounds x="1110" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareLookup_di" bpmnElement="PrepareLookup">
-        <dc:Bounds x="680" y="500" width="100" height="80" />
+        <dc:Bounds x="960" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateJoin_di" bpmnElement="CorrelateJoin" isMarkerVisible="true">
-        <dc:Bounds x="790" y="515" width="50" height="50" />
+        <dc:Bounds x="1070" y="515" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateToTask_di" bpmnElement="CorrelateToTask">
-        <dc:Bounds x="880" y="500" width="100" height="80" />
+        <dc:Bounds x="1160" y="500" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WasCorrelated_di" bpmnElement="WasCorrelated" isMarkerVisible="true">
-        <dc:Bounds x="1040" y="515" width="50" height="50" />
+        <dc:Bounds x="1320" y="515" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ProbeFollowUp_di" bpmnElement="ProbeFollowUp" isMarkerVisible="true">
-        <dc:Bounds x="1140" y="515" width="50" height="50" />
+        <dc:Bounds x="1420" y="515" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareFollowUpProbe_di" bpmnElement="PrepareFollowUpProbe">
-        <dc:Bounds x="1240" y="440" width="100" height="80" />
+        <dc:Bounds x="1520" y="440" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildNotFound_di" bpmnElement="BuildNotFound">
-        <dc:Bounds x="1240" y="600" width="100" height="80" />
+        <dc:Bounds x="1520" y="600" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotFoundReady_di" bpmnElement="NotFoundReady">
-        <dc:Bounds x="1400" y="622" width="36" height="36" />
+        <dc:Bounds x="1680" y="622" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitJoin_di" bpmnElement="WaitJoin" isMarkerVisible="true">
-        <dc:Bounds x="1450" y="395" width="50" height="50" />
+        <dc:Bounds x="1730" y="395" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitReply_di" bpmnElement="AwaitReply">
-        <dc:Bounds x="1550" y="395" width="50" height="50" />
+        <dc:Bounds x="1830" y="395" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReplyReceived_di" bpmnElement="ReplyReceived">
-        <dc:Bounds x="1660" y="282" width="36" height="36" />
+        <dc:Bounds x="1940" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReplyTimeout_di" bpmnElement="ReplyTimeout">
-        <dc:Bounds x="1660" y="502" width="36" height="36" />
+        <dc:Bounds x="1940" y="502" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IsFollowUpProbe_di" bpmnElement="IsFollowUpProbe" isMarkerVisible="true">
-        <dc:Bounds x="1760" y="275" width="50" height="50" />
+        <dc:Bounds x="2040" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildNotWaiting_di" bpmnElement="BuildNotWaiting">
-        <dc:Bounds x="1860" y="190" width="100" height="80" />
+        <dc:Bounds x="2140" y="190" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotWaitingReady_di" bpmnElement="NotWaitingReady">
-        <dc:Bounds x="2020" y="212" width="36" height="36" />
+        <dc:Bounds x="2300" y="212" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildResponse_di" bpmnElement="BuildResponse">
-        <dc:Bounds x="1860" y="320" width="100" height="80" />
+        <dc:Bounds x="2140" y="320" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ResponseReady_di" bpmnElement="ResponseReady">
-        <dc:Bounds x="2020" y="342" width="36" height="36" />
+        <dc:Bounds x="2300" y="342" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AlreadyProbed_di" bpmnElement="AlreadyProbed" isMarkerVisible="true">
-        <dc:Bounds x="1760" y="495" width="50" height="50" />
+        <dc:Bounds x="2040" y="495" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTimeoutError_di" bpmnElement="BuildTimeoutError">
-        <dc:Bounds x="1860" y="420" width="100" height="80" />
+        <dc:Bounds x="2140" y="420" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TimeoutReady_di" bpmnElement="TimeoutReady">
-        <dc:Bounds x="2020" y="442" width="36" height="36" />
+        <dc:Bounds x="2300" y="442" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareTimeoutProbe_di" bpmnElement="PrepareTimeoutProbe">
-        <dc:Bounds x="1860" y="560" width="100" height="80" />
+        <dc:Bounds x="2140" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_RpcReceived_ParseRequest_di" bpmnElement="Flow_RpcReceived_ParseRequest">
-        <di:waypoint x="186" y="300" />
-        <di:waypoint x="230" y="300" />
-      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="IsPushMethod_di" bpmnElement="IsPushMethod" isMarkerVisible="true">
+        <dc:Bounds x="240" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReadPushSetting_di" bpmnElement="ReadPushSetting">
+        <dc:Bounds x="330" y="150" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PushSettingKnown_di" bpmnElement="PushSettingKnown" isMarkerVisible="true">
+        <dc:Bounds x="440" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_ParseRequest_ValidateRequest_di" bpmnElement="Flow_ParseRequest_ValidateRequest">
-        <di:waypoint x="330" y="300" />
-        <di:waypoint x="390" y="300" />
+        <di:waypoint x="610" y="300" />
+        <di:waypoint x="670" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ValidateRequest_RouteRequest_di" bpmnElement="Flow_ValidateRequest_RouteRequest">
-        <di:waypoint x="490" y="300" />
-        <di:waypoint x="550" y="300" />
+        <di:waypoint x="770" y="300" />
+        <di:waypoint x="830" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_BuildValidationError_di" bpmnElement="Flow_RouteRequest_BuildValidationError">
-        <di:waypoint x="575" y="275" />
-        <di:waypoint x="575" y="60" />
-        <di:waypoint x="680" y="60" />
+        <di:waypoint x="855" y="275" />
+        <di:waypoint x="855" y="60" />
+        <di:waypoint x="960" y="60" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_RouteRequest_BuildTaskList_di" bpmnElement="Flow_RouteRequest_BuildTaskList">
-        <di:waypoint x="575" y="275" />
-        <di:waypoint x="575" y="180" />
-        <di:waypoint x="680" y="180" />
+      <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareList_di" bpmnElement="Flow_RouteRequest_PrepareList">
+        <di:waypoint x="855" y="275" />
+        <di:waypoint x="855" y="180" />
+        <di:waypoint x="960" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PrepareList_SearchTasks_di" bpmnElement="Flow_PrepareList_SearchTasks">
+        <di:waypoint x="1060" y="180" />
+        <di:waypoint x="1110" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SearchTasks_AnyTasks_di" bpmnElement="Flow_SearchTasks_AnyTasks">
+        <di:waypoint x="1210" y="180" />
+        <di:waypoint x="1270" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AnyTasks_FetchTasks_di" bpmnElement="Flow_AnyTasks_FetchTasks">
+        <di:waypoint x="1320" y="180" />
+        <di:waypoint x="1370" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AnyTasks_ListJoin_di" bpmnElement="Flow_AnyTasks_ListJoin">
+        <di:waypoint x="1295" y="155" />
+        <di:waypoint x="1295" y="105" />
+        <di:waypoint x="1555" y="105" />
+        <di:waypoint x="1555" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_FetchTasks_ListJoin_di" bpmnElement="Flow_FetchTasks_ListJoin">
+        <di:waypoint x="1470" y="180" />
+        <di:waypoint x="1530" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ListJoin_BuildTaskList_di" bpmnElement="Flow_ListJoin_BuildTaskList">
+        <di:waypoint x="1580" y="180" />
+        <di:waypoint x="1620" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_BuildDirectMessage_di" bpmnElement="Flow_RouteRequest_BuildDirectMessage">
-        <di:waypoint x="600" y="300" />
-        <di:waypoint x="680" y="300" />
+        <di:waypoint x="880" y="300" />
+        <di:waypoint x="960" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareNewTask_di" bpmnElement="Flow_RouteRequest_PrepareNewTask">
-        <di:waypoint x="575" y="325" />
-        <di:waypoint x="575" y="420" />
-        <di:waypoint x="680" y="420" />
+        <di:waypoint x="855" y="325" />
+        <di:waypoint x="855" y="420" />
+        <di:waypoint x="960" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareLookup_di" bpmnElement="Flow_RouteRequest_PrepareLookup">
-        <di:waypoint x="575" y="325" />
-        <di:waypoint x="575" y="540" />
-        <di:waypoint x="680" y="540" />
+        <di:waypoint x="855" y="325" />
+        <di:waypoint x="855" y="540" />
+        <di:waypoint x="960" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildValidationError_ValidationErrorReady_di" bpmnElement="Flow_BuildValidationError_ValidationErrorReady">
-        <di:waypoint x="780" y="60" />
-        <di:waypoint x="840" y="60" />
+        <di:waypoint x="1060" y="60" />
+        <di:waypoint x="1120" y="60" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildTaskList_TaskListReady_di" bpmnElement="Flow_BuildTaskList_TaskListReady">
-        <di:waypoint x="780" y="180" />
-        <di:waypoint x="840" y="180" />
+        <di:waypoint x="1720" y="180" />
+        <di:waypoint x="1780" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildDirectMessage_DirectMessageReady_di" bpmnElement="Flow_BuildDirectMessage_DirectMessageReady">
-        <di:waypoint x="780" y="300" />
-        <di:waypoint x="840" y="300" />
+        <di:waypoint x="1060" y="300" />
+        <di:waypoint x="1120" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PrepareNewTask_CreateTask_di" bpmnElement="Flow_PrepareNewTask_CreateTask">
-        <di:waypoint x="780" y="420" />
-        <di:waypoint x="830" y="420" />
+        <di:waypoint x="1060" y="420" />
+        <di:waypoint x="1110" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CreateTask_WaitJoin_di" bpmnElement="Flow_CreateTask_WaitJoin">
-        <di:waypoint x="930" y="420" />
-        <di:waypoint x="1450" y="420" />
+        <di:waypoint x="1210" y="420" />
+        <di:waypoint x="1730" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PrepareLookup_CorrelateJoin_di" bpmnElement="Flow_PrepareLookup_CorrelateJoin">
-        <di:waypoint x="780" y="540" />
-        <di:waypoint x="790" y="540" />
+        <di:waypoint x="1060" y="540" />
+        <di:waypoint x="1070" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CorrelateJoin_CorrelateToTask_di" bpmnElement="Flow_CorrelateJoin_CorrelateToTask">
-        <di:waypoint x="840" y="540" />
-        <di:waypoint x="880" y="540" />
+        <di:waypoint x="1120" y="540" />
+        <di:waypoint x="1160" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CorrelateToTask_WasCorrelated_di" bpmnElement="Flow_CorrelateToTask_WasCorrelated">
-        <di:waypoint x="980" y="540" />
-        <di:waypoint x="1040" y="540" />
+        <di:waypoint x="1260" y="540" />
+        <di:waypoint x="1320" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WasCorrelated_WaitJoin_di" bpmnElement="Flow_WasCorrelated_WaitJoin">
-        <di:waypoint x="1065" y="515" />
-        <di:waypoint x="1065" y="420" />
-        <di:waypoint x="1450" y="420" />
+        <di:waypoint x="1345" y="515" />
+        <di:waypoint x="1345" y="420" />
+        <di:waypoint x="1730" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WasCorrelated_ProbeFollowUp_di" bpmnElement="Flow_WasCorrelated_ProbeFollowUp">
-        <di:waypoint x="1090" y="540" />
-        <di:waypoint x="1140" y="540" />
+        <di:waypoint x="1370" y="540" />
+        <di:waypoint x="1420" y="540" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ProbeFollowUp_PrepareFollowUpProbe_di" bpmnElement="Flow_ProbeFollowUp_PrepareFollowUpProbe">
-        <di:waypoint x="1165" y="515" />
-        <di:waypoint x="1165" y="480" />
-        <di:waypoint x="1240" y="480" />
+        <di:waypoint x="1445" y="515" />
+        <di:waypoint x="1445" y="480" />
+        <di:waypoint x="1520" y="480" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ProbeFollowUp_BuildNotFound_di" bpmnElement="Flow_ProbeFollowUp_BuildNotFound">
-        <di:waypoint x="1165" y="565" />
-        <di:waypoint x="1165" y="640" />
-        <di:waypoint x="1240" y="640" />
+        <di:waypoint x="1445" y="565" />
+        <di:waypoint x="1445" y="640" />
+        <di:waypoint x="1520" y="640" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PrepareFollowUpProbe_CorrelateJoin_di" bpmnElement="Flow_PrepareFollowUpProbe_CorrelateJoin">
-        <di:waypoint x="1290" y="520" />
-        <di:waypoint x="1290" y="765" />
-        <di:waypoint x="815" y="765" />
-        <di:waypoint x="815" y="565" />
+        <di:waypoint x="1570" y="520" />
+        <di:waypoint x="1570" y="765" />
+        <di:waypoint x="1095" y="765" />
+        <di:waypoint x="1095" y="565" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildNotFound_NotFoundReady_di" bpmnElement="Flow_BuildNotFound_NotFoundReady">
-        <di:waypoint x="1340" y="640" />
-        <di:waypoint x="1400" y="640" />
+        <di:waypoint x="1620" y="640" />
+        <di:waypoint x="1680" y="640" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WaitJoin_AwaitReply_di" bpmnElement="Flow_WaitJoin_AwaitReply">
-        <di:waypoint x="1500" y="420" />
-        <di:waypoint x="1550" y="420" />
+        <di:waypoint x="1780" y="420" />
+        <di:waypoint x="1830" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitReply_ReplyReceived_di" bpmnElement="Flow_AwaitReply_ReplyReceived">
-        <di:waypoint x="1575" y="395" />
-        <di:waypoint x="1575" y="300" />
-        <di:waypoint x="1660" y="300" />
+        <di:waypoint x="1855" y="395" />
+        <di:waypoint x="1855" y="300" />
+        <di:waypoint x="1940" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitReply_ReplyTimeout_di" bpmnElement="Flow_AwaitReply_ReplyTimeout">
-        <di:waypoint x="1575" y="445" />
-        <di:waypoint x="1575" y="520" />
-        <di:waypoint x="1660" y="520" />
+        <di:waypoint x="1855" y="445" />
+        <di:waypoint x="1855" y="520" />
+        <di:waypoint x="1940" y="520" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReplyReceived_IsFollowUpProbe_di" bpmnElement="Flow_ReplyReceived_IsFollowUpProbe">
-        <di:waypoint x="1696" y="300" />
-        <di:waypoint x="1760" y="300" />
+        <di:waypoint x="1976" y="300" />
+        <di:waypoint x="2040" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsFollowUpProbe_BuildNotWaiting_di" bpmnElement="Flow_IsFollowUpProbe_BuildNotWaiting">
-        <di:waypoint x="1785" y="275" />
-        <di:waypoint x="1785" y="230" />
-        <di:waypoint x="1860" y="230" />
+        <di:waypoint x="2065" y="275" />
+        <di:waypoint x="2065" y="230" />
+        <di:waypoint x="2140" y="230" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsFollowUpProbe_BuildResponse_di" bpmnElement="Flow_IsFollowUpProbe_BuildResponse">
-        <di:waypoint x="1785" y="325" />
-        <di:waypoint x="1785" y="360" />
-        <di:waypoint x="1860" y="360" />
+        <di:waypoint x="2065" y="325" />
+        <di:waypoint x="2065" y="360" />
+        <di:waypoint x="2140" y="360" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildNotWaiting_NotWaitingReady_di" bpmnElement="Flow_BuildNotWaiting_NotWaitingReady">
-        <di:waypoint x="1960" y="230" />
-        <di:waypoint x="2020" y="230" />
+        <di:waypoint x="2240" y="230" />
+        <di:waypoint x="2300" y="230" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildResponse_ResponseReady_di" bpmnElement="Flow_BuildResponse_ResponseReady">
-        <di:waypoint x="1960" y="360" />
-        <di:waypoint x="2020" y="360" />
+        <di:waypoint x="2240" y="360" />
+        <di:waypoint x="2300" y="360" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReplyTimeout_AlreadyProbed_di" bpmnElement="Flow_ReplyTimeout_AlreadyProbed">
-        <di:waypoint x="1696" y="520" />
-        <di:waypoint x="1760" y="520" />
+        <di:waypoint x="1976" y="520" />
+        <di:waypoint x="2040" y="520" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AlreadyProbed_BuildTimeoutError_di" bpmnElement="Flow_AlreadyProbed_BuildTimeoutError">
-        <di:waypoint x="1785" y="495" />
-        <di:waypoint x="1785" y="460" />
-        <di:waypoint x="1860" y="460" />
+        <di:waypoint x="2065" y="495" />
+        <di:waypoint x="2065" y="460" />
+        <di:waypoint x="2140" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AlreadyProbed_PrepareTimeoutProbe_di" bpmnElement="Flow_AlreadyProbed_PrepareTimeoutProbe">
-        <di:waypoint x="1785" y="545" />
-        <di:waypoint x="1785" y="600" />
-        <di:waypoint x="1860" y="600" />
+        <di:waypoint x="2065" y="545" />
+        <di:waypoint x="2065" y="600" />
+        <di:waypoint x="2140" y="600" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildTimeoutError_TimeoutReady_di" bpmnElement="Flow_BuildTimeoutError_TimeoutReady">
-        <di:waypoint x="1960" y="460" />
-        <di:waypoint x="2020" y="460" />
+        <di:waypoint x="2240" y="460" />
+        <di:waypoint x="2300" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PrepareTimeoutProbe_CorrelateJoin_di" bpmnElement="Flow_PrepareTimeoutProbe_CorrelateJoin">
-        <di:waypoint x="1910" y="640" />
-        <di:waypoint x="1910" y="960" />
-        <di:waypoint x="815" y="960" />
-        <di:waypoint x="815" y="565" />
+        <di:waypoint x="2190" y="640" />
+        <di:waypoint x="2190" y="960" />
+        <di:waypoint x="1095" y="960" />
+        <di:waypoint x="1095" y="565" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RpcReceived_IsPushMethod_di" bpmnElement="Flow_RpcReceived_IsPushMethod">
+        <di:waypoint x="186" y="300" />
+        <di:waypoint x="240" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IsPushMethod_ReadPushSetting_di" bpmnElement="Flow_IsPushMethod_ReadPushSetting">
+        <di:waypoint x="265" y="275" />
+        <di:waypoint x="265" y="190" />
+        <di:waypoint x="330" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_IsPushMethod_PushSettingKnown_di" bpmnElement="Flow_IsPushMethod_PushSettingKnown">
+        <di:waypoint x="290" y="300" />
+        <di:waypoint x="440" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReadPushSetting_PushSettingKnown_di" bpmnElement="Flow_ReadPushSetting_PushSettingKnown">
+        <di:waypoint x="380" y="230" />
+        <di:waypoint x="380" y="300" />
+        <di:waypoint x="440" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PushSettingKnown_ParseRequest_di" bpmnElement="Flow_PushSettingKnown_ParseRequest">
+        <di:waypoint x="490" y="300" />
+        <di:waypoint x="510" y="300" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

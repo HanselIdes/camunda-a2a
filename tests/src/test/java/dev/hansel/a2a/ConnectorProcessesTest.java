@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 /** The two small reusable processes, with the HTTP JSON connector mocked at the job level. */
 @CamundaProcessTest
-@TestDeployment(resources = {"bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn"})
+@TestDeployment(resources = {"bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn"})
 class ConnectorProcessesTest {
   CamundaClient client;
   CamundaProcessTestContext context;

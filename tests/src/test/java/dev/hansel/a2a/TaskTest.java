@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 /** Every state transition of the a2a-task process, driven through the real handler process. */
 @CamundaProcessTest
 @TestDeployment(resources = {"bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn", "bpmn/a2a-correlate.bpmn",
-    "bpmn/a2a-publish-reply.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn", "dmn/capitals.dmn"})
+    "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn", "dmn/capitals.dmn"})
 class TaskTest {
   CamundaClient client;
   CamundaProcessTestContext context;

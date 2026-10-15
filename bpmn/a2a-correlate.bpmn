@@ -34,7 +34,7 @@
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="18" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-          <zeebe:header key="resultExpression" value="={&#10;  myResponseBody: response.body&#10;  // Use FEEL to extract values, e.g.,:&#10;  // myUserId: response.body.post.userId&#10;}" />
+          <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &#34;404&#34; then bpmnError(&#34;NOT_FOUND&#34;, &#34;no message subscription&#34;) else null" />
           <zeebe:header key="retryBackoff" value="PT30S" />
         </zeebe:taskHeaders>

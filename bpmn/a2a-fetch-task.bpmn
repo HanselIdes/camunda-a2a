@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_a2a_fetch_task" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <bpmn:message id="Msg_fetch_reply" name="a2a-reply"><bpmn:extensionElements><zeebe:subscription correlationKey="=corrId" /></bpmn:extensionElements></bpmn:message>
+  <bpmn:process id="a2a-fetch-task" name="A2A fetch one task" isExecutable="true">
+    <bpmn:startEvent id="FetchRequested" name="Fetch requested">
+      <bpmn:outgoing>Flow_FetchRequested_PrepareFetch</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="PrepareFetch" name="Prepare fetch">
+      <bpmn:extensionElements><zeebe:script expression="=uuid()" resultVariable="corrId" /></bpmn:extensionElements>
+      <bpmn:incoming>Flow_FetchRequested_PrepareFetch</bpmn:incoming>
+      <bpmn:outgoing>Flow_PrepareFetch_CorrelateGet</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:callActivity id="CorrelateGet" name="Ask the task for its state">
+      <bpmn:extensionElements><zeebe:calledElement processId="a2a-correlate" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source='="a2a-get"' target="messageName" /><zeebe:input source="=taskId" target="taskId" /><zeebe:input source='={getReq: {corrId: corrId, wrap: "bare", historyLength: historyLength}}' target="payload" /><zeebe:input source="=2" target="tries" /><zeebe:output source="=correlated" target="correlated" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:incoming>Flow_PrepareFetch_CorrelateGet</bpmn:incoming>
+      <bpmn:outgoing>Flow_CorrelateGet_TaskReachable</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="TaskReachable" name="Task answered?" default="Flow_TaskReachable_TaskGone">
+      <bpmn:incoming>Flow_CorrelateGet_TaskReachable</bpmn:incoming>
+      <bpmn:outgoing>Flow_TaskReachable_AwaitView</bpmn:outgoing>
+      <bpmn:outgoing>Flow_TaskReachable_TaskGone</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:eventBasedGateway id="AwaitView" name="Await view or timeout">
+      <bpmn:incoming>Flow_TaskReachable_AwaitView</bpmn:incoming>
+      <bpmn:outgoing>Flow_AwaitView_ViewReceived</bpmn:outgoing>
+      <bpmn:outgoing>Flow_AwaitView_ViewTimeout</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="ViewReceived" name="View received">
+      <bpmn:incoming>Flow_AwaitView_ViewReceived</bpmn:incoming>
+      <bpmn:outgoing>Flow_ViewReceived_TakeView</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="ViewReceived_def" messageRef="Msg_fetch_reply" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="ViewTimeout" name="View timed out">
+      <bpmn:incoming>Flow_AwaitView_ViewTimeout</bpmn:incoming>
+      <bpmn:outgoing>Flow_ViewTimeout_NoAnswer</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="ViewTimeout_def"><bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT10S"</bpmn:timeDuration></bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:scriptTask id="TakeView" name="Take view">
+      <bpmn:extensionElements><zeebe:script expression="=replyResult" resultVariable="taskView" /></bpmn:extensionElements>
+      <bpmn:incoming>Flow_ViewReceived_TakeView</bpmn:incoming>
+      <bpmn:outgoing>Flow_TakeView_ViewFetched</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="ViewFetched" name="View fetched">
+      <bpmn:incoming>Flow_TakeView_ViewFetched</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="TaskGone" name="Task is gone">
+      <bpmn:incoming>Flow_TaskReachable_TaskGone</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="NoAnswer" name="No answer">
+      <bpmn:incoming>Flow_ViewTimeout_NoAnswer</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_FetchRequested_PrepareFetch" sourceRef="FetchRequested" targetRef="PrepareFetch" />
+    <bpmn:sequenceFlow id="Flow_PrepareFetch_CorrelateGet" sourceRef="PrepareFetch" targetRef="CorrelateGet" />
+    <bpmn:sequenceFlow id="Flow_CorrelateGet_TaskReachable" sourceRef="CorrelateGet" targetRef="TaskReachable" />
+    <bpmn:sequenceFlow id="Flow_TaskReachable_AwaitView" sourceRef="TaskReachable" targetRef="AwaitView" name="yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=correlated = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_TaskReachable_TaskGone" sourceRef="TaskReachable" targetRef="TaskGone" name="no" />
+    <bpmn:sequenceFlow id="Flow_AwaitView_ViewReceived" sourceRef="AwaitView" targetRef="ViewReceived" />
+    <bpmn:sequenceFlow id="Flow_AwaitView_ViewTimeout" sourceRef="AwaitView" targetRef="ViewTimeout" />
+    <bpmn:sequenceFlow id="Flow_ViewReceived_TakeView" sourceRef="ViewReceived" targetRef="TakeView" />
+    <bpmn:sequenceFlow id="Flow_TakeView_ViewFetched" sourceRef="TakeView" targetRef="ViewFetched" />
+    <bpmn:sequenceFlow id="Flow_ViewTimeout_NoAnswer" sourceRef="ViewTimeout" targetRef="NoAnswer" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-fetch-task">
+      <bpmndi:BPMNShape id="FetchRequested_di" bpmnElement="FetchRequested">
+        <dc:Bounds x="150" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareFetch_di" bpmnElement="PrepareFetch">
+        <dc:Bounds x="230" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CorrelateGet_di" bpmnElement="CorrelateGet">
+        <dc:Bounds x="380" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskReachable_di" bpmnElement="TaskReachable">
+        <dc:Bounds x="540" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AwaitView_di" bpmnElement="AwaitView">
+        <dc:Bounds x="640" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ViewReceived_di" bpmnElement="ViewReceived">
+        <dc:Bounds x="750" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ViewTimeout_di" bpmnElement="ViewTimeout">
+        <dc:Bounds x="750" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TakeView_di" bpmnElement="TakeView">
+        <dc:Bounds x="840" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ViewFetched_di" bpmnElement="ViewFetched">
+        <dc:Bounds x="1000" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskGone_di" bpmnElement="TaskGone">
+        <dc:Bounds x="750" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NoAnswer_di" bpmnElement="NoAnswer">
+        <dc:Bounds x="840" y="252" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_FetchRequested_PrepareFetch_di" bpmnElement="Flow_FetchRequested_PrepareFetch">
+        <di:waypoint x="186" y="200" />
+        <di:waypoint x="230" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PrepareFetch_CorrelateGet_di" bpmnElement="Flow_PrepareFetch_CorrelateGet">
+        <di:waypoint x="330" y="200" />
+        <di:waypoint x="380" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_CorrelateGet_TaskReachable_di" bpmnElement="Flow_CorrelateGet_TaskReachable">
+        <di:waypoint x="480" y="200" />
+        <di:waypoint x="540" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TaskReachable_AwaitView_di" bpmnElement="Flow_TaskReachable_AwaitView">
+        <di:waypoint x="590" y="200" />
+        <di:waypoint x="640" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TaskReachable_TaskGone_di" bpmnElement="Flow_TaskReachable_TaskGone">
+        <di:waypoint x="565" y="225" />
+        <di:waypoint x="565" y="360" />
+        <di:waypoint x="750" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AwaitView_ViewReceived_di" bpmnElement="Flow_AwaitView_ViewReceived">
+        <di:waypoint x="665" y="175" />
+        <di:waypoint x="665" y="130" />
+        <di:waypoint x="750" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AwaitView_ViewTimeout_di" bpmnElement="Flow_AwaitView_ViewTimeout">
+        <di:waypoint x="665" y="225" />
+        <di:waypoint x="665" y="270" />
+        <di:waypoint x="750" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ViewReceived_TakeView_di" bpmnElement="Flow_ViewReceived_TakeView">
+        <di:waypoint x="786" y="130" />
+        <di:waypoint x="840" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TakeView_ViewFetched_di" bpmnElement="Flow_TakeView_ViewFetched">
+        <di:waypoint x="940" y="130" />
+        <di:waypoint x="1000" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ViewTimeout_NoAnswer_di" bpmnElement="Flow_ViewTimeout_NoAnswer">
+        <di:waypoint x="786" y="270" />
+        <di:waypoint x="840" y="270" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

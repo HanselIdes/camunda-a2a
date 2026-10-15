@@ -22,6 +22,8 @@ final class Harness {
   final CamundaClient client;
   final CamundaProcessTestContext context;
   final List<String> calls = new CopyOnWriteArrayList<>();
+  /** Whether the simulated deployment has the A2A_PUSH_ENABLED secret set to true. */
+  volatile boolean pushEnabled;
 
   Harness(final CamundaClient client, final CamundaProcessTestContext context) {
     this.client = client;
@@ -39,13 +41,38 @@ final class Harness {
                 if (url.endsWith("/v2/process-instances")) {
                   @SuppressWarnings("unchecked")
                   final Map<String, Object> variables = (Map<String, Object>) body.get("variables");
+                  @SuppressWarnings("unchecked")
+                  final List<String> tags = (List<String>) body.getOrDefault("tags", List.of());
                   client
                       .newCreateInstanceCommand()
                       .bpmnProcessId((String) body.get("processDefinitionId"))
                       .latestVersion()
                       .variables(variables)
+                      .tags(new java.util.LinkedHashSet<>(tags))
                       .send()
                       .join();
+                } else if (url.endsWith("/v2/process-instances/search")) {
+                  // stands in for the connector's resultExpression that turns the matches into task ids
+                  @SuppressWarnings("unchecked")
+                  final var filter = (Map<String, Object>) body.get("filter");
+                  @SuppressWarnings("unchecked")
+                  final var wanted = new java.util.LinkedHashSet<String>((List<String>) filter.get("tags"));
+                  final var items = client.newProcessInstanceSearchRequest()
+                      .filter(f -> f.processDefinitionId("a2a-task").tags(wanted)).send().join().items();
+                  final var taskIds = new java.util.ArrayList<String>();
+                  for (final var item : items) {
+                    for (final String tag : item.getTags()) {
+                      if (tag.startsWith("task-")) {
+                        taskIds.add(tag.substring(5));
+                      }
+                    }
+                  }
+                  jobClient.newCompleteCommand(job).variables(Map.of("taskIds", taskIds)).send().join();
+                  return;
+                } else if (url.endsWith("/v2/expression/evaluation")) {
+                  // stands in for the connector's resultExpression {pushEnabled: response.body.result = "true"}
+                  jobClient.newCompleteCommand(job).variables(Map.of("pushEnabled", pushEnabled)).send().join();
+                  return;
                 } else if (url.endsWith("/v2/messages/correlation")) {
                   @SuppressWarnings("unchecked")
                   final Map<String, Object> variables =
@@ -83,7 +110,27 @@ final class Harness {
                       .send()
                       .join();
                 } else {
-                  throw new IllegalStateException("unexpected http call " + url);
+                  // a push notification to a destination: do the POST like the connector, and turn a failure into
+                  // the BPMN error that the connector's errorExpression raises
+                  try {
+                    @SuppressWarnings("unchecked")
+                    final Map<String, Object> headers = (Map<String, Object>) vars.get("headers");
+                    final var request = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url))
+                        .timeout(java.time.Duration.ofSeconds(5))
+                        .POST(java.net.http.HttpRequest.BodyPublishers.ofString(JSON.writeValueAsString(body)));
+                    if (headers != null) {
+                      headers.forEach((k, v) -> request.header(k, String.valueOf(v)));
+                    }
+                    final var response = java.net.http.HttpClient.newHttpClient()
+                        .send(request.build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+                    if (response.statusCode() >= 400) {
+                      throw new IllegalStateException("status " + response.statusCode());
+                    }
+                  } catch (final Exception e) {
+                    jobClient.newThrowErrorCommand(job).errorCode("PUSH_FAILED").errorMessage(String.valueOf(e))
+                        .send().join();
+                    return;
+                  }
                 }
                 jobClient.newCompleteCommand(job).send().join();
               } catch (final RuntimeException e) {
@@ -171,6 +218,10 @@ final class Harness {
 
   Map<String, Object> get(final String taskId, final int historyLength) {
     return rpc(headers(), request("GetTask", "{\"id\":\"" + taskId + "\",\"historyLength\":" + historyLength + "}"));
+  }
+
+  Map<String, Object> list(final String paramsJson) {
+    return rpc(headers(), request("ListTasks", paramsJson));
   }
 
   Map<String, Object> cancel(final String taskId) {

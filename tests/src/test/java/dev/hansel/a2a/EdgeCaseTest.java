@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 /** Behavior beyond what the TCK checks: odd ids, big and unusual payloads, concurrency, repeated requests. */
 @CamundaProcessTest
 @TestDeployment(resources = {"bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn", "bpmn/a2a-correlate.bpmn",
-    "bpmn/a2a-publish-reply.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn", "dmn/capitals.dmn"})
+    "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn", "dmn/capitals.dmn"})
 class EdgeCaseTest {
   CamundaClient client;
   CamundaProcessTestContext context;

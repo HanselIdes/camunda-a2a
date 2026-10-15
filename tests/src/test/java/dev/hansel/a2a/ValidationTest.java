@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 @CamundaProcessTest
 @TestDeployment(resources = {"bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn", "bpmn/a2a-correlate.bpmn",
-    "bpmn/a2a-publish-reply.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn"})
+    "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn"})
 class ValidationTest {
   CamundaClient client;
   CamundaProcessTestContext context;

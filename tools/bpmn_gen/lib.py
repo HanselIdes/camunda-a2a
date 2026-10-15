@@ -116,6 +116,13 @@ class Proc:
         self.nodes[tgt].incoming.append(fid)
         return fid
 
+    def remove_flow(self, src, tgt):
+        for f in list(self.flows):
+            if f.src == src and f.tgt == tgt:
+                self.flows.remove(f)
+                self.nodes[src].outgoing.remove(f.id)
+                self.nodes[tgt].incoming.remove(f.id)
+
     # XML ------------------------------------------------------------------
     def _node_xml(self, n, ind):
         sp = "  " * ind

@@ -36,6 +36,7 @@ class OllamaAgentTest {
       .withConnectorsEnv("CAMUNDA_CLIENT_REQUEST_TIMEOUT", "PT60S")
       .withConnectorsSecret("ENGINE_URL", "http://camunda:8080")
       .withConnectorsSecret("A2A_PUBLIC_URL", "http://a2a.test")
+      .withConnectorsSecret("A2A_PUSH_ENABLED", "false")
       .withConnectorsSecret("OLLAMA_BASE_URL", BASE_URL)
       .withConnectorsSecret("OLLAMA_MODEL", MODEL);
 
@@ -49,7 +50,7 @@ class OllamaAgentTest {
   void deployAndWait() {
     final var cmd = client.newDeployResourceCommand();
     for (final String r : List.of("bpmn/a2a-card.bpmn", "bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn",
-        "bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn",
+        "bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn",
         "dmn/capitals.dmn")) {
       cmd.addResourceFromClasspath(r);
     }

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_a2a_push_notify" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <bpmn:error id="PushFailed" name="PushFailed" errorCode="PUSH_FAILED" />
+  <bpmn:process id="a2a-push-notify" name="A2A push notification delivery" isExecutable="true">
+    <bpmn:startEvent id="NotificationRequested" name="Push delivery requested">
+      <bpmn:outgoing>Flow_NotificationRequested_DeliverEach</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="DeliverEach" name="Deliver to each destination">
+      <bpmn:incoming>Flow_NotificationRequested_DeliverEach</bpmn:incoming>
+      <bpmn:outgoing>Flow_DeliverEach_DeliveriesAttempted</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=configs" inputElement="config" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:startEvent id="DeliveryStarted" name="Delivery started">
+        <bpmn:outgoing>Flow_DeliveryStarted_DeliverNotification</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:serviceTask id="DeliverNotification" name="Deliver notification" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="2" />
+          <zeebe:ioMapping>
+            <zeebe:input source="noAuth" target="authentication.type" />
+            <zeebe:input source="POST" target="method" />
+            <zeebe:input source="=config.url" target="url" />
+            <zeebe:input source="=context(get entries({&#34;Content-Type&#34;: &#34;application/a2a+json&#34;, &#34;Authorization&#34;: if config.authentication != null then config.authentication.scheme + &#34; &#34; + config.authentication.credentials else null, &#34;X-A2A-Notification-Token&#34;: config.token})[item.value != null])" target="headers" />
+            <zeebe:input source="=false" target="followRedirects" />
+            <zeebe:input source="JSON" target="documentReturnFormat.choice" />
+            <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="=20" target="readTimeoutInSeconds" />
+            <zeebe:input source="=payload" target="body" />
+            <zeebe:input source="true" target="ignoreNullValues" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="elementTemplateVersion" value="18" />
+            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+            <zeebe:header key="resultExpression" value="={&#10;  myResponseBody: response.body&#10;  // Use FEEL to extract values, e.g.,:&#10;  // myUserId: response.body.post.userId&#10;}" />
+            <zeebe:header key="errorExpression" value="=if error != null then bpmnError(&#34;PUSH_FAILED&#34;, string(error.message)) else null" />
+            <zeebe:header key="retryBackoff" value="PT30S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_DeliveryStarted_DeliverNotification</bpmn:incoming>
+        <bpmn:outgoing>Flow_DeliverNotification_NotificationDelivered</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:endEvent id="NotificationDelivered" name="Notification delivered">
+        <bpmn:incoming>Flow_DeliverNotification_NotificationDelivered</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:boundaryEvent id="DeliveryFailed" name="Delivery failed" attachedToRef="DeliverNotification">
+        <bpmn:outgoing>Flow_DeliveryFailed_DeliveryGivenUp</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="DeliveryFailed_def" errorRef="PushFailed" />
+      </bpmn:boundaryEvent>
+      <bpmn:endEvent id="DeliveryGivenUp" name="Delivery given up">
+        <bpmn:incoming>Flow_DeliveryFailed_DeliveryGivenUp</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_DeliveryStarted_DeliverNotification" sourceRef="DeliveryStarted" targetRef="DeliverNotification" />
+      <bpmn:sequenceFlow id="Flow_DeliverNotification_NotificationDelivered" sourceRef="DeliverNotification" targetRef="NotificationDelivered" />
+      <bpmn:sequenceFlow id="Flow_DeliveryFailed_DeliveryGivenUp" sourceRef="DeliveryFailed" targetRef="DeliveryGivenUp" />
+    </bpmn:subProcess>
+    <bpmn:endEvent id="DeliveriesAttempted" name="Deliveries attempted">
+      <bpmn:incoming>Flow_DeliverEach_DeliveriesAttempted</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_NotificationRequested_DeliverEach" sourceRef="NotificationRequested" targetRef="DeliverEach" />
+    <bpmn:sequenceFlow id="Flow_DeliverEach_DeliveriesAttempted" sourceRef="DeliverEach" targetRef="DeliveriesAttempted" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-push-notify">
+      <bpmndi:BPMNShape id="NotificationRequested_di" bpmnElement="NotificationRequested">
+        <dc:Bounds x="150" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DeliverEach_di" bpmnElement="DeliverEach" isExpanded="true">
+        <dc:Bounds x="250" y="60" width="520" height="260" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DeliveryStarted_di" bpmnElement="DeliveryStarted">
+        <dc:Bounds x="290" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DeliverNotification_di" bpmnElement="DeliverNotification">
+        <dc:Bounds x="370" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotificationDelivered_di" bpmnElement="NotificationDelivered">
+        <dc:Bounds x="530" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DeliveryGivenUp_di" bpmnElement="DeliveryGivenUp">
+        <dc:Bounds x="530" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DeliveryFailed_di" bpmnElement="DeliveryFailed">
+        <dc:Bounds x="402" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_DeliveryStarted_DeliverNotification_di" bpmnElement="Flow_DeliveryStarted_DeliverNotification">
+        <di:waypoint x="326" y="200" />
+        <di:waypoint x="370" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DeliverNotification_NotificationDelivered_di" bpmnElement="Flow_DeliverNotification_NotificationDelivered">
+        <di:waypoint x="470" y="200" />
+        <di:waypoint x="530" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DeliveryFailed_DeliveryGivenUp_di" bpmnElement="Flow_DeliveryFailed_DeliveryGivenUp">
+        <di:waypoint x="420" y="258" />
+        <di:waypoint x="420" y="280" />
+        <di:waypoint x="530" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DeliveriesAttempted_di" bpmnElement="DeliveriesAttempted">
+        <dc:Bounds x="860" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_NotificationRequested_DeliverEach_di" bpmnElement="Flow_NotificationRequested_DeliverEach">
+        <di:waypoint x="186" y="200" />
+        <di:waypoint x="218" y="200" />
+        <di:waypoint x="218" y="190" />
+        <di:waypoint x="250" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DeliverEach_DeliveriesAttempted_di" bpmnElement="Flow_DeliverEach_DeliveriesAttempted">
+        <di:waypoint x="770" y="190" />
+        <di:waypoint x="815" y="190" />
+        <di:waypoint x="815" y="200" />
+        <di:waypoint x="860" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

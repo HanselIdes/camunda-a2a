@@ -30,7 +30,8 @@ class WebhookIntegrationTest {
       .withConnectorsEnabled(true)
       .withConnectorsEnv("CAMUNDA_CLIENT_REQUEST_TIMEOUT", "PT60S")
       .withConnectorsSecret("ENGINE_URL", "http://camunda:8080")
-      .withConnectorsSecret("A2A_PUBLIC_URL", "http://a2a.test");
+      .withConnectorsSecret("A2A_PUBLIC_URL", "http://a2a.test")
+      .withConnectorsSecret("A2A_PUSH_ENABLED", "false");
 
   static final HttpClient HTTP = HttpClient.newHttpClient();
 
@@ -42,7 +43,7 @@ class WebhookIntegrationTest {
   void deployAndWait() {
     final var cmd = client.newDeployResourceCommand();
     for (final String r : List.of("bpmn/a2a-card.bpmn", "bpmn/a2a-rpc.bpmn", "bpmn/a2a-task.bpmn",
-        "bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn",
+        "bpmn/a2a-correlate.bpmn", "bpmn/a2a-publish-reply.bpmn", "bpmn/a2a-push-notify.bpmn", "bpmn/a2a-fetch-task.bpmn", "dmn/a2a-validate.dmn", "dmn/a2a-classify.dmn",
         "dmn/capitals.dmn")) {
       cmd.addResourceFromClasspath(r);
     }
@@ -169,5 +170,18 @@ class WebhookIntegrationTest {
   @Test
   void aGetOnTheRpcWebhookIsMethodNotAllowed() throws Exception {
     assertThat(get(base + "/inbound/a2a").statusCode()).isEqualTo(405);
+  }
+
+  @Test
+  void listTasksFindsTasksThroughTheEngineSearchAndFetchesEachOne() throws Exception {
+    for (int i = 0; i < 3; i++) {
+      rpc("SendMessage", "{\"message\":{\"messageId\":\"tck-complete-task-l" + i
+          + "\",\"role\":\"ROLE_USER\",\"contextId\":\"integration list/ctx\",\"parts\":[{\"text\":\"x\"}]}}");
+    }
+    Awaitility.await().atMost(Duration.ofSeconds(30)).pollInterval(Duration.ofSeconds(1)).untilAsserted(() -> {
+      final var list = Harness.result(rpc("ListTasks", "{\"context_id\":\"integration list/ctx\",\"page_size\":2}"));
+      assertThat(list).containsEntry("totalSize", 3).containsEntry("pageSize", 2).containsEntry("nextPageToken", "2");
+      assertThat((List<?>) list.get("tasks")).hasSize(2);
+    });
   }
 }

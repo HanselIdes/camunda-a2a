@@ -30,13 +30,24 @@ CTX = one("""{
  jsonrpcOk: r.jsonrpc = "2.0" and method != null,
  msgOk: p.message instance of context and m.messageId instance of string and m.role instance of string and m.parts instance of list,
  mediaOk: if m.parts instance of list then not(some part in m.parts satisfies part instance of context and part.mediaType != null and not(list contains(supported, part.mediaType))) else true,
- idOk: p.id instance of string and p.id != "",
+ pushMethods: ["CreateTaskPushNotificationConfig", "GetTaskPushNotificationConfig", "ListTaskPushNotificationConfigs", "DeleteTaskPushNotificationConfig"],
+ pushRef: if p.task_id instance of string then p.task_id else if p.taskId instance of string then p.taskId else null,
+ ref: if method != null and list contains(pushMethods, method) then pushRef else if p.id instance of string then p.id else null,
+ idOk: ref instance of string and ref != "",
+ pushEnabled: pushEnabled = true,
+ pushCfg: context(get entries({id: p.id, url: p.url, token: p.token, authentication: p.authentication})[item.value != null]),
+ taskPush: if cfg.taskPushNotificationConfig instance of context then cfg.taskPushNotificationConfig else null,
  taskId: if m.taskId instance of string and m.taskId != "" then m.taskId else null,
  contextId: if m.contextId instance of string and m.contextId != "" then m.contextId else null,
  messageId: if m.messageId instance of string then m.messageId else null,
  blocking: cfg.returnImmediately != true,
  hl: if cfg.historyLength instance of number then cfg.historyLength else if p.historyLength instance of number then p.historyLength else if p.history_length instance of number then p.history_length else null,
- pageSize: if p.pageSize instance of number then p.pageSize else if p.page_size instance of number then p.page_size else 50
+ pageSize: if p.pageSize instance of number then p.pageSize else if p.page_size instance of number then p.page_size else 50,
+ listContextId: if p.contextId instance of string and p.contextId != "" then p.contextId else if p.context_id instance of string and p.context_id != "" then p.context_id else null,
+ listStatus: if p.status instance of string and p.status != "" then p.status else null,
+ listAfter: if p.statusTimestampAfter instance of string then p.statusTimestampAfter else if p.status_timestamp_after instance of string then p.status_timestamp_after else null,
+ pageToken: if p.pageToken instance of string then p.pageToken else if p.page_token instance of string then p.page_token else null,
+ includeArtifacts: p.includeArtifacts = true or p.include_artifacts = true
 }""")
 
 # A2A error object from a verdict-like context e
@@ -68,3 +79,51 @@ def err(code, message, reason=None):
 
 def resp_from(e):
     return one("""(for e in [%s] return %s)[1]""" % (e, error_response("e")))
+
+
+# --- push notification configuration operations (task side) ----------------------------------
+def push_outcome():
+    """{result: ...} or {error: ...} for the push operation in `pushReq`, given the current `pushConfigs`."""
+    return one("""(for op in [pushReq.op] return
+      if op = "CreateTaskPushNotificationConfig" then
+        (if pushReq.config.url instance of string and pushReq.config.url != "" then
+           {result: put(put(pushReq.config, "taskId", task.id), "id",
+              if pushReq.config.id != null then pushReq.config.id else uuid())}
+         else {error: {code: -32602, message: "Invalid params: url is required"}})
+      else if op = "GetTaskPushNotificationConfig" then
+        (if count(pushConfigs[item.id = pushReq.configId]) > 0 then {result: pushConfigs[item.id = pushReq.configId][1]}
+         else {error: {code: -32602, message: "Push notification config not found"}})
+      else if op = "ListTaskPushNotificationConfigs" then {result: {configs: pushConfigs, nextPageToken: ""}}
+      else {result: {}})[1]""")
+
+
+def push_update():
+    return one("""if pushReq.op = "CreateTaskPushNotificationConfig" and pushOutcome.result != null then
+        append(pushConfigs[item.id != pushOutcome.result.id], pushOutcome.result)
+      else if pushReq.op = "DeleteTaskPushNotificationConfig" then pushConfigs[item.id != pushReq.configId]
+      else pushConfigs""")
+
+
+# --- ListTasks (handler side) --------------------------------------------------------------------
+LIST_TAG_CONTEXT = one("""if ctx.listContextId != null then "ctx-" + (if string length(sanitizedList) > 90 then substring(sanitizedList, 1, 90) else sanitizedList) else null""")
+
+
+def list_request():
+    return one("""(for s in [if ctx.listContextId != null then replace(ctx.listContextId, "[^A-Za-z0-9_:.-]", "_") else ""] return
+      {ctxTag: if ctx.listContextId != null then "ctx-" + (if string length(s) > 90 then substring(s, 1, 90) else s) else null,
+       size: if ctx.pageSize < 1 then 50 else if ctx.pageSize > 100 then 100 else ctx.pageSize,
+       start: if ctx.pageToken != null and number(ctx.pageToken) != null then number(ctx.pageToken) else 0})[1]""")
+
+
+def list_response():
+    return one("""(for views in [if is defined(taskViews) and taskViews != null then taskViews[item != null] else []] return
+      for found in [sort(views[(ctx.listContextId = null or item.contextId = ctx.listContextId)
+                              and (ctx.listStatus = null or item.status.state = ctx.listStatus)
+                              and (ctx.listAfter = null or item.status.timestamp > ctx.listAfter)],
+                         function(a, b) a.status.timestamp > b.status.timestamp)] return
+      for left in [count(found) - listReq.start] return
+      for page in [if left <= 0 then [] else sublist(found, listReq.start + 1, if left < listReq.size then left else listReq.size)] return
+      {jsonrpc: "2.0", id: ctx.id, result: {
+         tasks: for t in page return if ctx.includeArtifacts then t else context(get entries(t)[item.key != "artifacts"]),
+         nextPageToken: if listReq.start + listReq.size < count(found) then string(listReq.start + listReq.size) else "",
+         pageSize: listReq.size, totalSize: count(found)}})[1][1][1][1]""")

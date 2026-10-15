@@ -60,6 +60,7 @@ class DmnTest {
     c.put("msgOk", true);
     c.put("mediaOk", true);
     c.put("idOk", true);
+    c.put("pushEnabled", false);
     for (int i = 0; i < overrides.length; i += 2) {
       c.put((String) overrides[i], overrides[i + 1]);
     }
@@ -83,6 +84,11 @@ class DmnTest {
         Arguments.of(ctx("SendMessage", "mediaOk", false), "error", -32005, "CONTENT_TYPE_NOT_SUPPORTED"),
         Arguments.of(ctx("GetTask", "idOk", false), "error", -32602, null),
         Arguments.of(ctx("CancelTask", "idOk", false), "error", -32602, null),
+        Arguments.of(ctx("CreateTaskPushNotificationConfig", "pushEnabled", true), "CreateTaskPushNotificationConfig", null, null),
+        Arguments.of(ctx("GetTaskPushNotificationConfig", "pushEnabled", true), "GetTaskPushNotificationConfig", null, null),
+        Arguments.of(ctx("ListTaskPushNotificationConfigs", "pushEnabled", true), "ListTaskPushNotificationConfigs", null, null),
+        Arguments.of(ctx("DeleteTaskPushNotificationConfig", "pushEnabled", true), "DeleteTaskPushNotificationConfig", null, null),
+        Arguments.of(ctx("DeleteTaskPushNotificationConfig", "pushEnabled", true, "idOk", false), "error", -32602, null),
         Arguments.of(ctx("SendMessage"), "SendMessage", null, null),
         Arguments.of(ctx("GetTask"), "GetTask", null, null),
         Arguments.of(ctx("CancelTask"), "CancelTask", null, null),

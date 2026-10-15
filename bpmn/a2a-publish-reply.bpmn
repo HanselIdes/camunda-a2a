@@ -21,7 +21,7 @@
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="18" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-          <zeebe:header key="resultExpression" value="={&#10;  myResponseBody: response.body&#10;  // Use FEEL to extract values, e.g.,:&#10;  // myUserId: response.body.post.userId&#10;}" />
+          <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="retryBackoff" value="PT30S" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>

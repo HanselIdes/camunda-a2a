@@ -15,6 +15,11 @@
       <zeebe:subscription correlationKey="=taskId" />
     </bpmn:extensionElements>
   </bpmn:message>
+  <bpmn:message id="Msg_push" name="a2a-push">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=taskId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmn:error id="AgentFailed" name="AgentFailed" errorCode="AGENT_FAILED" />
   <bpmn:process id="a2a-task" name="A2A task" isExecutable="true">
     <bpmn:startEvent id="TaskSubmitted" name="Task submitted">
@@ -25,13 +30,20 @@
         <zeebe:script expression="= {id: taskId, contextId: contextId, status: {state: &#34;TASK_STATE_SUBMITTED&#34;, timestamp: substring(string(now()), 1, 19) + &#34;Z&#34;}, artifacts: [], history: [put(put(req.message, &#34;taskId&#34;, taskId), &#34;contextId&#34;, contextId)]}" resultVariable="task" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_TaskSubmitted_CreateTaskState</bpmn:incoming>
-      <bpmn:outgoing>Flow_CreateTaskState_SetPending</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CreateTaskState_InitPushConfigs</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="InitPushConfigs" name="Store push notification config">
+      <bpmn:extensionElements>
+        <zeebe:script expression="= if req.pushConfig = null then [] else [put(put(req.pushConfig, &#34;taskId&#34;, taskId), &#34;id&#34;, if req.pushConfig.id != null then req.pushConfig.id else uuid())]" resultVariable="pushConfigs" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_CreateTaskState_InitPushConfigs</bpmn:incoming>
+      <bpmn:outgoing>Flow_InitPushConfigs_SetPending</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:scriptTask id="SetPending" name="Set reply pending">
       <bpmn:extensionElements>
         <zeebe:script expression="=req.blocking" resultVariable="pending" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_CreateTaskState_SetPending</bpmn:incoming>
+      <bpmn:incoming>Flow_InitPushConfigs_SetPending</bpmn:incoming>
       <bpmn:outgoing>Flow_SetPending_ReturnImmediately</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:exclusiveGateway id="ReturnImmediately" name="Return immediately?" default="Flow_ReturnImmediately_InitDone">
@@ -89,7 +101,7 @@
         <bpmn:outgoing>Flow_ApplyScenario_WorkDone</bpmn:outgoing>
       </bpmn:scriptTask>
       <bpmn:exclusiveGateway id="IsPending" name="Reply pending?" default="Flow_IsPending_ReplyHandled">
-        <bpmn:incoming>Flow_WorkDone_IsPending</bpmn:incoming>
+        <bpmn:incoming>Flow_PushJoin_IsPending</bpmn:incoming>
         <bpmn:outgoing>Flow_IsPending_BuildReply</bpmn:outgoing>
         <bpmn:outgoing>Flow_IsPending_ReplyHandled</bpmn:outgoing>
       </bpmn:exclusiveGateway>
@@ -304,7 +316,7 @@
         <bpmn:incoming>Flow_ApplyScenario_WorkDone</bpmn:incoming>
         <bpmn:incoming>Flow_ApplyAgentResponse_WorkDone</bpmn:incoming>
         <bpmn:incoming>Flow_MarkAgentFailed_WorkDone</bpmn:incoming>
-        <bpmn:outgoing>Flow_WorkDone_IsPending</bpmn:outgoing>
+        <bpmn:outgoing>Flow_WorkDone_HasPush</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:subProcess id="ActiveGet" name="Answer GetTask" triggeredByEvent="true">
         <bpmn:startEvent id="GetWhileActive" name="GetTask while active" isInterrupting="false">
@@ -366,15 +378,125 @@
             </zeebe:ioMapping>
           </bpmn:extensionElements>
           <bpmn:incoming>Flow_BuildCancelView_PublishCancelView</bpmn:incoming>
-          <bpmn:outgoing>Flow_PublishCancelView_CancelPublished</bpmn:outgoing>
+          <bpmn:outgoing>Flow_PublishCancelView_HasPushCancel</bpmn:outgoing>
         </bpmn:callActivity>
         <bpmn:endEvent id="CancelPublished" name="Cancel published">
-          <bpmn:incoming>Flow_PublishCancelView_CancelPublished</bpmn:incoming>
+          <bpmn:incoming>Flow_HasPushCancel_CancelPublished</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:exclusiveGateway id="HasPushCancel" name="Push configs?" default="Flow_HasPushCancel_CancelPublished">
+          <bpmn:incoming>Flow_PublishCancelView_HasPushCancel</bpmn:incoming>
+          <bpmn:outgoing>Flow_HasPushCancel_NotifyPushCancel</bpmn:outgoing>
+          <bpmn:outgoing>Flow_HasPushCancel_CancelPublished</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:serviceTask id="NotifyPushCancel" name="Start push delivery" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+            <zeebe:ioMapping>
+              <zeebe:input source="noAuth" target="authentication.type" />
+              <zeebe:input source="POST" target="method" />
+              <zeebe:input source="=&#34;{{secrets.ENGINE_URL}}/v2/process-instances&#34;" target="url" />
+              <zeebe:input source="=false" target="followRedirects" />
+              <zeebe:input source="JSON" target="documentReturnFormat.choice" />
+              <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+              <zeebe:input source="=20" target="readTimeoutInSeconds" />
+              <zeebe:input source="={processDefinitionId: &#34;a2a-push-notify&#34;, variables: {configs: pushConfigs, payload: (for v in [(for h in [if null = null or null &#62;= count(task.history) then task.history else if null &#60;= 0 then [] else sublist(task.history, count(task.history) - null + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if &#34;task&#34; = &#34;task&#34; then {task: v} else v)[1]}}" target="body" />
+              <zeebe:input source="true" target="ignoreNullValues" />
+            </zeebe:ioMapping>
+            <zeebe:taskHeaders>
+              <zeebe:header key="elementTemplateVersion" value="18" />
+              <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+              <zeebe:header key="resultExpression" value="={}" />
+              <zeebe:header key="retryBackoff" value="PT30S" />
+            </zeebe:taskHeaders>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_HasPushCancel_NotifyPushCancel</bpmn:incoming>
+          <bpmn:outgoing>Flow_NotifyPushCancel_CancelNotified</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:endEvent id="CancelNotified" name="Cancel published">
+          <bpmn:incoming>Flow_NotifyPushCancel_CancelNotified</bpmn:incoming>
         </bpmn:endEvent>
         <bpmn:sequenceFlow id="Flow_CancelWhileActive_MarkCanceled" sourceRef="CancelWhileActive" targetRef="MarkCanceled" />
         <bpmn:sequenceFlow id="Flow_MarkCanceled_BuildCancelView" sourceRef="MarkCanceled" targetRef="BuildCancelView" />
         <bpmn:sequenceFlow id="Flow_BuildCancelView_PublishCancelView" sourceRef="BuildCancelView" targetRef="PublishCancelView" />
-        <bpmn:sequenceFlow id="Flow_PublishCancelView_CancelPublished" sourceRef="PublishCancelView" targetRef="CancelPublished" />
+        <bpmn:sequenceFlow id="Flow_PublishCancelView_HasPushCancel" sourceRef="PublishCancelView" targetRef="HasPushCancel" />
+        <bpmn:sequenceFlow id="Flow_HasPushCancel_NotifyPushCancel" name="yes" sourceRef="HasPushCancel" targetRef="NotifyPushCancel">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=count(pushConfigs) &gt; 0</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_HasPushCancel_CancelPublished" name="no" sourceRef="HasPushCancel" targetRef="CancelPublished" />
+        <bpmn:sequenceFlow id="Flow_NotifyPushCancel_CancelNotified" sourceRef="NotifyPushCancel" targetRef="CancelNotified" />
+      </bpmn:subProcess>
+      <bpmn:exclusiveGateway id="HasPush" name="Push configs?" default="Flow_HasPush_PushJoin">
+        <bpmn:incoming>Flow_WorkDone_HasPush</bpmn:incoming>
+        <bpmn:outgoing>Flow_HasPush_NotifyPush</bpmn:outgoing>
+        <bpmn:outgoing>Flow_HasPush_PushJoin</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:serviceTask id="NotifyPush" name="Start push delivery" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
+        <bpmn:extensionElements>
+          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+          <zeebe:ioMapping>
+            <zeebe:input source="noAuth" target="authentication.type" />
+            <zeebe:input source="POST" target="method" />
+            <zeebe:input source="=&#34;{{secrets.ENGINE_URL}}/v2/process-instances&#34;" target="url" />
+            <zeebe:input source="=false" target="followRedirects" />
+            <zeebe:input source="JSON" target="documentReturnFormat.choice" />
+            <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+            <zeebe:input source="=20" target="readTimeoutInSeconds" />
+            <zeebe:input source="={processDefinitionId: &#34;a2a-push-notify&#34;, variables: {configs: pushConfigs, payload: (for v in [(for h in [if null = null or null &#62;= count(task.history) then task.history else if null &#60;= 0 then [] else sublist(task.history, count(task.history) - null + 1)] return context(get entries({id: task.id, contextId: task.contextId, status: task.status, artifacts: if count(task.artifacts) &#62; 0 then task.artifacts else null, history: if count(h) &#62; 0 then h else null})[item.value != null]))[1]] return if &#34;task&#34; = &#34;task&#34; then {task: v} else v)[1]}}" target="body" />
+            <zeebe:input source="true" target="ignoreNullValues" />
+          </zeebe:ioMapping>
+          <zeebe:taskHeaders>
+            <zeebe:header key="elementTemplateVersion" value="18" />
+            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+            <zeebe:header key="resultExpression" value="={}" />
+            <zeebe:header key="retryBackoff" value="PT30S" />
+          </zeebe:taskHeaders>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_HasPush_NotifyPush</bpmn:incoming>
+        <bpmn:outgoing>Flow_NotifyPush_PushJoin</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:exclusiveGateway id="PushJoin" name="Push handled">
+        <bpmn:incoming>Flow_HasPush_PushJoin</bpmn:incoming>
+        <bpmn:incoming>Flow_NotifyPush_PushJoin</bpmn:incoming>
+        <bpmn:outgoing>Flow_PushJoin_IsPending</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:subProcess id="ActivePush" name="Answer push configuration operation" triggeredByEvent="true">
+        <bpmn:startEvent id="PushWhileActive" name="Push operation while active" isInterrupting="false">
+          <bpmn:outgoing>Flow_PushWhileActive_ComputePushOutcome</bpmn:outgoing>
+          <bpmn:messageEventDefinition id="PushWhileActive_def" messageRef="Msg_push" />
+        </bpmn:startEvent>
+        <bpmn:scriptTask id="ComputePushOutcome" name="Compute push outcome">
+          <bpmn:extensionElements>
+            <zeebe:script expression="=(for op in [pushReq.op] return if op = &#34;CreateTaskPushNotificationConfig&#34; then (if pushReq.config.url instance of string and pushReq.config.url != &#34;&#34; then {result: put(put(pushReq.config, &#34;taskId&#34;, task.id), &#34;id&#34;, if pushReq.config.id != null then pushReq.config.id else uuid())} else {error: {code: -32602, message: &#34;Invalid params: url is required&#34;}}) else if op = &#34;GetTaskPushNotificationConfig&#34; then (if count(pushConfigs[item.id = pushReq.configId]) &#62; 0 then {result: pushConfigs[item.id = pushReq.configId][1]} else {error: {code: -32602, message: &#34;Push notification config not found&#34;}}) else if op = &#34;ListTaskPushNotificationConfigs&#34; then {result: {configs: pushConfigs, nextPageToken: &#34;&#34;}} else {result: {}})[1]" resultVariable="pushOutcome" />
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_PushWhileActive_ComputePushOutcome</bpmn:incoming>
+          <bpmn:outgoing>Flow_ComputePushOutcome_UpdatePushConfigs</bpmn:outgoing>
+        </bpmn:scriptTask>
+        <bpmn:scriptTask id="UpdatePushConfigs" name="Update push configs">
+          <bpmn:extensionElements>
+            <zeebe:script expression="=if pushReq.op = &#34;CreateTaskPushNotificationConfig&#34; and pushOutcome.result != null then append(pushConfigs[item.id != pushOutcome.result.id], pushOutcome.result) else if pushReq.op = &#34;DeleteTaskPushNotificationConfig&#34; then pushConfigs[item.id != pushReq.configId] else pushConfigs" resultVariable="pushConfigs" />
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_ComputePushOutcome_UpdatePushConfigs</bpmn:incoming>
+          <bpmn:outgoing>Flow_UpdatePushConfigs_PublishPushOutcome</bpmn:outgoing>
+        </bpmn:scriptTask>
+        <bpmn:callActivity id="PublishPushOutcome" name="Publish push outcome">
+          <bpmn:extensionElements>
+            <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+            <zeebe:ioMapping>
+              <zeebe:input source="=pushReq.corrId" target="corrId" />
+              <zeebe:input source="=pushOutcome.result" target="replyResult" />
+              <zeebe:input source="=pushOutcome.error" target="replyError" />
+            </zeebe:ioMapping>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_UpdatePushConfigs_PublishPushOutcome</bpmn:incoming>
+          <bpmn:outgoing>Flow_PublishPushOutcome_PushOutcomePublished</bpmn:outgoing>
+        </bpmn:callActivity>
+        <bpmn:endEvent id="PushOutcomePublished" name="Push outcome published">
+          <bpmn:incoming>Flow_PublishPushOutcome_PushOutcomePublished</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_PushWhileActive_ComputePushOutcome" sourceRef="PushWhileActive" targetRef="ComputePushOutcome" />
+        <bpmn:sequenceFlow id="Flow_ComputePushOutcome_UpdatePushConfigs" sourceRef="ComputePushOutcome" targetRef="UpdatePushConfigs" />
+        <bpmn:sequenceFlow id="Flow_UpdatePushConfigs_PublishPushOutcome" sourceRef="UpdatePushConfigs" targetRef="PublishPushOutcome" />
+        <bpmn:sequenceFlow id="Flow_PublishPushOutcome_PushOutcomePublished" sourceRef="PublishPushOutcome" targetRef="PushOutcomePublished" />
       </bpmn:subProcess>
       <bpmn:sequenceFlow id="Flow_MessageAccepted_ClassifyJoin" sourceRef="MessageAccepted" targetRef="ClassifyJoin" />
       <bpmn:sequenceFlow id="Flow_ClassifyJoin_ClassifyMessage" sourceRef="ClassifyJoin" targetRef="ClassifyMessage" />
@@ -389,7 +511,6 @@
       <bpmn:sequenceFlow id="Flow_AgentError_MarkAgentFailed" sourceRef="AgentError" targetRef="MarkAgentFailed" />
       <bpmn:sequenceFlow id="Flow_ApplyAgentResponse_WorkDone" sourceRef="ApplyAgentResponse" targetRef="WorkDone" />
       <bpmn:sequenceFlow id="Flow_MarkAgentFailed_WorkDone" sourceRef="MarkAgentFailed" targetRef="WorkDone" />
-      <bpmn:sequenceFlow id="Flow_WorkDone_IsPending" sourceRef="WorkDone" targetRef="IsPending" />
       <bpmn:sequenceFlow id="Flow_IsPending_BuildReply" name="yes" sourceRef="IsPending" targetRef="BuildReply">
         <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=pending = true</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
@@ -413,12 +534,20 @@
       <bpmn:sequenceFlow id="Flow_RecordUserMessage_SetRequest" sourceRef="RecordUserMessage" targetRef="SetRequest" />
       <bpmn:sequenceFlow id="Flow_SetRequest_SetPendingAgain" sourceRef="SetRequest" targetRef="SetPendingAgain" />
       <bpmn:sequenceFlow id="Flow_SetPendingAgain_ClassifyJoin" sourceRef="SetPendingAgain" targetRef="ClassifyJoin" />
+      <bpmn:sequenceFlow id="Flow_WorkDone_HasPush" sourceRef="WorkDone" targetRef="HasPush" />
+      <bpmn:sequenceFlow id="Flow_HasPush_NotifyPush" name="yes" sourceRef="HasPush" targetRef="NotifyPush">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=count(pushConfigs) &gt; 0</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_HasPush_PushJoin" name="no" sourceRef="HasPush" targetRef="PushJoin" />
+      <bpmn:sequenceFlow id="Flow_NotifyPush_PushJoin" sourceRef="NotifyPush" targetRef="PushJoin" />
+      <bpmn:sequenceFlow id="Flow_PushJoin_IsPending" sourceRef="PushJoin" targetRef="IsPending" />
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="TerminalJoin" name="Await terminal requests">
       <bpmn:incoming>Flow_Active_TerminalJoin</bpmn:incoming>
       <bpmn:incoming>Flow_PublishTerminalView_TerminalJoin</bpmn:incoming>
       <bpmn:incoming>Flow_PublishNotCancelable_TerminalJoin</bpmn:incoming>
       <bpmn:incoming>Flow_PublishTerminalSendError_TerminalJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_PublishTerminalPush_TerminalJoin</bpmn:incoming>
       <bpmn:outgoing>Flow_TerminalJoin_AwaitTerminal</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:eventBasedGateway id="AwaitTerminal" name="Await requests or expiry">
@@ -427,6 +556,7 @@
       <bpmn:outgoing>Flow_AwaitTerminal_TerminalCancel</bpmn:outgoing>
       <bpmn:outgoing>Flow_AwaitTerminal_TerminalSend</bpmn:outgoing>
       <bpmn:outgoing>Flow_AwaitTerminal_TaskExpires</bpmn:outgoing>
+      <bpmn:outgoing>Flow_AwaitTerminal_TerminalPush</bpmn:outgoing>
     </bpmn:eventBasedGateway>
     <bpmn:intermediateCatchEvent id="TerminalGet" name="GetTask in terminal state">
       <bpmn:incoming>Flow_AwaitTerminal_TerminalGet</bpmn:incoming>
@@ -510,8 +640,40 @@
     <bpmn:endEvent id="TaskExpired" name="Task expired">
       <bpmn:incoming>Flow_TaskExpires_TaskExpired</bpmn:incoming>
     </bpmn:endEvent>
+    <bpmn:intermediateCatchEvent id="TerminalPush" name="Push operation in terminal state">
+      <bpmn:incoming>Flow_AwaitTerminal_TerminalPush</bpmn:incoming>
+      <bpmn:outgoing>Flow_TerminalPush_ComputeTerminalPush</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="TerminalPush_def" messageRef="Msg_push" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:scriptTask id="ComputeTerminalPush" name="Compute push outcome">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=(for op in [pushReq.op] return if op = &#34;CreateTaskPushNotificationConfig&#34; then (if pushReq.config.url instance of string and pushReq.config.url != &#34;&#34; then {result: put(put(pushReq.config, &#34;taskId&#34;, task.id), &#34;id&#34;, if pushReq.config.id != null then pushReq.config.id else uuid())} else {error: {code: -32602, message: &#34;Invalid params: url is required&#34;}}) else if op = &#34;GetTaskPushNotificationConfig&#34; then (if count(pushConfigs[item.id = pushReq.configId]) &#62; 0 then {result: pushConfigs[item.id = pushReq.configId][1]} else {error: {code: -32602, message: &#34;Push notification config not found&#34;}}) else if op = &#34;ListTaskPushNotificationConfigs&#34; then {result: {configs: pushConfigs, nextPageToken: &#34;&#34;}} else {result: {}})[1]" resultVariable="pushOutcome" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_TerminalPush_ComputeTerminalPush</bpmn:incoming>
+      <bpmn:outgoing>Flow_ComputeTerminalPush_UpdateTerminalPush</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="UpdateTerminalPush" name="Update push configs">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=if pushReq.op = &#34;CreateTaskPushNotificationConfig&#34; and pushOutcome.result != null then append(pushConfigs[item.id != pushOutcome.result.id], pushOutcome.result) else if pushReq.op = &#34;DeleteTaskPushNotificationConfig&#34; then pushConfigs[item.id != pushReq.configId] else pushConfigs" resultVariable="pushConfigs" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ComputeTerminalPush_UpdateTerminalPush</bpmn:incoming>
+      <bpmn:outgoing>Flow_UpdateTerminalPush_PublishTerminalPush</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:callActivity id="PublishTerminalPush" name="Publish push outcome">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-publish-reply" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=pushReq.corrId" target="corrId" />
+          <zeebe:input source="=pushOutcome.result" target="replyResult" />
+          <zeebe:input source="=pushOutcome.error" target="replyError" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_UpdateTerminalPush_PublishTerminalPush</bpmn:incoming>
+      <bpmn:outgoing>Flow_PublishTerminalPush_TerminalJoin</bpmn:outgoing>
+    </bpmn:callActivity>
     <bpmn:sequenceFlow id="Flow_TaskSubmitted_CreateTaskState" sourceRef="TaskSubmitted" targetRef="CreateTaskState" />
-    <bpmn:sequenceFlow id="Flow_CreateTaskState_SetPending" sourceRef="CreateTaskState" targetRef="SetPending" />
+    <bpmn:sequenceFlow id="Flow_CreateTaskState_InitPushConfigs" sourceRef="CreateTaskState" targetRef="InitPushConfigs" />
+    <bpmn:sequenceFlow id="Flow_InitPushConfigs_SetPending" sourceRef="InitPushConfigs" targetRef="SetPending" />
     <bpmn:sequenceFlow id="Flow_SetPending_ReturnImmediately" sourceRef="SetPending" targetRef="ReturnImmediately" />
     <bpmn:sequenceFlow id="Flow_ReturnImmediately_BuildInitialReply" name="yes" sourceRef="ReturnImmediately" targetRef="BuildInitialReply">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=req.blocking = false</bpmn:conditionExpression>
@@ -536,6 +698,11 @@
     <bpmn:sequenceFlow id="Flow_BuildTerminalSendError_PublishTerminalSendError" sourceRef="BuildTerminalSendError" targetRef="PublishTerminalSendError" />
     <bpmn:sequenceFlow id="Flow_PublishTerminalSendError_TerminalJoin" sourceRef="PublishTerminalSendError" targetRef="TerminalJoin" />
     <bpmn:sequenceFlow id="Flow_TaskExpires_TaskExpired" sourceRef="TaskExpires" targetRef="TaskExpired" />
+    <bpmn:sequenceFlow id="Flow_AwaitTerminal_TerminalPush" sourceRef="AwaitTerminal" targetRef="TerminalPush" />
+    <bpmn:sequenceFlow id="Flow_TerminalPush_ComputeTerminalPush" sourceRef="TerminalPush" targetRef="ComputeTerminalPush" />
+    <bpmn:sequenceFlow id="Flow_ComputeTerminalPush_UpdateTerminalPush" sourceRef="ComputeTerminalPush" targetRef="UpdateTerminalPush" />
+    <bpmn:sequenceFlow id="Flow_UpdateTerminalPush_PublishTerminalPush" sourceRef="UpdateTerminalPush" targetRef="PublishTerminalPush" />
+    <bpmn:sequenceFlow id="Flow_PublishTerminalPush_TerminalJoin" sourceRef="PublishTerminalPush" targetRef="TerminalJoin" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-task">
@@ -545,455 +712,580 @@
       <bpmndi:BPMNShape id="CreateTaskState_di" bpmnElement="CreateTaskState">
         <dc:Bounds x="230" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="InitPushConfigs_di" bpmnElement="InitPushConfigs">
+        <dc:Bounds x="360" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SetPending_di" bpmnElement="SetPending">
-        <dc:Bounds x="380" y="260" width="100" height="80" />
+        <dc:Bounds x="490" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReturnImmediately_di" bpmnElement="ReturnImmediately" isMarkerVisible="true">
-        <dc:Bounds x="530" y="275" width="50" height="50" />
+        <dc:Bounds x="620" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildInitialReply_di" bpmnElement="BuildInitialReply">
-        <dc:Bounds x="620" y="120" width="100" height="80" />
+        <dc:Bounds x="700" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishInitialReply_di" bpmnElement="PublishInitialReply">
-        <dc:Bounds x="760" y="120" width="100" height="80" />
+        <dc:Bounds x="840" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="InitDone_di" bpmnElement="InitDone" isMarkerVisible="true">
-        <dc:Bounds x="920" y="275" width="50" height="50" />
+        <dc:Bounds x="970" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Active_di" bpmnElement="Active" isExpanded="true">
-        <dc:Bounds x="1010" y="20" width="2260" height="1100" />
+        <dc:Bounds x="1170" y="20" width="2520" height="1100" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MessageAccepted_di" bpmnElement="MessageAccepted">
-        <dc:Bounds x="1050" y="282" width="36" height="36" />
+        <dc:Bounds x="1210" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClassifyJoin_di" bpmnElement="ClassifyJoin" isMarkerVisible="true">
-        <dc:Bounds x="1120" y="275" width="50" height="50" />
+        <dc:Bounds x="1280" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClassifyMessage_di" bpmnElement="ClassifyMessage">
-        <dc:Bounds x="1210" y="260" width="100" height="80" />
+        <dc:Bounds x="1370" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyScenario_di" bpmnElement="ApplyScenario">
-        <dc:Bounds x="1440" y="260" width="100" height="80" />
+        <dc:Bounds x="1600" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IsPending_di" bpmnElement="IsPending" isMarkerVisible="true">
-        <dc:Bounds x="1690" y="275" width="50" height="50" />
+        <dc:Bounds x="2110" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildReply_di" bpmnElement="BuildReply">
-        <dc:Bounds x="1780" y="140" width="100" height="80" />
+        <dc:Bounds x="2200" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishReply_di" bpmnElement="PublishReply">
-        <dc:Bounds x="1920" y="140" width="100" height="80" />
+        <dc:Bounds x="2340" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkReplied_di" bpmnElement="MarkReplied">
-        <dc:Bounds x="2060" y="140" width="100" height="80" />
+        <dc:Bounds x="2480" y="140" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReplyHandled_di" bpmnElement="ReplyHandled" isMarkerVisible="true">
-        <dc:Bounds x="2200" y="275" width="50" height="50" />
+        <dc:Bounds x="2620" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired" isMarkerVisible="true">
-        <dc:Bounds x="2290" y="275" width="50" height="50" />
+        <dc:Bounds x="2710" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WorkFinished_di" bpmnElement="WorkFinished">
-        <dc:Bounds x="2410" y="282" width="36" height="36" />
+        <dc:Bounds x="2830" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowJoin_di" bpmnElement="FollowJoin" isMarkerVisible="true">
-        <dc:Bounds x="2350" y="435" width="50" height="50" />
+        <dc:Bounds x="2770" y="435" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpArrives_di" bpmnElement="FollowUpArrives">
-        <dc:Bounds x="2430" y="442" width="36" height="36" />
+        <dc:Bounds x="2850" y="442" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ContextMatches_di" bpmnElement="ContextMatches" isMarkerVisible="true">
-        <dc:Bounds x="2530" y="435" width="50" height="50" />
+        <dc:Bounds x="2950" y="435" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildContextMismatch_di" bpmnElement="BuildContextMismatch">
-        <dc:Bounds x="2630" y="560" width="100" height="80" />
+        <dc:Bounds x="3050" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishMismatch_di" bpmnElement="PublishMismatch">
-        <dc:Bounds x="2790" y="560" width="100" height="80" />
+        <dc:Bounds x="3210" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RecordUserMessage_di" bpmnElement="RecordUserMessage">
-        <dc:Bounds x="2640" y="380" width="100" height="80" />
+        <dc:Bounds x="3060" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SetRequest_di" bpmnElement="SetRequest">
-        <dc:Bounds x="2780" y="380" width="100" height="80" />
+        <dc:Bounds x="3200" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SetPendingAgain_di" bpmnElement="SetPendingAgain">
-        <dc:Bounds x="2920" y="380" width="100" height="80" />
+        <dc:Bounds x="3340" y="380" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ModeGw_di" bpmnElement="ModeGw" isMarkerVisible="true">
-        <dc:Bounds x="1350" y="275" width="50" height="50" />
+        <dc:Bounds x="1510" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AgentTools_di" bpmnElement="AgentTools" isExpanded="true">
-        <dc:Bounds x="1560" y="470" width="720" height="300" />
+        <dc:Bounds x="1720" y="470" width="720" height="300" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="get_current_time_di" bpmnElement="get_current_time">
-        <dc:Bounds x="1590" y="550" width="100" height="80" />
+        <dc:Bounds x="1750" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="convert_temperature_di" bpmnElement="convert_temperature">
-        <dc:Bounds x="1740" y="550" width="100" height="80" />
+        <dc:Bounds x="1900" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="capital_of_di" bpmnElement="capital_of">
-        <dc:Bounds x="1890" y="550" width="100" height="80" />
+        <dc:Bounds x="2050" y="550" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyAgentResponse_di" bpmnElement="ApplyAgentResponse">
-        <dc:Bounds x="2340" y="560" width="100" height="80" />
+        <dc:Bounds x="2760" y="560" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkAgentFailed_di" bpmnElement="MarkAgentFailed">
-        <dc:Bounds x="2340" y="680" width="100" height="80" />
+        <dc:Bounds x="2760" y="680" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkWorking_di" bpmnElement="MarkWorking">
-        <dc:Bounds x="1400" y="350" width="100" height="80" />
+        <dc:Bounds x="1560" y="350" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WorkDone_di" bpmnElement="WorkDone" isMarkerVisible="true">
-        <dc:Bounds x="1590" y="275" width="50" height="50" />
+        <dc:Bounds x="1750" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ActiveGet_di" bpmnElement="ActiveGet" isExpanded="true">
-        <dc:Bounds x="1050" y="800" width="560" height="220" />
+        <dc:Bounds x="1210" y="800" width="560" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GetWhileActive_di" bpmnElement="GetWhileActive">
-        <dc:Bounds x="1090" y="882" width="36" height="36" />
+        <dc:Bounds x="1250" y="882" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildActiveView_di" bpmnElement="BuildActiveView">
-        <dc:Bounds x="1170" y="860" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PublishActiveView_di" bpmnElement="PublishActiveView">
         <dc:Bounds x="1330" y="860" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishActiveView_di" bpmnElement="PublishActiveView">
+        <dc:Bounds x="1490" y="860" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ActiveViewPublished_di" bpmnElement="ActiveViewPublished">
-        <dc:Bounds x="1490" y="882" width="36" height="36" />
+        <dc:Bounds x="1650" y="882" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_GetWhileActive_BuildActiveView_di" bpmnElement="Flow_GetWhileActive_BuildActiveView">
-        <di:waypoint x="1126" y="900" />
-        <di:waypoint x="1170" y="900" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildActiveView_PublishActiveView_di" bpmnElement="Flow_BuildActiveView_PublishActiveView">
-        <di:waypoint x="1270" y="900" />
+        <di:waypoint x="1286" y="900" />
         <di:waypoint x="1330" y="900" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PublishActiveView_ActiveViewPublished_di" bpmnElement="Flow_PublishActiveView_ActiveViewPublished">
+      <bpmndi:BPMNEdge id="Flow_BuildActiveView_PublishActiveView_di" bpmnElement="Flow_BuildActiveView_PublishActiveView">
         <di:waypoint x="1430" y="900" />
         <di:waypoint x="1490" y="900" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishActiveView_ActiveViewPublished_di" bpmnElement="Flow_PublishActiveView_ActiveViewPublished">
+        <di:waypoint x="1590" y="900" />
+        <di:waypoint x="1650" y="900" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="ActiveCancel_di" bpmnElement="ActiveCancel" isExpanded="true">
-        <dc:Bounds x="1690" y="800" width="760" height="220" />
+        <dc:Bounds x="1850" y="800" width="910" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CancelWhileActive_di" bpmnElement="CancelWhileActive">
-        <dc:Bounds x="1730" y="882" width="36" height="36" />
+        <dc:Bounds x="1890" y="882" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkCanceled_di" bpmnElement="MarkCanceled">
-        <dc:Bounds x="1810" y="860" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BuildCancelView_di" bpmnElement="BuildCancelView">
         <dc:Bounds x="1970" y="860" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PublishCancelView_di" bpmnElement="PublishCancelView">
+      <bpmndi:BPMNShape id="BuildCancelView_di" bpmnElement="BuildCancelView">
         <dc:Bounds x="2130" y="860" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishCancelView_di" bpmnElement="PublishCancelView">
+        <dc:Bounds x="2290" y="860" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CancelPublished_di" bpmnElement="CancelPublished">
-        <dc:Bounds x="2290" y="882" width="36" height="36" />
+        <dc:Bounds x="2700" y="945" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="HasPushCancel_di" bpmnElement="HasPushCancel" isMarkerVisible="true">
+        <dc:Bounds x="2450" y="875" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotifyPushCancel_di" bpmnElement="NotifyPushCancel">
+        <dc:Bounds x="2540" y="860" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CancelNotified_di" bpmnElement="CancelNotified">
+        <dc:Bounds x="2700" y="882" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_CancelWhileActive_MarkCanceled_di" bpmnElement="Flow_CancelWhileActive_MarkCanceled">
-        <di:waypoint x="1766" y="900" />
-        <di:waypoint x="1810" y="900" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_MarkCanceled_BuildCancelView_di" bpmnElement="Flow_MarkCanceled_BuildCancelView">
-        <di:waypoint x="1910" y="900" />
+        <di:waypoint x="1926" y="900" />
         <di:waypoint x="1970" y="900" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_BuildCancelView_PublishCancelView_di" bpmnElement="Flow_BuildCancelView_PublishCancelView">
+      <bpmndi:BPMNEdge id="Flow_MarkCanceled_BuildCancelView_di" bpmnElement="Flow_MarkCanceled_BuildCancelView">
         <di:waypoint x="2070" y="900" />
         <di:waypoint x="2130" y="900" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PublishCancelView_CancelPublished_di" bpmnElement="Flow_PublishCancelView_CancelPublished">
+      <bpmndi:BPMNEdge id="Flow_BuildCancelView_PublishCancelView_di" bpmnElement="Flow_BuildCancelView_PublishCancelView">
         <di:waypoint x="2230" y="900" />
         <di:waypoint x="2290" y="900" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishCancelView_HasPushCancel_di" bpmnElement="Flow_PublishCancelView_HasPushCancel">
+        <di:waypoint x="2390" y="900" />
+        <di:waypoint x="2450" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HasPushCancel_NotifyPushCancel_di" bpmnElement="Flow_HasPushCancel_NotifyPushCancel">
+        <di:waypoint x="2500" y="900" />
+        <di:waypoint x="2540" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HasPushCancel_CancelPublished_di" bpmnElement="Flow_HasPushCancel_CancelPublished">
+        <di:waypoint x="2475" y="925" />
+        <di:waypoint x="2475" y="963" />
+        <di:waypoint x="2700" y="963" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NotifyPushCancel_CancelNotified_di" bpmnElement="Flow_NotifyPushCancel_CancelNotified">
+        <di:waypoint x="2640" y="900" />
+        <di:waypoint x="2700" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="HasPush_di" bpmnElement="HasPush" isMarkerVisible="true">
+        <dc:Bounds x="1840" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NotifyPush_di" bpmnElement="NotifyPush">
+        <dc:Bounds x="1940" y="360" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PushJoin_di" bpmnElement="PushJoin" isMarkerVisible="true">
+        <dc:Bounds x="2030" y="275" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ActivePush_di" bpmnElement="ActivePush" isExpanded="true">
+        <dc:Bounds x="2850" y="800" width="760" height="220" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PushWhileActive_di" bpmnElement="PushWhileActive">
+        <dc:Bounds x="2890" y="882" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ComputePushOutcome_di" bpmnElement="ComputePushOutcome">
+        <dc:Bounds x="2970" y="860" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UpdatePushConfigs_di" bpmnElement="UpdatePushConfigs">
+        <dc:Bounds x="3110" y="860" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishPushOutcome_di" bpmnElement="PublishPushOutcome">
+        <dc:Bounds x="3250" y="860" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PushOutcomePublished_di" bpmnElement="PushOutcomePublished">
+        <dc:Bounds x="3410" y="882" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_PushWhileActive_ComputePushOutcome_di" bpmnElement="Flow_PushWhileActive_ComputePushOutcome">
+        <di:waypoint x="2926" y="900" />
+        <di:waypoint x="2970" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ComputePushOutcome_UpdatePushConfigs_di" bpmnElement="Flow_ComputePushOutcome_UpdatePushConfigs">
+        <di:waypoint x="3070" y="900" />
+        <di:waypoint x="3110" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_UpdatePushConfigs_PublishPushOutcome_di" bpmnElement="Flow_UpdatePushConfigs_PublishPushOutcome">
+        <di:waypoint x="3210" y="900" />
+        <di:waypoint x="3250" y="900" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishPushOutcome_PushOutcomePublished_di" bpmnElement="Flow_PublishPushOutcome_PushOutcomePublished">
+        <di:waypoint x="3350" y="900" />
+        <di:waypoint x="3410" y="900" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="AgentError_di" bpmnElement="AgentError">
-        <dc:Bounds x="2240" y="752" width="36" height="36" />
+        <dc:Bounds x="2400" y="752" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_MessageAccepted_ClassifyJoin_di" bpmnElement="Flow_MessageAccepted_ClassifyJoin">
-        <di:waypoint x="1086" y="300" />
-        <di:waypoint x="1120" y="300" />
+        <di:waypoint x="1246" y="300" />
+        <di:waypoint x="1280" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ClassifyJoin_ClassifyMessage_di" bpmnElement="Flow_ClassifyJoin_ClassifyMessage">
-        <di:waypoint x="1170" y="300" />
-        <di:waypoint x="1210" y="300" />
+        <di:waypoint x="1330" y="300" />
+        <di:waypoint x="1370" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ClassifyMessage_ModeGw_di" bpmnElement="Flow_ClassifyMessage_ModeGw">
-        <di:waypoint x="1310" y="300" />
-        <di:waypoint x="1350" y="300" />
+        <di:waypoint x="1470" y="300" />
+        <di:waypoint x="1510" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ModeGw_ApplyScenario_di" bpmnElement="Flow_ModeGw_ApplyScenario">
-        <di:waypoint x="1400" y="300" />
-        <di:waypoint x="1440" y="300" />
+        <di:waypoint x="1560" y="300" />
+        <di:waypoint x="1600" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ModeGw_MarkWorking_di" bpmnElement="Flow_ModeGw_MarkWorking">
-        <di:waypoint x="1375" y="325" />
-        <di:waypoint x="1375" y="390" />
-        <di:waypoint x="1400" y="390" />
+        <di:waypoint x="1535" y="325" />
+        <di:waypoint x="1535" y="390" />
+        <di:waypoint x="1560" y="390" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkWorking_AgentTools_di" bpmnElement="Flow_MarkWorking_AgentTools">
-        <di:waypoint x="1450" y="430" />
-        <di:waypoint x="1450" y="620" />
-        <di:waypoint x="1560" y="620" />
+        <di:waypoint x="1610" y="430" />
+        <di:waypoint x="1610" y="620" />
+        <di:waypoint x="1720" y="620" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ApplyScenario_WorkDone_di" bpmnElement="Flow_ApplyScenario_WorkDone">
-        <di:waypoint x="1540" y="300" />
-        <di:waypoint x="1590" y="300" />
+        <di:waypoint x="1700" y="300" />
+        <di:waypoint x="1750" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AgentTools_ApplyAgentResponse_di" bpmnElement="Flow_AgentTools_ApplyAgentResponse">
-        <di:waypoint x="2280" y="620" />
-        <di:waypoint x="2310" y="620" />
-        <di:waypoint x="2310" y="600" />
-        <di:waypoint x="2340" y="600" />
+        <di:waypoint x="2440" y="620" />
+        <di:waypoint x="2600" y="620" />
+        <di:waypoint x="2600" y="600" />
+        <di:waypoint x="2760" y="600" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AgentError_MarkAgentFailed_di" bpmnElement="Flow_AgentError_MarkAgentFailed">
-        <di:waypoint x="2258" y="788" />
-        <di:waypoint x="2258" y="720" />
-        <di:waypoint x="2340" y="720" />
+        <di:waypoint x="2418" y="788" />
+        <di:waypoint x="2418" y="720" />
+        <di:waypoint x="2760" y="720" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ApplyAgentResponse_WorkDone_di" bpmnElement="Flow_ApplyAgentResponse_WorkDone">
-        <di:waypoint x="2390" y="640" />
-        <di:waypoint x="2390" y="790" />
-        <di:waypoint x="1615" y="790" />
-        <di:waypoint x="1615" y="325" />
+        <di:waypoint x="2810" y="640" />
+        <di:waypoint x="2810" y="790" />
+        <di:waypoint x="1775" y="790" />
+        <di:waypoint x="1775" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkAgentFailed_WorkDone_di" bpmnElement="Flow_MarkAgentFailed_WorkDone">
-        <di:waypoint x="2390" y="760" />
-        <di:waypoint x="2390" y="990" />
-        <di:waypoint x="1615" y="990" />
-        <di:waypoint x="1615" y="325" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_WorkDone_IsPending_di" bpmnElement="Flow_WorkDone_IsPending">
-        <di:waypoint x="1640" y="300" />
-        <di:waypoint x="1690" y="300" />
+        <di:waypoint x="2810" y="760" />
+        <di:waypoint x="2810" y="990" />
+        <di:waypoint x="1775" y="990" />
+        <di:waypoint x="1775" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPending_BuildReply_di" bpmnElement="Flow_IsPending_BuildReply">
-        <di:waypoint x="1715" y="275" />
-        <di:waypoint x="1715" y="180" />
-        <di:waypoint x="1780" y="180" />
+        <di:waypoint x="2135" y="275" />
+        <di:waypoint x="2135" y="180" />
+        <di:waypoint x="2200" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPending_ReplyHandled_di" bpmnElement="Flow_IsPending_ReplyHandled">
-        <di:waypoint x="1740" y="300" />
-        <di:waypoint x="2200" y="300" />
+        <di:waypoint x="2160" y="300" />
+        <di:waypoint x="2620" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildReply_PublishReply_di" bpmnElement="Flow_BuildReply_PublishReply">
-        <di:waypoint x="1880" y="180" />
-        <di:waypoint x="1920" y="180" />
+        <di:waypoint x="2300" y="180" />
+        <di:waypoint x="2340" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishReply_MarkReplied_di" bpmnElement="Flow_PublishReply_MarkReplied">
-        <di:waypoint x="2020" y="180" />
-        <di:waypoint x="2060" y="180" />
+        <di:waypoint x="2440" y="180" />
+        <di:waypoint x="2480" y="180" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkReplied_ReplyHandled_di" bpmnElement="Flow_MarkReplied_ReplyHandled">
-        <di:waypoint x="2110" y="220" />
-        <di:waypoint x="2110" y="300" />
-        <di:waypoint x="2200" y="300" />
+        <di:waypoint x="2530" y="220" />
+        <di:waypoint x="2530" y="300" />
+        <di:waypoint x="2620" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReplyHandled_InputRequired_di" bpmnElement="Flow_ReplyHandled_InputRequired">
-        <di:waypoint x="2250" y="300" />
-        <di:waypoint x="2290" y="300" />
+        <di:waypoint x="2670" y="300" />
+        <di:waypoint x="2710" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_WorkFinished_di" bpmnElement="Flow_InputRequired_WorkFinished">
-        <di:waypoint x="2340" y="300" />
-        <di:waypoint x="2410" y="300" />
+        <di:waypoint x="2760" y="300" />
+        <di:waypoint x="2830" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_FollowJoin_di" bpmnElement="Flow_InputRequired_FollowJoin">
-        <di:waypoint x="2315" y="325" />
-        <di:waypoint x="2315" y="460" />
-        <di:waypoint x="2350" y="460" />
+        <di:waypoint x="2735" y="325" />
+        <di:waypoint x="2735" y="460" />
+        <di:waypoint x="2770" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowJoin_FollowUpArrives_di" bpmnElement="Flow_FollowJoin_FollowUpArrives">
-        <di:waypoint x="2400" y="460" />
-        <di:waypoint x="2430" y="460" />
+        <di:waypoint x="2820" y="460" />
+        <di:waypoint x="2850" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUpArrives_ContextMatches_di" bpmnElement="Flow_FollowUpArrives_ContextMatches">
-        <di:waypoint x="2466" y="460" />
-        <di:waypoint x="2530" y="460" />
+        <di:waypoint x="2886" y="460" />
+        <di:waypoint x="2950" y="460" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ContextMatches_RecordUserMessage_di" bpmnElement="Flow_ContextMatches_RecordUserMessage">
-        <di:waypoint x="2555" y="435" />
-        <di:waypoint x="2555" y="420" />
-        <di:waypoint x="2640" y="420" />
+        <di:waypoint x="2975" y="435" />
+        <di:waypoint x="2975" y="420" />
+        <di:waypoint x="3060" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ContextMatches_BuildContextMismatch_di" bpmnElement="Flow_ContextMatches_BuildContextMismatch">
-        <di:waypoint x="2555" y="485" />
-        <di:waypoint x="2555" y="600" />
-        <di:waypoint x="2630" y="600" />
+        <di:waypoint x="2975" y="485" />
+        <di:waypoint x="2975" y="600" />
+        <di:waypoint x="3050" y="600" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildContextMismatch_PublishMismatch_di" bpmnElement="Flow_BuildContextMismatch_PublishMismatch">
-        <di:waypoint x="2730" y="600" />
-        <di:waypoint x="2790" y="600" />
+        <di:waypoint x="3150" y="600" />
+        <di:waypoint x="3210" y="600" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishMismatch_FollowJoin_di" bpmnElement="Flow_PublishMismatch_FollowJoin">
-        <di:waypoint x="2840" y="640" />
-        <di:waypoint x="2840" y="680" />
-        <di:waypoint x="2375" y="680" />
-        <di:waypoint x="2375" y="485" />
+        <di:waypoint x="3260" y="640" />
+        <di:waypoint x="3260" y="680" />
+        <di:waypoint x="2795" y="680" />
+        <di:waypoint x="2795" y="485" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RecordUserMessage_SetRequest_di" bpmnElement="Flow_RecordUserMessage_SetRequest">
-        <di:waypoint x="2740" y="420" />
-        <di:waypoint x="2780" y="420" />
+        <di:waypoint x="3160" y="420" />
+        <di:waypoint x="3200" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SetRequest_SetPendingAgain_di" bpmnElement="Flow_SetRequest_SetPendingAgain">
-        <di:waypoint x="2880" y="420" />
-        <di:waypoint x="2920" y="420" />
+        <di:waypoint x="3300" y="420" />
+        <di:waypoint x="3340" y="420" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SetPendingAgain_ClassifyJoin_di" bpmnElement="Flow_SetPendingAgain_ClassifyJoin">
-        <di:waypoint x="2970" y="460" />
-        <di:waypoint x="2970" y="660" />
-        <di:waypoint x="1145" y="660" />
-        <di:waypoint x="1145" y="325" />
+        <di:waypoint x="3390" y="460" />
+        <di:waypoint x="3390" y="660" />
+        <di:waypoint x="1305" y="660" />
+        <di:waypoint x="1305" y="325" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WorkDone_HasPush_di" bpmnElement="Flow_WorkDone_HasPush">
+        <di:waypoint x="1800" y="300" />
+        <di:waypoint x="1840" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HasPush_NotifyPush_di" bpmnElement="Flow_HasPush_NotifyPush">
+        <di:waypoint x="1865" y="325" />
+        <di:waypoint x="1865" y="400" />
+        <di:waypoint x="1940" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HasPush_PushJoin_di" bpmnElement="Flow_HasPush_PushJoin">
+        <di:waypoint x="1890" y="300" />
+        <di:waypoint x="2030" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NotifyPush_PushJoin_di" bpmnElement="Flow_NotifyPush_PushJoin">
+        <di:waypoint x="1990" y="360" />
+        <di:waypoint x="1990" y="300" />
+        <di:waypoint x="2030" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PushJoin_IsPending_di" bpmnElement="Flow_PushJoin_IsPending">
+        <di:waypoint x="2080" y="300" />
+        <di:waypoint x="2110" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="TerminalJoin_di" bpmnElement="TerminalJoin" isMarkerVisible="true">
-        <dc:Bounds x="3350" y="275" width="50" height="50" />
+        <dc:Bounds x="3770" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitTerminal_di" bpmnElement="AwaitTerminal">
-        <dc:Bounds x="3450" y="275" width="50" height="50" />
+        <dc:Bounds x="3870" y="275" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TerminalGet_di" bpmnElement="TerminalGet">
-        <dc:Bounds x="3560" y="142" width="36" height="36" />
+        <dc:Bounds x="3980" y="142" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTerminalView_di" bpmnElement="BuildTerminalView">
-        <dc:Bounds x="3650" y="120" width="100" height="80" />
+        <dc:Bounds x="4070" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishTerminalView_di" bpmnElement="PublishTerminalView">
-        <dc:Bounds x="3800" y="120" width="100" height="80" />
+        <dc:Bounds x="4220" y="120" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TerminalCancel_di" bpmnElement="TerminalCancel">
-        <dc:Bounds x="3560" y="282" width="36" height="36" />
+        <dc:Bounds x="3980" y="282" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildNotCancelable_di" bpmnElement="BuildNotCancelable">
-        <dc:Bounds x="3650" y="260" width="100" height="80" />
+        <dc:Bounds x="4070" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishNotCancelable_di" bpmnElement="PublishNotCancelable">
-        <dc:Bounds x="3800" y="260" width="100" height="80" />
+        <dc:Bounds x="4220" y="260" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TerminalSend_di" bpmnElement="TerminalSend">
-        <dc:Bounds x="3560" y="422" width="36" height="36" />
+        <dc:Bounds x="3980" y="422" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTerminalSendError_di" bpmnElement="BuildTerminalSendError">
-        <dc:Bounds x="3650" y="400" width="100" height="80" />
+        <dc:Bounds x="4070" y="400" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PublishTerminalSendError_di" bpmnElement="PublishTerminalSendError">
-        <dc:Bounds x="3800" y="400" width="100" height="80" />
+        <dc:Bounds x="4220" y="400" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskExpires_di" bpmnElement="TaskExpires">
-        <dc:Bounds x="3560" y="562" width="36" height="36" />
+        <dc:Bounds x="3980" y="562" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskExpired_di" bpmnElement="TaskExpired">
-        <dc:Bounds x="3660" y="562" width="36" height="36" />
+        <dc:Bounds x="4080" y="562" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TerminalPush_di" bpmnElement="TerminalPush">
+        <dc:Bounds x="3980" y="702" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ComputeTerminalPush_di" bpmnElement="ComputeTerminalPush">
+        <dc:Bounds x="4070" y="680" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UpdateTerminalPush_di" bpmnElement="UpdateTerminalPush">
+        <dc:Bounds x="4210" y="680" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PublishTerminalPush_di" bpmnElement="PublishTerminalPush">
+        <dc:Bounds x="4350" y="680" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_TaskSubmitted_CreateTaskState_di" bpmnElement="Flow_TaskSubmitted_CreateTaskState">
         <di:waypoint x="186" y="300" />
         <di:waypoint x="230" y="300" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_CreateTaskState_SetPending_di" bpmnElement="Flow_CreateTaskState_SetPending">
+      <bpmndi:BPMNEdge id="Flow_CreateTaskState_InitPushConfigs_di" bpmnElement="Flow_CreateTaskState_InitPushConfigs">
         <di:waypoint x="330" y="300" />
-        <di:waypoint x="380" y="300" />
+        <di:waypoint x="360" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_InitPushConfigs_SetPending_di" bpmnElement="Flow_InitPushConfigs_SetPending">
+        <di:waypoint x="460" y="300" />
+        <di:waypoint x="490" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SetPending_ReturnImmediately_di" bpmnElement="Flow_SetPending_ReturnImmediately">
-        <di:waypoint x="480" y="300" />
-        <di:waypoint x="530" y="300" />
+        <di:waypoint x="590" y="300" />
+        <di:waypoint x="620" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReturnImmediately_BuildInitialReply_di" bpmnElement="Flow_ReturnImmediately_BuildInitialReply">
-        <di:waypoint x="555" y="275" />
-        <di:waypoint x="555" y="160" />
-        <di:waypoint x="620" y="160" />
+        <di:waypoint x="645" y="275" />
+        <di:waypoint x="645" y="160" />
+        <di:waypoint x="700" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReturnImmediately_InitDone_di" bpmnElement="Flow_ReturnImmediately_InitDone">
-        <di:waypoint x="580" y="300" />
-        <di:waypoint x="920" y="300" />
+        <di:waypoint x="670" y="300" />
+        <di:waypoint x="970" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildInitialReply_PublishInitialReply_di" bpmnElement="Flow_BuildInitialReply_PublishInitialReply">
-        <di:waypoint x="720" y="160" />
-        <di:waypoint x="760" y="160" />
+        <di:waypoint x="800" y="160" />
+        <di:waypoint x="840" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishInitialReply_InitDone_di" bpmnElement="Flow_PublishInitialReply_InitDone">
-        <di:waypoint x="810" y="200" />
-        <di:waypoint x="810" y="300" />
-        <di:waypoint x="920" y="300" />
+        <di:waypoint x="890" y="200" />
+        <di:waypoint x="890" y="300" />
+        <di:waypoint x="970" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InitDone_Active_di" bpmnElement="Flow_InitDone_Active">
-        <di:waypoint x="970" y="300" />
-        <di:waypoint x="990" y="300" />
-        <di:waypoint x="990" y="570" />
-        <di:waypoint x="1010" y="570" />
+        <di:waypoint x="1020" y="300" />
+        <di:waypoint x="1095" y="300" />
+        <di:waypoint x="1095" y="570" />
+        <di:waypoint x="1170" y="570" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Active_TerminalJoin_di" bpmnElement="Flow_Active_TerminalJoin">
-        <di:waypoint x="3270" y="570" />
-        <di:waypoint x="3310" y="570" />
-        <di:waypoint x="3310" y="300" />
-        <di:waypoint x="3350" y="300" />
+        <di:waypoint x="3690" y="570" />
+        <di:waypoint x="3730" y="570" />
+        <di:waypoint x="3730" y="300" />
+        <di:waypoint x="3770" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TerminalJoin_AwaitTerminal_di" bpmnElement="Flow_TerminalJoin_AwaitTerminal">
-        <di:waypoint x="3400" y="300" />
-        <di:waypoint x="3450" y="300" />
+        <di:waypoint x="3820" y="300" />
+        <di:waypoint x="3870" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalGet_di" bpmnElement="Flow_AwaitTerminal_TerminalGet">
-        <di:waypoint x="3475" y="275" />
-        <di:waypoint x="3475" y="160" />
-        <di:waypoint x="3560" y="160" />
+        <di:waypoint x="3895" y="275" />
+        <di:waypoint x="3895" y="160" />
+        <di:waypoint x="3980" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalCancel_di" bpmnElement="Flow_AwaitTerminal_TerminalCancel">
-        <di:waypoint x="3500" y="300" />
-        <di:waypoint x="3560" y="300" />
+        <di:waypoint x="3920" y="300" />
+        <di:waypoint x="3980" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalSend_di" bpmnElement="Flow_AwaitTerminal_TerminalSend">
-        <di:waypoint x="3475" y="325" />
-        <di:waypoint x="3475" y="440" />
-        <di:waypoint x="3560" y="440" />
+        <di:waypoint x="3895" y="325" />
+        <di:waypoint x="3895" y="440" />
+        <di:waypoint x="3980" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TaskExpires_di" bpmnElement="Flow_AwaitTerminal_TaskExpires">
-        <di:waypoint x="3475" y="325" />
-        <di:waypoint x="3475" y="580" />
-        <di:waypoint x="3560" y="580" />
+        <di:waypoint x="3895" y="325" />
+        <di:waypoint x="3895" y="580" />
+        <di:waypoint x="3980" y="580" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TerminalGet_BuildTerminalView_di" bpmnElement="Flow_TerminalGet_BuildTerminalView">
-        <di:waypoint x="3596" y="160" />
-        <di:waypoint x="3650" y="160" />
+        <di:waypoint x="4016" y="160" />
+        <di:waypoint x="4070" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildTerminalView_PublishTerminalView_di" bpmnElement="Flow_BuildTerminalView_PublishTerminalView">
-        <di:waypoint x="3750" y="160" />
-        <di:waypoint x="3800" y="160" />
+        <di:waypoint x="4170" y="160" />
+        <di:waypoint x="4220" y="160" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishTerminalView_TerminalJoin_di" bpmnElement="Flow_PublishTerminalView_TerminalJoin">
-        <di:waypoint x="3850" y="120" />
-        <di:waypoint x="3850" y="40" />
-        <di:waypoint x="3375" y="40" />
-        <di:waypoint x="3375" y="275" />
+        <di:waypoint x="4270" y="120" />
+        <di:waypoint x="4270" y="40" />
+        <di:waypoint x="3795" y="40" />
+        <di:waypoint x="3795" y="275" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TerminalCancel_BuildNotCancelable_di" bpmnElement="Flow_TerminalCancel_BuildNotCancelable">
-        <di:waypoint x="3596" y="300" />
-        <di:waypoint x="3650" y="300" />
+        <di:waypoint x="4016" y="300" />
+        <di:waypoint x="4070" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildNotCancelable_PublishNotCancelable_di" bpmnElement="Flow_BuildNotCancelable_PublishNotCancelable">
-        <di:waypoint x="3750" y="300" />
-        <di:waypoint x="3800" y="300" />
+        <di:waypoint x="4170" y="300" />
+        <di:waypoint x="4220" y="300" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishNotCancelable_TerminalJoin_di" bpmnElement="Flow_PublishNotCancelable_TerminalJoin">
-        <di:waypoint x="3850" y="340" />
-        <di:waypoint x="3850" y="420" />
-        <di:waypoint x="3375" y="420" />
-        <di:waypoint x="3375" y="325" />
+        <di:waypoint x="4270" y="340" />
+        <di:waypoint x="4270" y="420" />
+        <di:waypoint x="3795" y="420" />
+        <di:waypoint x="3795" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TerminalSend_BuildTerminalSendError_di" bpmnElement="Flow_TerminalSend_BuildTerminalSendError">
-        <di:waypoint x="3596" y="440" />
-        <di:waypoint x="3650" y="440" />
+        <di:waypoint x="4016" y="440" />
+        <di:waypoint x="4070" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildTerminalSendError_PublishTerminalSendError_di" bpmnElement="Flow_BuildTerminalSendError_PublishTerminalSendError">
-        <di:waypoint x="3750" y="440" />
-        <di:waypoint x="3800" y="440" />
+        <di:waypoint x="4170" y="440" />
+        <di:waypoint x="4220" y="440" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PublishTerminalSendError_TerminalJoin_di" bpmnElement="Flow_PublishTerminalSendError_TerminalJoin">
-        <di:waypoint x="3850" y="480" />
-        <di:waypoint x="3850" y="620" />
-        <di:waypoint x="3375" y="620" />
-        <di:waypoint x="3375" y="325" />
+        <di:waypoint x="4270" y="480" />
+        <di:waypoint x="4270" y="620" />
+        <di:waypoint x="3795" y="620" />
+        <di:waypoint x="3795" y="325" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskExpires_TaskExpired_di" bpmnElement="Flow_TaskExpires_TaskExpired">
-        <di:waypoint x="3596" y="580" />
-        <di:waypoint x="3660" y="580" />
+        <di:waypoint x="4016" y="580" />
+        <di:waypoint x="4080" y="580" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AwaitTerminal_TerminalPush_di" bpmnElement="Flow_AwaitTerminal_TerminalPush">
+        <di:waypoint x="3895" y="325" />
+        <di:waypoint x="3895" y="720" />
+        <di:waypoint x="3980" y="720" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TerminalPush_ComputeTerminalPush_di" bpmnElement="Flow_TerminalPush_ComputeTerminalPush">
+        <di:waypoint x="4016" y="720" />
+        <di:waypoint x="4070" y="720" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ComputeTerminalPush_UpdateTerminalPush_di" bpmnElement="Flow_ComputeTerminalPush_UpdateTerminalPush">
+        <di:waypoint x="4170" y="720" />
+        <di:waypoint x="4210" y="720" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_UpdateTerminalPush_PublishTerminalPush_di" bpmnElement="Flow_UpdateTerminalPush_PublishTerminalPush">
+        <di:waypoint x="4310" y="720" />
+        <di:waypoint x="4350" y="720" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PublishTerminalPush_TerminalJoin_di" bpmnElement="Flow_PublishTerminalPush_TerminalJoin">
+        <di:waypoint x="4400" y="760" />
+        <di:waypoint x="4400" y="1020" />
+        <di:waypoint x="3795" y="1020" />
+        <di:waypoint x="3795" y="325" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
