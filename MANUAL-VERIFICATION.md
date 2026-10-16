@@ -91,7 +91,36 @@ file with `git checkout`.
 blueprint/smoke.sh        # own compose project and free ports; expect "smoke test passed" and exit code 0
 ```
 
-## 6. Clean up
+## 6. Demo in a browser with the a2a-inspector
+
+The [a2a-inspector](https://github.com/a2aproject/a2a-inspector) is the A2A project's web UI for connecting to an agent,
+reading its card and chatting with it. `demo/` drives it with Playwright, using the same prompts as the tests
+(time, capital of Japan, temperature conversion, an agent question with a follow-up).
+
+```bash
+demo/run-demo.sh                 # headless; expect "6 passed"; screenshots land in demo/artifacts/
+HEADED=1 demo/run-demo.sh        # watch it in a browser window, slowed down
+RECORD=1 demo/run-demo.sh        # also record a video per scenario (demo/artifacts/)
+```
+
+The script clones the inspector at a pinned commit outside the repo (`INSPECTOR_DIR`), builds and starts it on a free
+port, warms the model up, runs the six scenarios and stops the inspector again. It needs the stack from step 1 and
+Ollama running. To do it by hand instead: start the inspector as its README describes, open it, enter
+`http://localhost:18090` as the Agent Card URL, press Connect, and send "What is the capital of Japan?".
+
+What you see, and why:
+
+- The inspector's chat shows each task **artifact** as a bubble. The agent returns its reply as an `answer` artifact
+  (or `question` when it needs input) and a `tool-trace` artifact listing the tools it called. The same reply is also in
+  the task's status message, which the inspector only shows in its debug console.
+- The inspector sends only a `contextId` on a follow-up, not a `taskId`. Our server therefore starts a new task in the
+  same context instead of continuing the one waiting for input, which still works because the follow-up is answerable
+  on its own. The continuing-task flow is covered by `blueprint/smoke.sh` and the process tests.
+- The inspector shows task states in lower case (`completed`), whatever the server sent.
+- If the machine runs low on memory the model can be unloaded and reloaded, and a reply then takes minutes. Keep the
+  model loaded (`run-demo.sh` does) and close heavy applications if a scenario stalls.
+
+## 7. Clean up
 
 ```bash
 docker compose -p camunda-a2a -f blueprint/docker-compose.yml --env-file .env down -v

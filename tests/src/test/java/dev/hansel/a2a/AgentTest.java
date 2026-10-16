@@ -78,9 +78,9 @@ class AgentTest {
     assertThat(state(task)).isEqualTo("TASK_STATE_COMPLETED");
     assertThat(statusText(task)).isEqualTo("It is 10:00 UTC.");
     final var artifacts = (List<Map<String, Object>>) task.get("artifacts");
-    assertThat(artifacts).hasSize(1);
-    assertThat(artifacts.get(0)).containsEntry("name", "tool-trace");
-    assertThat(artifacts.get(0).get("parts").toString()).contains("get_current_time");
+    assertThat(artifacts).extracting(a -> a.get("name")).containsExactly("answer", "tool-trace");
+    assertThat(artifacts.get(0).get("parts").toString()).contains("It is 10:00 UTC.");
+    assertThat(artifacts.get(1).get("parts").toString()).contains("get_current_time");
   }
 
   @Test
@@ -126,6 +126,7 @@ class AgentTest {
     final var waiting = task(first.join());
     assertThat(state(waiting)).isEqualTo("TASK_STATE_INPUT_REQUIRED");
     assertThat(statusText(waiting)).isEqualTo("Which value and unit?");
+    assertThat(((List<Map<String, Object>>) waiting.get("artifacts")).get(0)).containsEntry("name", "question");
 
     final var second = CompletableFuture.supplyAsync(() -> h.followUp((String) waiting.get("id"), "m-2", "100 celsius"));
     finish("212 F", List.of());

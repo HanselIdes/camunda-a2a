@@ -66,8 +66,10 @@ def add_agent(p, A):
           taskId: task.id, role: "ROLE_AGENT", parts: [{text: t}]}] return
         {id: task.id, contextId: task.contextId,
          status: {state: %s, message: m, timestamp: %s},
-         artifacts: if a = null then task.artifacts else append(task.artifacts[item.name != "tool-trace"], a),
-         history: append(task.history, m)})[1][1][1]""" % (text, trace, state, TS)), "task", parent=A)
+         artifacts: concatenate(task.artifacts[item.name != "tool-trace" and item.name != "answer" and item.name != "question"],
+           [{artifactId: uuid(), name: if (%s) = "TASK_STATE_INPUT_REQUIRED" then "question" else "answer", parts: [{text: t}]}],
+           if a = null then [] else [a]),
+         history: append(task.history, m)})[1][1][1]""" % (text, trace, state, TS, state)), "task", parent=A)
     p.script("MarkAgentFailed", "Mark task failed", 2340, 680, one("""=
       (for m in [{messageId: uuid(), contextId: task.contextId, taskId: task.id, role: "ROLE_AGENT",
           parts: [{text: "The agent could not complete the request."}]}] return

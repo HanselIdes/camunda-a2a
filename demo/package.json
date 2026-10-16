@@ -1,0 +1,11 @@
+{
+  "name": "camunda-a2a-demo",
+  "private": true,
+  "description": "Playwright demo of the camunda-a2a agent driven through the a2a-inspector web UI",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}
