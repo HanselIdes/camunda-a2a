@@ -96,7 +96,4 @@ cd tests && mvn verify
 3. **End-to-end** (`TwoAgentsE2ETest`): an ambiguous request, a clarification, then completion, with real A2A over
    HTTP and a stub model that plays both agents.
 
-Status: the process tests pass (3 tests, 100% element and flow coverage). The template integration and end-to-end
-tests were last run before the push moved to `application/json` and to a throw event, and before the activation
-condition fix, and need a rerun. The same route ran end to end on c8run with the provided LLM: an ambiguous request,
-the server's clarifying question answered in "User feedback", the conversion tool, and a completed instance.
+Status: all three tiers pass with `mvn verify` (30 tests: 3 process, 26 template integration, 1 end-to-end), with 100% element and flow coverage of the process. The same route also ran end to end on c8run with the provided LLM: an ambiguous request, the server's clarifying question answered in "User feedback", the conversion tool, and a completed instance.

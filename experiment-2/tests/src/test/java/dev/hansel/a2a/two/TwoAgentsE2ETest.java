@@ -43,8 +43,16 @@ class TwoAgentsE2ETest {
       if (toolResult.contains("Pushed TASK_STATE_COMPLETED")) {
         return StubModel.Step.reply("Task done.");
       }
-      return StubModel.Step.call("Server_PushNotification",
-          "{\"state\":\"TASK_STATE_COMPLETED\",\"text\":\"100 degrees Celsius is 212 degrees Fahrenheit.\"}");
+      if (toolResult.contains("\"unit\"")) {
+        // the conversion tool answered: report its value and unit to the client
+        final JsonNode converted = readOrNull(toolResult);
+        return StubModel.Step.call("Server_PushNotification", "{\"state\":\"TASK_STATE_COMPLETED\",\"text\":"
+            + quote("100 degrees Celsius is " + converted.path("value").asText() + " degrees "
+                + converted.path("unit").asText() + ".") + "}");
+      }
+      // the client's answer arrived: convert with the tool
+      return StubModel.Step.call("Tool_ConvertTemperature",
+          "{\"value\":100,\"fromUnit\":\"celsius\",\"toUnit\":\"fahrenheit\"}");
     }
     // the client agent: delegate to the remote agent, answer its question, then report its answer
     if (toolResult == null) {
@@ -66,6 +74,14 @@ class TwoAgentsE2ETest {
     }
   }
 
+  static JsonNode readOrNull(final String json) {
+    try {
+      return StubModel.JSON.readTree(json);
+    } catch (final Exception e) {
+      return StubModel.JSON.missingNode();
+    }
+  }
+
   static String quote(final String s) {
     try {
       return StubModel.JSON.writeValueAsString(s);
@@ -83,8 +99,9 @@ class TwoAgentsE2ETest {
       .withConnectorsEnv("CAMUNDA_CLIENT_REQUEST_TIMEOUT", "PT60S")
       .withConnectorsSecret("A2A_CONNECTORS_URL", "http://localhost:8080")
       .withConnectorsSecret("A2A_PUSH_TOKEN", TOKEN)
-      .withConnectorsSecret("OLLAMA_BASE_URL", MODEL.baseUrlFromConnectors())
-      .withConnectorsSecret("OLLAMA_MODEL", "stub");
+      .withConnectorsSecret("CAMUNDA_PROVIDED_LLM_API_ENDPOINT", MODEL.baseUrlFromConnectors())
+      .withConnectorsSecret("CAMUNDA_PROVIDED_LLM_API_KEY", "stub-key")
+      .withConnectorsSecret("CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL", "stub");
 
   CamundaClient client;
   CamundaProcessTestContext context;
@@ -139,11 +156,11 @@ class TwoAgentsE2ETest {
 
     // the client's answer comes back once the server completes; the client agent reports it to the person
     assertThat(instance).hasActiveElements("Client_UserFeedback");
-    assertThat(variable(key, "agent")).contains("212 degrees Fahrenheit");
+    assertThat(variable(key, "agent")).containsIgnoringCase("212 degrees fahrenheit");
 
     // server side: one task, through input-required, answered on the same task, completed
     assertThat(instance).hasCompletedElement("Server_MessageReceived", 1).hasCompletedElement("Event_1553b23", 1)
-        .hasCompletedElement("Server_PushNotification", 2).hasCompletedElements("Gateway_0oexjso", "Server_End")
+        .hasCompletedElement("Server_PushNotification", 2).hasCompletedElement("Tool_ConvertTemperature", 1).hasCompletedElements("Gateway_0oexjso", "Server_End")
         .hasCompletedElement("Activity_0u82j95", 1);
     // client side: two A2A calls, two pushes received
     assertThat(instance).hasCompletedElement("Tool_AskRemoteAgent", 2).hasCompletedElement("Tool_RemoteAgentReplied", 2);
@@ -156,7 +173,7 @@ class TwoAgentsE2ETest {
     assertThat(clientTools).contains("Tool_AskRemoteAgent", "Tool_ListUsers", "Tool_LoadUserByID");
     final var serverTools = MODEL.requests.stream().filter(r -> StubModel.systemPrompt(r).contains("TaskAgent"))
         .findFirst().map(StubModel::toolNames).orElseThrow();
-    assertThat(serverTools).contains("Server_PushNotification");
+    assertThat(serverTools).contains("Server_PushNotification", "Tool_ConvertTemperature");
 
     // a message on the completed task finds nothing waiting: the client has to start a new task
     final String agentId = variable(key, "a2aAgentId").replace("\"", "");
