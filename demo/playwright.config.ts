@@ -13,7 +13,7 @@ export default defineConfig({
     headless: process.env.HEADED ? false : true,
     viewport: { width: 1360, height: 900 },
     screenshot: 'only-on-failure',
-    video: process.env.RECORD ? 'on' : 'off',
-    launchOptions: { slowMo: process.env.HEADED ? 300 : 0 },
+    video: process.env.RECORD ? { mode: 'on', size: { width: 1360, height: 900 } } : 'off',
+    launchOptions: { slowMo: process.env.HEADED || process.env.RECORD ? 400 : 0 },
   },
 });

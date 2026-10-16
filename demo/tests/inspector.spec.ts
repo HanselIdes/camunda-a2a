@@ -38,11 +38,17 @@ async function ask(page: Page, text: string): Promise<string> {
   return all.slice(before).join('\n').trim();
 }
 
+/** Opens the slide-out debug console, reads it and closes it again so it never covers the chat input. */
 async function rawConsole(page: Page): Promise<string> {
-  if (await page.locator('#debug-console.hidden').count()) {
-    await page.locator('#toggle-console-btn').click();
+  const toggle = page.locator('#toggle-console-btn');
+  if ((await toggle.innerText()).trim() === 'Show') {
+    await toggle.click();
   }
-  return page.locator('#debug-content').innerText();
+  const text = await page.locator('#debug-content').innerText();
+  if ((await toggle.innerText()).trim() === 'Hide') {
+    await toggle.click();
+  }
+  return text;
 }
 
 test.describe.serial('camunda-a2a through the a2a-inspector', () => {

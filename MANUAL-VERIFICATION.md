@@ -108,6 +108,9 @@ port, warms the model up, runs the six scenarios and stops the inspector again. 
 Ollama running. To do it by hand instead: start the inspector as its README describes, open it, enter
 `http://localhost:18090` as the Agent Card URL, press Connect, and send "What is the capital of Japan?".
 
+A recording of a full run (30 seconds, all six scenarios) is checked in at
+`demo/recordings/camunda-a2a-inspector-demo.mp4`.
+
 What you see, and why:
 
 - The inspector's chat shows each task **artifact** as a bubble. The agent returns its reply as an `answer` artifact
