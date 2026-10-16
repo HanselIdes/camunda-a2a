@@ -1,0 +1,22 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "=resultText",
+      "id": "Field_a2a_client_result_0",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "a2a-client-result",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "camunda-a2a",
+    "version": "1"
+  },
+  "schemaVersion": 18
+}

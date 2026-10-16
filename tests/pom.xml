@@ -64,6 +64,10 @@
         <directory>${project.basedir}/../dmn</directory>
         <targetPath>dmn</targetPath>
       </testResource>
+      <testResource>
+        <directory>${project.basedir}/../forms</directory>
+        <targetPath>forms</targetPath>
+      </testResource>
     </testResources>
     <plugins>
       <plugin>

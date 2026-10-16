@@ -1,0 +1,36 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "### Ask the A2A agent\n\nThe question goes to the agent through the A2A protocol (JSON-RPC SendMessage). The agent is a BPMN process on this same cluster.",
+      "id": "Field_a2a_client_ask_0",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "question",
+      "label": "Question",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "What is the capital of Japan?",
+      "id": "Field_a2a_client_ask_1",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "a2a-client-ask",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "camunda-a2a",
+    "version": "1"
+  },
+  "schemaVersion": 18
+}

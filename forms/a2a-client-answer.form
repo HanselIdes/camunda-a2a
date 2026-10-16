@@ -1,0 +1,35 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "=\"### \" + agentName + \" needs more information\\n\\n\" + reply.text",
+      "id": "Field_a2a_client_answer_0",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "followUp",
+      "label": "Your answer",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_a2a_client_answer_1",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "a2a-client-answer",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "camunda-a2a",
+    "version": "1"
+  },
+  "schemaVersion": 18
+}

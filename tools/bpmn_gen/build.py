@@ -14,6 +14,7 @@ from lib import Proc, q  # noqa: E402
 import dmn  # noqa: E402
 import feel  # noqa: E402
 from agent import AGENT, add_agent, agent_settings  # noqa: E402
+import client as a2a_client  # noqa: E402
 from feel import one, nn, TS  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -724,6 +725,7 @@ def main():
     task()
     card_proc()
     card_runtime()
+    a2a_client.client(ROOT, write, apply, one)
     print("generated")
 
 

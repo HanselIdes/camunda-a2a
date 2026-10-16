@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploys every bpmn/ and dmn/ resource to the local stack and waits until the webhooks answer.
+# Deploys every bpmn/, dmn/ and forms/ resource to the local stack and waits until the webhooks answer.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENV_FILE="${ENV_FILE:-$ROOT/.env}"
@@ -7,7 +7,7 @@ ENV_FILE="${ENV_FILE:-$ROOT/.env}"
 REST="http://localhost:${CAMUNDA_REST_PORT:-18080}"
 CONN="http://localhost:${CONNECTORS_PORT:-18085}"
 args=()
-for f in "$ROOT"/bpmn/*.bpmn "$ROOT"/dmn/*.dmn; do
+for f in "$ROOT"/bpmn/*.bpmn "$ROOT"/dmn/*.dmn "$ROOT"/forms/*.form; do
   [ -f "$f" ] && args+=(-F "resources=@$f")
 done
 OUT="$(mktemp)"

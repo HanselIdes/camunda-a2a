@@ -123,7 +123,45 @@ What you see, and why:
 - If the machine runs low on memory the model can be unloaded and reloaded, and a reply then takes minutes. Keep the
   model loaded (`run-demo.sh` does) and close heavy applications if a scenario stalls.
 
-## 7. Clean up
+## 7. Both sides in Tasklist on c8run: client process calls the agent
+
+`a2a-client` is the originating process. It is built from the same parts as the server (HTTP JSON connector, user
+tasks, forms) and talks to the agent only through the A2A protocol. A person starts it in Tasklist, it reads the Agent
+Card, sends `SendMessage`, polls `GetTask` while the remote task works, relays an `INPUT_REQUIRED` question to a person
+and shows the answer.
+
+```bash
+scripts/c8run-demo.sh            # c8run 8.10.2 on 8080 (engine) and 8086 (connectors), deploys everything, prints URLs
+```
+
+1. Open `http://localhost:8080/tasklist/processes` and sign in (c8run default: `demo` / `demo`).
+2. Pick **A2A client: ask the agent**, press **Start process**, keep or change the question, submit.
+3. Within about 30 seconds a task **Review the result** appears under Tasks. It shows the answer, the tools the agent
+   used on the server side, and the A2A task and context ids. Ask "Please convert a temperature for me." instead to get
+   **Answer the agent's question** first; your answer goes back as a follow-up on the same A2A task.
+4. Follow the token: in Operate (`http://localhost:8080/operate`) open the `a2a-client` instance, then the `a2a-rpc`
+   instance for each request and the long-lived `a2a-task` instance (search by the tag `task-<id>` shown in the result).
+   The same path as one merged timeline:
+
+```bash
+python3 scripts/token-trace.py                    # newest a2a-client instance
+python3 scripts/token-trace.py --client <key>     # a specific one
+```
+
+The timeline lists, in time order, the client elements (Send message to the agent), the server handler elements
+(Parse request, Validate request, Create task instance), the task instance (Mark task working, the tool that ran,
+Apply agent response, Publish reply), and the client elements that follow (Read the agent's reply, Review the result).
+The server task instance stays active after it answers; that is its terminal state waiting for `GetTask`.
+
+The same flow runs as an automated test: `ClientServerE2ETest` deploys both sides on one cluster with the real
+connectors and a stub model, so it needs no Ollama. `OllamaClientServerE2ETest` (`mvn -Pollama verify`) does it with the
+local model.
+
+```bash
+scripts/c8run-demo.sh stop
+```
+
+## 8. Clean up
 
 ```bash
 docker compose -p camunda-a2a -f blueprint/docker-compose.yml --env-file .env down -v

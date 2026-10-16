@@ -39,6 +39,11 @@ a2a-task (one instance per A2A task, the task is always able to answer)
    Terminal: answers GetTask, rejects CancelTask (-32002) and SendMessage (-32004), expires after 1 hour
 ```
 
+The originating side is a process too: `a2a-client` (started from a Tasklist form) reads the Agent Card, sends
+`SendMessage` with the HTTP JSON connector, polls `GetTask`, relays an `INPUT_REQUIRED` question to a person and shows
+the answer. `ClientServerE2ETest` runs both processes on one cluster; see `MANUAL-VERIFICATION.md` section 7 to try it
+in Tasklist on c8run and follow the token across both with `scripts/token-trace.py`.
+
 All state lives in process variables. The task is the `task` variable of its `a2a-task` instance, so no request
 reads state back from secondary storage and there is no eventual-consistency window to wait out.
 
@@ -72,11 +77,12 @@ Step-by-step checks you can run by hand are in [MANUAL-VERIFICATION.md](MANUAL-V
 ```
 demo/        Playwright script and runner for the a2a-inspector demo
 bpmn/        a2a-card, a2a-rpc, a2a-task, a2a-correlate, a2a-publish-reply, a2a-fetch-task, a2a-push-notify,
-             a2a-card-runtime
+             a2a-card-runtime, a2a-client (the originating process, not part of the server)
+forms/       Tasklist forms of a2a-client
 dmn/         a2a-validate, a2a-classify, capitals
 tools/       bpmn_gen/ (generator for the files above), gen_card.py (Agent Card from the agent's tools)
 tests/       Maven module: CPT process tests, DMN tests, connector integration tests, Ollama tests
-scripts/     deploy.sh, trace.py
+scripts/     deploy.sh, trace.py, c8run-demo.sh (c8run + deploy), token-trace.py (client and server timeline)
 blueprint/   docker-compose.yml, nginx proxy, smoke.sh
 tck/         run.sh, check_results.py, allowed-not-passing.txt, pin.env, patches/, RESULTS.md,
              run-extra.sh (SHOULD and MAY), run-push.sh (push enabled)
