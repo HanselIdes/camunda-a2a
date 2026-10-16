@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "bpmnlint:recommended",
+    "plugin:camunda-compat/camunda-cloud-8-10"
+  ],
+  "rules": {
+    "camunda-compat/secrets": "off"
+  }
+}

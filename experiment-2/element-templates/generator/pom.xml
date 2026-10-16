@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>dev.hansel.a2a</groupId>
+  <artifactId>a2a-element-templates</artifactId>
+  <version>1.0.0</version>
+  <name>A2A 1.0 element templates</name>
+  <description>
+    Writes the A2A 1.0 element templates with the Camunda connector template generator DSL. The templates run on
+    out-of-the-box task types (HTTP JSON connector, HTTP webhook), so nothing from this module runs in the cluster.
+    Run: mvn -q compile exec:java (from this folder); the JSON lands in ../
+  </description>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <connectors.version>8.10.0</connectors.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>element-template-generator-core</artifactId>
+      <version>${connectors.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.camunda.connector</groupId>
+      <artifactId>element-template-generator-http-dsl</artifactId>
+      <version>${connectors.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.6.3</version>
+        <configuration>
+          <mainClass>dev.hansel.a2a.templates.A2aTemplates</mainClass>
+          <arguments>
+            <argument>${project.basedir}/..</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

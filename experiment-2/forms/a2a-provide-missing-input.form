@@ -1,0 +1,32 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.10.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.52.0"
+  },
+  "schemaVersion": 18,
+  "id": "a2a-provide-missing-input",
+  "type": "default",
+  "components": [
+    {
+      "type": "text",
+      "id": "Field_Intro",
+      "text": "# The remote agent needs more input\n\nThe task is paused in state **{{pausedState}}**. Your answer goes back to the remote agent as a follow-up message on the same task."
+    },
+    {
+      "type": "text",
+      "id": "Field_Question",
+      "text": "**Remote agent's question:**\n\n{{agentQuestion}}"
+    },
+    {
+      "type": "textarea",
+      "id": "Field_Answer",
+      "key": "answer",
+      "label": "Your answer",
+      "validate": {
+        "required": true
+      }
+    }
+  ]
+}
