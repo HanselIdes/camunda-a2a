@@ -242,6 +242,18 @@ class TemplatesIntegrationTest {
   }
 
   @Test
+  void clientWebhookCorrelatesOnTheTaskIdOfAMessageReply() {
+    // a follow-up's reply is a Message: the client waits on its taskId, since a Message's own id is the messageId
+    final String taskId = "t-" + UUID.randomUUID();
+    final long key = start("h-client-webhook", Map.of("agentResponse",
+        Map.of("result", Map.of("messageId", "reply-m1", "role", "ROLE_AGENT", "taskId", taskId))));
+    assertThat(ProcessInstanceSelectors.byKey(key)).hasActiveElements("Replied");
+    post("/inbound/h-client-webhook", pushTask(taskId, "TASK_STATE_COMPLETED"),
+        Map.of("X-A2A-Notification-Token", TOKEN));
+    assertThat(ProcessInstanceSelectors.byKey(key)).isCompleted();
+  }
+
+  @Test
   void clientWebhookAcceptsAStatusUpdatePayload() {
     final String taskId = "t-" + UUID.randomUUID();
     final long key = waitingClient(taskId);
@@ -365,9 +377,11 @@ class TemplatesIntegrationTest {
 
     final var response = post("/inbound/h-server?agent=agent-task-2",
         sendMessage("m-" + UUID.randomUUID(), messageId, "Celsius"), Map.of());
-    final var task = json(response.body()).path("result").path("task");
-    assertThat(task.path("id").asText()).isEqualTo(messageId);
-    assertThat(task.path("status").path("state").asText()).isEqualTo("TASK_STATE_WORKING");
+    // the reply confirms receipt only: the webhook cannot know the task's state when it answers
+    final var result = json(response.body()).path("result");
+    assertThat(result.has("task")).isFalse();
+    assertThat(result.path("message").path("taskId").asText()).isEqualTo(messageId);
+    assertThat(result.path("message").path("role").asText()).isEqualTo("ROLE_AGENT");
 
     assertThat(instance).hasCompletedElements("FollowUp").hasActiveElements("Answered");
     assertThat(instance).hasVariableSatisfies("toolCallResult", String.class, v -> assertThat(v).isEqualTo("Celsius"));
@@ -381,6 +395,11 @@ class TemplatesIntegrationTest {
     final var response = post("/inbound/h-server?agent=agent-task-3",
         sendMessage("m-" + UUID.randomUUID(), "no-such-task", "hello"), Map.of());
     assertThat(response.statusCode()).isEqualTo(200);
+    // no state is claimed for a task nothing waits for; the text says a closed task gets no update
+    final var result = json(response.body()).path("result");
+    assertThat(result.has("task")).isFalse();
+    assertThat(result.path("message").path("parts").get(0).path("text").asText())
+        .contains("push notification", "If the task is closed, nothing receives this message");
     assertThat(ProcessInstanceSelectors.byKey(key)).hasNotActivatedElements("NewTask", "FollowUp");
   }
 

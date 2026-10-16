@@ -219,6 +219,7 @@ public final class A2aTemplates {
         .removeProperties(p -> "inbound.auth.type".equals(p.getId()))
         .id("dev.hansel.a2a.client.webhook.intermediate.v1")
         .name("A2A 1.0 Client Webhook Intermediate Catch Event")
+        .version(2)
         .description(
             "Receives A2A 1.0 push notifications (StreamResponse) for a task sent with the A2A 1.0 Client. "
                 + "Correlates on the task ID; a push without the expected X-A2A-Notification-Token is rejected.")
@@ -243,9 +244,11 @@ public final class A2aTemplates {
                 StringProperty.builder()
                     .id("correlationKeyProcess")
                     .label("Task ID")
-                    .description("The ID of the task the A2A 1.0 Client sent.")
+                    .description("The ID of the task the A2A 1.0 Client sent: the Task's id for a new task, the "
+                        + "Message's taskId for a follow-up.")
                     .feel(FeelMode.required)
-                    .value("=agentResponse.result.id")
+                    .value("=if agentResponse.result.taskId != null then agentResponse.result.taskId "
+                        + "else agentResponse.result.id")
                     .binding(ZeebeSubscriptionProperty.CORRELATION_KEY)
                     .constraints(PropertyConstraints.builder().notEmpty(true).build())
                     .build(),
@@ -327,12 +330,18 @@ public final class A2aTemplates {
         "request.body.params.configuration.returnImmediately = true and " + pushConfig + ".url != null";
     String valid = "request.body.method = \"SendMessage\" and " + msg + ".messageId != null and " + textOnly
         + " and " + backgroundWithPush;
+    // The webhook answers before it correlates, so it cannot know whether a task still waits for a follow-up.
+    // A follow-up therefore gets a Message that states only what is known, not a Task with a guessed state.
     String response =
         "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: "
-            + "{jsonrpc: \"2.0\", id: request.body.id, result: {task: {"
-            + "id: " + taskId + ", contextId: " + contextId + ", "
-            + "status: {state: if " + msg + ".taskId != null then \"TASK_STATE_WORKING\" else \"TASK_STATE_SUBMITTED\"}"
-            + "}}}}";
+            + "{jsonrpc: \"2.0\", id: request.body.id, result: if " + msg + ".taskId = null "
+            + "then {task: {id: " + taskId + ", contextId: " + contextId + ", "
+            + "status: {state: \"TASK_STATE_SUBMITTED\"}}} "
+            + "else {message: {messageId: \"reply-\" + " + msg + ".messageId, role: \"ROLE_AGENT\", "
+            + "taskId: " + msg + ".taskId, contextId: " + contextId + ", parts: [{text: \"Message received for task \" + "
+            + msg + ".taskId + \". If this task is waiting for input, its next update arrives as a push notification. "
+            + "If the task is closed, nothing receives this message and no update will follow: start a new task.\"}]}}"
+            + "}}";
     // the verification expression runs before activation, so it can answer requests that activate nothing
     String rejectInvalid =
         "=if " + valid + " then null "
@@ -361,7 +370,7 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.v1")
             .name("A2A 1.0 Server: SendMessage (new task)")
-            .version(2)
+            .version(3)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage without a taskId: a new task. The agent query parameter finds the "
                     + "process instance the agent lives in; use it on a non-interrupting event sub-process start. "
@@ -384,10 +393,12 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.follow-up.v1")
             .name("A2A 1.0 Server: SendMessage (follow-up)")
-            .version(2)
+            .version(3)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage with a taskId: the client's answer to a task in "
                     + "TASK_STATE_INPUT_REQUIRED, which becomes toolCallResult. Correlates on the taskId, so it reaches only a task that is waiting. "
+                    + "The response is a Message that confirms receipt only, because the webhook answers before it "
+                    + "knows whether the task still waits. "
                     + "A task that is already final has nothing waiting; the client must start a new task.")
             .appliesTo(BpmnType.INTERMEDIATE_CATCH_EVENT)
             .elementType(BpmnType.INTERMEDIATE_CATCH_EVENT)

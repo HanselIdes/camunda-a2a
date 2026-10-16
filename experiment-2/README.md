@@ -37,7 +37,7 @@ connector and the HTTP webhook, so nothing custom runs in the cluster. Regenerat
 | A2A 1.0 Client Webhook | intermediate catch event | receives the push (`StreamResponse`), correlates on the task ID, checks `X-A2A-Notification-Token` |
 | A2A 1.0 Server: Agent Card | message start event | serves the card on GET, correlates on `?agent=`; the "Agent Card" field holds the agent's name, description, version and skills |
 | A2A 1.0 Server: SendMessage (new task) | message start event | answers `TASK_STATE_SUBMITTED`, correlates on `?agent=` |
-| A2A 1.0 Server: SendMessage (follow-up) | intermediate catch event | same endpoint, correlates on `taskId`, the answer becomes `toolCallResult` |
+| A2A 1.0 Server: SendMessage (follow-up) | intermediate catch event | same endpoint, correlates on `taskId`, the answer becomes `toolCallResult`; replies with a Message that claims no task state |
 | A2A 1.0 Server: push task update | message throw event | POSTs the task as `StreamResponse` with the notification token |
 
 The out-of-the-box A2A Client connector (connectors 8.10.0) bundles a2a-java SDK 0.3.3 and speaks A2A 0.3, so these
@@ -48,9 +48,11 @@ Two deviations from the A2A 1.0 spec, both forced by the HTTP webhook connector:
 - The push is sent as `application/json`, not `application/a2a+json`: the webhook only parses `application/json`
   into `request.body`, and the client webhook needs the parsed task to correlate.
 - A `SendMessage` with a `taskId` whose task is already final MUST get `UnsupportedOperationError` (-32004). This
-  server answers it with the Task in `TASK_STATE_WORKING`, which is untrue: nothing waits for that task, and the
-  message is lost. The webhook answers before it correlates and cannot see whether a task still waits. The
-  Ask remote agent tool description tells the client agent to start a new task after a final state.
+  server cannot tell: the webhook answers before it correlates, so it does not know whether the task still waits.
+  It therefore answers every follow-up with a Message that claims no task state. The Message says that it was
+  received, that a waiting task sends its next update as a push notification, and that a closed task gets no update
+  and the client should start a new task. Nothing receives a message sent to a closed task. The Ask remote agent
+  tool description tells the client agent to start a new task after a final state.
 
 The server runs every task in the background and answers by push notification only. It rejects requests it cannot
 serve rather than accepting them silently: a request without `returnImmediately: true` and a push notification URL
@@ -109,7 +111,7 @@ cd tests && mvn verify
    HTTP and a stub model that plays both agents. The stub follows a script and ignores the system prompts, so these
    tests do not show how a real model follows them.
 
-Status: all three tiers pass with `mvn verify` (31 tests: 3 process, 27 template integration, 1 end-to-end), with
+Status: all three tiers pass with `mvn verify` (32 tests: 3 process, 28 template integration, 1 end-to-end), with
 100% element and flow coverage of the process. On 2026-10-16 an earlier version of the diagram (before the current
 system prompts, Agent Card skills and request checks) also ran end to end on c8run with the provided LLM: an
 ambiguous request, the server's clarifying question answered in "User feedback", the conversion tool, and a

@@ -181,8 +181,10 @@ class TwoAgentsE2ETest {
 
     // a message on the completed task finds nothing waiting: the client has to start a new task
     final String agentId = variable(key, "a2aAgentId").replace("\"", "");
-    final String completedTaskId = StubModel.JSON.readTree(variable(key, "agentResponse")).path("result").path("id")
-        .asText();
+    // the last A2A call was the follow-up, so its reply is a Message carrying the task ID
+    final String completedTaskId = StubModel.JSON.readTree(variable(key, "agentResponse")).path("result")
+        .path("taskId").asText();
+    assertThat(completedTaskId).isNotEmpty();
     final var late = HTTP.send(HttpRequest.newBuilder(
             URI.create(context.getConnectorsAddress() + "/inbound/a2a-server?agent=" + agentId))
         .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(
@@ -190,6 +192,7 @@ class TwoAgentsE2ETest {
                 + "\"messageId\":\"late-1\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"one more\"}],"
                 + "\"taskId\":\"" + completedTaskId + "\"}}}")).build(), HttpResponse.BodyHandlers.ofString());
     assertThat(late.statusCode()).isEqualTo(200);
+    assertThat(StubModel.JSON.readTree(late.body()).path("result").has("task")).isFalse();
     Thread.sleep(3000);
     assertThat(instance).hasCompletedElement("Server_MessageReceived", 1).hasCompletedElement("Event_1553b23", 1);
 

@@ -4,7 +4,7 @@
   "id" : "dev.hansel.a2a.client.webhook.intermediate.v1",
   "description" : "Receives A2A 1.0 push notifications (StreamResponse) for a task sent with the A2A 1.0 Client. Correlates on the task ID; a push without the expected X-A2A-Notification-Token is rejected.",
   "documentationRef" : "https://a2a-protocol.org/latest/specification/",
-  "version" : 1,
+  "version" : 2,
   "category" : {
     "id" : "connectors",
     "name" : "Connectors"
@@ -136,8 +136,8 @@
   }, {
     "id" : "correlationKeyProcess",
     "label" : "Task ID",
-    "description" : "The ID of the task the A2A 1.0 Client sent.",
-    "value" : "=agentResponse.result.id",
+    "description" : "The ID of the task the A2A 1.0 Client sent: the Task's id for a new task, the Message's taskId for a follow-up.",
+    "value" : "=if agentResponse.result.taskId != null then agentResponse.result.taskId else agentResponse.result.id",
     "constraints" : {
       "notEmpty" : true
     },
