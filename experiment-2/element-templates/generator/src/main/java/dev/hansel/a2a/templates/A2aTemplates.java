@@ -270,6 +270,7 @@ public final class A2aTemplates {
     return webhookBase()
         .id("dev.hansel.a2a.server.card.v1")
         .name("A2A 1.0 Server: Agent Card")
+        .version(2)
         .description(
             "Serves the A2A 1.0 Agent Card on GET <connectors base>/inbound/<webhook ID>?agent=<agent ID>. The agent "
                 + "query parameter finds the process instance the agent lives in; use it on an event sub-process "
@@ -286,24 +287,28 @@ public final class A2aTemplates {
             group("card", "Agent Card",
                 TextProperty.builder()
                     .id("inbound.responseExpression")
-                    .label("Agent Card response")
-                    .description("The HTTP response; body is the Agent Card. Keep supportedInterfaces pointing at the "
-                        + "SendMessage webhook.")
+                    .label("Agent Card")
+                    .description("Edit card: the agent's name, description, version and skills. Clients choose "
+                        + "the agent by its skills, so list what its tools can do. The rest of the expression adds "
+                        + "the SendMessage endpoint and capabilities; keep it unchanged.")
                     .feel(FeelMode.required)
                     .value(
                         feel(
                             """
-                            ={statusCode: 200, headers: {"Content-Type": "application/json"}, body: {
-                              name: "Task agent",
-                              description: "Answers questions and asks for clarification when a request is ambiguous.",
-                              version: "1.0.0",
-                              supportedInterfaces: [{url: "{{secrets.A2A_CONNECTORS_URL}}/inbound/a2a-server?agent="
-                                                       + request.params.agent,
-                                                     protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
-                              capabilities: {streaming: false, pushNotifications: true, extendedAgentCard: false},
-                              defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain"],
-                              skills: [{id: "answer", name: "Answer a question", description: "General questions.",
-                                        tags: ["qa"]}]}}"""))
+                            ={card: {
+                                name: "Task agent",
+                                description: "Answers questions and asks for clarification when a request is ambiguous.",
+                                version: "1.0.0",
+                                skills: [{id: "answer", name: "Answer a question",
+                                          description: "Answers general questions.", tags: ["qa"]}]},
+                              response: {statusCode: 200, headers: {"Content-Type": "application/json"},
+                                body: context merge([card, {
+                                  supportedInterfaces: [{url: "{{secrets.A2A_CONNECTORS_URL}}/inbound/a2a-server?agent="
+                                                           + request.params.agent,
+                                                         protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
+                                  capabilities: {streaming: false, pushNotifications: true, extendedAgentCard: false},
+                                  defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain"]}])}
+                             }.response"""))
                     .binding(new ZeebeProperty("inbound.responseExpression"))
                     .build()))
         .build();

@@ -171,6 +171,10 @@ class TwoAgentsE2ETest {
     final var clientTools = MODEL.requests.stream().filter(r -> !StubModel.systemPrompt(r).contains("TaskAgent"))
         .findFirst().map(StubModel::toolNames).orElseThrow();
     assertThat(clientTools).contains("Tool_AskRemoteAgent", "Tool_ListUsers", "Tool_LoadUserByID");
+    // the client agent knows what the remote agent can do from the skills on its Agent Card
+    final String clientSystem = MODEL.requests.stream().map(StubModel::systemPrompt)
+        .filter(p -> !p.contains("TaskAgent")).findFirst().orElseThrow();
+    assertThat(clientSystem).contains("convert-temperature", "list-tech-stuff");
     final var serverTools = MODEL.requests.stream().filter(r -> StubModel.systemPrompt(r).contains("TaskAgent"))
         .findFirst().map(StubModel::toolNames).orElseThrow();
     assertThat(serverTools).contains("Server_PushNotification", "Tool_ConvertTemperature");

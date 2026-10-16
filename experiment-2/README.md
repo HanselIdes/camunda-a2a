@@ -35,7 +35,7 @@ connector and the HTTP webhook, so nothing custom runs in the cluster. Regenerat
 |----------|----|------|
 | A2A 1.0 Client | service task | fetchAgentCard (GET) or sendMessage (JSON-RPC `SendMessage`, `A2A-Version: 1.0`, push config) |
 | A2A 1.0 Client Webhook | intermediate catch event | receives the push (`StreamResponse`), correlates on the task ID, checks `X-A2A-Notification-Token` |
-| A2A 1.0 Server: Agent Card | message start event | serves the card on GET, correlates on `?agent=` |
+| A2A 1.0 Server: Agent Card | message start event | serves the card on GET, correlates on `?agent=`; the "Agent Card" field holds the agent's name, description, version and skills |
 | A2A 1.0 Server: SendMessage (new task) | message start event | answers `TASK_STATE_SUBMITTED`, correlates on `?agent=` |
 | A2A 1.0 Server: SendMessage (follow-up) | intermediate catch event | same endpoint, correlates on `taskId`, the answer becomes `toolCallResult` |
 | A2A 1.0 Server: push task update | message throw event | POSTs the task as `StreamResponse` with the notification token |
@@ -49,6 +49,12 @@ Two deliberate deviations from the A2A 1.0 spec, both forced by the HTTP webhook
   into `request.body`, and the client webhook needs the parsed task to correlate.
 - A `SendMessage` with a `taskId` whose task is already final finds nothing waiting and is not rejected with an
   error; the client must start a new task (the client agent's prompt says so).
+
+The card is one FEEL field because an element template cannot combine several fields into one binding, and the
+webhook's response expression can read only the request. The field's `card` part is what you edit. The rest adds
+the SendMessage endpoint and capabilities with `context merge`, so editing the card cannot break the endpoint. The
+client agent's system prompt includes the card's name, description and skills, so the skills must say what the
+server agent's tools can do.
 
 The server agent's tools are the push event, "Get list of all Tech Stuff" and "Convert temperature", a FEEL script
 task that converts between celsius, fahrenheit and kelvin.

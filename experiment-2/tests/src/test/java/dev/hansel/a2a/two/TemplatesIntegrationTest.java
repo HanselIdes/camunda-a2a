@@ -302,7 +302,11 @@ class TemplatesIntegrationTest {
     assertThat(jsonRpc.path("protocolVersion").asText()).isEqualTo("1.0");
     assertThat(jsonRpc.path("url").asText()).isEqualTo("http://localhost:8080/inbound/a2a-server?agent=agent-card-1");
     assertThat(card.path("capabilities").path("pushNotifications").asBoolean()).isTrue();
-    assertThat(card.path("skills")).isNotEmpty();
+    assertThat(card.path("skills").get(0).path("id").asText()).isEqualTo("answer");
+    assertThat(card.path("version").asText()).isEqualTo("1.0.0");
+    // the editable card part and the protocol part merge into one card, with no wrapper keys left over
+    assertThat(card.has("card")).isFalse();
+    assertThat(card.has("response")).isFalse();
 
     assertThat(ProcessInstanceSelectors.byKey(mine)).hasCompletedElements("Card", "CardEnd");
     assertThat(ProcessInstanceSelectors.byKey(other)).hasNotActivatedElements("Card");

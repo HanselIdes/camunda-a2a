@@ -4,7 +4,7 @@
   "id" : "dev.hansel.a2a.server.card.v1",
   "description" : "Serves the A2A 1.0 Agent Card on GET <connectors base>/inbound/<webhook ID>?agent=<agent ID>. The agent query parameter finds the process instance the agent lives in; use it on an event sub-process start. The card's JSON-RPC URL carries the same agent ID.",
   "documentationRef" : "https://a2a-protocol.org/latest/specification/",
-  "version" : 1,
+  "version" : 2,
   "category" : {
     "id" : "connectors",
     "name" : "Connectors"
@@ -164,9 +164,9 @@
     "type" : "String"
   }, {
     "id" : "inbound.responseExpression",
-    "label" : "Agent Card response",
-    "description" : "The HTTP response; body is the Agent Card. Keep supportedInterfaces pointing at the SendMessage webhook.",
-    "value" : "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: { name: \"Task agent\", description: \"Answers questions and asks for clarification when a request is ambiguous.\", version: \"1.0.0\", supportedInterfaces: [{url: \"{{secrets.A2A_CONNECTORS_URL}}/inbound/a2a-server?agent=\" + request.params.agent, protocolBinding: \"JSONRPC\", protocolVersion: \"1.0\"}], capabilities: {streaming: false, pushNotifications: true, extendedAgentCard: false}, defaultInputModes: [\"text/plain\"], defaultOutputModes: [\"text/plain\"], skills: [{id: \"answer\", name: \"Answer a question\", description: \"General questions.\", tags: [\"qa\"]}]}}",
+    "label" : "Agent Card",
+    "description" : "Edit card: the agent's name, description, version and skills. Clients choose the agent by its skills, so list what its tools can do. The rest of the expression adds the SendMessage endpoint and capabilities; keep it unchanged.",
+    "value" : "={card: { name: \"Task agent\", description: \"Answers questions and asks for clarification when a request is ambiguous.\", version: \"1.0.0\", skills: [{id: \"answer\", name: \"Answer a question\", description: \"Answers general questions.\", tags: [\"qa\"]}]}, response: {statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: context merge([card, { supportedInterfaces: [{url: \"{{secrets.A2A_CONNECTORS_URL}}/inbound/a2a-server?agent=\" + request.params.agent, protocolBinding: \"JSONRPC\", protocolVersion: \"1.0\"}], capabilities: {streaming: false, pushNotifications: true, extendedAgentCard: false}, defaultInputModes: [\"text/plain\"], defaultOutputModes: [\"text/plain\"]}])} }.response",
     "feel" : "required",
     "group" : "card",
     "binding" : {
