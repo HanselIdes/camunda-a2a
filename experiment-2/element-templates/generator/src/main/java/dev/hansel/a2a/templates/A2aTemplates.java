@@ -219,7 +219,7 @@ public final class A2aTemplates {
         .removeProperties(p -> "inbound.auth.type".equals(p.getId()))
         .id("dev.hansel.a2a.client.webhook.intermediate.v1")
         .name("A2A 1.0 Client Webhook Intermediate Catch Event")
-        .version(2)
+        .version(3)
         .description(
             "Receives A2A 1.0 push notifications (StreamResponse) for a task sent with the A2A 1.0 Client. "
                 + "Correlates on the task ID; a push without the expected X-A2A-Notification-Token is rejected.")
@@ -227,7 +227,7 @@ public final class A2aTemplates {
         .elementType(BpmnType.INTERMEDIATE_CATCH_EVENT)
         .propertyGroups(
             group("endpoint", "Webhook", hidden("inbound.method", "post"), context(null,
-                "Part of the URL: <connectors base>/inbound/<webhook ID>. Use the same URL as the client's "
+                "Part of the URL: {connectors base}/inbound/{webhook ID}. Use the same URL as the client's "
                     + "webhook URL."),
                 hidden("inbound.auth.type", "APIKEY"),
                 StringProperty.builder()
@@ -259,11 +259,9 @@ public final class A2aTemplates {
                     .value("=list contains(" + WAKE_STATES + ", " + pushState + ")")
                     .description("By default the event fires on final, input-required and auth-required states.")
                     .build()),
-            group("output", "Output mapping",
-                CommonProperties.resultExpression(
-                        "={toolCallResult: if request.body.task != null then request.body.task else request.body}")
-                    .binding(new ZeebeProperty("resultExpression"))
-                    .build()))
+            output("={toolCallResult: if request.body.task != null then request.body.task else request.body}",
+                "Maps the push request to process variables. The default hands the pushed Task to the AI agent as "
+                    + "toolCallResult."))
         .build();
   }
 
@@ -273,17 +271,16 @@ public final class A2aTemplates {
     return webhookBase()
         .id("dev.hansel.a2a.server.card.v1")
         .name("A2A 1.0 Server: Agent Card")
-        .version(2)
+        .version(3)
         .description(
-            "Serves the A2A 1.0 Agent Card on GET <connectors base>/inbound/<webhook ID>?agent=<agent ID>. The agent "
+            "Serves the A2A 1.0 Agent Card on GET {connectors base}/inbound/{webhook ID}?agent={agent ID}. The agent "
                 + "query parameter finds the process instance the agent lives in; use it on an event sub-process "
                 + "start. The card's JSON-RPC URL carries the same agent ID.")
         .appliesTo(BpmnType.START_EVENT)
         .elementType(BpmnType.MESSAGE_START_EVENT)
         .propertyGroups(
             group("endpoint", "Webhook", hidden("inbound.method", "get"),
-                context("a2a-server-card", "Clients read the card from <connectors base>/inbound/<webhook ID>?agent=<agent ID>."),
-                hidden("resultExpression", "={}")),
+                context("a2a-server-card", "Clients read the card from {connectors base}/inbound/{webhook ID}?agent={agent ID}.")),
             group("correlation", "Agent instance", hidden("correlationRequired", "required"),
                 hidden("correlationKeyExpression", "=" + AGENT_PARAM), agentIdProperty(),
                 CommonProperties.messageNameUuid().group("correlation").build()),
@@ -313,7 +310,8 @@ public final class A2aTemplates {
                                   defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain"]}])}
                              }.response"""))
                     .binding(new ZeebeProperty("inbound.responseExpression"))
-                    .build()))
+                    .build()),
+            output(null, "Maps the card request to process variables. Empty by default: serving the card needs none."))
         .build();
   }
 
@@ -360,7 +358,7 @@ public final class A2aTemplates {
     // them behind one endpoint; activation condition, correlation and result are per element.
     Property[] endpoint = {
       hidden("inbound.method", "post"),
-      context("a2a-server", "The JSON-RPC endpoint is <connectors base>/inbound/<webhook ID>?agent=<agent ID>. "
+      context("a2a-server", "The JSON-RPC endpoint is {connectors base}/inbound/{webhook ID}?agent={agent ID}. "
           + "Use the same webhook ID on the follow-up event."),
       hidden("inbound.verificationExpression", rejectInvalid),
       hidden("inbound.responseExpression", response)
@@ -370,7 +368,7 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.v1")
             .name("A2A 1.0 Server: SendMessage (new task)")
-            .version(3)
+            .version(4)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage without a taskId: a new task. The agent query parameter finds the "
                     + "process instance the agent lives in; use it on a non-interrupting event sub-process start. "
@@ -383,17 +381,18 @@ public final class A2aTemplates {
                     hidden("activationCondition", "=" + valid + " and " + msg + ".taskId = null"),
                     hidden("correlationRequired", "required"), hidden("correlationKeyExpression", "=" + AGENT_PARAM),
                     hidden("messageIdExpression", "=" + msg + ".messageId"), agentIdProperty(),
-                    CommonProperties.messageNameUuid().group("correlation").build(),
-                    hidden("resultExpression",
-                        "={taskId: " + taskId + ", contextId: " + contextId + ", messageText: " + messageText
-                            + ", pushNotification: " + pushConfig + ", taskState: \"TASK_STATE_SUBMITTED\"}")))
+                    CommonProperties.messageNameUuid().group("correlation").build()),
+                output("={taskId: " + taskId + ", contextId: " + contextId + ", messageText: " + messageText
+                        + ", pushNotification: " + pushConfig + ", taskState: \"TASK_STATE_SUBMITTED\"}",
+                    "Maps the SendMessage request to process variables. The push event and the follow-up event of "
+                        + "this task read taskId, contextId and pushNotification; keep them."))
             .build();
 
     ElementTemplate followUp =
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.follow-up.v1")
             .name("A2A 1.0 Server: SendMessage (follow-up)")
-            .version(3)
+            .version(4)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage with a taskId: the client's answer to a task in "
                     + "TASK_STATE_INPUT_REQUIRED, which becomes toolCallResult. Correlates on the taskId, so it reaches only a task that is waiting. "
@@ -416,9 +415,11 @@ public final class A2aTemplates {
                         .binding(ZeebeSubscriptionProperty.CORRELATION_KEY)
                         .constraints(PropertyConstraints.builder().notEmpty(true).build())
                         .build(),
-                    CommonProperties.messageNameUuid().group("correlation").build(),
-                    hidden("resultExpression",
-                        "={toolCallResult: " + messageText + ", messageText: " + messageText + ", pushNotification: " + pushConfig + "}")))
+                    CommonProperties.messageNameUuid().group("correlation").build()),
+                output("={toolCallResult: " + messageText + ", messageText: " + messageText + ", pushNotification: "
+                        + pushConfig + "}",
+                    "Maps the follow-up request to process variables. The default hands the client's answer to the AI "
+                        + "agent as toolCallResult and keeps the client's latest push notification config."))
             .build();
     return List.of(newTask, followUp);
   }
@@ -513,6 +514,15 @@ public final class A2aTemplates {
             hidden("consumeUnmatchedEvents", "true"),
             hidden("deduplicationModeManualFlag", "false"),
             hidden("deduplicationMode", "AUTO"));
+  }
+
+  /** The Output mapping group every connector shows: a result variable and a result expression. */
+  static PropertyGroup output(String expression, String description) {
+    var resultExpression = expression == null
+        ? CommonProperties.resultExpression() : CommonProperties.resultExpression(expression);
+    return group("output", "Output mapping",
+        CommonProperties.resultVariable().binding(new ZeebeProperty("resultVariable")).build(),
+        resultExpression.description(description).binding(new ZeebeProperty("resultExpression")).build());
   }
 
   static PropertyGroup group(String id, String label, Property... properties) {

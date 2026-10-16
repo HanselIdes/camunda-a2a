@@ -111,7 +111,10 @@ cd tests && mvn verify
    HTTP and a stub model that plays both agents. The stub follows a script and ignores the system prompts, so these
    tests do not show how a real model follows them.
 
-Status: all three tiers pass with `mvn verify` (32 tests: 3 process, 28 template integration, 1 end-to-end), with
+`TemplateShapeTest` checks the generated JSON: every template shows a result variable and a result expression,
+and no description uses an angle-bracket placeholder, which Modeler would drop as an HTML tag.
+
+Status: all three tiers pass with `mvn verify` (44 tests: 3 process, 28 template integration, 1 end-to-end, 12 template shape), with
 100% element and flow coverage of the process. On 2026-10-16 an earlier version of the diagram (before the current
 system prompts, Agent Card skills and request checks) also ran end to end on c8run with the provided LLM: an
 ambiguous request, the server's clarifying question answered in "User feedback", the conversion tool, and a
