@@ -4,7 +4,7 @@
   "id" : "dev.hansel.a2a.server.send-message.v1",
   "description" : "A2A 1.0 JSON-RPC SendMessage without a taskId: a new task. The agent query parameter finds the process instance the agent lives in; use it on a non-interrupting event sub-process start. The response is the Task in TASK_STATE_SUBMITTED.",
   "documentationRef" : "https://a2a-protocol.org/latest/specification/",
-  "version" : 1,
+  "version" : 2,
   "category" : {
     "id" : "connectors",
     "name" : "Connectors"
@@ -105,7 +105,7 @@
     "type" : "String"
   }, {
     "id" : "inbound.verificationExpression",
-    "value" : "=if request.body.method = \"SendMessage\" and request.body.params.message.messageId != null then null else {statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: if request.body.method != \"SendMessage\" then {jsonrpc: \"2.0\", id: request.body.id, error: {code: -32601, message: \"Method not found\"}} else {jsonrpc: \"2.0\", id: request.body.id, error: {code: -32602, message: \"Invalid params: message.messageId is required\"}}}",
+    "value" : "=if request.body.method = \"SendMessage\" and request.body.params.message.messageId != null and (request.body.params.message.parts != null and (every part in request.body.params.message.parts satisfies part.text != null)) and request.body.params.configuration.returnImmediately = true and request.body.params.configuration.taskPushNotificationConfig.url != null then null else {statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: {jsonrpc: \"2.0\", id: request.body.id, error: if request.body.method != \"SendMessage\" then {code: -32601, message: \"Method not found\"} else if request.body.params.message.messageId = null then {code: -32602, message: \"Invalid params: message.messageId is required\"} else if not((request.body.params.message.parts != null and (every part in request.body.params.message.parts satisfies part.text != null))) then {code: -32005, message: \"Content type not supported: this agent accepts text parts only\"} else {code: -32004, message: \"Unsupported operation: this agent runs tasks in the background and answers by push notification only. Set configuration.returnImmediately to true and configuration.taskPushNotificationConfig.url.\"}}}",
     "group" : "endpoint",
     "binding" : {
       "name" : "inbound.verificationExpression",
@@ -123,7 +123,7 @@
     "type" : "Hidden"
   }, {
     "id" : "activationCondition",
-    "value" : "=request.body.method = \"SendMessage\" and request.body.params.message.messageId != null and request.body.params.message.taskId = null",
+    "value" : "=request.body.method = \"SendMessage\" and request.body.params.message.messageId != null and (request.body.params.message.parts != null and (every part in request.body.params.message.parts satisfies part.text != null)) and request.body.params.configuration.returnImmediately = true and request.body.params.configuration.taskPushNotificationConfig.url != null and request.body.params.message.taskId = null",
     "group" : "correlation",
     "binding" : {
       "name" : "activationCondition",
@@ -188,7 +188,7 @@
     "type" : "String"
   }, {
     "id" : "resultExpression",
-    "value" : "={taskId: (if request.body.params.message.taskId != null then request.body.params.message.taskId else request.body.params.message.messageId), contextId: (if request.body.params.message.contextId != null then request.body.params.message.contextId else (if request.body.params.message.taskId != null then request.body.params.message.taskId else request.body.params.message.messageId)), messageText: string join(for part in request.body.params.message.parts return if part.text != null then part.text else \"\", \" \"), pushNotification: request.body.params.configuration.taskPushNotificationConfig, taskState: \"TASK_STATE_SUBMITTED\"}",
+    "value" : "={taskId: (if request.body.params.message.taskId != null then request.body.params.message.taskId else request.body.params.message.messageId), contextId: (if request.body.params.message.contextId != null then request.body.params.message.contextId else (if request.body.params.message.taskId != null then request.body.params.message.taskId else request.body.params.message.messageId)), messageText: string join(for part in request.body.params.message.parts return part.text, \" \"), pushNotification: request.body.params.configuration.taskPushNotificationConfig, taskState: \"TASK_STATE_SUBMITTED\"}",
     "group" : "correlation",
     "binding" : {
       "name" : "resultExpression",

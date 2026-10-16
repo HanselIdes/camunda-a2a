@@ -43,12 +43,18 @@ connector and the HTTP webhook, so nothing custom runs in the cluster. Regenerat
 The out-of-the-box A2A Client connector (connectors 8.10.0) bundles a2a-java SDK 0.3.3 and speaks A2A 0.3, so these
 templates are a separate 1.0 implementation that keeps its field layout.
 
-Two deliberate deviations from the A2A 1.0 spec, both forced by the HTTP webhook connector:
+Two deviations from the A2A 1.0 spec, both forced by the HTTP webhook connector:
 
 - The push is sent as `application/json`, not `application/a2a+json`: the webhook only parses `application/json`
   into `request.body`, and the client webhook needs the parsed task to correlate.
-- A `SendMessage` with a `taskId` whose task is already final finds nothing waiting and is not rejected with an
-  error; the client must start a new task (the client agent's prompt says so).
+- A `SendMessage` with a `taskId` whose task is already final MUST get `UnsupportedOperationError` (-32004). This
+  server answers it with the Task in `TASK_STATE_WORKING`, which is untrue: nothing waits for that task, and the
+  message is lost. The webhook answers before it correlates and cannot see whether a task still waits. The
+  Ask remote agent tool description tells the client agent to start a new task after a final state.
+
+The server runs every task in the background and answers by push notification only. It rejects requests it cannot
+serve rather than accepting them silently: a request without `returnImmediately: true` and a push notification URL
+gets -32004, and a message with non-text parts gets -32005.
 
 The card is one FEEL field because an element template cannot combine several fields into one binding, and the
 webhook's response expression can read only the request. The field's `card` part is what you edit. The rest adds
@@ -100,6 +106,11 @@ cd tests && mvn verify
 2. **Template integration tests** (`TemplatesIntegrationTest`): each template on its own, on the real connectors
    runtime, against harness processes in `tests/src/test/resources/harness` and a recording HTTP server.
 3. **End-to-end** (`TwoAgentsE2ETest`): an ambiguous request, a clarification, then completion, with real A2A over
-   HTTP and a stub model that plays both agents.
+   HTTP and a stub model that plays both agents. The stub follows a script and ignores the system prompts, so these
+   tests do not show how a real model follows them.
 
-Status: all three tiers pass with `mvn verify` (30 tests: 3 process, 26 template integration, 1 end-to-end), with 100% element and flow coverage of the process. The same route also ran end to end on c8run with the provided LLM: an ambiguous request, the server's clarifying question answered in "User feedback", the conversion tool, and a completed instance.
+Status: all three tiers pass with `mvn verify` (31 tests: 3 process, 27 template integration, 1 end-to-end), with
+100% element and flow coverage of the process. On 2026-10-16 an earlier version of the diagram (before the current
+system prompts, Agent Card skills and request checks) also ran end to end on c8run with the provided LLM: an
+ambiguous request, the server's clarifying question answered in "User feedback", the conversion tool, and a
+completed instance. The current version has not run against a real model yet.

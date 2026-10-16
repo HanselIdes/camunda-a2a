@@ -397,6 +397,28 @@ class TemplatesIntegrationTest {
     assertThat(ProcessInstanceSelectors.byKey(key)).hasNotActivatedElements("NewTask");
   }
 
+  @Test
+  void requestsTheAgentCannotServeGetAJsonRpcErrorAndStartNothing() {
+    final long key = agent("agent-task-5");
+    final String path = "/inbound/h-server?agent=agent-task-5";
+    final String message = "\"message\":{\"messageId\":\"m-x\",\"role\":\"ROLE_USER\",\"parts\":[%s]}";
+    final String push = "\"taskPushNotificationConfig\":{\"url\":\"http://client/reply\",\"token\":\"t\"}";
+    // a file part: the agent accepts text only
+    final var file = post(path, "{\"jsonrpc\":\"2.0\",\"id\":\"9\",\"method\":\"SendMessage\",\"params\":{"
+        + message.formatted("{\"url\":\"https://example.com/a.png\"}") + ",\"configuration\":{"
+        + "\"returnImmediately\":true," + push + "}}}", Map.of());
+    assertThat(json(file.body()).path("error").path("code").asInt()).isEqualTo(-32005);
+    // a blocking request: the agent cannot hold the HTTP response until the task ends
+    final var blocking = post(path, "{\"jsonrpc\":\"2.0\",\"id\":\"10\",\"method\":\"SendMessage\",\"params\":{"
+        + message.formatted("{\"text\":\"hi\"}") + ",\"configuration\":{" + push + "}}}", Map.of());
+    assertThat(json(blocking.body()).path("error").path("code").asInt()).isEqualTo(-32004);
+    // no push URL: the agent would have no way to deliver the answer
+    final var noPush = post(path, "{\"jsonrpc\":\"2.0\",\"id\":\"11\",\"method\":\"SendMessage\",\"params\":{"
+        + message.formatted("{\"text\":\"hi\"}") + ",\"configuration\":{\"returnImmediately\":true}}}", Map.of());
+    assertThat(json(noPush.body()).path("error").path("code").asInt()).isEqualTo(-32004);
+    assertThat(ProcessInstanceSelectors.byKey(key)).hasNotActivatedElements("NewTask");
+  }
+
   // A2A 1.0 Server: push task update ----------------------------------------------------------------------------
 
   @ParameterizedTest

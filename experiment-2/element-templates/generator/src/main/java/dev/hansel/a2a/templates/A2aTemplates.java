@@ -320,7 +320,13 @@ public final class A2aTemplates {
     String msg = "request.body.params.message";
     String taskId = "(if " + msg + ".taskId != null then " + msg + ".taskId else " + msg + ".messageId)";
     String contextId = "(if " + msg + ".contextId != null then " + msg + ".contextId else " + taskId + ")";
-    String valid = "request.body.method = \"SendMessage\" and " + msg + ".messageId != null";
+    String pushConfig = "request.body.params.configuration.taskPushNotificationConfig";
+    String textOnly = "(" + msg + ".parts != null and (every part in " + msg + ".parts satisfies part.text != null))";
+    // the agent runs every task in the background and answers by push notification only
+    String backgroundWithPush =
+        "request.body.params.configuration.returnImmediately = true and " + pushConfig + ".url != null";
+    String valid = "request.body.method = \"SendMessage\" and " + msg + ".messageId != null and " + textOnly
+        + " and " + backgroundWithPush;
     String response =
         "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: "
             + "{jsonrpc: \"2.0\", id: request.body.id, result: {task: {"
@@ -331,13 +337,16 @@ public final class A2aTemplates {
     String rejectInvalid =
         "=if " + valid + " then null "
             + "else {statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: "
-            + "if request.body.method != \"SendMessage\" then {jsonrpc: \"2.0\", id: request.body.id, "
-            + "error: {code: -32601, message: \"Method not found\"}} "
-            + "else {jsonrpc: \"2.0\", id: request.body.id, "
-            + "error: {code: -32602, message: \"Invalid params: message.messageId is required\"}}}";
-    String messageText =
-        "string join(for part in " + msg + ".parts return if part.text != null then part.text else \"\", \" \")";
-    String pushConfig = "request.body.params.configuration.taskPushNotificationConfig";
+            + "{jsonrpc: \"2.0\", id: request.body.id, error: "
+            + "if request.body.method != \"SendMessage\" then {code: -32601, message: \"Method not found\"} "
+            + "else if " + msg + ".messageId = null then "
+            + "{code: -32602, message: \"Invalid params: message.messageId is required\"} "
+            + "else if not(" + textOnly + ") then "
+            + "{code: -32005, message: \"Content type not supported: this agent accepts text parts only\"} "
+            + "else {code: -32004, message: \"Unsupported operation: this agent runs tasks in the background and "
+            + "answers by push notification only. Set configuration.returnImmediately to true and "
+            + "configuration.taskPushNotificationConfig.url.\"}}}";
+    String messageText = "string join(for part in " + msg + ".parts return part.text, \" \")";
     // Both elements must carry the same connector properties (method, context, response) so the runtime puts
     // them behind one endpoint; activation condition, correlation and result are per element.
     Property[] endpoint = {
@@ -352,6 +361,7 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.v1")
             .name("A2A 1.0 Server: SendMessage (new task)")
+            .version(2)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage without a taskId: a new task. The agent query parameter finds the "
                     + "process instance the agent lives in; use it on a non-interrupting event sub-process start. "
@@ -374,6 +384,7 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.follow-up.v1")
             .name("A2A 1.0 Server: SendMessage (follow-up)")
+            .version(2)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage with a taskId: the client's answer to a task in "
                     + "TASK_STATE_INPUT_REQUIRED, which becomes toolCallResult. Correlates on the taskId, so it reaches only a task that is waiting. "
