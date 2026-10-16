@@ -82,6 +82,47 @@ server agent's tools can do.
 The server agent's tools are the push event, "Get list of all Tech Stuff" and "Convert temperature", a FEEL script
 task that converts between celsius, fahrenheit and kelvin.
 
+## Path to TCK conformance
+
+This server does not pass the [a2a-tck](https://github.com/a2aproject/a2a-tck) at MUST level, and the request checks
+above do not change that. It has never been run against the TCK. Its design makes three things impossible:
+
+1. The TCK cannot reach the server without the client. The server lives in the client's process instance, behind an
+   `?agent=` key that only the client knows.
+2. The card is not at `/.well-known/agent-card.json`.
+3. The server serves `SendMessage` in push mode only. It has no `GetTask`, `CancelTask` or `ListTasks`.
+
+[experiment-1](../experiment-1/README.md) passes the pinned TCK and shows what each step below takes. The steps run
+from cheapest to most involved:
+
+1. **Deploy the client and the server as two processes.**
+   - Move "GET Agent Card" and "A2A task" into an always-on `a2a-server` deployment with plain message start events,
+     so a request needs no `?agent=` key and no client instance.
+   - The client process keeps "Fetch remote agent card" and "Ask remote agent" and reads the server's URL.
+   - `scripts/c8run-demo.sh` deploys both.
+2. **Serve the card where the TCK looks.** A webhook path cannot be `/.well-known/agent-card.json`, so this needs a
+   proxy rewrite like experiment-1's `blueprint/proxy/nginx.conf` (CARD-DISC-001).
+3. **Generate task IDs in the engine.** Today the task ID is the client's messageId, which the client chooses. The
+   webhook evaluates its response and its result mapping separately, so a `uuid()` in FEEL there would give two
+   different IDs. A uuid has to come from a process step, as experiment-1's `PrepareNewTask` does (CORE-MULTI-003,
+   CORE-MULTI-001a).
+4. **Accept blocking and non-push sends.** This needs a synchronous webhook that waits for the reply, as
+   experiment-1's AwaitReply does, and a path past the push event when there is no push config (CORE-SEND-001,
+   CORE-EXECUTION-MODE-001/002, DM-\*).
+5. **Answer task operations from engine state.** `GetTask`, `CancelTask`, `ListTasks` and `historyLength` need a task
+   that can be queried and cancelled while it runs, through engine search as experiment-1's `a2a-task` and
+   `a2a-fetch-task` do. The same state gives -32001 for an unknown task and -32004 for a follow-up to a final task,
+   which removes the second deviation above (CORE-GET-\*, CORE-CANCEL-\*, CORE-LIST-\*, CORE-HIST-002,
+   CORE-MULTI-004/005/006).
+6. **Push notification configs.** The card declares push, so the 4 config methods need implementing (PUSH-\*).
+   Declaring push also makes the TCK skip CORE-CAP-001.
+7. **Gate on the TCK.** Port experiment-1's `tck/run.sh`, `check_results.py`, `pin.env` and the patch unchanged
+   except for paths. The pinned commit, the 3 unmerged TCK fix PRs and the list of requirements that may never be
+   allowlisted come with them.
+
+Steps 3 to 6 rebuild most of experiment-1's server. If the goal is a conformant server for the client agent to talk
+to, pointing this client at experiment-1's server is the shorter path.
+
 ## Secrets
 
 | Secret | Used for |
