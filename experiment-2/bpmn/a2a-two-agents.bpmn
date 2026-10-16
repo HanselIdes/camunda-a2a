@@ -3,6 +3,10 @@
   <bpmn:collaboration id="Collaboration_0t0nskd">
     <bpmn:documentation>Two agents in one process instance that talk Agent-to-Agent (A2A) 1.0 over HTTP. The client agent is the main flow. The server agent lives in event sub-processes that the client's A2A calls trigger: the agent query parameter in the URLs finds this instance, and the taskId finds a waiting task.</bpmn:documentation>
     <bpmn:participant id="Participant_Agents" name="A2A agents (one process instance)" processRef="a2a-two-agents" />
+    <bpmn:textAnnotation id="Note_Push">
+      <bpmn:text>A2A Server, push task update. The server agent's only way to reach the client: posts the task state and text it chooses to the client's webhook. Input required waits here for the answer. A final state ends the task.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Assoc_Push" associationDirection="None" sourceRef="Server_PushNotification" targetRef="Note_Push" />
   </bpmn:collaboration>
   <bpmn:process id="a2a-two-agents" name="A2A two agents" isExecutable="true">
     <bpmn:laneSet id="LaneSet_Agents">
@@ -236,6 +240,8 @@
             <zeebe:property name="correlationRequired" value="required" />
             <zeebe:property name="correlationKeyExpression" value="=request.params.agent" />
             <zeebe:property name="inbound.responseExpression" value="={card: { name: &#34;Task agent&#34;, description: &#34;Converts temperatures, lists tech stuff and answers general questions. Asks for clarification when a request is ambiguous.&#34;, version: &#34;1.0.0&#34;, skills: [{id: &#34;convert-temperature&#34;, name: &#34;Convert a temperature&#34;, description: &#34;Converts a temperature between celsius, fahrenheit and kelvin.&#34;, tags: [&#34;temperature&#34;, &#34;units&#34;]}, {id: &#34;list-tech-stuff&#34;, name: &#34;List tech stuff&#34;, description: &#34;Lists the devices in a public sample catalog (demo data, not a real inventory).&#34;, tags: [&#34;inventory&#34;]}, {id: &#34;answer&#34;, name: &#34;Answer a question&#34;, description: &#34;Answers general questions and asks for clarification when a request is ambiguous.&#34;, tags: [&#34;qa&#34;]}]}, response: {statusCode: 200, headers: {&#34;Content-Type&#34;: &#34;application/json&#34;}, body: context merge([card, { supportedInterfaces: [{url: &#34;{{secrets.A2A_CONNECTORS_URL}}/inbound/a2a-server?agent=&#34; + request.params.agent, protocolBinding: &#34;JSONRPC&#34;, protocolVersion: &#34;1.0&#34;}], capabilities: {streaming: false, pushNotifications: true, extendedAgentCard: false}, defaultInputModes: [&#34;text/plain&#34;], defaultOutputModes: [&#34;text/plain&#34;]}])} }.response" />
+            <zeebe:property name="resultVariable" value="" />
+            <zeebe:property name="resultExpression" value="" />
           </zeebe:properties>
         </bpmn:extensionElements>
         <bpmn:outgoing>Flow_0axxcf7</bpmn:outgoing>
@@ -453,6 +459,7 @@
             <zeebe:property name="correlationRequired" value="required" />
             <zeebe:property name="correlationKeyExpression" value="=request.params.agent" />
             <zeebe:property name="messageIdExpression" value="=request.body.params.message.messageId" />
+            <zeebe:property name="resultVariable" value="" />
             <zeebe:property name="resultExpression" value="={taskId: (if request.body.params.message.taskId != null then request.body.params.message.taskId else request.body.params.message.messageId), contextId: (if request.body.params.message.contextId != null then request.body.params.message.contextId else (if request.body.params.message.taskId != null then request.body.params.message.taskId else request.body.params.message.messageId)), messageText: string join(for part in request.body.params.message.parts return part.text, &#34; &#34;), pushNotification: request.body.params.configuration.taskPushNotificationConfig, taskState: &#34;TASK_STATE_SUBMITTED&#34;}" />
           </zeebe:properties>
         </bpmn:extensionElements>
@@ -484,7 +491,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=userSatisfied</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:textAnnotation id="Note_FetchAgentCard">
-      <bpmn:text>A2A Client, fetchAgentCard. Reads the server agent's Agent Card from this instance. The card's skills go into the client agent's prompt, and its JSON-RPC URL is where Ask remote agent sends.</bpmn:text>
+      <bpmn:text>A2A Client, fetchAgentCard. Reads the server agent's Agent Card from this instance. The card's skills go into the client agent's system prompt, and its JSON-RPC URL is where Ask remote agent sends.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_FetchAgentCard" associationDirection="None" sourceRef="Client_FetchAgentCard" targetRef="Note_FetchAgentCard" />
     <bpmn:textAnnotation id="Note_AskRemoteAgent">
@@ -503,10 +510,6 @@
       <bpmn:text>A2A Server, SendMessage (new task). Starts one run of A2A task per new task and answers TASK_STATE_SUBMITTED at once. Rejects requests the agent cannot serve with a JSON-RPC error.</bpmn:text>
     </bpmn:textAnnotation>
     <bpmn:association id="Assoc_MessageReceived" associationDirection="None" sourceRef="Server_MessageReceived" targetRef="Note_MessageReceived" />
-    <bpmn:textAnnotation id="Note_Push">
-      <bpmn:text>A2A Server, push task update. The server agent's only way to reach the client: posts the task state and text it chooses to the client's webhook. Input required waits here for the answer. A final state ends the task.</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:association id="Assoc_Push" associationDirection="None" sourceRef="Server_PushNotification" targetRef="Note_Push" />
     <bpmn:textAnnotation id="Note_FollowUp">
       <bpmn:text>A2A Server, SendMessage (follow-up). Receives the client's answer to the question on the same endpoint, matched on the taskId, and hands it to the server agent. Its reply confirms receipt and claims no task state.</bpmn:text>
     </bpmn:textAnnotation>
@@ -555,21 +558,6 @@
       <bpmndi:BPMNShape id="Client_JoinGateway_di" bpmnElement="Client_JoinGateway" isMarkerVisible="true">
         <dc:Bounds x="457" y="371" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Client_UserFeedback_di" bpmnElement="Client_UserFeedback">
-        <dc:Bounds x="1180" y="356" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Client_End_di" bpmnElement="Client_End">
-        <dc:Bounds x="1452" y="378" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1446" y="421" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Client_UserSatisfied_di" bpmnElement="Client_UserSatisfied" isMarkerVisible="true">
-        <dc:Bounds x="1335" y="371" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1324" y="347" width="73" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_AI_Agent_di" bpmnElement="Client_AI_Agent" isExpanded="true">
         <dc:Bounds x="562" y="196" width="478" height="310" />
       </bpmndi:BPMNShape>
@@ -601,7 +589,7 @@
       <bpmndi:BPMNShape id="Event_13f2nai_di" bpmnElement="Server_CardRequested">
         <dc:Bounds x="252" y="906" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="242" y="949" width="56" height="27" />
+          <dc:Bounds x="222" y="856.5" width="56" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0w7v65t_di" bpmnElement="Server_CardServed">
@@ -704,7 +692,7 @@
       <bpmndi:BPMNShape id="Event_0hjnbuq_di" bpmnElement="Server_MessageReceived">
         <dc:Bounds x="602" y="974" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="577" y="1017" width="90" height="20" />
+          <dc:Bounds x="575" y="950" width="89" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_08f6dbl_di" bpmnElement="Flow_08f6dbl">
@@ -746,6 +734,45 @@
         <di:waypoint x="1140" y="934" />
         <di:waypoint x="1205" y="934" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Client_UserFeedback_di" bpmnElement="Client_UserFeedback">
+        <dc:Bounds x="1180" y="356" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Client_End_di" bpmnElement="Client_End">
+        <dc:Bounds x="1452" y="378" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1446" y="421" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Client_UserSatisfied_di" bpmnElement="Client_UserSatisfied" isMarkerVisible="true">
+        <dc:Bounds x="1335" y="371" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1324" y="347" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_FetchAgentCard_di" bpmnElement="Note_FetchAgentCard">
+        <dc:Bounds x="212" y="210" width="230.3099593495935" height="100" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_AskRemoteAgent_di" bpmnElement="Note_AskRemoteAgent">
+        <dc:Bounds x="582" y="520" width="238" height="100" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_RemoteAgentReplied_di" bpmnElement="Note_RemoteAgentReplied">
+        <dc:Bounds x="1060" y="450" width="250" height="86" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_CardRequested_di" bpmnElement="Note_CardRequested">
+        <dc:Bounds x="230" y="1030" width="250" height="86" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_MessageReceived_di" bpmnElement="Note_MessageReceived">
+        <dc:Bounds x="590" y="1258" width="260" height="86" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Note_FollowUp_di" bpmnElement="Note_FollowUp">
+        <dc:Bounds x="1030" y="1258" width="270" height="86" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_C1_di" bpmnElement="Flow_C1">
         <di:waypoint x="250" y="396" />
         <di:waypoint x="302" y="396" />
@@ -782,63 +809,39 @@
           <dc:Bounds x="1410" y="378" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_FetchAgentCard_di" bpmnElement="Note_FetchAgentCard">
-        <dc:Bounds x="212" y="210" width="300" height="96" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_FetchAgentCard_di" bpmnElement="Assoc_FetchAgentCard">
         <di:waypoint x="352" y="356" />
-        <di:waypoint x="352" y="306" />
+        <di:waypoint x="352" y="310" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_AskRemoteAgent_di" bpmnElement="Note_AskRemoteAgent">
-        <dc:Bounds x="582" y="520" width="320" height="110" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_AskRemoteAgent_di" bpmnElement="Assoc_AskRemoteAgent">
         <di:waypoint x="662" y="436" />
         <di:waypoint x="662" y="520" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_RemoteAgentReplied_di" bpmnElement="Note_RemoteAgentReplied">
-        <dc:Bounds x="1060" y="450" width="270" height="110" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_RemoteAgentReplied_di" bpmnElement="Assoc_RemoteAgentReplied">
         <di:waypoint x="809" y="401" />
         <di:waypoint x="1060" y="472" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_CardRequested_di" bpmnElement="Note_CardRequested">
-        <dc:Bounds x="230" y="1030" width="320" height="100" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_CardRequested_di" bpmnElement="Assoc_CardRequested">
         <di:waypoint x="270" y="942" />
         <di:waypoint x="270" y="1030" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_MessageReceived_di" bpmnElement="Note_MessageReceived">
-        <dc:Bounds x="590" y="1258" width="420" height="86" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_MessageReceived_di" bpmnElement="Assoc_MessageReceived">
         <di:waypoint x="620" y="1010" />
         <di:waypoint x="620" y="1258" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_Push_di" bpmnElement="Note_Push">
-        <dc:Bounds x="592" y="790" width="500" height="72" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Assoc_Push_di" bpmnElement="Assoc_Push">
-        <di:waypoint x="810" y="946" />
-        <di:waypoint x="810" y="862" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Note_FollowUp_di" bpmnElement="Note_FollowUp">
-        <dc:Bounds x="1030" y="1258" width="390" height="90" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Assoc_FollowUp_di" bpmnElement="Assoc_FollowUp">
         <di:waypoint x="1058" y="964" />
         <di:waypoint x="1100" y="964" />
         <di:waypoint x="1100" y="1258" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Push_di" bpmnElement="Assoc_Push">
+        <di:waypoint x="810" y="946" />
+        <di:waypoint x="810" y="882" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Note_Push_di" bpmnElement="Note_Push">
+        <dc:Bounds x="592" y="810" width="500" height="72" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
