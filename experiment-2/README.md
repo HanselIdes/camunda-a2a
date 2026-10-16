@@ -55,8 +55,23 @@ Two deviations from the A2A 1.0 spec, both forced by the HTTP webhook connector:
   tool description tells the client agent to start a new task after a final state.
 
 The server runs every task in the background and answers by push notification only. It rejects requests it cannot
-serve rather than accepting them silently: a request without `returnImmediately: true` and a push notification URL
-gets -32004, and a message with non-text parts gets -32005.
+serve rather than accepting them silently. The checks run in this order, and the first that fails answers:
+
+| Request                                                                                  | Error                         |
+|------------------------------------------------------------------------------------------|-------------------------------|
+| `A2A-Version` header other than empty, `1` or `1.x`                                      | -32009 VERSION_NOT_SUPPORTED  |
+| `Content-Type` other than `application/json` or `application/a2a+json`                   | -32005                        |
+| No `jsonrpc: "2.0"` or no `method`                                                       | -32600 Invalid Request        |
+| `SendStreamingMessage`, `SubscribeToTask`, `GetExtendedAgentCard`                        | -32004 UNSUPPORTED_OPERATION  |
+| `GetTask`, `CancelTask`, `ListTasks` and the 4 push notification config methods          | -32004 UNSUPPORTED_OPERATION  |
+| Any other method except `SendMessage`                                                    | -32601 Method not found       |
+| A message without a messageId, a role or at least one part                               | -32602 Invalid params         |
+| A part that is not text, or text with a `mediaType` other than `text/plain`              | -32005                        |
+| No `returnImmediately: true` or no push notification URL                                 | -32004 UNSUPPORTED_OPERATION  |
+
+The A2A errors (-32004, -32005, -32009) carry a `google.rpc.ErrorInfo` with the reason. The server answers
+`GetTask` and the other task methods with -32004 rather than -32601, because they are A2A methods: this server
+keeps no task store to answer them from. A new task's status carries a UTC timestamp.
 
 The card is one FEEL field because an element template cannot combine several fields into one binding, and the
 webhook's response expression can read only the request. The field's `card` part is what you edit. The rest adds

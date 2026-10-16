@@ -190,9 +190,14 @@ class TwoAgentsE2ETest {
         .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(
             "{\"jsonrpc\":\"2.0\",\"id\":\"late\",\"method\":\"SendMessage\",\"params\":{\"message\":{"
                 + "\"messageId\":\"late-1\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"one more\"}],"
-                + "\"taskId\":\"" + completedTaskId + "\"}}}")).build(), HttpResponse.BodyHandlers.ofString());
+                + "\"taskId\":\"" + completedTaskId + "\"},\"configuration\":{\"returnImmediately\":true,"
+                + "\"taskPushNotificationConfig\":{\"url\":\"http://client/late\"}}}}")).build(),
+        HttpResponse.BodyHandlers.ofString());
     assertThat(late.statusCode()).isEqualTo(200);
-    assertThat(StubModel.JSON.readTree(late.body()).path("result").has("task")).isFalse();
+    // a valid request, so the reply is the receipt Message, which claims no task state
+    final var lateResult = StubModel.JSON.readTree(late.body()).path("result");
+    assertThat(lateResult.has("task")).isFalse();
+    assertThat(lateResult.path("message").path("taskId").asText()).isEqualTo(completedTaskId);
     Thread.sleep(3000);
     assertThat(instance).hasCompletedElement("Server_MessageReceived", 1).hasCompletedElement("Event_1553b23", 1);
 

@@ -99,7 +99,7 @@ class TemplatesIntegrationTest {
     try {
       final var builder = HttpRequest.newBuilder(URI.create(context.getConnectorsAddress() + path))
           .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(body));
-      headers.forEach(builder::header);
+      headers.forEach(builder::setHeader);
       return HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
     } catch (final Exception e) {
       throw new IllegalStateException(e);
@@ -357,6 +357,7 @@ class TemplatesIntegrationTest {
     final var task = rpc.path("result").path("task");
     assertThat(task.path("id").asText()).isEqualTo(messageId);
     assertThat(task.path("status").path("state").asText()).isEqualTo("TASK_STATE_SUBMITTED");
+    assertThat(task.path("status").path("timestamp").asText()).matches("\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\dZ");
 
     final var instance = ProcessInstanceSelectors.byKey(key);
     assertThat(instance).hasCompletedElements("NewTask").hasActiveElements("Working", "Hold");
@@ -403,16 +404,46 @@ class TemplatesIntegrationTest {
     assertThat(ProcessInstanceSelectors.byKey(key)).hasNotActivatedElements("NewTask", "FollowUp");
   }
 
+  JsonNode error(final String path, final String body, final Map<String, String> headers) {
+    return json(post(path, body, headers).body()).path("error");
+  }
+
+  static String rpc(final String id, final String method, final String params) {
+    return "{\"jsonrpc\":\"2.0\",\"id\":\"" + id + "\",\"method\":\"" + method + "\",\"params\":" + params + "}";
+  }
+
   @Test
   void otherMethodsGetAJsonRpcErrorAndStartNothing() {
     final long key = agent("agent-task-4");
-    final var wrongMethod = post("/inbound/h-server?agent=agent-task-4",
-        "{\"jsonrpc\":\"2.0\",\"id\":\"7\",\"method\":\"GetTask\",\"params\":{\"id\":\"x\"}}", Map.of());
-    assertThat(json(wrongMethod.body()).path("error").path("code").asInt()).isEqualTo(-32601);
-    final var noMessageId = post("/inbound/h-server?agent=agent-task-4",
-        "{\"jsonrpc\":\"2.0\",\"id\":\"8\",\"method\":\"SendMessage\",\"params\":{\"message\":{\"parts\":[]}}}",
-        Map.of());
-    assertThat(json(noMessageId.body()).path("error").path("code").asInt()).isEqualTo(-32602);
+    final String path = "/inbound/h-server?agent=agent-task-4";
+    // spec methods the agent cannot serve without a task store: unsupported, not unknown
+    final var getTask = error(path, rpc("7", "GetTask", "{\"id\":\"x\"}"), Map.of());
+    assertThat(getTask.path("code").asInt()).isEqualTo(-32004);
+    assertThat(getTask.path("data").get(0).path("reason").asText()).isEqualTo("UNSUPPORTED_OPERATION");
+    assertThat(getTask.path("data").get(0).path("@type").asText())
+        .isEqualTo("type.googleapis.com/google.rpc.ErrorInfo");
+    assertThat(error(path, rpc("7a", "CreateTaskPushNotificationConfig", "{\"taskId\":\"x\"}"), Map.of())
+        .path("code").asInt()).isEqualTo(-32004);
+    assertThat(error(path, rpc("7b", "SendStreamingMessage", "{}"), Map.of()).path("code").asInt())
+        .isEqualTo(-32004);
+    assertThat(error(path, rpc("7c", "GetExtendedAgentCard", "{}"), Map.of()).path("code").asInt())
+        .isEqualTo(-32004);
+    final var unknown = error(path, rpc("7d", "NoSuchMethod", "{}"), Map.of());
+    assertThat(unknown.path("code").asInt()).isEqualTo(-32601);
+    assertThat(unknown.has("data")).isFalse();
+    // not JSON-RPC 2.0
+    assertThat(error(path, "{\"id\":\"7e\",\"method\":\"SendMessage\",\"params\":{}}", Map.of()).path("code").asInt())
+        .isEqualTo(-32600);
+    // invalid params: no messageId, then no parts
+    assertThat(error(path, rpc("8", "SendMessage", "{\"message\":{\"parts\":[]}}"), Map.of()).path("code").asInt())
+        .isEqualTo(-32602);
+    assertThat(error(path, rpc("8a", "SendMessage",
+        "{\"message\":{\"messageId\":\"m-y\",\"role\":\"ROLE_USER\",\"parts\":[]}}"), Map.of()).path("code").asInt())
+        .isEqualTo(-32602);
+    // an A2A version this agent does not speak
+    final var version = error(path, sendMessage("m-v", null, "hi"), Map.of("A2A-Version", "2.0"));
+    assertThat(version.path("code").asInt()).isEqualTo(-32009);
+    assertThat(version.path("data").get(0).path("reason").asText()).isEqualTo("VERSION_NOT_SUPPORTED");
     assertThat(ProcessInstanceSelectors.byKey(key)).hasNotActivatedElements("NewTask");
   }
 
@@ -427,6 +458,15 @@ class TemplatesIntegrationTest {
         + message.formatted("{\"url\":\"https://example.com/a.png\"}") + ",\"configuration\":{"
         + "\"returnImmediately\":true," + push + "}}}", Map.of());
     assertThat(json(file.body()).path("error").path("code").asInt()).isEqualTo(-32005);
+    // a text part with a media type other than text/plain
+    final var image = error(path, "{\"jsonrpc\":\"2.0\",\"id\":\"9a\",\"method\":\"SendMessage\",\"params\":{"
+        + message.formatted("{\"text\":\"iVBOR\",\"mediaType\":\"image/png\"}") + ",\"configuration\":{"
+        + "\"returnImmediately\":true," + push + "}}}", Map.of());
+    assertThat(image.path("code").asInt()).isEqualTo(-32005);
+    assertThat(image.path("data").get(0).path("reason").asText()).isEqualTo("CONTENT_TYPE_NOT_SUPPORTED");
+    // a request body that is not declared as JSON
+    assertThat(error(path, sendMessage("m-ct", null, "hi"), Map.of("Content-Type", "text/plain")).path("code")
+        .asInt()).isEqualTo(-32005);
     // a blocking request: the agent cannot hold the HTTP response until the task ends
     final var blocking = post(path, "{\"jsonrpc\":\"2.0\",\"id\":\"10\",\"method\":\"SendMessage\",\"params\":{"
         + message.formatted("{\"text\":\"hi\"}") + ",\"configuration\":{" + push + "}}}", Map.of());

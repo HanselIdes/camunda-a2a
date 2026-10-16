@@ -317,24 +317,45 @@ public final class A2aTemplates {
 
   // A2A 1.0 Server: SendMessage ---------------------------------------------------------------------------------
 
+  /** A FEEL JSON-RPC error for an A2A error code, with the google.rpc.ErrorInfo detail A2A 1.0 requires. */
+  static String a2aError(final int code, final String message, final String reason) {
+    return "{code: " + code + ", message: \"" + message + "\", data: [{\"@type\": "
+        + "\"type.googleapis.com/google.rpc.ErrorInfo\", reason: \"" + reason + "\", domain: \"a2a-protocol.org\"}]}";
+  }
+
   static List<ElementTemplate> serverSendMessage() {
     String msg = "request.body.params.message";
     String taskId = "(if " + msg + ".taskId != null then " + msg + ".taskId else " + msg + ".messageId)";
     String contextId = "(if " + msg + ".contextId != null then " + msg + ".contextId else " + taskId + ")";
     String pushConfig = "request.body.params.configuration.taskPushNotificationConfig";
-    String textOnly = "(" + msg + ".parts != null and (every part in " + msg + ".parts satisfies part.text != null))";
+    String method = "request.body.method";
+    String version = "get value(request.headers, \"a2a-version\")";
+    String contentType = "get value(request.headers, \"content-type\")";
+    // a missing or empty A2A-Version header means 1.0; any 1.x is accepted
+    String versionOk = "(if " + version + " instance of string then (" + version + " = \"\" or " + version
+        + " = \"1\" or starts with(" + version + ", \"1.\")) else true)";
+    String contentTypeOk = "(" + contentType + " instance of string and (starts with(lower case(" + contentType
+        + "), \"application/json\") or starts with(lower case(" + contentType + "), \"application/a2a+json\")))";
+    String jsonRpcOk = "(request.body.jsonrpc instance of string and request.body.jsonrpc = \"2.0\" and " + method
+        + " instance of string)";
+    String messageOk = "(" + msg + " instance of context and " + msg + ".messageId instance of string and " + msg
+        + ".role instance of string and " + msg + ".parts instance of list and count(" + msg + ".parts) > 0)";
+    String textOnly = "(" + msg + ".parts instance of list and (every part in " + msg + ".parts satisfies part "
+        + "instance of context and part.text instance of string and (part.mediaType = null or part.mediaType = "
+        + "\"text/plain\")))";
     // the agent runs every task in the background and answers by push notification only
     String backgroundWithPush =
         "request.body.params.configuration.returnImmediately = true and " + pushConfig + ".url != null";
-    String valid = "request.body.method = \"SendMessage\" and " + msg + ".messageId != null and " + textOnly
-        + " and " + backgroundWithPush;
+    String valid = versionOk + " and " + contentTypeOk + " and " + jsonRpcOk + " and " + method
+        + " = \"SendMessage\" and " + messageOk + " and " + textOnly + " and " + backgroundWithPush;
     // The webhook answers before it correlates, so it cannot know whether a task still waits for a follow-up.
     // A follow-up therefore gets a Message that states only what is known, not a Task with a guessed state.
     String response =
         "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: "
             + "{jsonrpc: \"2.0\", id: request.body.id, result: if " + msg + ".taskId = null "
             + "then {task: {id: " + taskId + ", contextId: " + contextId + ", "
-            + "status: {state: \"TASK_STATE_SUBMITTED\"}}} "
+            + "status: {state: \"TASK_STATE_SUBMITTED\", timestamp: "
+            + "substring(string(date and time(now(), \"UTC\")), 1, 19) + \"Z\"}}} "
             + "else {message: {messageId: \"reply-\" + " + msg + ".messageId, role: \"ROLE_AGENT\", "
             + "taskId: " + msg + ".taskId, contextId: " + contextId + ", parts: [{text: \"Message received for task \" + "
             + msg + ".taskId + \". If this task is waiting for input, its next update arrives as a push notification. "
@@ -345,14 +366,34 @@ public final class A2aTemplates {
         "=if " + valid + " then null "
             + "else {statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: "
             + "{jsonrpc: \"2.0\", id: request.body.id, error: "
-            + "if request.body.method != \"SendMessage\" then {code: -32601, message: \"Method not found\"} "
-            + "else if " + msg + ".messageId = null then "
-            + "{code: -32602, message: \"Invalid params: message.messageId is required\"} "
-            + "else if not(" + textOnly + ") then "
-            + "{code: -32005, message: \"Content type not supported: this agent accepts text parts only\"} "
-            + "else {code: -32004, message: \"Unsupported operation: this agent runs tasks in the background and "
-            + "answers by push notification only. Set configuration.returnImmediately to true and "
-            + "configuration.taskPushNotificationConfig.url.\"}}}";
+            + "if not(" + versionOk + ") then "
+            + a2aError(-32009, "Unsupported A2A-Version: this agent speaks A2A 1.0", "VERSION_NOT_SUPPORTED")
+            + " else if not(" + contentTypeOk + ") then "
+            + a2aError(-32005, "Content-Type must be application/json", "CONTENT_TYPE_NOT_SUPPORTED")
+            + " else if not(" + jsonRpcOk + ") then {code: -32600, message: \"Invalid Request\"}"
+            + " else if list contains([\"SendStreamingMessage\", \"SubscribeToTask\"], " + method + ") then "
+            + a2aError(-32004, "Unsupported operation: streaming is not supported", "UNSUPPORTED_OPERATION")
+            + " else if " + method + " = \"GetExtendedAgentCard\" then "
+            + a2aError(-32004, "Unsupported operation: the extended agent card is not supported",
+                "UNSUPPORTED_OPERATION")
+            // spec methods this agent cannot serve, because it keeps no task store: not "Method not found"
+            + " else if list contains([\"GetTask\", \"CancelTask\", \"ListTasks\", "
+            + "\"CreateTaskPushNotificationConfig\", \"GetTaskPushNotificationConfig\", "
+            + "\"ListTaskPushNotificationConfigs\", \"DeleteTaskPushNotificationConfig\"], " + method + ") then "
+            + a2aError(-32004, "Unsupported operation: this agent keeps no task store. Task updates arrive only as "
+                + "push notifications to the configuration of the SendMessage that started the task.",
+                "UNSUPPORTED_OPERATION")
+            + " else if " + method + " != \"SendMessage\" then {code: -32601, message: \"Method not found\"}"
+            + " else if not(" + messageOk + ") then {code: -32602, message: \"Invalid params: message with "
+            + "messageId, role and a non-empty parts list is required\"}"
+            + " else if not(" + textOnly + ") then "
+            + a2aError(-32005, "Content type not supported: this agent accepts text/plain text parts only",
+                "CONTENT_TYPE_NOT_SUPPORTED")
+            + " else "
+            + a2aError(-32004, "Unsupported operation: this agent runs tasks in the background and answers by push "
+                + "notification only. Set configuration.returnImmediately to true and "
+                + "configuration.taskPushNotificationConfig.url.", "UNSUPPORTED_OPERATION")
+            + "}}";
     String messageText = "string join(for part in " + msg + ".parts return part.text, \" \")";
     // Both elements must carry the same connector properties (method, context, response) so the runtime puts
     // them behind one endpoint; activation condition, correlation and result are per element.
@@ -368,7 +409,7 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.v1")
             .name("A2A 1.0 Server: SendMessage (new task)")
-            .version(4)
+            .version(5)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage without a taskId: a new task. The agent query parameter finds the "
                     + "process instance the agent lives in; use it on a non-interrupting event sub-process start. "
@@ -392,7 +433,7 @@ public final class A2aTemplates {
         webhookBase()
             .id("dev.hansel.a2a.server.send-message.follow-up.v1")
             .name("A2A 1.0 Server: SendMessage (follow-up)")
-            .version(4)
+            .version(5)
             .description(
                 "A2A 1.0 JSON-RPC SendMessage with a taskId: the client's answer to a task in "
                     + "TASK_STATE_INPUT_REQUIRED, which becomes toolCallResult. Correlates on the taskId, so it reaches only a task that is waiting. "
