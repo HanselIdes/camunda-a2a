@@ -1,0 +1,80 @@
+# Requirements and skipped tests that may not be PASS on jsonrpc, each with a reason.
+# Reasons: capability-not-declared, other-binding, client-side, not-exercised
+#
+#   REQ <requirement id> <reason> <note>
+#   SKIP <regex searched in "module.Class::test[param]"> <reason> <note>
+#
+# tck/check_results.py rejects entries for the requirement ids it requires to be PASS.
+
+# --- capabilities the Agent Card does not declare ---------------------------------------------
+REQ CORE-STREAM-001 capability-not-declared streaming is false in the Agent Card
+REQ CORE-STREAM-002 capability-not-declared streaming is false in the Agent Card
+REQ CORE-STREAM-003 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-ORDER-001 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-ORDER-002 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-ORDER-003 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-ORDER-004 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-SUB-001 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-SUB-002 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-SUB-003 capability-not-declared streaming is false in the Agent Card
+REQ STREAM-SUB-004 capability-not-declared streaming is false in the Agent Card
+REQ JSONRPC-SSE-001 capability-not-declared streaming is false in the Agent Card
+REQ PUSH-CREATE-001 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-CREATE-002 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-GET-001 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-GET-002 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-LIST-001 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-DEL-001 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-DEL-002 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-DELIVER-001 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-DELIVER-002 capability-not-declared pushNotifications is false in the Agent Card
+REQ PUSH-DELIVER-003 capability-not-declared pushNotifications is false in the Agent Card
+REQ CARD-EXT-001 capability-not-declared extendedAgentCard is false in the Agent Card
+REQ CARD-EXT-002 capability-not-declared extendedAgentCard is false in the Agent Card
+REQ CORE-CAP-004 capability-not-declared the card declares no required extension
+
+# --- other bindings -------------------------------------------------------------------------------
+REQ GRPC-SVC-001 other-binding gRPC is not offered
+REQ GRPC-SVC-002 other-binding gRPC is not offered
+REQ GRPC-SVC-003 other-binding gRPC is not offered
+REQ GRPC-META-001 other-binding gRPC is not offered
+REQ GRPC-ERR-001 other-binding gRPC is not offered
+REQ GRPC-ERR-002 other-binding gRPC is not offered
+REQ GRPC-ERR-003 other-binding gRPC is not offered
+REQ HTTP_JSON-SVC-001 other-binding HTTP+JSON is not offered
+REQ HTTP_JSON-SVC-002 other-binding HTTP+JSON is not offered
+REQ HTTP_JSON-ERR-001 other-binding HTTP+JSON is not offered
+REQ HTTP_JSON-ERR-002 other-binding HTTP+JSON is not offered
+REQ HTTP_JSON-STATUS-001 other-binding HTTP+JSON is not offered
+REQ HTTP_JSON-SSE-001 other-binding HTTP+JSON is not offered
+REQ BIND-EQUIV-001 other-binding needs more than one binding
+REQ BIND-EQUIV-002 other-binding needs more than one binding
+REQ BIND-EQUIV-003 other-binding needs more than one binding
+REQ BIND-EQUIV-004 other-binding needs more than one binding
+
+# --- client obligations -------------------------------------------------------------------------
+REQ VER-CLIENT-001 client-side the requirement is about what a client sends
+REQ VER-CLIENT-002 client-side the requirement is about what a client sends
+
+# --- not exercised by the TCK on jsonrpc ----------------------------------------------------------
+REQ CARD-SIGN-001 not-exercised the card is unsigned and the TCK has no signature test
+REQ CARD-SIGN-002 not-exercised the card is unsigned and the TCK has no signature test
+REQ CARD-SIGN-003 not-exercised the card is unsigned and the TCK has no signature test
+REQ CARD-SIGN-004 not-exercised the card is unsigned and the TCK has no signature test
+REQ AUTH-TLS-001 not-exercised the TCK has no test for transport encryption
+REQ AUTH-SERVER-002 not-exercised no authentication scheme is declared and the TCK has no test for it
+REQ AUTH-INTASK-001 not-exercised the TCK has no test for in-task authorization
+REQ AUTH-INTASK-002 not-exercised the TCK has no test for in-task authorization
+REQ AUTH-INTASK-003 not-exercised the TCK has no test for in-task authorization
+REQ AUTH-INTASK-004 not-exercised the TCK has no test for in-task authorization
+REQ AUTH-SCOPE-001 not-exercised the TCK has no test for authorization scope
+REQ AUTH-SCOPE-002 not-exercised the TCK has no test for authorization scope
+REQ AUTH-SCOPE-003 not-exercised the TCK has no test for authorization scope
+REQ VER-SERVER-001 not-exercised the TCK has no test for version-specific semantics
+
+# --- skipped tests ------------------------------------------------------------------------------------
+SKIP grpc other-binding gRPC is not offered
+SKIP http_json|HTTP\+JSON|TestRest|_rest$ other-binding HTTP+JSON is not offered
+SKIP test_push_notifications capability-not-declared pushNotifications is false
+SKIP test_multi_stream|test_stream_ordering|test_sse_streaming|TestSubscribeLifecycle|TestJsonRpcStreaming|CORE-STREAM-|STREAM-SUB- capability-not-declared streaming is false
+SKIP TestExtendedCard|TestCapabilityExtensionRequired capability-not-declared no extended card and no required extension are declared

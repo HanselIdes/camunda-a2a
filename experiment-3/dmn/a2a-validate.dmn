@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_a2a_validate" name="Validate A2A request" namespace="http://camunda.org/schema/1.0/dmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <decision id="a2a-validate" name="Validate A2A request">
+    <decisionTable id="a2a-validate_table" hitPolicy="FIRST">
+      <input id="In_0" label="A2A-Version accepted">
+        <inputExpression id="InExpr_0" typeRef="boolean"><text>ctx.versionOk</text></inputExpression>
+      </input>
+      <input id="In_1" label="Content-Type accepted">
+        <inputExpression id="InExpr_1" typeRef="boolean"><text>ctx.contentTypeOk</text></inputExpression>
+      </input>
+      <input id="In_2" label="JSON-RPC 2.0 request">
+        <inputExpression id="InExpr_2" typeRef="boolean"><text>ctx.jsonrpcOk</text></inputExpression>
+      </input>
+      <input id="In_3" label="Method">
+        <inputExpression id="InExpr_3" typeRef="string"><text>ctx.method</text></inputExpression>
+      </input>
+      <input id="In_4" label="Message valid">
+        <inputExpression id="InExpr_4" typeRef="boolean"><text>ctx.msgOk</text></inputExpression>
+      </input>
+      <input id="In_5" label="Media types supported">
+        <inputExpression id="InExpr_5" typeRef="boolean"><text>ctx.mediaOk</text></inputExpression>
+      </input>
+      <input id="In_6" label="Task id present">
+        <inputExpression id="InExpr_6" typeRef="boolean"><text>ctx.idOk</text></inputExpression>
+      </input>
+      <input id="In_7" label="Push notifications enabled">
+        <inputExpression id="InExpr_7" typeRef="boolean"><text>ctx.pushEnabled</text></inputExpression>
+      </input>
+      <output id="Out_0" label="Route" name="route" typeRef="string" />
+      <output id="Out_1" label="Error code" name="code" typeRef="number" />
+      <output id="Out_2" label="Error reason" name="reason" typeRef="string" />
+      <output id="Out_3" label="Error message" name="message" typeRef="string" />
+      <rule id="Rule_1">
+        <description>Unsupported A2A-Version</description>
+        <inputEntry id="Rule_1_in_0"><text>false</text></inputEntry>
+        <inputEntry id="Rule_1_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_3"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_1_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_1_out_1"><text>-32009</text></outputEntry>
+        <outputEntry id="Rule_1_out_2"><text>"VERSION_NOT_SUPPORTED"</text></outputEntry>
+        <outputEntry id="Rule_1_out_3"><text>"Unsupported A2A-Version"</text></outputEntry>
+      </rule>
+      <rule id="Rule_2">
+        <description>Content-Type is not application/json</description>
+        <inputEntry id="Rule_2_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_1"><text>false</text></inputEntry>
+        <inputEntry id="Rule_2_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_3"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_2_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_2_out_1"><text>-32005</text></outputEntry>
+        <outputEntry id="Rule_2_out_2"><text>"CONTENT_TYPE_NOT_SUPPORTED"</text></outputEntry>
+        <outputEntry id="Rule_2_out_3"><text>"Content-Type must be application/json"</text></outputEntry>
+      </rule>
+      <rule id="Rule_3">
+        <description>Not a JSON-RPC 2.0 request</description>
+        <inputEntry id="Rule_3_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_2"><text>false</text></inputEntry>
+        <inputEntry id="Rule_3_in_3"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_3_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_3_out_1"><text>-32600</text></outputEntry>
+        <outputEntry id="Rule_3_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_3_out_3"><text>"Invalid Request"</text></outputEntry>
+      </rule>
+      <rule id="Rule_4">
+        <description>Streaming is not supported</description>
+        <inputEntry id="Rule_4_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_3"><text>"SendStreamingMessage","SubscribeToTask"</text></inputEntry>
+        <inputEntry id="Rule_4_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_4_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_4_out_1"><text>-32004</text></outputEntry>
+        <outputEntry id="Rule_4_out_2"><text>"UNSUPPORTED_OPERATION"</text></outputEntry>
+        <outputEntry id="Rule_4_out_3"><text>"Streaming is not supported"</text></outputEntry>
+      </rule>
+      <rule id="Rule_5">
+        <description>Extended agent card is not supported</description>
+        <inputEntry id="Rule_5_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_3"><text>"GetExtendedAgentCard"</text></inputEntry>
+        <inputEntry id="Rule_5_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_5_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_5_out_1"><text>-32004</text></outputEntry>
+        <outputEntry id="Rule_5_out_2"><text>"UNSUPPORTED_OPERATION"</text></outputEntry>
+        <outputEntry id="Rule_5_out_3"><text>"Extended agent card is not supported"</text></outputEntry>
+      </rule>
+      <rule id="Rule_6">
+        <description>Push notifications are not supported</description>
+        <inputEntry id="Rule_6_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_6_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_6_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_6_in_3"><text>"CreateTaskPushNotificationConfig","GetTaskPushNotificationConfig","ListTaskPushNotificationConfigs","DeleteTaskPushNotificationConfig"</text></inputEntry>
+        <inputEntry id="Rule_6_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_6_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_6_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_6_in_7"><text>false</text></inputEntry>
+        <outputEntry id="Rule_6_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_6_out_1"><text>-32003</text></outputEntry>
+        <outputEntry id="Rule_6_out_2"><text>"PUSH_NOTIFICATION_NOT_SUPPORTED"</text></outputEntry>
+        <outputEntry id="Rule_6_out_3"><text>"Push notifications are not supported"</text></outputEntry>
+      </rule>
+      <rule id="Rule_7">
+        <description>Unknown method</description>
+        <inputEntry id="Rule_7_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_3"><text>not("SendMessage","GetTask","ListTasks","CancelTask","CreateTaskPushNotificationConfig","GetTaskPushNotificationConfig","ListTaskPushNotificationConfigs","DeleteTaskPushNotificationConfig")</text></inputEntry>
+        <inputEntry id="Rule_7_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_7_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_7_out_1"><text>-32601</text></outputEntry>
+        <outputEntry id="Rule_7_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_7_out_3"><text>"Method not found"</text></outputEntry>
+      </rule>
+      <rule id="Rule_8">
+        <description>SendMessage without a valid message</description>
+        <inputEntry id="Rule_8_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_8_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_8_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_8_in_3"><text>"SendMessage"</text></inputEntry>
+        <inputEntry id="Rule_8_in_4"><text>false</text></inputEntry>
+        <inputEntry id="Rule_8_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_8_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_8_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_8_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_8_out_1"><text>-32602</text></outputEntry>
+        <outputEntry id="Rule_8_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_8_out_3"><text>"Invalid params: message with messageId, role and parts is required"</text></outputEntry>
+      </rule>
+      <rule id="Rule_9">
+        <description>SendMessage with an unsupported part media type</description>
+        <inputEntry id="Rule_9_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_9_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_9_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_9_in_3"><text>"SendMessage"</text></inputEntry>
+        <inputEntry id="Rule_9_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_9_in_5"><text>false</text></inputEntry>
+        <inputEntry id="Rule_9_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_9_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_9_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_9_out_1"><text>-32005</text></outputEntry>
+        <outputEntry id="Rule_9_out_2"><text>"CONTENT_TYPE_NOT_SUPPORTED"</text></outputEntry>
+        <outputEntry id="Rule_9_out_3"><text>"Unsupported media type in message part"</text></outputEntry>
+      </rule>
+      <rule id="Rule_10">
+        <description>A task id is required</description>
+        <inputEntry id="Rule_10_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_10_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_10_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_10_in_3"><text>"GetTask","CancelTask","CreateTaskPushNotificationConfig","GetTaskPushNotificationConfig","ListTaskPushNotificationConfigs","DeleteTaskPushNotificationConfig"</text></inputEntry>
+        <inputEntry id="Rule_10_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_10_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_10_in_6"><text>false</text></inputEntry>
+        <inputEntry id="Rule_10_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_10_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_10_out_1"><text>-32602</text></outputEntry>
+        <outputEntry id="Rule_10_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_10_out_3"><text>"Invalid params: id is required"</text></outputEntry>
+      </rule>
+      <rule id="Rule_11">
+        <description>Valid request</description>
+        <inputEntry id="Rule_11_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_3"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_7"><text>-</text></inputEntry>
+        <outputEntry id="Rule_11_out_0"><text>ctx.method</text></outputEntry>
+        <outputEntry id="Rule_11_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_11_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_11_out_3"><text>null</text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_1">
+      <dmndi:DMNShape id="a2a-validate_di" dmnElementRef="a2a-validate">
+        <dc:Bounds height="80" width="180" x="150" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

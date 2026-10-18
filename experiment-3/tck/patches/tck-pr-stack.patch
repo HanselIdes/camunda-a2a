@@ -1,0 +1,1419 @@
+diff --git a/specification/a2a.proto b/specification/a2a.proto
+index 184a555..400cdba 100644
+--- a/specification/a2a.proto
++++ b/specification/a2a.proto
+@@ -341,7 +341,12 @@ message AgentInterface {
+   // easily extended for other protocol bindings. The core ones officially
+   // supported are `JSONRPC`, `GRPC` and `HTTP+JSON`.
+   string protocol_binding = 2 [(google.api.field_behavior) = REQUIRED];
+-  // Tenant ID to be used in the request when calling the agent.
++  // Optional. An opaque string used for routing requests to a specific agent
++  // or tenant when multiple agents are served behind a single A2A endpoint.
++  // When set, clients MUST include this value in the `tenant` field of all
++  // request messages sent to this interface. The server is responsible for
++  // interpreting the value and routing requests accordingly; the protocol
++  // does not define its format or semantics.
+   string tenant = 3;
+   // The version of the A2A protocol this interface exposes.
+   // Use the latest supported minor version per major version.
+@@ -462,7 +467,8 @@ message AgentCardSignature {
+ 
+ // A container associating a push notification configuration with a specific task.
+ message TaskPushNotificationConfig {
+-  // Optional. Tenant ID.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The push notification configuration details.
+   // A unique identifier (e.g. UUID) for this push notification configuration.
+@@ -640,7 +646,8 @@ message DeviceCodeOAuthFlow {
+ 
+ // Represents a request for the `SendMessage` method.
+ message SendMessageRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The message to send to the agent.
+   Message message = 2 [(google.api.field_behavior) = REQUIRED];
+@@ -652,7 +659,8 @@ message SendMessageRequest {
+ 
+ // Represents a request for the `GetTask` method.
+ message GetTaskRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The resource ID of the task to retrieve.
+   string id = 2 [(google.api.field_behavior) = REQUIRED];
+@@ -665,7 +673,8 @@ message GetTaskRequest {
+ 
+ // Parameters for listing tasks with optional filtering criteria.
+ message ListTasksRequest {
+-  // Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // Filter tasks by context ID to get tasks from a specific conversation or session.
+   string context_id = 2;
+@@ -704,7 +713,8 @@ message ListTasksResponse {
+ 
+ // Represents a request for the `CancelTask` method.
+ message CancelTaskRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The resource ID of the task to cancel.
+   string id = 2 [(google.api.field_behavior) = REQUIRED];
+@@ -714,7 +724,8 @@ message CancelTaskRequest {
+ 
+ // Represents a request for the `GetTaskPushNotificationConfig` method.
+ message GetTaskPushNotificationConfigRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The parent task resource ID.
+   string task_id = 2 [(google.api.field_behavior) = REQUIRED];
+@@ -724,7 +735,8 @@ message GetTaskPushNotificationConfigRequest {
+ 
+ // Represents a request for the `DeleteTaskPushNotificationConfig` method.
+ message DeleteTaskPushNotificationConfigRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The parent task resource ID.
+   string task_id = 2 [(google.api.field_behavior) = REQUIRED];
+@@ -734,7 +746,8 @@ message DeleteTaskPushNotificationConfigRequest {
+ 
+ // Represents a request for the `SubscribeToTask` method.
+ message SubscribeToTaskRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+   // The resource ID of the task to subscribe to.
+   string id = 2 [(google.api.field_behavior) = REQUIRED];
+@@ -742,7 +755,8 @@ message SubscribeToTaskRequest {
+ 
+ // Represents a request for the `ListTaskPushNotificationConfigs` method.
+ message ListTaskPushNotificationConfigsRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 4;
+   // The parent task resource ID.
+   string task_id = 1 [(google.api.field_behavior) = REQUIRED];
+@@ -756,7 +770,8 @@ message ListTaskPushNotificationConfigsRequest {
+ 
+ // Represents a request for the `GetExtendedAgentCard` method.
+ message GetExtendedAgentCardRequest {
+-  // Optional. Tenant ID, provided as a path parameter.
++  // Optional. Opaque routing identifier. Must match the `tenant` value from
++  // the selected `AgentInterface` in the Agent Card when that field is set.
+   string tenant = 1;
+ }
+ 
+diff --git a/specification/specification.md b/specification/specification.md
+index 7095fc0..382185a 100644
+--- a/specification/specification.md
++++ b/specification/specification.md
+@@ -1,13 +1,11 @@
+-# Agent2Agent (A2A) Protocol Specification (Release Candidate v1.0)
++# Agent2Agent (A2A) Protocol Specification
+ 
+-??? note "**Latest Released Version** [`0.3.0`](https://a2a-protocol.org/v0.3.0/specification)"
++??? note "**Latest Released Version** [`1.0.0`](https://a2a-protocol.org/v1.0.0/specification)"
+ 
+     **Previous Versions**
+ 
++    - [`0.3.0`](https://a2a-protocol.org/v0.3.0/specification)
+     - [`0.2.6`](https://a2a-protocol.org/v0.2.6/specification)
+-    - [`0.2.5`](https://a2a-protocol.org/v0.2.5/specification)
+-    - [`0.2.4`](https://a2a-protocol.org/v0.2.4/specification)
+-    - [`0.2.0`](https://a2a-protocol.org/v0.2.0/specification)
+     - [`0.1.0`](https://a2a-protocol.org/v0.1.0/specification)
+ 
+ See [Release Notes](https://github.com/a2aproject/A2A/releases) for changes made between versions.
+@@ -55,7 +53,7 @@ graph TB
+ 
+     subgraph L2 ["A2A Operations"]
+         direction LR
+-        G[Send Message] ~~~ H[Stream Message] ~~~ I[Get Task] ~~~ J[List Tasks] ~~~ K[Cancel Task] ~~~ L[Get Agent Card]
++        G[Send Message] ~~~ H[Send Streaming Message] ~~~ I[Get Task] ~~~ J[List Tasks] ~~~ K[Cancel Task] ~~~ L[Get Agent Card]
+     end
+ 
+     subgraph L3 ["Protocol Bindings"]
+@@ -174,7 +172,7 @@ The primary operation for initiating agent interactions. Clients send a message
+ **Errors:**
+ 
+ - [`ContentTypeNotSupportedError`](#332-error-handling): A Media Type provided in the request's message parts is not supported by the agent.
+-- [`UnsupportedOperationError`](#332-error-handling): Messages sent to Tasks that are in a terminal state (e.g., completed, canceled, rejected) cannot accept further messages.
++- [`UnsupportedOperationError`](#332-error-handling): Messages sent to Tasks that are in a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`) cannot accept further messages.
+ - [`TaskNotFoundError`](#332-error-handling): The task ID does not exist or is not accessible.
+ 
+ **Behavior:**
+@@ -199,7 +197,7 @@ Similar to Send Message but with real-time streaming of updates during processin
+ **Errors:**
+ 
+ - [`UnsupportedOperationError`](#332-error-handling): Streaming is not supported by the agent (see [Capability Validation](#334-capability-validation)).
+-- [`UnsupportedOperationError`](#332-error-handling): Messages sent to Tasks that are in a terminal state (e.g., completed, canceled, rejected) cannot accept further messages.
++- [`UnsupportedOperationError`](#332-error-handling): Messages sent to Tasks that are in a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`) cannot accept further messages.
+ - [`ContentTypeNotSupportedError`](#332-error-handling): A Media Type provided in the request's message parts is not supported by the agent.
+ - [`TaskNotFoundError`](#332-error-handling): The task ID does not exist or is not accessible.
+ 
+@@ -209,13 +207,13 @@ The operation MUST establish a streaming connection for real-time updates. The s
+ 
+ 1. **Message-only stream:** If the agent returns a [`Message`](#414-message), the stream MUST contain exactly one `Message` object and then close immediately. No task tracking or updates are provided.
+ 
+-2. **Task lifecycle stream:** If the agent returns a [`Task`](#411-task), the stream MUST begin with the Task object, followed by zero or more [`TaskStatusUpdateEvent`](#421-taskstatusupdateevent) or [`TaskArtifactUpdateEvent`](#422-taskartifactupdateevent) objects. The stream MUST close when the task reaches a terminal state (e.g. completed, failed, canceled, rejected).
++2. **Task lifecycle stream:** If the agent returns a [`Task`](#411-task), the stream MUST begin with the Task object, followed by zero or more [`TaskStatusUpdateEvent`](#421-taskstatusupdateevent) or [`TaskArtifactUpdateEvent`](#422-taskartifactupdateevent) objects. The stream MUST close when the task reaches a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`).
+ 
+ The agent MAY return a `Task` for complex processing with status/artifact updates or MAY return a `Message` for direct streaming responses without task overhead. The implementation MUST provide immediate feedback on progress and intermediate results.
+ 
+ #### 3.1.3. Get Task
+ 
+-Retrieves the current state (including status, artifacts, and optionally history) of a previously initiated task. This is typically used for polling the status of a task initiated with message/send, or for fetching the final state of a task after being notified via a push notification or after a stream has ended.
++Retrieves the current state (including status, artifacts, and optionally history) of a previously initiated task. This is typically used for polling the status of a task initiated with Send Message, or for fetching the final state of a task after being notified via a push notification or after a stream has ended.
+ 
+ **Inputs:**
+ 
+@@ -304,11 +302,11 @@ Establishes a streaming connection to receive updates for an existing task.
+ 
+ - [`UnsupportedOperationError`](#332-error-handling): Streaming is not supported by the agent (see [Capability Validation](#334-capability-validation)).
+ - [`TaskNotFoundError`](#332-error-handling): The task ID does not exist or is not accessible.
+-- [`UnsupportedOperationError`](#332-error-handling): The operation is attempted on a task that is in a terminal state (`completed`, `failed`, `canceled`, or `rejected`).
++- [`UnsupportedOperationError`](#332-error-handling): The operation is attempted on a task that is in a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`).
+ 
+ **Behavior:**
+ 
+-The operation enables real-time monitoring of task progress and can be used with any task that is not in a terminal state. The stream MUST terminate when the task reaches a terminal state (`completed`, `failed`, `canceled`, or `rejected`).
++The operation enables real-time monitoring of task progress and can be used with any task that is not in a terminal state. The stream MUST terminate when the task reaches a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`).
+ 
+ The operation MUST return a `Task` object as the first event in the stream, representing the current state of the task at the time of subscription. This prevents a potential loss of information between a call to `GetTask` and calling `SubscribeToTask`.
+ 
+@@ -321,7 +319,7 @@ Creates a push notification configuration for a task to receive asynchronous upd
+ 
+ **Inputs:**
+ 
+-{{ proto_to_table("CreateTaskPushNotificationConfigRequest") }}
++{{ proto_to_table("TaskPushNotificationConfig") }}
+ 
+ **Outputs:**
+ 
+@@ -445,9 +443,9 @@ This section defines common parameter objects used across multiple operations.
+ 
+ The `return_immediately` field in [`SendMessageConfiguration`](#322-sendmessageconfiguration) controls whether the operation returns immediately or waits for task completion. Operations are blocking by default:
+ 
+-- **Blocking (`return_immediately: false` or unset)**: The operation MUST wait until the task reaches a terminal state (`COMPLETED`, `FAILED`, `CANCELED`, `REJECTED`) or an interrupted state (`INPUT_REQUIRED`, `AUTH_REQUIRED`) before returning. The response MUST include the latest task state with all artifacts and status information. This is the default behavior.
++- **Blocking (`return_immediately: false` or unset)**: The operation MUST wait until the task reaches a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`) or an interrupted state (`TASK_STATE_INPUT_REQUIRED`, `TASK_STATE_AUTH_REQUIRED`) before returning. The response MUST include the latest task state with all artifacts and status information. This is the default behavior.
+ 
+-- **Non-Blocking (`return_immediately: true`)**: The operation MUST return immediately after creating the task, even if processing is still in progress. The returned task will have an in-progress state (e.g., `working`, `input_required`). It is the caller's responsibility to poll for updates using [Get Task](#313-get-task), subscribe via [Subscribe to Task](#316-subscribe-to-task), or receive updates via push notifications.
++- **Non-Blocking (`return_immediately: true`)**: The operation MUST return immediately after creating the task, even if processing is still in progress. The returned task will have an in-progress state (e.g., `TASK_STATE_WORKING`, `TASK_STATE_INPUT_REQUIRED`). It is the caller's responsibility to poll for updates using [Get Task](#313-get-task), subscribe via [Subscribe to Task](#316-subscribe-to-task), or receive updates via push notifications.
+ 
+ The `return_immediately` field has no effect:
+ 
+@@ -543,7 +541,7 @@ All error responses in the A2A protocol, regardless of binding, **MUST** convey
+ 
+ 1. **Error Code**: A machine-readable identifier for the error type (e.g., string code, numeric code, or protocol-specific status)
+ 2. **Error Message**: A human-readable description of the error
+-3. **Error Details** (optional): Additional structured information about the error, such as:
++3. **Error Details** (optional): An array of objects providing additional structured information about the error. Each object in the array **MUST** include a `@type` key that identifies the object's type (using [ProtoJSON `Any` representation](https://protobuf.dev/programming-guides/json)). Well-known types from the [`google.rpc` error model](https://cloud.google.com/apis/design/errors#error_model) (e.g., `ErrorInfo`, `BadRequest`) **SHOULD** be used where applicable. Error details may be used for:
+     - Affected fields or parameters
+     - Contextual information (e.g., task ID, timestamp)
+     - Suggestions for resolution
+@@ -552,17 +550,17 @@ Protocol bindings **MUST** map these elements to their native error representati
+ 
+ **A2A-Specific Errors:**
+ 
+-| Error Name                            | Description                                                                                                                                                       |
+-| :------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+-| `TaskNotFoundError`                   | The specified task ID does not correspond to an existing or accessible task. It might be invalid, expired, or already completed and purged.                       |
+-| `TaskNotCancelableError`              | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `completed`, `failed`, or `canceled`). |
+-| `PushNotificationNotSupportedError`   | Client attempted to use push notification features but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).      |
+-| `UnsupportedOperationError`           | The requested operation or a specific aspect of it is not supported by this server agent implementation.                                                          |
+-| `ContentTypeNotSupportedError`        | A Media Type provided in the request's message parts or implied for an artifact is not supported by the agent or the specific skill being invoked.                |
+-| `InvalidAgentResponseError`           | An agent returned a response that does not conform to the specification for the current method.                                                                   |
+-| `ExtendedAgentCardNotConfiguredError` | The agent does not have an extended agent card configured when one is required for the requested operation.                                                       |
+-| `ExtensionSupportRequiredError`       | Server requested use of an extension marked as `required: true` in the Agent Card but the client did not declare support for it in the request.                   |
+-| `VersionNotSupportedError`            | The A2A protocol version specified in the request (via `A2A-Version` service parameter) is not supported by the agent.                                            |
++| Error Name                            | Description                                                                                                                                                                                                            |
++| :------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
++| `TaskNotFoundError`                   | The specified task ID does not correspond to an existing or accessible task. It might be invalid, expired, or already completed and purged.                                                                            |
++| `TaskNotCancelableError`              | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, `TASK_STATE_REJECTED`). |
++| `PushNotificationNotSupportedError`   | Client attempted to use push notification features but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                                                           |
++| `UnsupportedOperationError`           | The requested operation or a specific aspect of it is not supported by this server agent implementation.                                                                                                               |
++| `ContentTypeNotSupportedError`        | A Media Type provided in the request's message parts or implied for an artifact is not supported by the agent or the specific skill being invoked.                                                                     |
++| `InvalidAgentResponseError`           | An agent returned a response that does not conform to the specification for the current method.                                                                                                                        |
++| `ExtendedAgentCardNotConfiguredError` | The agent does not have an extended agent card configured when one is required for the requested operation.                                                                                                            |
++| `ExtensionSupportRequiredError`       | Server requested use of an extension marked as `required: true` in the Agent Card but the client did not declare support for it in the request.                                                                        |
++| `VersionNotSupportedError`            | The A2A protocol version specified in the request (via `A2A-Version` service parameter) is not supported by the agent.                                                                                                 |
+ 
+ #### 3.3.3. Asynchronous Processing
+ 
+@@ -661,7 +659,7 @@ The A2A protocol provides three complementary mechanisms for clients to receive
+ **Streaming:**
+ 
+ - Real-time delivery of events as they occur
+-- Operations: Stream Message ([Section 3.1.2](#312-send-streaming-message)) and Subscribe to Task ([Section 3.1.6](#316-subscribe-to-task))
++- Operations: Send Streaming Message ([Section 3.1.2](#312-send-streaming-message)) and Subscribe to Task ([Section 3.1.6](#316-subscribe-to-task))
+ - Low latency, efficient for frequent updates
+ - Requires persistent connection support
+ - Best for: Interactive applications, real-time dashboards, live progress monitoring
+@@ -850,7 +848,7 @@ When a task update occurs, the agent sends an HTTP POST request to the configure
+ ```http
+ POST {webhook_url}
+ Authorization: {authentication_scheme} {credentials}
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ 
+ {
+   /* StreamResponse object - one of: */
+@@ -1057,7 +1055,7 @@ Clients indicate their desire to opt into the use of specific extensions through
+ ```http
+ POST /message:send HTTP/1.1
+ Host: agent.example.com
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ Authorization: Bearer token
+ A2A-Extensions: https://example.com/extensions/geolocation/v1,https://standards.org/extensions/citations/v1
+ 
+@@ -1164,7 +1162,7 @@ When an agent supports multiple protocols, all supported protocols **MUST**:
+ | Functionality                   | JSON-RPC Method                    | gRPC Method                        | REST Endpoint                                           |
+ | :------------------------------ | :--------------------------------- | :--------------------------------- | :------------------------------------------------------ |
+ | Send message                    | `SendMessage`                      | `SendMessage`                      | `POST /message:send`                                    |
+-| Stream message                  | `SendStreamingMessage`             | `SendStreamingMessage`             | `POST /message:stream`                                  |
++| Send streaming message          | `SendStreamingMessage`             | `SendStreamingMessage`             | `POST /message:stream`                                  |
+ | Get task                        | `GetTask`                          | `GetTask`                          | `GET /tasks/{id}`                                       |
+ | List tasks                      | `ListTasks`                        | `ListTasks`                        | `GET /tasks`                                            |
+ | Cancel task                     | `CancelTask`                       | `CancelTask`                       | `POST /tasks/{id}:cancel`                               |
+@@ -1179,17 +1177,17 @@ When an agent supports multiple protocols, all supported protocols **MUST**:
+ 
+ All A2A-specific errors defined in [Section 3.3.2](#332-error-handling) **MUST** be mapped to binding-specific error representations. The following table provides the canonical mappings for each standard protocol binding:
+ 
+-| A2A Error Type                        | JSON-RPC Code | gRPC Status           | HTTP Status                  |
+-| :------------------------------------ | :------------ | :-------------------- | :--------------------------- |
+-| `TaskNotFoundError`                   | `-32001`      | `NOT_FOUND`           | `404 Not Found`              |
+-| `TaskNotCancelableError`              | `-32002`      | `FAILED_PRECONDITION` | `409 Conflict`               |
+-| `PushNotificationNotSupportedError`   | `-32003`      | `UNIMPLEMENTED`       | `400 Bad Request`            |
+-| `UnsupportedOperationError`           | `-32004`      | `UNIMPLEMENTED`       | `400 Bad Request`            |
+-| `ContentTypeNotSupportedError`        | `-32005`      | `INVALID_ARGUMENT`    | `415 Unsupported Media Type` |
+-| `InvalidAgentResponseError`           | `-32006`      | `INTERNAL`            | `502 Bad Gateway`            |
+-| `ExtendedAgentCardNotConfiguredError` | `-32007`      | `FAILED_PRECONDITION` | `400 Bad Request`            |
+-| `ExtensionSupportRequiredError`       | `-32008`      | `FAILED_PRECONDITION` | `400 Bad Request`            |
+-| `VersionNotSupportedError`            | `-32009`      | `UNIMPLEMENTED`       | `400 Bad Request`            |
++| A2A Error Type                        | JSON-RPC Code | gRPC Status           | HTTP Status                 |
++| :------------------------------------ | :------------ | :-------------------- | :-------------------------- |
++| `TaskNotFoundError`                   | `-32001`      | `NOT_FOUND`           | `404 Not Found`             |
++| `TaskNotCancelableError`              | `-32002`      | `FAILED_PRECONDITION` | `400 Bad Request`           |
++| `PushNotificationNotSupportedError`   | `-32003`      | `FAILED_PRECONDITION` | `400 Bad Request`           |
++| `UnsupportedOperationError`           | `-32004`      | `FAILED_PRECONDITION` | `400 Bad Request`           |
++| `ContentTypeNotSupportedError`        | `-32005`      | `INVALID_ARGUMENT`    | `400 Bad Request`           |
++| `InvalidAgentResponseError`           | `-32006`      | `INTERNAL`            | `500 Internal Server Error` |
++| `ExtendedAgentCardNotConfiguredError` | `-32007`      | `FAILED_PRECONDITION` | `400 Bad Request`           |
++| `ExtensionSupportRequiredError`       | `-32008`      | `FAILED_PRECONDITION` | `400 Bad Request`           |
++| `VersionNotSupportedError`            | `-32009`      | `FAILED_PRECONDITION` | `400 Bad Request`           |
+ 
+ **Custom Binding Requirements:**
+ 
+@@ -1276,6 +1274,33 @@ The Protocol Buffer `optional` keyword is used to distinguish between a field be
+ 
+ Implementations **SHOULD** ignore unrecognized fields in messages, allowing for forward compatibility as the protocol evolves.
+ 
++### 5.8. Custom Binding Identification
++
++Custom protocol bindings **SHOULD** be identified by a URI. Using a URI as the
++identifier provides globally unique identification across all implementers.
++
++The `protocolBinding` field in the Agent Card's `supportedInterfaces` entry
++**SHOULD** be a URI:
++
++```json
++{
++  "supportedInterfaces": [
++    {
++      "url": "wss://agent.example.com/a2a/websocket",
++      "protocolBinding": "https://example.com/bindings/websocket/v1",
++      "protocolVersion": "1.0"
++    }
++  ]
++}
++```
++
++When a breaking change is introduced to a binding, a new URI **MUST** be used
++so that clients can distinguish between incompatible versions:
++
++```text
++https://example.com/bindings/websocket/v1  →  https://example.com/bindings/websocket/v2
++```
++
+ ## 6. Common Workflows & Examples
+ 
+ This section provides illustrative examples of common A2A interactions across different bindings.
+@@ -1586,7 +1611,7 @@ Content-Type: application/problem+json
+     },
+     {
+       "field": "status",
+-      "message": "Invalid status value 'running'. Must be one of: pending, working, completed, failed, canceled"
++      "message": "Invalid status value 'TASK_STATE_RUNNING'. Must be one of: TASK_STATE_SUBMITTED, TASK_STATE_WORKING, TASK_STATE_COMPLETED, TASK_STATE_FAILED, TASK_STATE_CANCELED, TASK_STATE_REJECTED, TASK_STATE_INPUT_REQUIRED, TASK_STATE_AUTH_REQUIRED"
+     }
+   ]
+ }
+@@ -1615,11 +1640,11 @@ Authorization: Bearer token
+     "messageId": "6dbc13b5-bd57-4c2b-b503-24e381b6c8d6"
+   },
+   "configuration": {
+-    "pushNotificationConfig": {
++    "taskPushNotificationConfig": {
+       "url": "https://client.example.com/webhook/a2a-notifications",
+-      "token": "secure-client-token-for-task-aaa",
+       "authentication": {
+-        "schemes": ["Bearer"]
++        "scheme": "Bearer",
++        "credentials": "secure-client-token-for-task-aaa"
+       }
+     }
+   }
+@@ -1637,7 +1662,7 @@ Content-Type: application/a2a+json
+     "id": "43667960-d455-4453-b0cf-1bae4955270d",
+     "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+     "status": {
+-      "state": "submitted",
++      "state": "TASK_STATE_SUBMITTED",
+       "timestamp": "2024-03-15T11:00:00Z"
+     }
+   }
+@@ -1649,9 +1674,8 @@ Content-Type: application/a2a+json
+ ```http
+ POST /webhook/a2a-notifications HTTP/1.1
+ Host: client.example.com
+-Authorization: Bearer server-generated-jwt
++Authorization: Bearer secure-client-token-for-task-aaa
+ Content-Type: application/a2a+json
+-X-A2A-Notification-Token: secure-client-token-for-task-aaa
+ 
+ {
+   "statusUpdate": {
+@@ -1973,6 +1997,7 @@ Clients **MUST** follow these rules:
+ 1. Parse `supportedInterfaces` if present, and select the first supported transport
+ 2. Prefer earlier entries in the ordered list when multiple options are supported
+ 3. Use the correct URL for the selected transport
++4. Set the `tenant` field in every request message to exactly the value declared in the selected `AgentInterface` entry (omit the field if `tenant` is not set in that entry)
+ 
+ ### 8.4. Agent Card Signing
+ 
+@@ -2129,7 +2154,6 @@ Clients verifying Agent Card signatures **MUST**:
+   "capabilities": {
+     "streaming": true,
+     "pushNotifications": true,
+-    "stateTransitionHistory": false,
+     "extendedAgentCard": true
+   },
+   "securitySchemes": {
+@@ -2381,7 +2405,7 @@ Subscribes to a task stream for receiving updates on a task that is not in a ter
+ 
+ **Response:** SSE stream (same format as `SendStreamingMessage`)
+ 
+-**Error:** Returns `UnsupportedOperationError` if the task is in a terminal state (`completed`, `failed`, `canceled`, or `rejected`).
++**Error:** Returns `UnsupportedOperationError` if the task is in a terminal state (`TASK_STATE_COMPLETED`, `TASK_STATE_FAILED`, `TASK_STATE_CANCELED`, or `TASK_STATE_REJECTED`).
+ 
+ #### 9.4.7. Push Notification Configuration Methods
+ 
+@@ -2410,7 +2434,7 @@ JSON-RPC error responses use the standard [JSON-RPC 2.0 error object](https://ww
+ 
+ - **Error Code**: Mapped to `error.code` (numeric JSON-RPC error code)
+ - **Error Message**: Mapped to `error.message` (human-readable string)
+-- **Error Details**: Mapped to `error.data` (array containing `google.protobuf.Any` messages, using ProtoJSON representation)
++- **Error Details**: Mapped to `error.data` (array of objects, each containing a `@type` key, using ProtoJSON `Any` representation)
+ 
+ **Standard JSON-RPC Error Codes:**
+ 
+@@ -2426,16 +2450,9 @@ JSON-RPC error responses use the standard [JSON-RPC 2.0 error object](https://ww
+ 
+ A2A-specific errors use codes in the range `-32001` to `-32099`. For the complete mapping of A2A error types to JSON-RPC error codes, see [Section 5.4 (Error Code Mappings)](#54-error-code-mappings).
+ 
+-**A2A Error Representation:**
+-
+-For A2A-specific errors, implementations **MUST** include a `google.rpc.ErrorInfo` message in the `data` array with:
+-
+-- `@type`: Set to `"type.googleapis.com/google.rpc.ErrorInfo"`
+-- `reason`: The A2A error type in UPPER_SNAKE_CASE without the "Error" suffix (e.g., `TASK_NOT_FOUND`)
+-- `domain`: Set to `"a2a-protocol.org"`
+-- `metadata`: Optional map of additional error context
++**Error Detail Objects:**
+ 
+-Additional error context **MAY** be included in the `data` array.
++Each object in the `data` array **MUST** include a `@type` key that identifies the object's type. Implementations **SHOULD** use well-known types such as `google.rpc.ErrorInfo` to refine error reporting, or `google.rpc.BadRequest` to attach structured data to validation errors. Additional error context **MAY** be included as further objects in the `data` array.
+ 
+ **Error Response Structure:**
+ 
+@@ -2444,11 +2461,19 @@ Additional error context **MAY** be included in the `data` array.
+   "jsonrpc": "2.0",
+   "id": 1,
+   "error": {
+-    "code": -32601,
+-    "message": "Method not found",
+-    "data": {
+-      "method": "invalid/method"
+-    }
++    "code": -32602,
++    "message": "Invalid parameters",
++    "data": [
++      {
++        "@type": "type.googleapis.com/google.rpc.BadRequest",
++        "fieldViolations": [
++          {
++            "field": "message.parts",
++            "description": "At least one part is required"
++          }
++        ]
++      }
++    ]
+   }
+ }
+ ```
+@@ -2649,10 +2674,6 @@ Resource wrapper for push notification configurations. This is a gRPC-specific t
+ 
+ {{ proto_to_table("TaskPushNotificationConfig") }}
+ 
+-**Fields:**
+-
+-{{ proto_to_table("TaskPushNotificationConfig") }}
+-
+ ### 10.6. Error Handling
+ 
+ gRPC error responses use the standard [gRPC status](https://grpc.io/docs/guides/error/) structure with [google.rpc.Status](https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto), which maps to the generic A2A error model defined in [Section 3.3.2](#332-error-handling) as follows:
+@@ -2726,7 +2747,7 @@ The HTTP+JSON protocol binding provides a RESTful interface using standard HTTP
+ ### 11.1. Protocol Requirements
+ 
+ - **Protocol:** HTTP(S) with JSON payloads
+-- **Content-Type:** `application/json` for requests and responses
++- **Content-Type:** application/a2a+json **SHOULD** be used for requests and responses
+ - **Methods:** Standard HTTP verbs (GET, POST, PUT, DELETE)
+ - **URL Patterns:** RESTful resource-based URLs
+ - **Streaming:** Server-Sent Events for real-time updates
+@@ -2746,7 +2767,7 @@ A2A service parameters defined in [Section 3.2.6](#326-service-parameters) **MUS
+ ```http
+ POST /message:send HTTP/1.1
+ Host: agent.example.com
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ Authorization: Bearer token
+ A2A-Version: 0.3
+ A2A-Extensions: https://example.com/extensions/geolocation/v1,https://standards.org/extensions/citations/v1
+@@ -2792,7 +2813,7 @@ All requests and responses use JSON objects structurally equivalent to the Proto
+ 
+ ```http
+ POST /message:send
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ 
+ {
+   "message": {
+@@ -2812,7 +2833,7 @@ Content-Type: application/json
+ 
+ ```http
+ HTTP/1.1 200 OK
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ 
+ {
+   "task": {
+@@ -2849,7 +2870,7 @@ Query parameter names **MUST** use `camelCase` to match the JSON serialization o
+ List tasks with filtering:
+ 
+ ```http
+-GET /tasks?contextId=uuid&status=working&pageSize=50&pageToken=cursor
++GET /tasks?contextId=uuid&status=TASK_STATE_WORKING&pageSize=50&pageToken=cursor
+ ```
+ 
+ Get task with history:
+@@ -2863,7 +2884,7 @@ GET /tasks/{id}?historyLength=10
+ - **Strings**: Passed directly as query parameter values
+ - **Booleans**: Represented as lowercase strings (`true`, `false`)
+ - **Numbers**: Represented as decimal strings
+-- **Enums**: Represented using their string values (e.g., `status=working`)
++- **Enums**: Represented using their string values (e.g., `status=TASK_STATE_WORKING`)
+ - **Repeated Fields**: Multiple values **MAY** be passed by repeating the parameter name (e.g., `?tag=value1&tag=value2`) or as comma-separated values (e.g., `?tag=value1,value2`)
+ - **Nested Objects**: Not supported in query parameters; operations requiring nested objects **MUST** use POST with a request body
+ - **Datetimes/Timestamps**: Represented as ISO 8601 strings (e.g., `2025-11-09T10:30:00Z`)
+@@ -2874,28 +2895,31 @@ All query parameter values **MUST** be properly URL-encoded per [RFC 3986](https
+ 
+ ### 11.6. Error Handling
+ 
+-HTTP error responses use the representation specified in [AIP-193](https://google.aip.dev/193#http11json-representation) which maps to the generic A2A error model defined in [Section 3.3.2](#332-error-handling) as follows:
++HTTP error responses use the [google.rpc.Status](https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto) JSON representation, which maps to the generic A2A error model defined in [Section 3.3.2](#332-error-handling) as follows:
+ 
+ - **Error Code**: Mapped to the HTTP status code and the `error.code` field
+ - **Error Message**: Mapped to the `error.message` field (human-readable string)
+-- **Error Details**: Mapped to the `error.details` array (containing `google.protobuf.Any` messages)
++- **Error Details**: Mapped to the `error.details` array (array of objects, each containing a `@type` key, using ProtoJSON `Any` representation)
++
++**Error Detail Objects:**
++
++Each object in the `details` array **MUST** include a `@type` key that identifies the object's type. Implementations **SHOULD** use well-known types such as `google.rpc.BadRequest` to attach structured data to validation errors. Additional error context **MAY** be included as further objects in the `details` array.
+ 
+ **A2A Error Representation:**
+ 
+-For A2A-specific errors, implementations **MUST** include a `google.rpc.ErrorInfo` message in the `details` array with:
++Since multiple A2A error types may map to the same HTTP status code (e.g., `TaskNotCancelableError` and `PushNotificationNotSupportedError` both map to `400 Bad Request`), implementations **MUST** include a `google.rpc.ErrorInfo` object in the `details` array for A2A-specific errors with:
+ 
+ - `@type`: Set to `"type.googleapis.com/google.rpc.ErrorInfo"`
+-- `reason`: The A2A error type in UPPER_SNAKE_CASE without the "Error" suffix (e.g., `TASK_NOT_FOUND`)
++- `reason`: The A2A error type in UPPER_SNAKE_CASE without the "Error" suffix (e.g., `TASK_NOT_FOUND`, `TASK_NOT_CANCELABLE`)
+ - `domain`: Set to `"a2a-protocol.org"`
+-- `metadata`: Optional map of additional error context
+ 
+-For the complete mapping of A2A error types to HTTP status codes, see [Section 5.4 (Error Code Mappings)](#54-error-code-mappings). Additional error context **MAY** be included in the `details` array of the Status object.
++For the complete mapping of A2A error types to HTTP status codes, see [Section 5.4 (Error Code Mappings)](#54-error-code-mappings).
+ 
+ **Error Response Example:**
+ 
+ ```http
+ HTTP/1.1 404 Not Found
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ 
+ {
+   "error": {
+@@ -2927,7 +2951,7 @@ REST streaming uses Server-Sent Events with the `data` field containing JSON ser
+ 
+ ```http
+ POST /message:stream
+-Content-Type: application/json
++Content-Type: application/a2a+json
+ 
+ { /* SendMessageRequest object */ }
+ ```
+@@ -3017,9 +3041,8 @@ Custom bindings **MUST**:
+ 
+ Custom bindings **MUST** be declared in the Agent Card:
+ 
+-1. **Transport Identifier**: Use a clear, descriptive transport name
++1. **Transport Identifier**: Use a URI to identify the binding (see [Section 5.8](#58-custom-binding-identification))
+ 2. **Endpoint URL**: Provide the full URL where the binding is available
+-3. **Documentation Link**: Include a URL to the complete binding specification
+ 
+ **Example:**
+ 
+@@ -3028,7 +3051,7 @@ Custom bindings **MUST** be declared in the Agent Card:
+   "supportedInterfaces": [
+     {
+       "url": "wss://agent.example.com/a2a/websocket",
+-      "protocolBinding": "WEBSOCKET"
++      "protocolBinding": "https://example.com/bindings/websocket/v1"
+     }
+   ]
+ }
+@@ -3562,7 +3585,7 @@ For **SDK Developers**:
+ 
+ **Rationale:**
+ 
+-All optional features enabling specific operations (`streaming`, `pushNotifications`, `stateTransitionHistory`) reside in `AgentCapabilities`. Moving `extendedAgentCard` achieves:
++All optional features enabling specific operations (`streaming`, `pushNotifications`) reside in `AgentCapabilities`. Moving `extendedAgentCard` achieves:
+ 
+ - Architectural consistency
+ - Improved discoverability
+diff --git a/specification/version.json b/specification/version.json
+index a64b018..7bc5145 100644
+--- a/specification/version.json
++++ b/specification/version.json
+@@ -1,10 +1,10 @@
+ {
+-  "downloadTime": "2026-03-13T07:43:14Z",
++  "downloadTime": "2026-09-03T07:26:16Z",
+   "organization": "a2aproject",
+   "repository": "A2A",
+-  "branch": "v1.0.0",
+-  "commitHash": "173695755607e884aa9acf8ce4feed90e32727a1",
+-  "sourceUrl": "https://github.com/a2aproject/A2A/tree/173695755607e884aa9acf8ce4feed90e32727a1/specification",
++  "branch": "v1.0.1",
++  "commitHash": "3303592588e388e62e0f69f701af531d2f4e3991",
++  "sourceUrl": "https://github.com/a2aproject/A2A/tree/3303592588e388e62e0f69f701af531d2f4e3991/specification",
+   "files": [
+     "a2a.proto",
+     "buf.lock",
+diff --git a/tck/requirements/base.py b/tck/requirements/base.py
+index 665c136..2188950 100644
+--- a/tck/requirements/base.py
++++ b/tck/requirements/base.py
+@@ -102,6 +102,7 @@ class RequirementSpec:
+     spec_url: str = ""
+     tags: list[str] = field(default_factory=list)
+     validators: list[Callable[[Any, str], list[str]]] = field(default_factory=list)
++    allows_error: bool = False
+ 
+ 
+ # Shared spec URL base pointing to the local specification file.
+@@ -269,7 +270,7 @@ TASK_NOT_FOUND_ERROR = ErrorBinding(
+ TASK_NOT_CANCELABLE_ERROR = ErrorBinding(
+     name="TaskNotCancelableError",
+     jsonrpc_code=-32002,
+-    http_status=409,
++    http_status=400,
+     grpc_status="FAILED_PRECONDITION",
+     reason="TASK_NOT_CANCELABLE",
+ )
+@@ -278,7 +279,7 @@ PUSH_NOTIFICATION_NOT_SUPPORTED_ERROR = ErrorBinding(
+     name="PushNotificationNotSupportedError",
+     jsonrpc_code=-32003,
+     http_status=400,
+-    grpc_status="UNIMPLEMENTED",
++    grpc_status="FAILED_PRECONDITION",
+     reason="PUSH_NOTIFICATION_NOT_SUPPORTED",
+ )
+ 
+@@ -286,14 +287,14 @@ UNSUPPORTED_OPERATION_ERROR = ErrorBinding(
+     name="UnsupportedOperationError",
+     jsonrpc_code=-32004,
+     http_status=400,
+-    grpc_status="UNIMPLEMENTED",
++    grpc_status="FAILED_PRECONDITION",
+     reason="UNSUPPORTED_OPERATION",
+ )
+ 
+ CONTENT_TYPE_NOT_SUPPORTED_ERROR = ErrorBinding(
+     name="ContentTypeNotSupportedError",
+     jsonrpc_code=-32005,
+-    http_status=415,
++    http_status=400,
+     grpc_status="INVALID_ARGUMENT",
+     reason="CONTENT_TYPE_NOT_SUPPORTED",
+ )
+@@ -301,7 +302,7 @@ CONTENT_TYPE_NOT_SUPPORTED_ERROR = ErrorBinding(
+ INVALID_AGENT_RESPONSE_ERROR = ErrorBinding(
+     name="InvalidAgentResponseError",
+     jsonrpc_code=-32006,
+-    http_status=502,
++    http_status=500,
+     grpc_status="INTERNAL",
+     reason="INVALID_AGENT_RESPONSE",
+ )
+@@ -326,7 +327,7 @@ VERSION_NOT_SUPPORTED_ERROR = ErrorBinding(
+     name="VersionNotSupportedError",
+     jsonrpc_code=-32009,
+     http_status=400,
+-    grpc_status="UNIMPLEMENTED",
++    grpc_status="FAILED_PRECONDITION",
+     reason="VERSION_NOT_SUPPORTED",
+ )
+ 
+diff --git a/tck/requirements/binding_grpc.py b/tck/requirements/binding_grpc.py
+index a1c4865..94389b2 100644
+--- a/tck/requirements/binding_grpc.py
++++ b/tck/requirements/binding_grpc.py
+@@ -104,13 +104,13 @@ BINDING_GRPC_REQUIREMENTS: list[RequirementSpec] = [
+             "All A2A-specific error types MUST be mapped to their specified "
+             "gRPC status codes: TaskNotFoundError=NOT_FOUND, "
+             "TaskNotCancelableError=FAILED_PRECONDITION, "
+-            "PushNotificationNotSupportedError=UNIMPLEMENTED, "
+-            "UnsupportedOperationError=UNIMPLEMENTED, "
++            "PushNotificationNotSupportedError=FAILED_PRECONDITION, "
++            "UnsupportedOperationError=FAILED_PRECONDITION, "
+             "ContentTypeNotSupportedError=INVALID_ARGUMENT, "
+             "InvalidAgentResponseError=INTERNAL, "
+             "ExtendedAgentCardNotConfiguredError=FAILED_PRECONDITION, "
+             "ExtensionSupportRequiredError=FAILED_PRECONDITION, "
+-            "VersionNotSupportedError=UNIMPLEMENTED."
++            "VersionNotSupportedError=FAILED_PRECONDITION."
+         ),
+         expected_behavior="Each A2A error mapped to correct gRPC status",
+         spec_url=f"{SPEC_BASE}54-error-code-mappings",
+diff --git a/tck/requirements/binding_http_json.py b/tck/requirements/binding_http_json.py
+index 91b9d4a..81eecc1 100644
+--- a/tck/requirements/binding_http_json.py
++++ b/tck/requirements/binding_http_json.py
+@@ -130,7 +130,7 @@ BINDING_HTTP_JSON_REQUIREMENTS: list[RequirementSpec] = [
+         description=(
+             "Each A2A error type MUST map to the HTTP status code specified "
+             "in the error code mappings table (e.g., TaskNotFoundError to "
+-            "404, ContentTypeNotSupportedError to 415)."
++            "404, ContentTypeNotSupportedError to 400)."
+         ),
+         expected_behavior="HTTP status code matches the spec-defined mapping for each error",
+         spec_url=f"{SPEC_BASE}54-error-code-mappings",
+diff --git a/tck/requirements/core_operations.py b/tck/requirements/core_operations.py
+index 77e7692..a8fcd96 100644
+--- a/tck/requirements/core_operations.py
++++ b/tck/requirements/core_operations.py
+@@ -9,6 +9,7 @@ from __future__ import annotations
+ 
+ from tck.requirements.base import (
+     CANCEL_TASK_BINDING,
++    CONTENT_TYPE_NOT_SUPPORTED_ERROR,
+     EXTENSION_SUPPORT_REQUIRED_ERROR,
+     GET_TASK_BINDING,
+     LIST_TASKS_BINDING,
+@@ -46,7 +47,13 @@ from tck.requirements.tags import (
+     TASK_ID,
+     VALIDATION,
+ )
+-from tck.validators.payload import validate_message_response_contains_field
++from tck.validators.payload import (
++    validate_message_response_contains_field,
++    validate_message_response_field_equals,
++)
++
++
++_REJECTED_CLIENT_CONTEXT_ID = tck_id("client-context-rejected")
+ 
+ 
+ CORE_OPERATIONS_REQUIREMENTS: list[RequirementSpec] = [
+@@ -108,6 +115,7 @@ CORE_OPERATIONS_REQUIREMENTS: list[RequirementSpec] = [
+         binding=SEND_MESSAGE_BINDING,
+         proto_request_type="SendMessageRequest",
+         expected_behavior="ContentTypeNotSupportedError returned",
++        expected_error=CONTENT_TYPE_NOT_SUPPORTED_ERROR,
+         spec_url=f"{SPEC_BASE}311-send-message",
+         tags=[CORE, SEND_MESSAGE, ERROR],
+         sample_input={
+@@ -601,6 +609,7 @@ CORE_OPERATIONS_REQUIREMENTS: list[RequirementSpec] = [
+         operation=OperationType.SEND_MESSAGE,
+         binding=SEND_MESSAGE_BINDING,
+         expected_behavior="Error returned when client contextId not accepted",
++        allows_error=True,
+         spec_url=f"{SPEC_BASE}341-context-identifier-semantics",
+         tags=[CORE, MULTI_TURN, CONTEXT, ERROR],
+         sample_input={
+@@ -608,9 +617,15 @@ CORE_OPERATIONS_REQUIREMENTS: list[RequirementSpec] = [
+                 "role": "ROLE_USER",
+                 "parts": [{"text": "Message with client contextId"}],
+                 "messageId": tck_id("complete-task"),
+-                "contextId": tck_id("client-context-rejected"),
++                "contextId": _REJECTED_CLIENT_CONTEXT_ID,
+             },
+         },
++        validators=[
++            validate_message_response_field_equals(
++                "contextId",
++                _REJECTED_CLIENT_CONTEXT_ID,
++            ),
++        ],
+     ),
+     RequirementSpec(
+         id="CORE-MULTI-003",
+diff --git a/tck/transport/jsonrpc_client.py b/tck/transport/jsonrpc_client.py
+index 7db3e37..0cb9971 100644
+--- a/tck/transport/jsonrpc_client.py
++++ b/tck/transport/jsonrpc_client.py
+@@ -209,7 +209,7 @@ class JsonRpcClient(BaseTransportClient):
+         history_length: int | None = None,
+     ) -> TransportResponse:
+         """Get a task by ID."""
+-        params = _build_params(id=id, history_length=history_length)
++        params = _build_params(id=id, historyLength=history_length)
+         return self._call(OperationType.GET_TASK.value, params)
+ 
+     def list_tasks(
+diff --git a/tck/validators/_json.py b/tck/validators/_json.py
+index 7de800b..bfdc3cb 100644
+--- a/tck/validators/_json.py
++++ b/tck/validators/_json.py
+@@ -146,3 +146,19 @@ def validate_message_response_contains_field(
+     if inner.get(field) is None:
+         return [f"{error_prefix} must include '{field}'"]
+     return []
++
++
++def validate_message_response_field_equals(
++    result: dict[str, Any],
++    field: str,
++    expected: Any,
++) -> list[str]:
++    """Validate a field value in an unwrapped SendMessageResponse dict."""
++    inner = result.get("task") or result.get("message") or result
++    actual = inner.get(field) if isinstance(inner, dict) else None
++    if actual != expected:
++        return [
++            f"Expected response field '{field}' to equal "
++            f"'{expected}', got '{actual}'"
++        ]
++    return []
+diff --git a/tck/validators/grpc/payload.py b/tck/validators/grpc/payload.py
+index 7f51842..f330e25 100644
+--- a/tck/validators/grpc/payload.py
++++ b/tck/validators/grpc/payload.py
+@@ -155,3 +155,20 @@ def validate_message_response_contains_field(
+     if value is None:
+         return [f"Response must include '{field}'"]
+     return []
++
++
++def validate_message_response_field_equals(
++    response: Any,
++    field: str,
++    expected: Any,
++) -> list[str]:
++    """Validate a field value in a SendMessageResponse."""
++    msg = response.raw_response
++    inner = getattr(msg, "task", None) or getattr(msg, "message", None) or msg
++    actual = getattr(inner, field, None)
++    if actual != expected:
++        return [
++            f"Expected response field '{field}' to equal '{expected}', "
++            f"got '{actual}'"
++        ]
++    return []
+diff --git a/tck/validators/http_json/payload.py b/tck/validators/http_json/payload.py
+index ae340e1..84bf30e 100644
+--- a/tck/validators/http_json/payload.py
++++ b/tck/validators/http_json/payload.py
+@@ -73,3 +73,15 @@ def validate_message_response_contains_field(
+     if not data:
+         return [f"Response is not a JSON object, cannot check for '{field}'"]
+     return _json.validate_message_response_contains_field(data, field)
++
++
++def validate_message_response_field_equals(
++    response: Any,
++    field: str,
++    expected: Any,
++) -> list[str]:
++    """Validate a field value in the SendMessageResponse body."""
++    data = _unwrap(response)
++    if not data:
++        return [f"Response is not a JSON object, cannot check '{field}'"]
++    return _json.validate_message_response_field_equals(data, field, expected)
+diff --git a/tck/validators/jsonrpc/payload.py b/tck/validators/jsonrpc/payload.py
+index 8cfc54d..dc6a238 100644
+--- a/tck/validators/jsonrpc/payload.py
++++ b/tck/validators/jsonrpc/payload.py
+@@ -74,3 +74,16 @@ def validate_message_response_contains_field(
+     return _json.validate_message_response_contains_field(
+         _unwrap_result(response), field, error_prefix="Response result",
+     )
++
++
++def validate_message_response_field_equals(
++    response: Any,
++    field: str,
++    expected: Any,
++) -> list[str]:
++    """Validate a field value in the SendMessageResponse result."""
++    return _json.validate_message_response_field_equals(
++        _unwrap_result(response),
++        field,
++        expected,
++    )
+diff --git a/tck/validators/payload.py b/tck/validators/payload.py
+index 0c2d84c..51e82e3 100644
+--- a/tck/validators/payload.py
++++ b/tck/validators/payload.py
+@@ -29,6 +29,12 @@ _TRANSPORT_VALIDATORS = {
+     "http_json": _http_json.validate_message_response_contains_field,
+ }
+ 
++_TRANSPORT_EQUALITY_VALIDATORS = {
++    "grpc": _grpc.validate_message_response_field_equals,
++    "jsonrpc": _jsonrpc.validate_message_response_field_equals,
++    "http_json": _http_json.validate_message_response_field_equals,
++}
++
+ _STATE_VALIDATORS = {
+     "grpc": _grpc.validate_task_state,
+     "jsonrpc": _jsonrpc.validate_task_state,
+@@ -87,6 +93,23 @@ def validate_message_response_contains_field(
+     return _validate
+ 
+ 
++def validate_message_response_field_equals(
++    field: str,
++    expected: Any,
++) -> Callable[[Any, str], list[str]]:
++    """Return a validator that checks a SendMessageResponse field value."""
++    grpc_field = _to_snake_case(field)
++
++    def _validate(response: Any, transport: str) -> list[str]:
++        validate = _TRANSPORT_EQUALITY_VALIDATORS.get(transport)
++        if validate is None:
++            return []
++        f = grpc_field if transport == "grpc" else field
++        return validate(response, f, expected)
++
++    return _validate
++
++
+ def validate_task_state(
+     response: Any,
+     transport: str,
+diff --git a/tests/compatibility/core_operations/test_requirements.py b/tests/compatibility/core_operations/test_requirements.py
+index 59e0afb..ba6aab4 100644
+--- a/tests/compatibility/core_operations/test_requirements.py
++++ b/tests/compatibility/core_operations/test_requirements.py
+@@ -100,6 +100,10 @@ def _validate_response(
+     if requirement.expected_error is not None:
+         return validate_expected_error(response, transport, requirement.expected_error)
+ 
++    # Conditional requirements may allow rejection or validate a successful response.
++    if requirement.allows_error and not response.success:
++        return []
++
+     # For streaming responses, just verify at least one event arrives
+     if isinstance(response, StreamingResponse):
+         if not response.success:
+diff --git a/tests/compatibility/grpc/test_status_codes.py b/tests/compatibility/grpc/test_status_codes.py
+index 250539d..c870375 100644
+--- a/tests/compatibility/grpc/test_status_codes.py
++++ b/tests/compatibility/grpc/test_status_codes.py
+@@ -124,13 +124,13 @@ class TestGrpcStatusCodes:
+         )
+         assert_and_record(compatibility_collector, req, TRANSPORT, errors)
+ 
+-    def test_unsupported_operation_returns_unimplemented(
++    def test_unsupported_operation_returns_failed_precondition(
+         self,
+         transport_clients: dict[str, BaseTransportClient],
+         agent_card: dict[str, Any],
+         compatibility_collector: Any,
+     ) -> None:
+-        """UnsupportedOperationError: streaming when unsupported returns UNIMPLEMENTED."""
++        """UnsupportedOperationError: streaming when unsupported returns FAILED_PRECONDITION."""
+         req = GRPC_ERR_002
+ 
+         caps = agent_card.get("capabilities", {})
+@@ -153,13 +153,13 @@ class TestGrpcStatusCodes:
+         errors = [] if result.valid else [result.message]
+         assert_and_record(compatibility_collector, req, TRANSPORT, errors)
+ 
+-    def test_push_not_supported_returns_unimplemented(
++    def test_push_not_supported_returns_failed_precondition(
+         self,
+         transport_clients: dict[str, BaseTransportClient],
+         agent_card: dict[str, Any],
+         compatibility_collector: Any,
+     ) -> None:
+-        """PushNotificationNotSupportedError: push config when unsupported returns UNIMPLEMENTED."""
++        """PushNotificationNotSupportedError: push config when unsupported returns FAILED_PRECONDITION."""
+         req = GRPC_ERR_002
+ 
+         caps = agent_card.get("capabilities", {})
+@@ -180,12 +180,12 @@ class TestGrpcStatusCodes:
+         errors = [] if result.valid else [result.message]
+         assert_and_record(compatibility_collector, req, TRANSPORT, errors)
+ 
+-    def test_version_not_supported_returns_unimplemented(
++    def test_version_not_supported_returns_failed_precondition(
+         self,
+         transport_clients: dict[str, BaseTransportClient],
+         compatibility_collector: Any,
+     ) -> None:
+-        """VersionNotSupportedError: unsupported A2A-Version via gRPC metadata returns UNIMPLEMENTED."""
++        """VersionNotSupportedError: unsupported A2A-Version via gRPC metadata returns FAILED_PRECONDITION."""
+         req = GRPC_ERR_002
+         client = get_client(transport_clients, TRANSPORT, compatibility_collector=compatibility_collector, req=req)
+ 
+@@ -210,7 +210,7 @@ class TestGrpcStatusCodes:
+             )
+             # If the call succeeds, the server did not enforce version checking.
+             detail = (
+-                "Server MUST return VersionNotSupportedError (UNIMPLEMENTED) for "
++                "Server MUST return VersionNotSupportedError (FAILED_PRECONDITION) for "
+                 "unsupported A2A-Version, but processed the request normally"
+             )
+             record(
+diff --git a/tests/compatibility/http_json/test_http_status.py b/tests/compatibility/http_json/test_http_status.py
+index ea0c548..31938dc 100644
+--- a/tests/compatibility/http_json/test_http_status.py
++++ b/tests/compatibility/http_json/test_http_status.py
+@@ -75,12 +75,12 @@ class TestHttpJsonStatusCodes:
+         errors = [] if result.valid else [result.message]
+         assert_and_record(compatibility_collector, req, TRANSPORT, errors)
+ 
+-    def test_task_not_cancelable_returns_409(
++    def test_task_not_cancelable_returns_400(
+         self,
+         transport_clients: dict[str, BaseTransportClient],
+         compatibility_collector: Any,
+     ) -> None:
+-        """TaskNotCancelableError: POST /tasks/{id}:cancel on non-existent returns 409 (or 404)."""
++        """TaskNotCancelableError: POST /tasks/{id}:cancel on non-existent returns 400 (or 404)."""
+         req = HTTP_JSON_STATUS_001
+         client = get_client(transport_clients, TRANSPORT, compatibility_collector=compatibility_collector, req=req)
+ 
+@@ -89,15 +89,15 @@ class TestHttpJsonStatusCodes:
+             pytest.skip("Server did not return an error for CancelTask")
+ 
+         status = response.status_code
+-        # Server may return 404 (TaskNotFoundError) instead of 409
++        # Server may return 404 (TaskNotFoundError) instead of 400
+         # (TaskNotCancelableError) since the task doesn't exist.
+-        valid = status in (404, 409)
++        valid = status in (404, 400)
+         errors = (
+             []
+             if valid
+             else [
+                 f"CancelTask on non-existent task should return "
+-                f"404 (TaskNotFoundError) or 409 (TaskNotCancelableError), "
++                f"404 (TaskNotFoundError) or 400 (TaskNotCancelableError), "
+                 f"got {status}"
+             ]
+         )
+@@ -134,12 +134,12 @@ class TestHttpJsonStatusCodes:
+         errors = [] if result.valid else [result.message]
+         assert_and_record(compatibility_collector, req, TRANSPORT, errors)
+ 
+-    def test_content_type_not_supported_returns_415(
++    def test_content_type_not_supported_returns_400(
+         self,
+         transport_clients: dict[str, BaseTransportClient],
+         compatibility_collector: Any,
+     ) -> None:
+-        """ContentTypeNotSupportedError: wrong Content-Type returns 415."""
++        """ContentTypeNotSupportedError: wrong Content-Type returns 400."""
+         req = HTTP_JSON_STATUS_001
+         client = get_client(transport_clients, TRANSPORT, compatibility_collector=compatibility_collector, req=req)
+ 
+diff --git a/tests/compatibility/jsonrpc/test_error_codes.py b/tests/compatibility/jsonrpc/test_error_codes.py
+index ea74ef7..5f90a92 100644
+--- a/tests/compatibility/jsonrpc/test_error_codes.py
++++ b/tests/compatibility/jsonrpc/test_error_codes.py
+@@ -230,7 +230,7 @@ class TestJsonRpcErrorCodeMappings:
+         )
+ 
+         # The server may reject the wrong Content-Type at the HTTP level
+-        # (e.g. 415 with an empty body) instead of returning a JSON-RPC error.
++        # (e.g. 400 with an empty body) instead of returning a JSON-RPC error.
+         try:
+             body = response.json()
+         except Exception:
+diff --git a/tests/unit/requirements/test_error_binding_spec.py b/tests/unit/requirements/test_error_binding_spec.py
+new file mode 100644
+index 0000000..6a2a797
+--- /dev/null
++++ b/tests/unit/requirements/test_error_binding_spec.py
+@@ -0,0 +1,44 @@
++"""Keep the executable error bindings aligned with the vendored specification."""
++
++from __future__ import annotations
++
++from pathlib import Path
++
++from tck.requirements.base import ERROR_BINDINGS
++
++
++_SPEC_PATH = Path(__file__).resolve().parents[3] / "specification" / "specification.md"
++_MAPPING_HEADING = "### 5.4. Error Code Mappings"
++_MAPPING_END = "**Custom Binding Requirements:**"
++_MAPPING_COLUMN_COUNT = 4
++
++
++def _spec_error_bindings() -> dict[str, tuple[int, str, int]]:
++    """Parse the canonical Section 5.4 mapping table from the vendored spec."""
++    specification = _SPEC_PATH.read_text(encoding="utf-8")
++    mapping_section = specification.split(_MAPPING_HEADING, maxsplit=1)[1].split(_MAPPING_END, maxsplit=1)[0]
++
++    bindings = {}
++    for line in mapping_section.splitlines():
++        if not line.startswith("| `"):
++            continue
++        cells = [cell.strip().strip("`") for cell in line.strip().strip("|").split("|")]
++        if len(cells) != _MAPPING_COLUMN_COUNT or not cells[1].lstrip("-").isdigit():
++            continue
++        http_status = cells[3].split(maxsplit=1)[0]
++        if not http_status.isdigit():
++            continue
++        bindings[cells[0]] = (int(cells[1]), cells[2], int(http_status))
++    return bindings
++
++
++def test_error_bindings_match_section_5_4() -> None:
++    """Every executable A2A error binding must match the vendored spec table."""
++    expected = _spec_error_bindings()
++    actual = {
++        name: (binding.jsonrpc_code, binding.grpc_status, binding.http_status)
++        for name, binding in ERROR_BINDINGS.items()
++        if name in expected
++    }
++
++    assert actual == expected
+diff --git a/tests/unit/requirements/test_error_expectations.py b/tests/unit/requirements/test_error_expectations.py
+new file mode 100644
+index 0000000..4dfb91a
+--- /dev/null
++++ b/tests/unit/requirements/test_error_expectations.py
+@@ -0,0 +1,163 @@
++"""Regression tests for requirement error expectations."""
++
++from __future__ import annotations
++
++from types import SimpleNamespace
++from typing import Any
++
++import pytest
++
++from specification.generated import a2a_pb2
++from tck.requirements.base import CONTENT_TYPE_NOT_SUPPORTED_ERROR
++from tck.requirements.core_operations import CORE_OPERATIONS_REQUIREMENTS
++from tests.compatibility.core_operations.test_requirements import _validate_response
++
++
++def _requirement(requirement_id: str) -> Any:
++    """Return a core requirement by ID."""
++    return next(requirement for requirement in CORE_OPERATIONS_REQUIREMENTS if requirement.id == requirement_id)
++
++
++def _response(
++    *,
++    success: bool,
++    error_code: int | str | None = None,
++    raw_response: Any = None,
++) -> SimpleNamespace:
++    """Build the response surface used by the generic requirement validator."""
++    return SimpleNamespace(
++        success=success,
++        error=None if success else "rejected",
++        error_code=error_code,
++        raw_response={} if raw_response is None else raw_response,
++    )
++
++
++@pytest.mark.parametrize(
++    ("transport", "error_code"),
++    [
++        ("jsonrpc", -32005),
++        ("http_json", 415),
++        ("grpc", "INVALID_ARGUMENT"),
++    ],
++)
++def test_core_send_003_requires_content_type_not_supported_error(
++    transport: str,
++    error_code: int | str,
++) -> None:
++    """CORE-SEND-003 must enforce the specific error named by the spec."""
++    requirement = _requirement("CORE-SEND-003")
++
++    assert requirement.expected_error is CONTENT_TYPE_NOT_SUPPORTED_ERROR
++    assert (
++        _validate_response(
++            _response(success=False, error_code=error_code),
++            transport,
++            requirement,
++            {},
++        )
++        == []
++    )
++
++
++def test_core_send_003_rejects_wrong_error_code() -> None:
++    """CORE-SEND-003 must reject a different validation error."""
++    requirement = _requirement("CORE-SEND-003")
++
++    assert _validate_response(
++        _response(success=False, error_code=-32602),
++        "jsonrpc",
++        requirement,
++        {},
++    ) == ["Expected error code -32005 (ContentTypeNotSupportedError), got -32602"]
++
++
++@pytest.mark.parametrize(
++    ("transport", "error_code"),
++    [
++        ("jsonrpc", -32602),
++        ("http_json", 400),
++        ("grpc", "INVALID_ARGUMENT"),
++    ],
++)
++def test_core_multi_002a_allows_rejection_without_exact_code(
++    transport: str,
++    error_code: int | str,
++) -> None:
++    """CORE-MULTI-002a must accept rejection without inventing an exact code."""
++    requirement = _requirement("CORE-MULTI-002a")
++
++    assert requirement.allows_error is True
++    assert requirement.expected_error is None
++    assert (
++        _validate_response(
++            _response(success=False, error_code=error_code),
++            transport,
++            requirement,
++            {},
++        )
++        == []
++    )
++
++
++@pytest.mark.parametrize(
++    ("transport", "raw_response"),
++    [
++        ("jsonrpc", lambda context_id: {"result": {"task": {"contextId": context_id}}}),
++        ("http_json", lambda context_id: {"message": {"contextId": context_id}}),
++        (
++            "grpc",
++            lambda context_id: a2a_pb2.SendMessageResponse(
++                task=a2a_pb2.Task(context_id=context_id),
++            ),
++        ),
++    ],
++)
++def test_core_multi_002a_accepts_preserved_context_id(
++    transport: str,
++    raw_response: Any,
++) -> None:
++    """CORE-MULTI-002a must allow success when the client context ID is preserved."""
++    requirement = _requirement("CORE-MULTI-002a")
++    context_id = requirement.sample_input["message"]["contextId"]
++
++    assert (
++        _validate_response(
++            _response(success=True, raw_response=raw_response(context_id)),
++            transport,
++            requirement,
++            {},
++        )
++        == []
++    )
++
++
++def test_core_multi_002a_rejects_replaced_context_id() -> None:
++    """CORE-MULTI-002a must fail when success replaces the client context ID."""
++    requirement = _requirement("CORE-MULTI-002a")
++    expected = requirement.sample_input["message"]["contextId"]
++
++    assert _validate_response(
++        _response(
++            success=True,
++            raw_response={"task": {"contextId": "server-generated-replacement"}},
++        ),
++        "http_json",
++        requirement,
++        {},
++    ) == [f"Expected response field 'contextId' to equal '{expected}', got 'server-generated-replacement'"]
++
++
++def test_dispatched_error_requirements_declare_error_expectations() -> None:
++    """Every generic error requirement must opt into an error validation path."""
++    missing_expectation = [
++        requirement.id
++        for requirement in CORE_OPERATIONS_REQUIREMENTS
++        if "error" in requirement.tags
++        and requirement.operation is not None
++        and "multi-operation" not in requirement.tags
++        and requirement.expected_error is None
++        and not getattr(requirement, "allows_error", False)
++    ]
++
++    assert missing_expectation == []
+diff --git a/tests/unit/transport/test_jsonrpc_client.py b/tests/unit/transport/test_jsonrpc_client.py
+new file mode 100644
+index 0000000..5936441
+--- /dev/null
++++ b/tests/unit/transport/test_jsonrpc_client.py
+@@ -0,0 +1,73 @@
++"""Regression tests for the JSON-RPC transport client (issue #242).
++
++The A2A JSON representation for ``GetTask`` params requires ``historyLength``
++(camelCase). ``JsonRpcClient.get_task()`` accepts a Pythonic ``history_length``
++keyword argument, but must serialize it onto the wire as ``historyLength`` —
++sending the raw Python parameter name causes conformant servers to silently
++ignore the client's requested history limit.
++"""
++
++from __future__ import annotations
++
++import json
++import threading
++
++from http.server import BaseHTTPRequestHandler, HTTPServer
++from typing import Any, Iterator
++
++import pytest
++
++from tck.transport.jsonrpc_client import JsonRpcClient
++
++
++_RESULT_BODY = json.dumps({"jsonrpc": "2.0", "id": 1, "result": {"id": "task-1"}}).encode()
++
++
++class _RecordingHandler(BaseHTTPRequestHandler):
++    """Records the JSON-RPC request's ``params`` and returns a canned success response."""
++
++    captured_params: dict[str, Any] | None = None
++
++    def do_POST(self) -> None:
++        content_length = int(self.headers.get("Content-Length", 0))
++        body = self.rfile.read(content_length) if content_length else b""
++        payload = json.loads(body)
++        _RecordingHandler.captured_params = payload["params"]
++        self.send_response(200)
++        self.send_header("Content-Type", "application/json")
++        self.send_header("Content-Length", str(len(_RESULT_BODY)))
++        self.end_headers()
++        self.wfile.write(_RESULT_BODY)
++
++    def log_message(self, format: str, *args: Any) -> None:
++        pass
++
++
++@pytest.fixture
++def recording_server() -> Iterator[str]:
++    """A stdlib HTTP server that records the JSON-RPC request body it receives."""
++    _RecordingHandler.captured_params = None
++    server = HTTPServer(("127.0.0.1", 0), _RecordingHandler)
++    thread = threading.Thread(target=server.serve_forever, daemon=True)
++    thread.start()
++    try:
++        yield f"http://127.0.0.1:{server.server_port}"
++    finally:
++        server.shutdown()
++        server.server_close()
++
++
++def test_get_task_sends_history_length_as_camel_case(recording_server: str) -> None:
++    """Regression test for issue #242.
++
++    ``get_task(history_length=1)`` must produce JSON-RPC params containing
++    ``{"id": ..., "historyLength": 1}``, not ``history_length``.
++    """
++    client = JsonRpcClient(recording_server)
++    try:
++        client.get_task(id="task-1", history_length=1)
++    finally:
++        client.close()
++
++    params = _RecordingHandler.captured_params
++    assert params == {"id": "task-1", "historyLength": 1}
+diff --git a/tests/unit/validators/http_json/test_error_validator.py b/tests/unit/validators/http_json/test_error_validator.py
+index 928b440..8ddb0d4 100644
+--- a/tests/unit/validators/http_json/test_error_validator.py
++++ b/tests/unit/validators/http_json/test_error_validator.py
+@@ -20,7 +20,6 @@ from tck.validators.http_json.error_validator import (
+ HTTP_NOT_FOUND = HTTPStatus.NOT_FOUND
+ HTTP_BAD_REQUEST = HTTPStatus.BAD_REQUEST
+ HTTP_CONFLICT = HTTPStatus.CONFLICT
+-HTTP_UNSUPPORTED_MEDIA_TYPE = HTTPStatus.UNSUPPORTED_MEDIA_TYPE
+ HTTP_INTERNAL_SERVER_ERROR = HTTPStatus.INTERNAL_SERVER_ERROR
+ 
+ 
+@@ -150,14 +149,14 @@ class TestHTTPJSONErrorStatus:
+         assert HTTP_JSON_ERROR_STATUS["TaskNotFoundError"] == HTTP_NOT_FOUND
+ 
+     def test_contains_task_not_cancelable(self) -> None:
+-        """Test TaskNotCancelableError maps to 409."""
++        """Test TaskNotCancelableError maps to 400."""
+         assert "TaskNotCancelableError" in HTTP_JSON_ERROR_STATUS
+-        assert HTTP_JSON_ERROR_STATUS["TaskNotCancelableError"] == HTTP_CONFLICT
++        assert HTTP_JSON_ERROR_STATUS["TaskNotCancelableError"] == HTTP_BAD_REQUEST
+ 
+     def test_contains_content_type_not_supported(self) -> None:
+-        """Test ContentTypeNotSupportedError maps to 415."""
++        """Test ContentTypeNotSupportedError maps to 400."""
+         assert "ContentTypeNotSupportedError" in HTTP_JSON_ERROR_STATUS
+-        assert HTTP_JSON_ERROR_STATUS["ContentTypeNotSupportedError"] == HTTP_UNSUPPORTED_MEDIA_TYPE
++        assert HTTP_JSON_ERROR_STATUS["ContentTypeNotSupportedError"] == HTTP_BAD_REQUEST
+ 
+     def test_contains_internal_error(self) -> None:
+         """Test InternalError maps to 500."""
+@@ -346,6 +345,6 @@ class TestHelperFunctions:
+         assert "InvalidRequestError" in errors
+ 
+     def test_get_possible_errors_conflict(self) -> None:
+-        """Test that 409 maps to TaskNotCancelableError."""
++        """Test that 409 is no longer assigned to TaskNotCancelableError."""
+         errors = get_possible_errors(HTTP_CONFLICT)
+-        assert "TaskNotCancelableError" in errors
++        assert "TaskNotCancelableError" not in errors

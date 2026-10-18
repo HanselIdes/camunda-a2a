@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+# Starts a local c8run 8.10.2 with the secrets experiment 3 needs, deploys the client, the agent and the protocol
+# diagrams with their decisions and forms, and waits until the connectors runtime serves the server's webhooks. c8run uses fixed ports: 8080 (engine, Operate, Tasklist),
+# 8086 (connectors), 26500. Connector secrets are passed as SECRET_* environment variables. The agents use
+# camunda.secrets.CAMUNDA_PROVIDED_LLM_*, which the engine reads from c8run's local secret store; set them once with
+#   c8run secrets set CAMUNDA_PROVIDED_LLM_API_ENDPOINT CAMUNDA_PROVIDED_LLM_API_KEY CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL
+#
+#   scripts/c8run-demo.sh            start (or restart) c8run, deploy, print the URLs
+#   scripts/c8run-demo.sh deploy     deploy only, to a c8run that is already running with these secrets
+#   scripts/c8run-demo.sh stop       stop c8run (its data is kept)
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+VERSION="${C8_VERSION:-8.10.2}"
+REST=http://localhost:8080
+CONN=http://localhost:8086
+
+if [ "${1:-}" = "stop" ]; then
+  c8ctl cluster stop
+  exit 0
+fi
+
+if [ "${1:-}" != "deploy" ]; then
+  if lsof -nP -iTCP:8080 -sTCP:LISTEN >/dev/null 2>&1; then
+    c8ctl cluster stop
+  fi
+  # c8run 8.10.2 keeps camunda.secrets.* references unresolved in connector jobs, so hand every secret of the
+  # local store (c8run secrets set ...) to the connectors runtime, which resolves {{secrets.NAME}} from SECRET_NAME
+  C8RUN="$HOME/Library/Caches/c8run/c8run-$VERSION/c8run-$VERSION/c8run"
+  [ -x "$C8RUN" ] || c8ctl cluster install "$VERSION"
+  STORE="$("$C8RUN" secrets path)"
+  for f in "$STORE"/*; do
+    name="$(basename "$f")"
+    [[ "$name" =~ ^[A-Za-z0-9_]+$ ]] || continue
+    value="$(cat "$f")"
+    # a value typed with surrounding quotes at the hidden prompt is stored with them; read it like a dotenv value
+    if [[ ${#value} -ge 2 && ( ( $value == \'*\' ) || ( $value == \"*\" ) ) ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+    export "SECRET_$name=$value"
+  done
+  # the server and the client share one cluster here, so the server's public URL is the connectors runtime itself
+  export SECRET_ENGINE_URL="$REST"
+  export SECRET_A2A_CONNECTORS_URL="$CONN"
+  export SECRET_A2A_PUBLIC_URL="$CONN/inbound"
+  export SECRET_A2A_SERVER_URL="$CONN/inbound"
+  export SECRET_A2A_AGENT_CARD_PATH="a2a-card"
+  export SECRET_A2A_PUSH_ENABLED=true
+  export SECRET_A2A_AGENT_PROCESS=a2a-agent
+  export SECRET_A2A_PUSH_TOKEN="${A2A_PUSH_TOKEN:-local-push-token}"
+  export CAMUNDA_CLIENT_REQUEST_TIMEOUT=PT120S
+  c8ctl cluster start "$VERSION"
+  for _ in $(seq 1 60); do
+    [ "$(curl -s -o /dev/null -w '%{http_code}' $CONN/actuator/health)" = 200 ] && break
+    sleep 3
+  done
+fi
+
+args=()
+for f in "$ROOT"/bpmn/*.bpmn "$ROOT"/dmn/*.dmn "$ROOT"/forms/*.form; do args+=(-F "resources=@$f"); done
+OUT="$(mktemp)"
+code=$(curl -s -o "$OUT" -w '%{http_code}' -X POST "$REST/v2/deployments" "${args[@]}")
+[ "$code" = 200 ] || { echo "deploy failed: HTTP $code"; cat "$OUT"; exit 1; }
+echo "deployed $(jq '.deployments | length' "$OUT") resources"
+
+# the connectors runtime polls for new definitions; wait until its webhooks belong to the versions just deployed
+for _ in $(seq 1 90); do
+  ok=true
+  for pid in a2a-card a2a-rpc; do
+    key=$(jq -r --arg p "$pid" '.deployments[] | select(.processDefinition.processDefinitionId == $p) | .processDefinition.processDefinitionKey' "$OUT")
+    curl -s "$CONN/inbound" | jq -e --arg k "$key" --arg p "$pid" \
+      '[.[] | .elements[] | select(.bpmnProcessId == $p) | (.processDefinitionKey | tostring)] | index($k) != null' >/dev/null 2>&1 || ok=false
+  done
+  if $ok; then echo "connectors serve the deployed server"; break; fi
+  sleep 2
+done
+
+cat <<EOF
+
+Tasklist:  $REST/tasklist/processes   (c8run default login: demo / demo)
+           Processes tab > "A2A client agent" > Start process
+Operate:   $REST/operate
+Agent:     $CONN/inbound/a2a-card
+EOF
