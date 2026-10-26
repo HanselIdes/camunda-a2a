@@ -1,6 +1,6 @@
-This Connector is developed by Camunda's partners or independent third-party developers. To receive assistance or support for the Connector A2A BPMN Blueprint, contact HanselIdes directly through the [repository issues](https://github.com/HanselIdes/camunda-a2a/issues). Camunda disclaims any support obligation for the Connector.
+This Blueprint is designed by Camunda's partners or independent third-party developers. To receive assistance or support for the Blueprint A2A BPMN Blueprint, contact HanselIdes directly through the [repository issues](https://github.com/HanselIdes/camunda-a2a/issues). Camunda disclaims any support obligation for the Blueprint.
 
-By installing this connector, you consent to Camunda sharing your contact information with the developer of this connector so that you can receive more information about it directly from the developer.
+By installing this blueprint, you consent to Camunda sharing your contact information with the developer of this blueprint so that you can receive more information about it directly from the developer.
 
 This is an unmaintained community contribution. The contact channel does not establish a maintenance or support commitment.
 

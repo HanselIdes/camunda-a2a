@@ -89,6 +89,11 @@ Push is disabled in these profiles. Inline push requests are rejected before bus
 do not call the cluster-variable or expression-evaluation APIs and do not include conformance-specific direct-message
 behavior.
 
+Existing-task operations allow a three-second visibility window before reporting a missing task. The protocol retries
+process/tag searches every 250 ms and uses the remaining window to read the task variable. This handles a task returned
+by `SendMessage` before its process is visible in search; unknown and cross-agent task IDs still expire with
+`TASK_NOT_FOUND`. It does not extend task retention or turn engine API failures into missing-task responses.
+
 A fresh, isolated Self-Managed check of the exact Basic profile passed on **engine 8.8.21, stock Connectors 8.9.0,
 and Elasticsearch 8.17.0**, with engine authentication and platform authorizations enabled. Missing and invalid task API
 keys returned 401; valid keys returned the exact completed echo and completed-task polling. This check used loopback HTTP,

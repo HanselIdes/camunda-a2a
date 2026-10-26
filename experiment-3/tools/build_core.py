@@ -34,11 +34,18 @@ def remove(root, ids):
                 parent.remove(child)
 
 
-def connect(root, process_id, source, target):
+def connect(root, process_id, source, target, condition=None, default=False, name=None):
     process = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == process_id)
     flow_id = f"Flow_{source}_{target}"
-    ET.SubElement(process, f"{{{B}}}sequenceFlow",
-                  {"id": flow_id, "sourceRef": source, "targetRef": target})
+    flow = ET.SubElement(process, f"{{{B}}}sequenceFlow",
+                         {"id": flow_id, "sourceRef": source, "targetRef": target})
+    if name:
+        flow.set("name", name)
+    if condition:
+        ET.SubElement(flow, f"{{{B}}}conditionExpression",
+                      {"{http://www.w3.org/2001/XMLSchema-instance}type": "bpmn:tFormalExpression"}).text = condition
+    if default:
+        next(e for e in process if e.get("id") == source).set("default", flow_id)
     for node_id, reference in ((source, "outgoing"), (target, "incoming")):
         node = next(e for e in process if e.get("id") == node_id)
         preceding = {"documentation", "extensionElements", "auditing", "monitoring", "incoming"}
@@ -57,6 +64,56 @@ def connect(root, process_id, source, target):
     tx, ty = float(b.get("x")), float(b.get("y")) + float(b.get("height")) / 2
     for x, y in ((sx, sy), ((sx + tx) / 2, sy), ((sx + tx) / 2, ty), (tx, ty)):
         ET.SubElement(edge, f"{{{DI}}}waypoint", {"x": str(x), "y": str(y)})
+
+
+def lookup_retry(root):
+    process = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
+    lookup = next(e for e in process if e.get("id") == "PrepareLookup").find(
+        f"{{{B}}}extensionElements/{{{Z}}}script")
+    expression = lookup.get("expression")
+    assert expression.startswith("={taskId:") and expression.endswith("}"), "Lookup source changed"
+    lookup.set("expression", expression[:-1] + ', indexDeadline: string(now() + duration("PT3S"))}')
+    read = next(e for e in process if e.get("id") == "ReadTask")
+    next(e for e in read.iter(f"{{{Z}}}input") if e.get("target") == "deadline").set(
+        "source", "=lookup.indexDeadline")
+
+    ET.SubElement(process, f"{{{B}}}exclusiveGateway", {"id": "LookupTimeLeft", "name": "Lookup time left?"})
+    ET.SubElement(process, f"{{{B}}}exclusiveGateway", {"id": "LookupJoin"})
+    timer = ET.SubElement(process, f"{{{B}}}intermediateCatchEvent",
+                          {"id": "WaitForIndex", "name": "Await task index"})
+    definition = ET.SubElement(timer, f"{{{B}}}timerEventDefinition", {"id": "WaitForIndex_def"})
+    ET.SubElement(definition, f"{{{B}}}timeDuration",
+                  {"{http://www.w3.org/2001/XMLSchema-instance}type": "bpmn:tFormalExpression"}).text = '="PT0.25S"'
+
+    shapes = {e.get("bpmnElement"): e.find(f"{{{DC}}}Bounds") for e in root.iter(f"{{{D}}}BPMNShape")}
+    x = max(float(shapes[e.get("id")].get("x")) + float(shapes[e.get("id")].get("width"))
+            for e in process if e.get("id") in shapes) + 150
+    y = float(shapes["TaskKnown"].get("y")) + 110
+    plane = root.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane")
+    for node_id, offset, size in (("LookupTimeLeft", 0, 50), ("WaitForIndex", 150, 36)):
+        shape = ET.SubElement(plane, f"{{{D}}}BPMNShape", {"id": node_id + "_di", "bpmnElement": node_id})
+        ET.SubElement(shape, f"{{{DC}}}Bounds",
+                      {"x": str(x + offset), "y": str(y + (50 - size) / 2),
+                       "width": str(size), "height": str(size)})
+    shape = ET.SubElement(plane, f"{{{D}}}BPMNShape", {"id": "LookupJoin_di", "bpmnElement": "LookupJoin"})
+    search = shapes["FindTask"]
+    ET.SubElement(shape, f"{{{DC}}}Bounds",
+                  {"x": str(float(search.get("x")) - 43),
+                   "y": str(float(search.get("y")) + (float(search.get("height")) - 36) / 2),
+                   "width": "36", "height": "36"})
+    for participant in root.iter(f"{{{B}}}participant"):
+        if participant.get("processRef") == "a2a-rpc":
+            bounds = shapes[participant.get("id")]
+            bounds.set("width", str(max(float(bounds.get("width")), x + 220 - float(bounds.get("x")))))
+
+    remove(root, {"Flow_TaskKnown_NotFoundJoin", "Flow_PrepareLookup_FindTask"})
+    connect(root, "a2a-rpc", "PrepareLookup", "LookupJoin")
+    connect(root, "a2a-rpc", "LookupJoin", "FindTask")
+    connect(root, "a2a-rpc", "TaskKnown", "LookupTimeLeft", default=True, name="not indexed")
+    connect(root, "a2a-rpc", "LookupTimeLeft", "WaitForIndex",
+            condition="=now() < date and time(lookup.indexDeadline)", name="retry")
+    connect(root, "a2a-rpc", "LookupTimeLeft", "NotFoundJoin", default=True, name="expired")
+    connect(root, "a2a-rpc", "WaitForIndex", "LookupJoin")
 
 
 def build(authentication):
@@ -78,6 +135,7 @@ def build(authentication):
     connect(root, "a2a-task-update", "ApplyOutcome", "TaskUpdated")
     connect(root, "a2a-rpc", "AwaitCanceled", "BuildCanceledView")
     connect(root, "a2a-rpc", "PrepareNewTask", "CreateTask")
+    lookup_retry(root)
 
     setting = next(e for e in root.iter() if e.get("id") == "ReadPushSetting")
     setting.tag = f"{{{B}}}scriptTask"

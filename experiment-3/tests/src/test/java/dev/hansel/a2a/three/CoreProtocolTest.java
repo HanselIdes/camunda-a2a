@@ -10,6 +10,10 @@ import io.camunda.client.CamundaClient;
 import io.camunda.process.test.api.CamundaProcessTest;
 import io.camunda.process.test.api.CamundaProcessTestContext;
 import io.camunda.process.test.api.TestDeployment;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,5 +64,25 @@ class CoreProtocolTest {
         "{\"taskPushNotificationConfig\":{\"url\":\"https://example.invalid/callback\"}}");
     assertThat(response.toString()).contains("PUSH_NOTIFICATION_NOT_SUPPORTED");
     assertThat(h.calls).noneMatch(c -> c.equals("POST /v2/process-instances"));
+  }
+
+  @Test
+  void taskLookupWaitsForDelayedProcessIndexVisibility() {
+    final var completed = task(h.send("index-lag", "Indexed result"));
+    final var misses = new AtomicInteger(2);
+    h.afterEngineResponse = (call, body) ->
+        call.equals("POST /v2/process-instances/search") && misses.getAndDecrement() > 0
+            ? Map.of("items", List.of()) : body;
+    assertThat(h.get((String) completed.get("id")).get("result")).isEqualTo(completed);
+    assertThat(misses.get()).isNegative();
+  }
+
+  @Test
+  void unknownTaskLookupHasABoundedExpiry() {
+    final long start = System.nanoTime();
+    assertThat(h.get("missing-task").toString()).contains("TASK_NOT_FOUND");
+    assertThat(Duration.ofNanos(System.nanoTime() - start)).isLessThan(Duration.ofSeconds(8));
+    assertThat(h.calls.stream().filter(c -> c.equals("POST /v2/process-instances/search")).count())
+        .isBetween(2L, 20L);
   }
 }

@@ -228,10 +228,10 @@
     </bpmn:endEvent>
     <bpmn:scriptTask id="PrepareLookup" name="Prepare lookup">
       <bpmn:extensionElements>
-        <zeebe:script expression="={taskId: if ctx.method = &quot;SendMessage&quot; then ctx.taskId else ctx.ref}" resultVariable="lookup" />
+        <zeebe:script expression="={taskId: if ctx.method = &quot;SendMessage&quot; then ctx.taskId else ctx.ref, indexDeadline: string(now() + duration(&quot;PT3S&quot;))}" resultVariable="lookup" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_RouteRequest_PrepareLookup</bpmn:incoming>
-      <bpmn:outgoing>Flow_PrepareLookup_FindTask</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PrepareLookup_LookupJoin</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:serviceTask id="FindTask" name="Find task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjAzMzUgOC45OTk5N0MxNy4wMzM1IDEzLjQ0NzUgMTMuNDI4MSAxNy4wNTI5IDguOTgwNjUgMTcuMDUyOUM0LjUzMzE2IDE3LjA1MjkgMC45Mjc3NjUgMTMuNDQ3NSAwLjkyNzc2NSA4Ljk5OTk3QzAuOTI3NzY1IDQuNTUyNDggNC41MzMxNiAwLjk0NzA4MyA4Ljk4MDY1IDAuOTQ3MDgzQzEzLjQyODEgMC45NDcwODMgMTcuMDMzNSA0LjU1MjQ4IDE3LjAzMzUgOC45OTk5N1oiIGZpbGw9IiM1MDU1NjIiLz4KPHBhdGggZD0iTTQuOTMxMjYgMTQuMTU3MUw2Ljc4MTA2IDMuNzE0NzFIMTAuMTM3NUMxMS4xOTE3IDMuNzE0NzEgMTEuOTgyNCAzLjk4MzIzIDEyLjUwOTUgNC41MjAyN0MxMy4wNDY1IDUuMDQ3MzYgMTMuMzE1IDUuNzMzNTggMTMuMzE1IDYuNTc4OTJDMTMuMzE1IDcuNDQ0MTQgMTMuMDcxNCA4LjE1NTIyIDEyLjU4NDEgOC43MTIxNUMxMi4xMDY3IDkuMjU5MTMgMTEuNDU1MyA5LjYzNzA1IDEwLjYyOTggOS44NDU5TDEyLjA2MTkgMTQuMTU3MUgxMC4zMzE1TDkuMDMzNjQgMTAuMDI0OUg3LjI0MzUxTDYuNTEyNTQgMTQuMTU3MUg0LjkzMTI2Wk03LjQ5NzExIDguNTkyODFIOS4yNDI0OEM5Ljk5ODMyIDguNTkyODEgMTAuNTkwMSA4LjQyMzc0IDExLjAxNzcgOC4wODU2MUMxMS40NTUzIDcuNzM3NTMgMTEuNjc0MSA3LjI2NTEzIDExLjY3NDEgNi42Njg0MkMxMS42NzQxIDYuMTkxMDYgMTEuNTI0OSA1LjgxODExIDExLjIyNjUgNS41NDk1OUMxMC45MjgyIDUuMjcxMTMgMTAuNDU1OCA1LjEzMTkgOS44MDkzNiA1LjEzMTlIOC4xMDg3NEw3LjQ5NzExIDguNTkyODFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K">
       <bpmn:extensionElements>
@@ -260,13 +260,13 @@
           <zeebe:header key="retryBackoff" value="PT30S" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_PrepareLookup_FindTask</bpmn:incoming>
+      <bpmn:incoming>Flow_LookupJoin_FindTask</bpmn:incoming>
       <bpmn:outgoing>Flow_FindTask_TaskKnown</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:exclusiveGateway id="TaskKnown" name="Task known?" default="Flow_TaskKnown_NotFoundJoin">
+    <bpmn:exclusiveGateway id="TaskKnown" name="Task known?" default="Flow_TaskKnown_LookupTimeLeft">
       <bpmn:incoming>Flow_FindTask_TaskKnown</bpmn:incoming>
       <bpmn:outgoing>Flow_TaskKnown_ReadTask</bpmn:outgoing>
-      <bpmn:outgoing>Flow_TaskKnown_NotFoundJoin</bpmn:outgoing>
+      <bpmn:outgoing>Flow_TaskKnown_LookupTimeLeft</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:callActivity id="ReadTask" name="Read task">
       <bpmn:extensionElements>
@@ -274,7 +274,7 @@
         <zeebe:ioMapping>
           <zeebe:input source="={path: &quot;/v2/variables/search?truncateValues=false&quot;, body: {filter: {name: &quot;task&quot;, processInstanceKey: found, scopeKey: found}, page: {limit: 1}}}" target="probe" />
           <zeebe:input source="={kind: &quot;task&quot;, minRev: 0}" target="until" />
-          <zeebe:input source="=string(now() + duration(&quot;PT&quot; + string(0) + &quot;S&quot;))" target="deadline" />
+          <zeebe:input source="=lookup.indexDeadline" target="deadline" />
           <zeebe:output source="=check.seen" target="task" />
           <zeebe:output source="=check.visible" target="visible" />
         </zeebe:ioMapping>
@@ -290,8 +290,8 @@
       <bpmn:outgoing>Flow_RouteMethod_CheckFollowUp</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:exclusiveGateway id="NotFoundJoin">
-      <bpmn:incoming>Flow_TaskKnown_NotFoundJoin</bpmn:incoming>
       <bpmn:incoming>Flow_RouteMethod_NotFoundJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_LookupTimeLeft_NotFoundJoin</bpmn:incoming>
       <bpmn:outgoing>Flow_NotFoundJoin_BuildNotFound</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:scriptTask id="BuildNotFound" name="Build task not found error">
@@ -542,12 +542,10 @@
     <bpmn:sequenceFlow id="Flow_CreateTask_AwaitNewTask" sourceRef="CreateTask" targetRef="AwaitNewTask" />
     <bpmn:sequenceFlow id="Flow_AwaitNewTask_BuildNewTaskResponse" sourceRef="AwaitNewTask" targetRef="BuildNewTaskResponse" />
     <bpmn:sequenceFlow id="Flow_BuildNewTaskResponse_NewTaskReady" sourceRef="BuildNewTaskResponse" targetRef="NewTaskReady" />
-    <bpmn:sequenceFlow id="Flow_PrepareLookup_FindTask" sourceRef="PrepareLookup" targetRef="FindTask" />
     <bpmn:sequenceFlow id="Flow_FindTask_TaskKnown" sourceRef="FindTask" targetRef="TaskKnown" />
     <bpmn:sequenceFlow id="Flow_TaskKnown_ReadTask" name="yes" sourceRef="TaskKnown" targetRef="ReadTask">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=found != null</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_TaskKnown_NotFoundJoin" name="no" sourceRef="TaskKnown" targetRef="NotFoundJoin" />
     <bpmn:sequenceFlow id="Flow_ReadTask_RouteMethod" sourceRef="ReadTask" targetRef="RouteMethod" />
     <bpmn:sequenceFlow id="Flow_RouteMethod_NotFoundJoin" name="task not visible" sourceRef="RouteMethod" targetRef="NotFoundJoin" />
     <bpmn:sequenceFlow id="Flow_RouteMethod_BuildTaskView" name="GetTask" sourceRef="RouteMethod" targetRef="BuildTaskView">
@@ -591,6 +589,31 @@
     <bpmn:sequenceFlow id="Flow_BuildFollowUpError_FollowUpErrorReady" sourceRef="BuildFollowUpError" targetRef="FollowUpErrorReady" />
     <bpmn:sequenceFlow id="Flow_AwaitCanceled_BuildCanceledView" sourceRef="AwaitCanceled" targetRef="BuildCanceledView" />
     <bpmn:sequenceFlow id="Flow_PrepareNewTask_CreateTask" sourceRef="PrepareNewTask" targetRef="CreateTask" />
+    <bpmn:exclusiveGateway id="LookupTimeLeft" name="Lookup time left?" default="Flow_LookupTimeLeft_NotFoundJoin">
+      <bpmn:incoming>Flow_TaskKnown_LookupTimeLeft</bpmn:incoming>
+      <bpmn:outgoing>Flow_LookupTimeLeft_WaitForIndex</bpmn:outgoing>
+      <bpmn:outgoing>Flow_LookupTimeLeft_NotFoundJoin</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="LookupJoin">
+      <bpmn:incoming>Flow_PrepareLookup_LookupJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_WaitForIndex_LookupJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_LookupJoin_FindTask</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="WaitForIndex" name="Await task index">
+      <bpmn:incoming>Flow_LookupTimeLeft_WaitForIndex</bpmn:incoming>
+      <bpmn:outgoing>Flow_WaitForIndex_LookupJoin</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="WaitForIndex_def">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT0.25S"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:sequenceFlow id="Flow_PrepareLookup_LookupJoin" sourceRef="PrepareLookup" targetRef="LookupJoin" />
+    <bpmn:sequenceFlow id="Flow_LookupJoin_FindTask" sourceRef="LookupJoin" targetRef="FindTask" />
+    <bpmn:sequenceFlow id="Flow_TaskKnown_LookupTimeLeft" sourceRef="TaskKnown" targetRef="LookupTimeLeft" name="not indexed" />
+    <bpmn:sequenceFlow id="Flow_LookupTimeLeft_WaitForIndex" sourceRef="LookupTimeLeft" targetRef="WaitForIndex" name="retry">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=now() &lt; date and time(lookup.indexDeadline)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_LookupTimeLeft_NotFoundJoin" sourceRef="LookupTimeLeft" targetRef="NotFoundJoin" name="expired" />
+    <bpmn:sequenceFlow id="Flow_WaitForIndex_LookupJoin" sourceRef="WaitForIndex" targetRef="LookupJoin" />
   </bpmn:process>
   <bpmn:process id="a2a-task-update" name="A2A task update" isExecutable="true">
     <bpmn:startEvent id="TurnFinished" name="Turn finished">
@@ -798,7 +821,7 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_a2a_protocol">
       <bpmndi:BPMNShape id="Pool_a2a-rpc_di" bpmnElement="Pool_a2a-rpc" isHorizontal="true">
-        <dc:Bounds x="160" y="40" width="3688" height="2128" />
+        <dc:Bounds x="160" y="40" width="3978.0" height="2128" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RpcReceived_di" bpmnElement="RpcReceived">
         <dc:Bounds x="282" y="622" width="36" height="36" />
@@ -1142,10 +1165,6 @@
         <di:waypoint x="2450" y="640" />
         <di:waypoint x="2532" y="640" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PrepareLookup_FindTask_di" bpmnElement="Flow_PrepareLookup_FindTask">
-        <di:waypoint x="1400" y="1030" />
-        <di:waypoint x="1450" y="1030" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FindTask_TaskKnown_di" bpmnElement="Flow_FindTask_TaskKnown">
         <di:waypoint x="1550" y="1030" />
         <di:waypoint x="1625" y="1030" />
@@ -1155,14 +1174,6 @@
         <di:waypoint x="1750" y="1030" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1704" y="1005" width="18" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_TaskKnown_NotFoundJoin_di" bpmnElement="Flow_TaskKnown_NotFoundJoin">
-        <di:waypoint x="1650" y="1005" />
-        <di:waypoint x="1650" y="900" />
-        <di:waypoint x="2075" y="900" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1659" y="943" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadTask_RouteMethod_di" bpmnElement="Flow_ReadTask_RouteMethod">
@@ -1571,6 +1582,51 @@
         <di:waypoint x="1725.0" y="640.0" />
         <di:waypoint x="1725.0" y="640.0" />
         <di:waypoint x="2050.0" y="640.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="LookupTimeLeft_di" bpmnElement="LookupTimeLeft">
+        <dc:Bounds x="3918.0" y="1115.0" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WaitForIndex_di" bpmnElement="WaitForIndex">
+        <dc:Bounds x="4068.0" y="1122.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="LookupJoin_di" bpmnElement="LookupJoin">
+        <dc:Bounds x="1407.0" y="1012.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_PrepareLookup_LookupJoin_di" bpmnElement="Flow_PrepareLookup_LookupJoin">
+        <di:waypoint x="1400.0" y="1030.0" />
+        <di:waypoint x="1403.5" y="1030.0" />
+        <di:waypoint x="1403.5" y="1030.0" />
+        <di:waypoint x="1407.0" y="1030.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LookupJoin_FindTask_di" bpmnElement="Flow_LookupJoin_FindTask">
+        <di:waypoint x="1443.0" y="1030.0" />
+        <di:waypoint x="1446.5" y="1030.0" />
+        <di:waypoint x="1446.5" y="1030.0" />
+        <di:waypoint x="1450.0" y="1030.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_TaskKnown_LookupTimeLeft_di" bpmnElement="Flow_TaskKnown_LookupTimeLeft">
+        <di:waypoint x="1675.0" y="1030.0" />
+        <di:waypoint x="2796.5" y="1030.0" />
+        <di:waypoint x="2796.5" y="1140.0" />
+        <di:waypoint x="3918.0" y="1140.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LookupTimeLeft_WaitForIndex_di" bpmnElement="Flow_LookupTimeLeft_WaitForIndex">
+        <di:waypoint x="3968.0" y="1140.0" />
+        <di:waypoint x="4018.0" y="1140.0" />
+        <di:waypoint x="4018.0" y="1140.0" />
+        <di:waypoint x="4068.0" y="1140.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LookupTimeLeft_NotFoundJoin_di" bpmnElement="Flow_LookupTimeLeft_NotFoundJoin">
+        <di:waypoint x="3968.0" y="1140.0" />
+        <di:waypoint x="3021.5" y="1140.0" />
+        <di:waypoint x="3021.5" y="900.0" />
+        <di:waypoint x="2075.0" y="900.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WaitForIndex_LookupJoin_di" bpmnElement="Flow_WaitForIndex_LookupJoin">
+        <di:waypoint x="4104.0" y="1140.0" />
+        <di:waypoint x="2755.5" y="1140.0" />
+        <di:waypoint x="2755.5" y="1030.0" />
+        <di:waypoint x="1407.0" y="1030.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
