@@ -22,7 +22,7 @@ fraud determination, financial integration, document processing or unreleased pr
 | Client HTTP template | `io.camunda.connectors.HttpJson.v2`, version 12                                                                      |
 | Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
 | Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
-| Engine exporter      | Self-Managed 8.8.21 only: explicit CamundaExporter class and `bulk.delay=1`; see below                                |
+| Engine exporter      | Self-Managed 8.8.21 only: explicit CamundaExporter class and `bulk.delay=1`; see below                                 |
 
 This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 proof. Other combinations and model
 providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
@@ -31,6 +31,26 @@ Modeler import and Tasklist form rendering still require their own observed chec
 The execution-thread setting matters when client and server use the same Connectors runtime: a synchronous
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
 The four-thread configuration passed the supplied client flow. It is not a capacity guarantee.
+
+The [96357f5 verification record](../verification/96357f5/summary.json) contains three clean-source runs of
+the pinned TCK **MUST gate**: each passed 56 MUST requirements and excluded 58 with documented reasons
+(25 undeclared capabilities, 17 other bindings, 14 not exercised by the TCK and two client-side requirements).
+Each run executed 68 tests, skipped 167, and reported no failures, errors or engine incidents.
+The [detailed gate audit](../verification/96357f5/gate.json) maps every MUST and skipped test to its reason.
+This is **not full A2A conformance**. The official SDK 1.2.3 flow and the supplied BPMN client passed the
+exact real-model outcome checks; the complete Maven suite finished with 172 tests and no failures/errors/skips.
+
+The TCK does not test 16 MUST requirements here: card signing (`CARD-SIGN-001` through `004`), TLS
+(`AUTH-TLS-001`), server authentication (`AUTH-SERVER-002`), in-task authorization (`AUTH-INTASK-001` through
+`004`), authorization scopes (`AUTH-SCOPE-001` through `003`), version semantics (`VER-SERVER-001`) and two
+client version requirements (`VER-CLIENT-001`, `VER-CLIENT-002`). Native verification separately checks
+certificate validation and missing/invalid API-key rejection; those are not TCK passes.
+The card is unsigned. One shared key supplies no per-caller task scoping.
+
+Across the three runs, raw Extensions-call latency was **1.630 / 1.764 / 2.221 seconds**
+(min/median/max), against its unchanged five-second read timeout. Normal RPC latency across 195 requests
+was **0.097 / 1.657 / 4.532 seconds**, against the pinned transport's unchanged 30-second read timeout.
+These measurements describe this local configuration, not a latency guarantee.
 
 ## Prepare the cluster
 
@@ -233,8 +253,9 @@ Task search uses the selected agent process; existing-task lookups have a three-
 Push, streaming and A2A 0.3 interoperability are not advertised.
 
 Terminal-state races, bulk concurrency across two agents, duplicate-request behavior, pagination/retention,
-restart recovery, expired/insufficient credentials, the full version matrix, independent clients, exact-candidate
-conformance, Modeler/form usability and a timed fresh adoption remain unverified. Do not infer exactly-once
+restart recovery, expired/insufficient credentials, the full version matrix,
+Modeler/form usability and a timed fresh adoption remain unverified. The recorded MUST-gate and SDK results
+apply only to their exact source and deployment settings, not subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
 business outcomes.
 
@@ -274,7 +295,8 @@ executable when running the verifier. This uses `a2a-sdk==1.2.3`, not the confor
 and checks discovery, polling, same-task clarification, exact real-tool evidence and context-filtered listing.
 
 For the unchanged pinned conformance suite, prepare a separate checkout at
-`263b9cfaf16a554bdfb166a7ba5b67716e946349`, apply `tck/patches/tck-pr-stack.patch` and run `uv sync` there.
+`263b9cfaf16a554bdfb166a7ba5b67716e946349`, apply `experiment-3/tck/patches/tck-pr-stack.patch` from this
+repository and run `uv sync` there.
 Set `PROOF_TCK_DIRECTORY` to its absolute path and run the same verifier. The runner checks the complete
 patched source fingerprint before execution and deploys a clearly nonshipping deterministic fixture.
 It preserves the raw five-second read timeout and the existing assertions/exclusions. The explicit test
