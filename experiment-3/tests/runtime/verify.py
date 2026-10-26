@@ -11,6 +11,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from isolation import IsolatedCompose
+
 ROOT = Path(__file__).resolve().parents[2]
 REPORTS = Path(os.environ.get("PROOF_REPORT_DIR", str(ROOT / "reports/runtime")))
 REPORTS.mkdir(parents=True, exist_ok=True)
@@ -20,7 +22,10 @@ env = dict(os.environ, PROOF_ENGINE_PASSWORD=secrets.token_urlsafe(32),
 env.setdefault("PROOF_AGENT_PROCESS", "a2a-card-dispute")
 if env["PROOF_AGENT_PROCESS"] not in ("a2a-card-dispute", "a2a-echo"):
     raise ValueError("PROOF_AGENT_PROCESS must select a2a-card-dispute or a2a-echo")
-cmd = ["docker", "compose", "-p", "a2a-acceptance-88", "-f", COMPOSE]
+stack = IsolatedCompose(COMPOSE, env)
+cmd = stack.command
+engine_url = "http://127.0.0.1:" + env["PROOF_ENGINE_PORT"]
+connectors_url = "https://127.0.0.1:" + env["PROOF_CONNECTORS_PORT"]
 demo = env.get("PROOF_AGENT_PROCESS") == "a2a-card-dispute"
 tls_directory = tempfile.TemporaryDirectory(prefix="a2a-proof-tls-")
 env["PROOF_CERTIFICATE_DIR"] = tls_directory.name
@@ -45,7 +50,7 @@ def request(path, body=None, authenticated=True):
         headers["Authorization"] = "Basic " + token
     if body is not None:
         headers["Content-Type"] = "application/json"
-    req = urllib.request.Request("http://127.0.0.1:38880" + path,
+    req = urllib.request.Request(engine_url + path,
                                  data=None if body is None else json.dumps(body).encode(),
                                  headers=headers)
     try:
@@ -66,7 +71,7 @@ def deploy(files):
         body.extend(b"\r\n")
     body.extend(f"--{boundary}--\r\n".encode())
     token = base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode()
-    req = urllib.request.Request("http://127.0.0.1:38880/v2/deployments", data=body,
+    req = urllib.request.Request(engine_url + "/v2/deployments", data=body,
                                  headers={"Authorization": "Basic " + token,
                                           "Content-Type": f"multipart/form-data; boundary={boundary}"})
     try:
@@ -80,7 +85,7 @@ def rpc(body, key=True):
     headers = {"Content-Type": "application/json", "A2A-Version": "1.0"}
     if key:
         headers["X-A2A-Api-Key"] = env["PROOF_A2A_API_KEY"] if key is True else key
-    req = urllib.request.Request("https://127.0.0.1:38885/inbound/a2a",
+    req = urllib.request.Request(connectors_url + "/inbound/a2a",
                                  data=json.dumps(body).encode(), headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=60, context=tls_context) as response:
@@ -126,8 +131,33 @@ def record_model_inputs():
     print("Captured model input/context diagnostics without credentials", flush=True)
 
 
+def assert_no_persisted_credentials():
+    cursor = None
+    while True:
+        page = {"limit": 100}
+        if cursor:
+            page["after"] = cursor
+        status, body = request("/v2/variables/search?truncateValues=false", {"filter": {}, "page": page})
+        assert status == 200, "Cannot verify credential exclusion: variable search failed"
+        variables = json.loads(body)
+        forbidden = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD")]
+        forbidden.append(base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode())
+        assert not any(value in body for value in forbidden), "Credential persisted in engine variables"
+        for item in variables["items"]:
+            if item["name"] == "hdr":
+                assert set(json.loads(item["value"])) <= {"content-type", "a2a-version"}, \
+                    "Non-allowlisted request header persisted"
+        pagination = variables["page"]
+        next_cursor = pagination.get("endCursor")
+        if len(variables["items"]) < 100:
+            break
+        assert next_cursor and next_cursor != cursor, "Variable pagination made no progress"
+        cursor = next_cursor
+    print("All persisted process variables exclude runtime credentials and arbitrary headers: PASS", flush=True)
+
+
 try:
-    subprocess.run(cmd + ["up", "-d", "--wait", "--wait-timeout", "300"], env=env, check=True)
+    stack.start()
     deadline = time.monotonic() + 60
     while request("/v2/topology")[0] != 200:
         if time.monotonic() >= deadline:
@@ -222,11 +252,11 @@ try:
         assert all(m["taskId"] == followed["id"] and m["contextId"] == followed["contextId"]
                    for m in followed["history"]), followed
         print("real-model card-dispute numeric-leading follow-up completes same task with four-message history: PASS", flush=True)
-        with urllib.request.urlopen("https://127.0.0.1:38885/inbound/a2a-card",
+        with urllib.request.urlopen(connectors_url + "/inbound/a2a-card",
                                     context=tls_context, timeout=30) as response:
             card = json.load(response)
         assert card["supportedInterfaces"][0]["url"] == env.get(
-            "EXPECTED_RPC_URL", "https://host.docker.internal:38885/inbound/a2a"), card
+            "EXPECTED_RPC_URL", "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a"), card
         assert card["capabilities"]["pushNotifications"] is False, card
         assert card["securitySchemes"]["a2aApiKey"]["apiKeySecurityScheme"]["name"] == "X-A2A-Api-Key", card
         assert [s["id"] for s in card["skills"]] == ["review_duplicate_charge"], card
@@ -279,6 +309,7 @@ try:
                            "params": {"id": task["id"]}})
     assert status == 200 and fetched["result"]["id"] == task["id"], (status, fetched)
     print("completed task polling preserves expected task: PASS", flush=True)
+    assert_no_persisted_credentials()
 except Exception:
     status, incidents = request("/v2/incidents/search", {"filter": {"state": "ACTIVE"}})
     for value in (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], env["PROOF_TLS_PASSWORD"]):
@@ -299,5 +330,7 @@ except Exception:
     print(logs, flush=True)
     raise
 finally:
-    subprocess.run(cmd + ["down"], env=env, check=True)
-    tls_directory.cleanup()
+    try:
+        stack.close()
+    finally:
+        tls_directory.cleanup()

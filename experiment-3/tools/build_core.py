@@ -14,6 +14,8 @@ Z = "http://camunda.org/schema/zeebe/1.0"
 D = "http://www.omg.org/spec/BPMN/20100524/DI"
 DC = "http://www.omg.org/spec/DD/20100524/DC"
 DI = "http://www.omg.org/spec/DD/20100524/DI"
+REQUEST_MAPPING = ('={rpc: request.body, hdr: {"content-type": request.headers.`content-type`, '
+                   '"a2a-version": request.headers.`a2a-version`}}')
 for prefix, uri in {
     "bpmn": B, "zeebe": Z, "bpmndi": D, "dc": DC, "di": DI,
     "modeler": "http://camunda.org/schema/modeler/1.0",
@@ -121,6 +123,8 @@ def build(authentication):
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.8.0")
     for node in root.iter():
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
+        if node.get(f"{{{Z}}}modelerTemplate") == "io.camunda.connectors.HttpJson.v2":
+            node.set(f"{{{Z}}}modelerTemplateVersion", "12")
     remove(root, {
         "BuildDirectMessage", "DirectMessageReady", "FindPushConfigs", "AnyPushConfigs",
         "StartPushDelivery", "PushHandled", "FindCancelPush", "AnyCancelPush", "StartCancelPush",
@@ -141,6 +145,8 @@ def build(authentication):
 
     setting = next(e for e in root.iter() if e.get("id") == "ReadPushSetting")
     setting.tag = f"{{{B}}}scriptTask"
+    setting.attrib.pop(f"{{{Z}}}modelerTemplate", None)
+    setting.attrib.pop(f"{{{Z}}}modelerTemplateVersion", None)
     setting.remove(setting.find(f"{{{B}}}extensionElements"))
     extension = ET.Element(f"{{{B}}}extensionElements")
     ET.SubElement(extension, f"{{{Z}}}script", {"expression": "=false", "resultVariable": "pushEnabled"})
@@ -184,6 +190,7 @@ def build(authentication):
     for properties in root.iter(f"{{{Z}}}properties"):
         if any(e.get("name") == "inbound.context" and e.get("value") == "a2a" for e in properties):
             next(e for e in properties if e.get("name") == "inbound.auth.type").set("value", "APIKEY")
+            next(e for e in properties if e.get("name") == "resultExpression").set("value", REQUEST_MAPPING)
             ET.SubElement(properties, f"{{{Z}}}property",
                           {"name": "inbound.auth.apiKey", "value": "{{secrets.A2A_API_KEY}}"})
             ET.SubElement(properties, f"{{{Z}}}property",

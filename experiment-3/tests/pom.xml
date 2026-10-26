@@ -78,6 +78,14 @@
         <directory>${project.basedir}/../blueprint/profiles/basic</directory>
         <targetPath>core</targetPath>
       </testResource>
+      <testResource>
+        <directory>${project.basedir}/../blueprint/profiles/oauth</directory>
+        <targetPath>core-oauth</targetPath>
+      </testResource>
+      <testResource>
+        <directory>${project.basedir}/../blueprint/templates</directory>
+        <targetPath>core-templates</targetPath>
+      </testResource>
     </testResources>
     <plugins>
       <plugin>

@@ -7,7 +7,7 @@ import tempfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from build_core import B, Z, ROOT
+from build_core import B, Z, ROOT, REQUEST_MAPPING
 from gen_card import feel_str, json_string_expression, skills_from_bpmn, skills_feel
 from bpmn_gen import build as original
 from bpmn_gen.agent import USER_PROMPT
@@ -170,6 +170,10 @@ def assets():
                                    "only combinations documented in the setup guide are verified.")
             if kind == "rpc":
                 next(p for p in data["properties"] if p.get("id") == "inbound.auth.type")["value"] = "APIKEY"
+                mapping = next(p for p in data["properties"] if p.get("id") == "resultExpression")
+                mapping["value"] = REQUEST_MAPPING
+                mapping["description"] = ("Persist the JSON-RPC body and only content-type/a2a-version headers. "
+                                          "Never persist authorization, API keys or arbitrary request headers.")
                 for name, value in {
                     "inbound.auth.apiKey": "{{secrets.A2A_API_KEY}}",
                     "inbound.auth.apiKeyLocator": '=request.headers.`x-a2a-api-key`',

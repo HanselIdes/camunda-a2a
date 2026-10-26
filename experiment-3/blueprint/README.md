@@ -12,16 +12,16 @@ fraud determination, financial integration, document processing or unreleased pr
 
 ## Verified configuration
 
-| Component | Version or setting |
-|-----------|--------------------|
-| Self-Managed engine | Camunda 8.8.21, Basic authentication and platform authorizations enabled |
-| Stock Connectors | 8.9.0; no custom worker or custom HTTP server |
-| Secondary storage | Elasticsearch 8.17.0 |
-| Model | Local Ollama `qwen3-coder-30b-64k:latest`, digest `13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253` |
-| AI Agent template | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5 |
-| Client HTTP template | `io.camunda.connectors.HttpJson.v2`, version 12 |
-| Transport | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients |
-| Runtime settings | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4` |
+| Component            | Version or setting                                                                                                   |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Self-Managed engine  | Camunda 8.8.21, Basic authentication and platform authorizations enabled                                             |
+| Stock Connectors     | 8.9.0; no custom worker or custom HTTP server                                                                        |
+| Secondary storage    | Elasticsearch 8.17.0                                                                                                 |
+| Model                | Local Ollama `qwen3-coder-30b-64k:latest`, digest `13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253` |
+| AI Agent template    | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                                    |
+| Client HTTP template | `io.camunda.connectors.HttpJson.v2`, version 12                                                                      |
+| Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
+| Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
 
 This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 proof. Other combinations and model
 providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
@@ -50,17 +50,17 @@ Use `CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX=SECRET_` if supplying l
 environment variables. For example, connector secret `ENGINE_URL` is then supplied as `SECRET_ENGINE_URL`.
 Use your deployment's normal secret provider instead where appropriate.
 
-| Connector secret | Required value |
-|------------------|----------------|
-| `ENGINE_URL` | Engine REST base URL without `/v2`, reachable from Connectors |
-| `ENGINE_USERNAME`, `ENGINE_PASSWORD` | Authorized engine credentials; do not disable platform authentication |
-| `A2A_API_KEY` | Shared key for task operations; supply it only over HTTPS |
-| `A2A_AGENT_PROCESS` | `a2a-card-dispute` |
-| `A2A_RPC_URL` | Complete HTTPS webhook URL, including any cluster prefix and `/inbound/a2a` |
-| `A2A_AGENT_CARD_URL` | Complete HTTPS discovery URL, including any cluster prefix and `/inbound/a2a-card` |
-| `CAMUNDA_PROVIDED_LLM_API_ENDPOINT` | OpenAI-compatible base URL reachable from Connectors, including `/v1` |
-| `CAMUNDA_PROVIDED_LLM_API_KEY` | Provider credential; the tested local Ollama setup uses its documented dummy key |
-| `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` | `qwen3-coder-30b-64k:latest` for the verified local configuration |
+| Connector secret                     | Required value                                                                     |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| `ENGINE_URL`                         | Engine REST base URL without `/v2`, reachable from Connectors                      |
+| `ENGINE_USERNAME`, `ENGINE_PASSWORD` | Authorized engine credentials; do not disable platform authentication              |
+| `A2A_API_KEY`                        | Shared key for task operations; supply it only over HTTPS                          |
+| `A2A_AGENT_PROCESS`                  | `a2a-card-dispute`                                                                 |
+| `A2A_RPC_URL`                        | Complete HTTPS webhook URL, including any cluster prefix and `/inbound/a2a`        |
+| `A2A_AGENT_CARD_URL`                 | Complete HTTPS discovery URL, including any cluster prefix and `/inbound/a2a-card` |
+| `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`  | OpenAI-compatible base URL reachable from Connectors, including `/v1`              |
+| `CAMUNDA_PROVIDED_LLM_API_KEY`       | Provider credential; the tested local Ollama setup uses its documented dummy key   |
+| `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` | `qwen3-coder-30b-64k:latest` for the verified local configuration                  |
 
 The `CAMUNDA_PROVIDED_LLM_*` names are configuration names, not a claim that this check used Camunda's SaaS model.
 For Docker Desktop, a host-local Ollama service can be reached through `host.docker.internal`; do not assume
@@ -73,16 +73,16 @@ share executable process IDs.
 
 Import these resources into one Modeler project:
 
-| Resource | Purpose |
-|----------|---------|
-| [profiles/basic/a2a-protocol.bpmn](profiles/basic/a2a-protocol.bpmn) | Authenticated, push-disabled protocol; deploy unchanged |
-| [../dmn/a2a-validate.dmn](../dmn/a2a-validate.dmn) | Protocol request validation |
-| [demo/a2a-card.bpmn](demo/a2a-card.bpmn) | Direct discovery card with actual skill, complete URL and API-key scheme |
-| [demo/a2a-card-dispute.bpmn](demo/a2a-card-dispute.bpmn) | AI agent, reconciliation tool and follow-up loop |
-| [demo/a2a-client.bpmn](demo/a2a-client.bpmn) | BPMN client with explicit card discovery, authenticated calls and polling |
-| [demo/a2a-client-ask.form](demo/a2a-client-ask.form) | Synthetic starting request |
-| [demo/a2a-client-answer.form](demo/a2a-client-answer.form) | Clarification reply |
-| [demo/a2a-client-result.form](demo/a2a-client-result.form) | Returned result and arithmetic evidence |
+| Resource                                                             | Purpose                                                                   |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [profiles/basic/a2a-protocol.bpmn](profiles/basic/a2a-protocol.bpmn) | Authenticated, push-disabled protocol; deploy unchanged                   |
+| [../dmn/a2a-validate.dmn](../dmn/a2a-validate.dmn)                   | Protocol request validation                                               |
+| [demo/a2a-card.bpmn](demo/a2a-card.bpmn)                             | Direct discovery card with actual skill, complete URL and API-key scheme  |
+| [demo/a2a-card-dispute.bpmn](demo/a2a-card-dispute.bpmn)             | AI agent, reconciliation tool and follow-up loop                          |
+| [demo/a2a-client.bpmn](demo/a2a-client.bpmn)                         | BPMN client with explicit card discovery, authenticated calls and polling |
+| [demo/a2a-client-ask.form](demo/a2a-client-ask.form)                 | Synthetic starting request                                                |
+| [demo/a2a-client-answer.form](demo/a2a-client-answer.form)           | Clarification reply                                                       |
+| [demo/a2a-client-result.form](demo/a2a-client-result.form)           | Returned result and arithmetic evidence                                   |
 
 Import the three JSON files in [templates/](templates/) and the
 [upstream AI Agent version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
@@ -166,10 +166,13 @@ python3 experiment-3/tests/runtime/verify.py
 cd experiment-3/tests && mvn -q test
 ```
 
-The runtime verifier uses only loopback-published ports 38880/38885, an isolated Compose project and random temporary
-credentials. It creates a certificate and truststore with `openssl`/`keytool`, starts the pinned stack, deploys the
+The runtime verifier reserves available loopback ports and creates a unique per-run Compose project and random temporary
+credentials. It refuses to reuse existing project resources and cleans up only its own startup, including a partial
+startup failure. Docker rejects competing port claims rather than reusing another service.
+It creates a certificate and truststore with `openssl`/`keytool`, starts the pinned stack, deploys the
 committed resources, checks authentication/discovery, expected real-model results, verbatim numeric-leading continuation
-and final BPMN client completion, then removes its containers. It does not stop or reuse unrelated clusters.
+and final BPMN client completion, verifies persisted variables exclude runtime credentials, then removes its containers.
+It does not stop or reuse unrelated clusters.
 Docker, Python 3, OpenSSL, a JDK/keytool and the already-running local Ollama model are required.
 `PROOF_AGENT_PROCESS=a2a-echo` selects the deterministic contract check without model inference.
 Model-input diagnostics contain synthetic prompts only and are stored under ignored `experiment-3/reports/runtime`.
@@ -177,4 +180,6 @@ Model-input diagnostics contain synthetic prompts only and are stored under igno
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.
+`python3 experiment-3/tools/check_resources.py` checks the selected import set for template-version, form, decision
+and process reference closure. Add `--ref <full-public-commit-SHA>` to print the 12 immutable resource URLs.
 Neither command changes an adopter's deployment. A successful runtime check is not a conformance or Modeler-import pass.

@@ -23,7 +23,7 @@
           <zeebe:property name="inbound.context" value="a2a" />
           <zeebe:property name="inbound.responseExpression" value="={statusCode: 200, headers: {&quot;Content-Type&quot;: &quot;application/json&quot;}, body: correlation.variables.rpcResponse}" />
           <zeebe:property name="resultVariable" value="" />
-          <zeebe:property name="resultExpression" value="={rpc: request.body, hdr: request.headers}" />
+          <zeebe:property name="resultExpression" value="={rpc: request.body, hdr: {&quot;content-type&quot;: request.headers.`content-type`, &quot;a2a-version&quot;: request.headers.`a2a-version`}}" />
           <zeebe:property name="inbound.auth.apiKey" value="{{secrets.A2A_API_KEY}}" />
           <zeebe:property name="inbound.auth.apiKeyLocator" value="=request.headers.`x-a2a-api-key`" />
         </zeebe:properties>
@@ -35,7 +35,7 @@
       <bpmn:outgoing>Flow_IsPushMethod_ReadPushSetting</bpmn:outgoing>
       <bpmn:outgoing>Flow_IsPushMethod_PushSettingKnown</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:scriptTask id="ReadPushSetting" name="Read push setting" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:scriptTask id="ReadPushSetting" name="Read push setting">
       <bpmn:extensionElements>
         <zeebe:script expression="=false" resultVariable="pushEnabled" />
       </bpmn:extensionElements>
@@ -85,7 +85,7 @@
       <bpmn:incoming>Flow_RouteRequest_PrepareList</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareList_SearchTasks</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="SearchTasks" name="Search tasks" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="SearchTasks" name="Search tasks" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -120,7 +120,7 @@
       <bpmn:outgoing>Flow_AnyTasks_ReadTasks</bpmn:outgoing>
       <bpmn:outgoing>Flow_AnyTasks_ListJoin</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="ReadTasks" name="Read their state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="ReadTasks" name="Read their state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -172,7 +172,7 @@
       <bpmn:incoming>Flow_RouteRequest_PrepareNewTask</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareNewTask_CreateTask</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="CreateTask" name="Start agent process" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="CreateTask" name="Start agent process" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -233,7 +233,7 @@
       <bpmn:incoming>Flow_RouteRequest_PrepareLookup</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareLookup_LookupJoin</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="FindTask" name="Find task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="FindTask" name="Find task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -326,7 +326,7 @@
       <bpmn:incoming>Flow_Cancelable_MarkCanceled</bpmn:incoming>
       <bpmn:outgoing>Flow_MarkCanceled_StoreCanceled</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="StoreCanceled" name="Store canceled task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="StoreCanceled" name="Store canceled task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -357,7 +357,7 @@
       <bpmn:incoming>Flow_MarkCanceled_StoreCanceled</bpmn:incoming>
       <bpmn:outgoing>Flow_StoreCanceled_CancelAgent</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="CancelAgent" name="Cancel agent process" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="CancelAgent" name="Cancel agent process" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -641,7 +641,7 @@
       <bpmn:incoming>Flow_WaitAMoment_LookAgain</bpmn:incoming>
       <bpmn:outgoing>Flow_LookAgain_ReadState</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="ReadState" name="Read engine state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="ReadState" name="Read engine state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
@@ -731,7 +731,7 @@
       <bpmn:incoming>Flow_WaitBeforeRetry_TryJoin</bpmn:incoming>
       <bpmn:outgoing>Flow_TryJoin_CorrelateMessage</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="CorrelateMessage" name="Correlate message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="18">
+    <bpmn:serviceTask id="CorrelateMessage" name="Correlate message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>

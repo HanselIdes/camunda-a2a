@@ -10,10 +10,13 @@ import io.camunda.client.CamundaClient;
 import io.camunda.process.test.api.CamundaProcessTest;
 import io.camunda.process.test.api.CamundaProcessTestContext;
 import io.camunda.process.test.api.TestDeployment;
+import io.camunda.zeebe.model.bpmn.Bpmn;
+import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeScript;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -99,5 +102,49 @@ class CoreProtocolTest {
       final String encoded = (String) result.getVariablesAsMap().get("encoded");
       assertThat(Harness.JSON.readValue(encoded, String.class)).isEqualTo(text);
     }
+  }
+
+  @Test
+  void bothProfilesAndTemplatePersistOnlyAllowlistedNonsecretHeaders() throws Exception {
+    final var factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    final var expressions = new java.util.ArrayList<String>();
+    for (final String resource : List.of("core/a2a-protocol.bpmn", "core-oauth/a2a-protocol.bpmn")) {
+      try (var input = getClass().getClassLoader().getResourceAsStream(resource)) {
+        final var properties = factory.newDocumentBuilder().parse(input)
+            .getElementsByTagNameNS("http://camunda.org/schema/zeebe/1.0", "property");
+        for (int i = 0; i < properties.getLength(); i++) {
+          final var property = (org.w3c.dom.Element) properties.item(i);
+          if (property.getAttribute("name").equals("resultExpression")) {
+            expressions.add(property.getAttribute("value"));
+          }
+        }
+      }
+    }
+    try (var input = getClass().getClassLoader().getResourceAsStream("core-templates/a2a-core-rpc.json")) {
+      for (final var property : Harness.JSON.readTree(input).get("properties")) {
+        if (property.path("id").asText().equals("resultExpression")) {
+          expressions.add(property.get("value").asText());
+        }
+      }
+    }
+    assertThat(expressions).hasSize(3).allMatch(expressions.getFirst()::equals);
+    try (var input = getClass().getClassLoader().getResourceAsStream("bpmn/a2a-literal-prompt.bpmn")) {
+      final var model = Bpmn.readModelFromStream(input);
+      final var script = model.getModelElementsByType(ZeebeScript.class).iterator().next();
+      script.setExpression(expressions.getFirst());
+      script.setResultVariable("mapped");
+      client.newDeployResourceCommand().addProcessModel(model, "header-mapping-regression.bpmn").send().join();
+    }
+    final var headers = Map.of("content-type", "application/a2a+json", "a2a-version", "1.0",
+        "x-a2a-api-key", "MUST-NOT-PERSIST", "authorization", "Bearer MUST-NOT-PERSIST",
+        "cookie", "session=MUST-NOT-PERSIST", "unexpected", "MUST-NOT-PERSIST");
+    final var body = Map.of("jsonrpc", "2.0", "id", "header-check", "method", "GetTask");
+    final var result = client.newCreateInstanceCommand().bpmnProcessId("a2a-literal-prompt").latestVersion()
+        .variables(Map.of("request", Map.of("headers", headers, "body", body)))
+        .withResult().fetchVariables("mapped").send().join().getVariablesAsMap().get("mapped");
+    assertThat(result).isEqualTo(Map.of("rpc", body, "hdr",
+        Map.of("content-type", "application/a2a+json", "a2a-version", "1.0")));
+    assertThat(result.toString()).doesNotContain("MUST-NOT-PERSIST");
   }
 }

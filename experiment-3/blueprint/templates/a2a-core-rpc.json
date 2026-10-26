@@ -141,8 +141,8 @@
     {
       "id": "resultExpression",
       "label": "Result expression",
-      "description": "Maps the request to process variables: rpc is the JSON-RPC request, hdr its headers. The process reads both, so keep them.",
-      "value": "={rpc: request.body, hdr: request.headers}",
+      "description": "Persist the JSON-RPC body and only content-type/a2a-version headers. Never persist authorization, API keys or arbitrary request headers.",
+      "value": "={rpc: request.body, hdr: {\"content-type\": request.headers.`content-type`, \"a2a-version\": request.headers.`a2a-version`}}",
       "feel": "required",
       "group": "output",
       "binding": {
