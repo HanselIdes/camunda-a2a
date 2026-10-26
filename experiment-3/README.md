@@ -72,6 +72,9 @@ The original quickstart remains an experiment, not an authenticated release inst
 The files in `blueprint/profiles/` are **nonshipping validation candidates**. They are not a completed Marketplace
 blueprint. No Marketplace import, publication, or SaaS runtime compatibility is established by these files.
 
+These candidates are **non-production only**, subject to the [repository license and licensing limitations](../README.md#license-and-support).
+Licensing authority confirmation and Marketplace eligibility remain publication gates.
+
 Both profiles protect the JSON-RPC webhook with the `A2A_API_KEY` connector secret, read from the
 `X-A2A-Api-Key` header. Engine REST calls use authenticated access. Select exactly one profile: they share process IDs.
 They require the deterministic example and `dmn/a2a-validate.dmn` alongside the selected protocol.

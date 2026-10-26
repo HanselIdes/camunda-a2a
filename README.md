@@ -21,6 +21,11 @@ evidence and outstanding limitations.
 See [LICENSE.md](LICENSE.md) for Camunda License 1.0 and the Marketplace community notices. The legal text is reproduced
 unchanged from [Camunda Connectors LICENSE.txt at commit 844cb028](https://github.com/camunda/connectors/blob/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/LICENSE.txt).
 
+**Non-production only.** Use is restricted to development, staging, testing, quality assurance, demonstration, and
+evaluation, not live or production systems. Confirmation that Camunda can license this independent community repository
+remains outstanding. Do not infer licensing compliance, Marketplace eligibility, or production-use permission from these
+files.
+
 This is an unmaintained community contribution, not a Camunda-maintained or certified product. The repository issue
 tracker is a contact channel, not a maintenance or support commitment. Marketplace eligibility and publication are not
 established by the presence of a license or these notices.
