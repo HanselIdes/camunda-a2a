@@ -66,6 +66,47 @@ The contract between the protocol and an agent process:
 | after each turn | calls `a2a-task-update` with `task` and an outcome: `{state, text, artifacts}`, or `{agent: <AI Agent result>}` |
 | needs input | waits for message `a2a-send` with correlation key `=task.id`; its output mappings add the client's message to the history |
 
+### Candidate validation profiles (not a release)
+
+The original quickstart remains an experiment, not an authenticated release installation.
+The files in `blueprint/profiles/` are **nonshipping validation candidates**. They are not a completed Marketplace
+blueprint. No Marketplace import, publication, or SaaS runtime compatibility is established by these files.
+
+Both profiles protect the JSON-RPC webhook with the `A2A_API_KEY` connector secret, read from the
+`X-A2A-Api-Key` header. Engine REST calls use authenticated access. Select exactly one profile: they share process IDs.
+They require the deterministic example and `dmn/a2a-validate.dmn` alongside the selected protocol.
+
+| Profile | Engine connector secrets |
+|---------|--------------------------|
+| `basic` | `ENGINE_URL`, `ENGINE_USERNAME`, `ENGINE_PASSWORD` |
+| `oauth` | `ENGINE_URL`, `ENGINE_OAUTH_TOKEN_ENDPOINT`, `ENGINE_CLIENT_ID`, `ENGINE_CLIENT_SECRET`, `ENGINE_AUDIENCE` |
+
+`ENGINE_URL` is the REST base URL without `/v2`; `A2A_AGENT_PROCESS=a2a-echo` selects the deterministic process.
+Push is disabled in these profiles. Inline push requests are rejected before business work starts. These profiles
+do not call the cluster-variable or expression-evaluation APIs and do not include conformance-specific direct-message
+behavior.
+
+A fresh, isolated Self-Managed check of the exact Basic profile passed on **engine 8.8.21, stock Connectors 8.9.0,
+and Elasticsearch 8.17.0**, with engine authentication and platform authorizations enabled. Missing and invalid task API
+keys returned 401; valid keys returned the exact completed echo and completed-task polling. This check used loopback HTTP,
+not HTTPS, and required `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`. It is mixed-version feasibility evidence,
+not matched-8.8 compatibility, conformance, or a production deployment claim.
+
+The OAuth profile has not passed a real-runtime task check. A separate SaaS attempt on engine 8.8.44 and Connectors 8.8.24
+was blocked: authenticated webhook registration reported an unavailable secret, and HTTP requests returned 403, including
+with a valid key and a new registration. SaaS runtime support remains **unverified**. Deployment and Modeler import are
+separate from runtime support.
+
+Secure discovery cards, a compatible client, real-model results, terminal-state races, production HTTPS, conformance,
+the complete compatibility matrix, and actual Marketplace-to-Modeler import remain outstanding. Do not treat the experimental
+card or client as a verified companion to these candidate profiles.
+
+For contributors, `bpmn/a2a-protocol.bpmn` is the input to the profile builder. The builder preserves surviving diagram
+layout; it does not regenerate the source diagram. Regenerate a selected profile with
+`python3 tools/build_core.py --authentication basic --output blueprint/profiles/basic/a2a-protocol.bpmn`
+(substitute `oauth` for the other profile). Run `python3 tools/build_core.py --check` to check both committed outputs
+without modifying files. Adopters must not need to run this generator.
+
 ### Deterministic task-contract example
 
 Set the connector secret `A2A_AGENT_PROCESS` to `a2a-echo` to select the echo process for new tasks.

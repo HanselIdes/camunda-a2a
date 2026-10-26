@@ -74,6 +74,10 @@
         <directory>${project.basedir}/../forms</directory>
         <targetPath>forms</targetPath>
       </testResource>
+      <testResource>
+        <directory>${project.basedir}/../blueprint/profiles/basic</directory>
+        <targetPath>core</targetPath>
+      </testResource>
     </testResources>
     <plugins>
       <plugin>

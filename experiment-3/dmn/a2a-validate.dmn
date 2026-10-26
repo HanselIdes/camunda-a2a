@@ -26,6 +26,9 @@
       <input id="In_7" label="Push notifications enabled">
         <inputExpression id="InExpr_7" typeRef="boolean"><text>ctx.pushEnabled</text></inputExpression>
       </input>
+      <input id="In_8" label="Inline push config supplied">
+        <inputExpression id="InExpr_8" typeRef="boolean"><text>ctx.taskPush != null</text></inputExpression>
+      </input>
       <output id="Out_0" label="Route" name="route" typeRef="string" />
       <output id="Out_1" label="Error code" name="code" typeRef="number" />
       <output id="Out_2" label="Error reason" name="reason" typeRef="string" />
@@ -40,6 +43,7 @@
         <inputEntry id="Rule_1_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_1_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_1_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_1_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_1_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_1_out_1"><text>-32009</text></outputEntry>
         <outputEntry id="Rule_1_out_2"><text>"VERSION_NOT_SUPPORTED"</text></outputEntry>
@@ -55,6 +59,7 @@
         <inputEntry id="Rule_2_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_2_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_2_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_2_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_2_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_2_out_1"><text>-32005</text></outputEntry>
         <outputEntry id="Rule_2_out_2"><text>"CONTENT_TYPE_NOT_SUPPORTED"</text></outputEntry>
@@ -70,6 +75,7 @@
         <inputEntry id="Rule_3_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_3_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_3_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_3_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_3_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_3_out_1"><text>-32600</text></outputEntry>
         <outputEntry id="Rule_3_out_2"><text>null</text></outputEntry>
@@ -85,6 +91,7 @@
         <inputEntry id="Rule_4_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_4_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_4_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_4_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_4_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_4_out_1"><text>-32004</text></outputEntry>
         <outputEntry id="Rule_4_out_2"><text>"UNSUPPORTED_OPERATION"</text></outputEntry>
@@ -100,6 +107,7 @@
         <inputEntry id="Rule_5_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_5_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_5_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_5_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_5_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_5_out_1"><text>-32004</text></outputEntry>
         <outputEntry id="Rule_5_out_2"><text>"UNSUPPORTED_OPERATION"</text></outputEntry>
@@ -115,6 +123,7 @@
         <inputEntry id="Rule_6_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_6_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_6_in_7"><text>false</text></inputEntry>
+        <inputEntry id="Rule_6_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_6_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_6_out_1"><text>-32003</text></outputEntry>
         <outputEntry id="Rule_6_out_2"><text>"PUSH_NOTIFICATION_NOT_SUPPORTED"</text></outputEntry>
@@ -130,6 +139,7 @@
         <inputEntry id="Rule_7_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_7_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_7_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_7_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_7_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_7_out_1"><text>-32601</text></outputEntry>
         <outputEntry id="Rule_7_out_2"><text>null</text></outputEntry>
@@ -145,6 +155,7 @@
         <inputEntry id="Rule_8_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_8_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_8_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_8_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_8_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_8_out_1"><text>-32602</text></outputEntry>
         <outputEntry id="Rule_8_out_2"><text>null</text></outputEntry>
@@ -160,6 +171,7 @@
         <inputEntry id="Rule_9_in_5"><text>false</text></inputEntry>
         <inputEntry id="Rule_9_in_6"><text>-</text></inputEntry>
         <inputEntry id="Rule_9_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_9_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_9_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_9_out_1"><text>-32005</text></outputEntry>
         <outputEntry id="Rule_9_out_2"><text>"CONTENT_TYPE_NOT_SUPPORTED"</text></outputEntry>
@@ -175,25 +187,43 @@
         <inputEntry id="Rule_10_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_10_in_6"><text>false</text></inputEntry>
         <inputEntry id="Rule_10_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_10_in_8"><text>-</text></inputEntry>
         <outputEntry id="Rule_10_out_0"><text>"error"</text></outputEntry>
         <outputEntry id="Rule_10_out_1"><text>-32602</text></outputEntry>
         <outputEntry id="Rule_10_out_2"><text>null</text></outputEntry>
         <outputEntry id="Rule_10_out_3"><text>"Invalid params: id is required"</text></outputEntry>
       </rule>
       <rule id="Rule_11">
-        <description>Valid request</description>
+        <description>Inline push config supplied while push is disabled</description>
         <inputEntry id="Rule_11_in_0"><text>-</text></inputEntry>
         <inputEntry id="Rule_11_in_1"><text>-</text></inputEntry>
         <inputEntry id="Rule_11_in_2"><text>-</text></inputEntry>
-        <inputEntry id="Rule_11_in_3"><text>-</text></inputEntry>
+        <inputEntry id="Rule_11_in_3"><text>"SendMessage"</text></inputEntry>
         <inputEntry id="Rule_11_in_4"><text>-</text></inputEntry>
         <inputEntry id="Rule_11_in_5"><text>-</text></inputEntry>
         <inputEntry id="Rule_11_in_6"><text>-</text></inputEntry>
-        <inputEntry id="Rule_11_in_7"><text>-</text></inputEntry>
-        <outputEntry id="Rule_11_out_0"><text>ctx.method</text></outputEntry>
-        <outputEntry id="Rule_11_out_1"><text>null</text></outputEntry>
-        <outputEntry id="Rule_11_out_2"><text>null</text></outputEntry>
-        <outputEntry id="Rule_11_out_3"><text>null</text></outputEntry>
+        <inputEntry id="Rule_11_in_7"><text>false</text></inputEntry>
+        <inputEntry id="Rule_11_in_8"><text>true</text></inputEntry>
+        <outputEntry id="Rule_11_out_0"><text>"error"</text></outputEntry>
+        <outputEntry id="Rule_11_out_1"><text>-32003</text></outputEntry>
+        <outputEntry id="Rule_11_out_2"><text>"PUSH_NOTIFICATION_NOT_SUPPORTED"</text></outputEntry>
+        <outputEntry id="Rule_11_out_3"><text>"Push notifications are not supported"</text></outputEntry>
+      </rule>
+      <rule id="Rule_12">
+        <description>Valid request</description>
+        <inputEntry id="Rule_12_in_0"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_1"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_2"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_3"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_4"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_5"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_6"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_7"><text>-</text></inputEntry>
+        <inputEntry id="Rule_12_in_8"><text>-</text></inputEntry>
+        <outputEntry id="Rule_12_out_0"><text>ctx.method</text></outputEntry>
+        <outputEntry id="Rule_12_out_1"><text>null</text></outputEntry>
+        <outputEntry id="Rule_12_out_2"><text>null</text></outputEntry>
+        <outputEntry id="Rule_12_out_3"><text>null</text></outputEntry>
       </rule>
     </decisionTable>
   </decision>
