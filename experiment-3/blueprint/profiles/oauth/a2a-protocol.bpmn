@@ -105,7 +105,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={taskKeys: for i in response.body.items return i.processInstanceKey}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -140,7 +140,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={taskItems: for i in response.body.items return context merge([i, {value: from json(i.value)}])}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -192,7 +192,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={created: response.body.processInstanceKey}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -253,7 +253,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={found: if count(response.body.items) &gt; 0 then response.body.items[1].processInstanceKey else null}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -347,7 +347,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -378,7 +378,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -661,7 +661,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={items: for i in response.body.items return context merge([i, {value: from json(i.value)}])}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -751,7 +751,7 @@
           <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="18" />
+          <zeebe:header key="elementTemplateVersion" value="12" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />

@@ -23,6 +23,13 @@ class ResourceClosureTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unresolved formId a2a-client-ask"):
             check(self.resources)
 
+    def test_connector_task_header_version_mismatch_is_rejected(self):
+        path = "blueprint/profiles/basic/a2a-protocol.bpmn"
+        self.resources[path] = self.resources[path].replace(
+            b'key="elementTemplateVersion" value="12"', b'key="elementTemplateVersion" value="18"', 1)
+        with self.assertRaisesRegex(ValueError, "task-header template version 18 differs"):
+            check(self.resources)
+
     def test_missing_called_process_is_rejected(self):
         path = "blueprint/demo/a2a-card-dispute.bpmn"
         self.resources[path] = self.resources[path].replace(b'processId="a2a-task-update"',

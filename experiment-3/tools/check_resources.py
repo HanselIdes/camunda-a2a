@@ -56,6 +56,12 @@ def check(resources=None):
             if template and (template, element.get(f"{{{Z}}}modelerTemplateVersion")) not in templates:
                 errors.append(f"{path}:{element.get('id')}: missing template {template}@"
                               f"{element.get(f'{{{Z}}}modelerTemplateVersion')}")
+            if template:
+                for header in element.findall(f"{{{B}}}extensionElements/{{{Z}}}taskHeaders/{{{Z}}}header"):
+                    if (header.get("key") == "elementTemplateVersion"
+                            and header.get("value") != element.get(f"{{{Z}}}modelerTemplateVersion")):
+                        errors.append(f"{path}:{element.get('id')}: task-header template version "
+                                      f"{header.get('value')} differs from Modeler assignment")
             for tag, attribute, available in (("formDefinition", "formId", forms),
                                               ("calledElement", "processId", processes),
                                               ("calledDecision", "decisionId", decisions)):

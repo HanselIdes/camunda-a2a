@@ -125,6 +125,9 @@ def build(authentication):
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
         if node.get(f"{{{Z}}}modelerTemplate") == "io.camunda.connectors.HttpJson.v2":
             node.set(f"{{{Z}}}modelerTemplateVersion", "12")
+            for header in node.findall(f"{{{B}}}extensionElements/{{{Z}}}taskHeaders/{{{Z}}}header"):
+                if header.get("key") == "elementTemplateVersion":
+                    header.set("value", "12")
     remove(root, {
         "BuildDirectMessage", "DirectMessageReady", "FindPushConfigs", "AnyPushConfigs",
         "StartPushDelivery", "PushHandled", "FindCancelPush", "AnyCancelPush", "StartCancelPush",
