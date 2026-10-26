@@ -7,6 +7,7 @@ experiment takes those steps, and then takes the protocol out of the diagram a c
 | Diagram | What it is |
 |---------|------------|
 | [bpmn/a2a-agent.bpmn](bpmn/a2a-agent.bpmn) | What a customer models: the Agent Card and the A2A task. The AI agent with its two tools, "Update A2A task" after each turn, and a follow-up loop while the agent needs input. 14 flow nodes. |
+| [bpmn/a2a-echo.bpmn](bpmn/a2a-echo.bpmn) | A deterministic task-contract example. Echoes the submitted text and completes the task without a model or a custom worker. |
 | [bpmn/a2a-protocol.bpmn](bpmn/a2a-protocol.bpmn) | The A2A 1.0 JSON-RPC protocol, deployed unchanged next to the agent. Generated, not meant to be edited. |
 | [bpmn/a2a-client.bpmn](bpmn/a2a-client.bpmn) | The client agent of experiment 2. It reads the remote agent's card, delegates work with the "A2A 1.0 Client" template and receives the answers as push notifications through the "A2A 1.0 Client Webhook". |
 | [tck/fixture/a2a-tck-fixture.bpmn](tck/fixture/a2a-tck-fixture.bpmn) | A scripted stand-in for the agent, with the same contract. Deployed only for the TCK runs. |
@@ -64,6 +65,20 @@ The contract between the protocol and an agent process:
 | started | variables `task` (the A2A Task plus a revision `rev`) and `req` (the message and request options); tags `a2a`, `task-<id>`, `ctx-<contextId>` |
 | after each turn | calls `a2a-task-update` with `task` and an outcome: `{state, text, artifacts}`, or `{agent: <AI Agent result>}` |
 | needs input | waits for message `a2a-send` with correlation key `=task.id`; its output mappings add the client's message to the history |
+
+### Deterministic task-contract example
+
+Set the connector secret `A2A_AGENT_PROCESS` to `a2a-echo` to select the echo process for new tasks.
+Deploy `a2a-echo.bpmn` alongside the protocol and validation decision. The existing local deployment script includes it.
+The process receives `task` and `req`, produces an outcome with `state` and `text`, calls `a2a-task-update`, and maps
+the updated `task` back to its own root scope. It needs no language model.
+
+When exposing this example, configure the Agent Card's name, description, and skills to describe echoing text,
+not the AI agent's tools. Selecting a different process does not automatically update the card.
+
+`DeterministicProcessTest` checks exact returned text, history, completed-task polling, and isolation between two
+requests on engine 8.10.2 with the existing HTTP test harness and Connectors disabled. This is not evidence for authenticated
+deployment or an 8.8 compatibility claim.
 
 Push notification configs are cluster variables named `a2a-push-<taskId>~<configId>`, because the TCK changes them on
 completed tasks, after the task's process instance has ended.

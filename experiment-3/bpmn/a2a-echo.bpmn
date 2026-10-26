@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_Echo" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:process id="a2a-echo" name="Echo an A2A message" isExecutable="true">
+    <bpmn:documentation>Deterministic example of the A2A task contract. Accepts task and req, echoes the message text, and calls a2a-task-update with the outcome. Requires no model or custom worker.</bpmn:documentation>
+    <bpmn:startEvent id="TaskReceived" name="Task received">
+      <bpmn:outgoing>Flow_Received_Echo</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="EchoMessage" name="Echo message">
+      <bpmn:extensionElements>
+        <zeebe:script expression="={state: &#34;TASK_STATE_COMPLETED&#34;, text: string join(req.message.parts.text, &#34; &#34;)}" resultVariable="outcome" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Received_Echo</bpmn:incoming>
+      <bpmn:outgoing>Flow_Echo_Update</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:callActivity id="UpdateTask" name="Update A2A task">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=task" target="task" />
+          <zeebe:input source="=outcome" target="outcome" />
+          <zeebe:output source="=task" target="task" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Echo_Update</bpmn:incoming>
+      <bpmn:outgoing>Flow_Update_Done</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="TaskDone" name="Task done">
+      <bpmn:incoming>Flow_Update_Done</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Received_Echo" sourceRef="TaskReceived" targetRef="EchoMessage" />
+    <bpmn:sequenceFlow id="Flow_Echo_Update" sourceRef="EchoMessage" targetRef="UpdateTask" />
+    <bpmn:sequenceFlow id="Flow_Update_Done" sourceRef="UpdateTask" targetRef="TaskDone" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_Echo">
+    <bpmndi:BPMNPlane id="Plane_Echo" bpmnElement="a2a-echo">
+      <bpmndi:BPMNShape id="TaskReceived_di" bpmnElement="TaskReceived">
+        <dc:Bounds x="150" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EchoMessage_di" bpmnElement="EchoMessage">
+        <dc:Bounds x="240" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UpdateTask_di" bpmnElement="UpdateTask">
+        <dc:Bounds x="400" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskDone_di" bpmnElement="TaskDone">
+        <dc:Bounds x="560" y="122" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_Received_Echo_di" bpmnElement="Flow_Received_Echo">
+        <di:waypoint x="186" y="140" />
+        <di:waypoint x="240" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Echo_Update_di" bpmnElement="Flow_Echo_Update">
+        <di:waypoint x="340" y="140" />
+        <di:waypoint x="400" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Update_Done_di" bpmnElement="Flow_Update_Done">
+        <di:waypoint x="500" y="140" />
+        <di:waypoint x="560" y="140" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
