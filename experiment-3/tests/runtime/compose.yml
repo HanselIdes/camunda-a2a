@@ -1,0 +1,72 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS localhost:9200/_cluster/health >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+  camunda:
+    image: ${PROOF_ENGINE_IMAGE:-camunda/camunda:8.8.21}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      JAVA_TOOL_OPTIONS: -Xmx1536m
+      CAMUNDA_SECURITY_AUTHENTICATION_METHOD: basic
+      CAMUNDA_SECURITY_AUTHENTICATION_UNPROTECTEDAPI: "false"
+      CAMUNDA_SECURITY_AUTHORIZATIONS_ENABLED: "true"
+      CAMUNDA_SECURITY_INITIALIZATION_USERS_0_USERNAME: proof
+      CAMUNDA_SECURITY_INITIALIZATION_USERS_0_PASSWORD: ${PROOF_ENGINE_PASSWORD:?required}
+      CAMUNDA_SECURITY_INITIALIZATION_USERS_0_NAME: Compatibility proof
+      CAMUNDA_SECURITY_INITIALIZATION_DEFAULTROLES_ADMIN_USERS_0: proof
+      CAMUNDA_DATA_SECONDARYSTORAGE_TYPE: elasticsearch
+      CAMUNDA_DATA_SECONDARYSTORAGE_ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+      - "127.0.0.1:38880:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9600/actuator/health/status >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+  connectors:
+    image: ${PROOF_CONNECTORS_IMAGE:-camunda/connectors-bundle:8.9.0}
+    depends_on:
+      camunda:
+        condition: service_healthy
+    environment:
+      CAMUNDA_CLIENT_MODE: self-managed
+      CAMUNDA_CLIENT_REST_ADDRESS: http://camunda:8080
+      CAMUNDA_CLIENT_GRPC_ADDRESS: http://camunda:26500
+      CAMUNDA_CLIENT_AUTH_METHOD: basic
+      CAMUNDA_CLIENT_AUTH_USERNAME: proof
+      CAMUNDA_CLIENT_AUTH_PASSWORD: ${PROOF_ENGINE_PASSWORD:?required}
+      CAMUNDA_CLIENT_REQUESTTIMEOUT: PT40S
+      CAMUNDA_CLIENT_EXECUTION_THREADS: "4"
+      CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX: SECRET_
+      CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED: "false"
+      SERVER_SSL_ENABLED: "true"
+      SERVER_SSL_KEY_STORE: file:/certificates/server.p12
+      SERVER_SSL_KEY_STORE_TYPE: PKCS12
+      SERVER_SSL_KEY_STORE_PASSWORD: ${PROOF_TLS_PASSWORD:?required}
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certificates/trust.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=${PROOF_TLS_PASSWORD:?required}
+      SECRET_ENGINE_URL: http://camunda:8080
+      SECRET_ENGINE_USERNAME: proof
+      SECRET_ENGINE_PASSWORD: ${PROOF_ENGINE_PASSWORD:?required}
+      SECRET_A2A_API_KEY: ${PROOF_A2A_API_KEY:?required}
+      SECRET_A2A_RPC_URL: https://host.docker.internal:38885/inbound/a2a
+      SECRET_A2A_AGENT_CARD_URL: https://host.docker.internal:38885/inbound/a2a-card
+      SECRET_A2A_PUBLIC_URL: http://localhost:38885/inbound
+      SECRET_A2A_PUSH_ENABLED: "false"
+      SECRET_A2A_AGENT_PROCESS: ${PROOF_AGENT_PROCESS:-a2a-echo}
+      SECRET_CAMUNDA_PROVIDED_LLM_API_ENDPOINT: http://host.docker.internal:11434/v1
+      SECRET_CAMUNDA_PROVIDED_LLM_API_KEY: ollama
+      SECRET_CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL: qwen3-coder-30b-64k:latest
+    ports:
+      - "127.0.0.1:38885:8080"
+    volumes:
+      - ${PROOF_CERTIFICATE_DIR:?required}:/certificates:ro

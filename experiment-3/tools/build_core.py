@@ -119,6 +119,8 @@ def lookup_retry(root):
 def build(authentication):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.8.0")
+    for node in root.iter():
+        node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     remove(root, {
         "BuildDirectMessage", "DirectMessageReady", "FindPushConfigs", "AnyPushConfigs",
         "StartPushDelivery", "PushHandled", "FindCancelPush", "AnyCancelPush", "StartCancelPush",
@@ -186,6 +188,9 @@ def build(authentication):
                           {"name": "inbound.auth.apiKey", "value": "{{secrets.A2A_API_KEY}}"})
             ET.SubElement(properties, f"{{{Z}}}property",
                           {"name": "inbound.auth.apiKeyLocator", "value": '=request.headers.`x-a2a-api-key`'})
+    rpc = next(e for e in root.iter() if e.get("id") == "RpcReceived")
+    rpc.set(f"{{{Z}}}modelerTemplate", "dev.hansel.a2a.core.rpc.v1")
+    rpc.set(f"{{{Z}}}modelerTemplateVersion", "1")
     ET.indent(root, space="  ")
     return ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n"
 

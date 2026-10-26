@@ -105,9 +105,15 @@ was blocked: authenticated webhook registration reported an unavailable secret, 
 with a valid key and a new registration. SaaS runtime support remains **unverified**. Deployment and Modeler import are
 separate from runtime support.
 
-Secure discovery cards, a compatible client, real-model results, terminal-state races, production HTTPS, conformance,
-the complete compatibility matrix, and actual Marketplace-to-Modeler import remain outstanding. Do not treat the experimental
-card or client as a verified companion to these candidate profiles.
+The [candidate setup guide](blueprint/README.md) provides separate direct discovery, authenticated BPMN client,
+AI-agent, form and template resources. On the mixed-version configuration above, these passed direct certificate-verified
+HTTPS, exact synthetic charge-reconciliation evidence, numeric-leading same-task follow-up, and the complete BPMN
+client-to-server-agent result/review flow with the documented local Qwen model. Stock Connectors required four job
+execution threads for the nested client/server calls. This is not a real financial service or production-use claim.
+
+Terminal-state races, conformance, the complete compatibility matrix, Modeler/form usability, fresh-adopter timing
+and actual Marketplace-to-Modeler import remain outstanding. Do not use the archived experimental card or client as
+companions to these candidate profiles.
 
 For contributors, `bpmn/a2a-protocol.bpmn` is the input to the profile builder. The builder preserves surviving diagram
 layout; it does not regenerate the source diagram. Regenerate a selected profile with

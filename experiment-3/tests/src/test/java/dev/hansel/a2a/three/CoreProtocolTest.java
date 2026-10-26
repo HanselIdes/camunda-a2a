@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 @CamundaProcessTest
 @TestDeployment(resources = {"core/a2a-protocol.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn",
-    "tck/fixture/a2a-tck-fixture.bpmn", "tck/fixture/a2a-classify.dmn"})
+    "tck/fixture/a2a-tck-fixture.bpmn", "tck/fixture/a2a-classify.dmn", "bpmn/a2a-literal-prompt.bpmn"})
 class CoreProtocolTest {
   CamundaClient client;
   CamundaProcessTestContext context;
@@ -84,5 +84,20 @@ class CoreProtocolTest {
     assertThat(Duration.ofNanos(System.nanoTime() - start)).isLessThan(Duration.ofSeconds(8));
     assertThat(h.calls.stream().filter(c -> c.equals("POST /v2/process-instances/search")).count())
         .isBetween(2L, 20L);
+  }
+
+  @Test
+  void literalPromptEncodingPreservesNumericJsonExpressionAndControlCharacterText() throws Exception {
+    final var controls = new StringBuilder();
+    for (char c = 0; c < 32; c++) {
+      controls.append(c);
+    }
+    for (final String text : List.of("100 degrees Celsius to Fahrenheit.", "{\"value\":100}", "[1,2]",
+        "true", "=1 + 1", "\"quoted\" and \\backslash\n\t", controls.toString(), "Unicode: \u00e9 \u6771\u4eac")) {
+      final var result = client.newCreateInstanceCommand().bpmnProcessId("a2a-literal-prompt").latestVersion()
+          .variables(Map.of("text", text)).withResult().fetchVariables("encoded").send().join();
+      final String encoded = (String) result.getVariablesAsMap().get("encoded");
+      assertThat(Harness.JSON.readValue(encoded, String.class)).isEqualTo(text);
+    }
   }
 }

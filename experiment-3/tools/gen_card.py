@@ -23,6 +23,17 @@ def feel_str(s):
     return '"%s"' % s.replace("\\", "\\\\").replace('"', '\\"')
 
 
+def json_string_expression(expression):
+    """Keep literal prompts intact when the stock connector binds an @FEEL String."""
+    escaped = expression.removeprefix("=")
+    for pattern, replacement in ((r"\\", r"\\\\"), ('"', r'\\"')):
+        escaped = f"replace({escaped}, {feel_str(pattern)}, {feel_str(replacement)})"
+    for code in range(32):
+        pattern, replacement = rf"\u{code:04x}", rf"\\u{code:04x}"
+        escaped = f"replace({escaped}, {feel_str(pattern)}, {feel_str(replacement)})"
+    return f"={feel_str(chr(34))} + {escaped} + {feel_str(chr(34))}"
+
+
 def feel_list(items):
     return "[%s]" % ", ".join(feel_str(i) for i in items)
 
