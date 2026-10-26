@@ -8,6 +8,8 @@ import argparse
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+from bpmn_gen import feel
+
 ROOT = Path(__file__).resolve().parents[1]
 B = "http://www.omg.org/spec/BPMN/20100524/MODEL"
 Z = "http://camunda.org/schema/zeebe/1.0"
@@ -118,6 +120,25 @@ def lookup_retry(root):
     connect(root, "a2a-rpc", "WaitForIndex", "LookupJoin")
 
 
+def response_mode(root):
+    update = next(e for e in root.iter() if e.get("id") == "ApplyOutcome").find(
+        f"{{{B}}}extensionElements/{{{Z}}}script")
+    expression = update.get("expression")
+    marker = "{id: task.id, contextId: task.contextId, rev:"
+    assert expression.count(marker) == 1, "Task outcome source changed"
+    update.set("expression", expression.replace(marker,
+        '{responseMode: if o.responseMode = "message" then "message" else "task", '
+        'id: task.id, contextId: task.contextId, rev:', 1))
+    for element, fallback in (("BuildNewTaskResponse", "lookup.task"), ("BuildFollowUpResponse", "task")):
+        script = next(e for e in root.iter() if e.get("id") == element).find(
+            f"{{{B}}}extensionElements/{{{Z}}}script")
+        result = ('if task.responseMode = "message" and task.status.state = "TASK_STATE_COMPLETED" '
+                  'and task.status.message != null and count(task.artifacts) = 0 '
+                  'then {message: task.status.message} else ' + feel.wrapped("ctx.hl", '"task"'))
+        script.set("expression", "=(for task in [if seen != null then seen else %s] return %s)[1]"
+                   % (fallback, feel.result(result)))
+
+
 def build(authentication):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.8.0")
@@ -145,6 +166,7 @@ def build(authentication):
     connect(root, "a2a-rpc", "AwaitCanceled", "BuildCanceledView")
     connect(root, "a2a-rpc", "PrepareNewTask", "CreateTask")
     lookup_retry(root)
+    response_mode(root)
 
     setting = next(e for e in root.iter() if e.get("id") == "ReadPushSetting")
     setting.tag = f"{{{B}}}scriptTask"

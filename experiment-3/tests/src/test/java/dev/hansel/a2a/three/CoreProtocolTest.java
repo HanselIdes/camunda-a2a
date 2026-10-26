@@ -51,6 +51,48 @@ class CoreProtocolTest {
   }
 
   @Test
+  void businessOutcomeCanSelectMessageWithoutUsingRequestIds() throws Exception {
+    for (final String desiredState : List.of("TASK_STATE_COMPLETED", "TASK_STATE_FAILED", "TASK_STATE_INPUT_REQUIRED")) {
+      try (var input = getClass().getClassLoader().getResourceAsStream("bpmn/a2a-echo.bpmn")) {
+        final var model = Bpmn.readModelFromStream(input);
+        final var script = model.getModelElementsByType(ZeebeScript.class).iterator().next();
+        script.setExpression("={state: \"" + desiredState + "\", text: \"Business reply\", responseMode: \"message\"}");
+        client.newDeployResourceCommand().addProcessModel(model, "business-message-policy.bpmn").send().join();
+      }
+      final var result = Harness.result(h.send("ordinary-user-request", "Business input"));
+      if (desiredState.equals("TASK_STATE_COMPLETED")) {
+        assertThat(result).containsOnlyKeys("message");
+        final var message = (Map<?, ?>) result.get("message");
+        assertThat(message.get("parts")).isEqualTo(List.of(Map.of("text", "Business reply")));
+        assertThat(message.get("role")).isEqualTo("ROLE_AGENT");
+        final var persisted = Harness.bareTask(h.get((String) message.get("taskId")));
+        assertThat(state(persisted)).isEqualTo("TASK_STATE_COMPLETED");
+        assertThat(persisted).doesNotContainKey("responseMode");
+      } else {
+        assertThat(state(task(Map.of("result", result)))).isEqualTo(desiredState);
+      }
+    }
+  }
+
+  @Test
+  void messageResponseModeCannotDiscardBusinessArtifacts() throws Exception {
+    try (var input = getClass().getClassLoader().getResourceAsStream("bpmn/a2a-echo.bpmn")) {
+      final var model = Bpmn.readModelFromStream(input);
+      final var script = model.getModelElementsByType(ZeebeScript.class).iterator().next();
+      script.setExpression("={state: \"TASK_STATE_COMPLETED\", text: \"Business reply\", "
+          + "responseMode: \"message\", artifacts: [{artifactId: \"evidence\", "
+          + "name: \"business-evidence\", parts: [{text: \"Retain this evidence\"}]}]}");
+      client.newDeployResourceCommand().addProcessModel(model, "business-message-artifacts.bpmn").send().join();
+    }
+    final var completed = task(h.send("ordinary-artifact-request", "Business input"));
+    assertThat(state(completed)).isEqualTo("TASK_STATE_COMPLETED");
+    assertThat(completed.get("artifacts")).isEqualTo(List.of(Map.of(
+        "artifactId", "evidence", "name", "business-evidence",
+        "parts", List.of(Map.of("text", "Retain this evidence")))));
+    assertThat(completed).doesNotContainKey("responseMode");
+  }
+
+  @Test
   void anotherAgentsTaskCannotBeReadOrChanged() {
     h.agentProcess = Harness.FIXTURE;
     final var other = task(h.send("tck-complete-task-other", "Other agent"));

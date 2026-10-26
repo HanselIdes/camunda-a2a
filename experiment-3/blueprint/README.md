@@ -22,6 +22,7 @@ fraud determination, financial integration, document processing or unreleased pr
 | Client HTTP template | `io.camunda.connectors.HttpJson.v2`, version 12                                                                      |
 | Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
 | Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
+| Engine exporter      | Self-Managed 8.8.21 only: explicit CamundaExporter class and `bulk.delay=1`; see below                                |
 
 This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 proof. Other combinations and model
 providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
@@ -36,6 +37,47 @@ The four-thread configuration passed the supplied client flow. It is not a capac
 Start timing an adoption attempt only after the cluster, Modeler, runtime, model and credentials are ready.
 Keep the engine API authenticated. Configure the stock Connectors runtime's engine connection as usual; the
 engine credentials below also authenticate the protocol's REST calls.
+
+Set these stock Connectors environment variables explicitly:
+
+```text
+CAMUNDA_CLIENT_EXECUTION_THREADS=4
+CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false
+```
+
+Four execution threads are required for the demonstrated same-runtime client/server flow; one thread can cause starvation
+while the synchronous client waits for server HTTP jobs. On an 8.8 engine, disable active-version polling because
+the newer importer statistics API is unavailable. These settings do not disable engine authentication.
+
+On the Self-Managed engine, the low-latency/conformance profile requires these explicit deployment settings:
+
+```text
+ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_CLASSNAME=io.camunda.exporter.CamundaExporter
+ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_ARGS_BULK_DELAY=1
+```
+
+These settings were exercised on **Self-Managed 8.8.21 only**; other engine versions are unverified.
+The class name is necessary when explicitly configuring the exporter through these environment variables:
+omitting it caused engine startup to fail with "Expected to find a 'className' configured for the exporter."
+The [8.8.21 exporter source](https://github.com/camunda/camunda/blob/8.8.21/zeebe/exporters/camunda-exporter/src/main/java/io/camunda/exporter/config/ExporterConfiguration.java)
+sets the default forced-flush delay to five seconds. The protocol reads indexed task state, so this delay can
+consume a short client's entire read budget. A fresh default-delay TCK run failed the Extensions-header call
+at its unchanged five-second read timeout; another run passed that call in 4.553 seconds. Neither result
+establishes reliable headroom.
+
+One-second flushing trades smaller batches and more frequent storage requests for lower indexing latency;
+it can increase CPU, I/O and storage request overhead and reduce throughput efficiency. Size and measure
+the secondary storage accordingly. This is a deployment prerequisite, not behavior installed by importing
+the BPMN, nor a production sizing recommendation. Managed/SaaS clusters may not expose this setting; their
+latency and conformance remain unverified.
+
+The observed 8.8.21 exporter startup configurations retain the same logged index, archiver, cache and
+post-export defaults; only `bulk.delay` differs. Its connection object is not expanded in that log.
+The [8.8.21 configuration merge](https://github.com/camunda/camunda/blob/8.8.21/configuration/src/main/java/io/camunda/configuration/beanoverrides/BrokerBasedPropertiesOverride.java)
+retains the unified secondary-storage connection, index prefix and security configuration.
+Authenticated indexed process/variable/user-task searches and user-task completion were exercised with this
+profile. **Retention remains disabled**, its stock default. Operate/Tasklist visual UI behavior and enabled
+history cleanup have **not** been verified with the tuned exporter.
 
 Provide HTTPS on the **Connectors runtime itself**, or through an optional TLS terminator. With stock Spring Boot
 Connectors, direct TLS uses `SERVER_SSL_ENABLED=true`, `SERVER_SSL_KEY_STORE`, `SERVER_SSL_KEY_STORE_TYPE=PKCS12`
@@ -65,6 +107,9 @@ Use your deployment's normal secret provider instead where appropriate.
 The `CAMUNDA_PROVIDED_LLM_*` names are configuration names, not a claim that this check used Camunda's SaaS model.
 For Docker Desktop, a host-local Ollama service can be reached through `host.docker.internal`; do not assume
 that hostname works on a remote cluster. Model inference needs sufficient local resources.
+The supplied AI Agent activity `AgentTools` already references these three model/provider secrets through its
+`provider.openaiCompatible.*` inputs. Changing their secret values does not require editing that activity.
+Changing to a different provider type, business tool or system instructions does require configuring the agent BPMN.
 
 ## Import and deploy
 
@@ -89,12 +134,16 @@ Import the three JSON files in [templates/](templates/) and the
 as element templates, using the Modeler's template-import workflow. The stock templates are pinned; the two blueprint templates configure the authenticated RPC endpoint
 and public discovery card. Do not use the archived experiment's unauthenticated RPC template.
 
-The AI template remains an upstream dependency with its own proprietary module terms; it is not redistributed
-in the blueprint ZIP. See [third-party notices](../../THIRD_PARTY_NOTICES.md).
+The AI template remains an upstream dependency with its own proprietary module terms; its JSON is imported from
+upstream rather than copied into this repository. See [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
 Deploy all eight BPMN/DMN/form resources together, so the forms and decision are available to the processes.
 No generator execution, protocol editing, custom worker, nginx route or standard-path ingress is required.
 Wait for both webhook registrations to become healthy before testing.
+In Operate, inspect the inbound connector status on `CardRequested` in `a2a-card` and `RpcReceived` in `a2a-rpc`.
+Externally, `curl --fail "$A2A_AGENT_CARD_URL"` must return the card, and an unauthenticated POST with a JSON body
+to `A2A_RPC_URL` must return 401, not 404. A 404 means the task webhook is not yet registered.
+Use your deployment's trusted CA configuration for every curl command; do not use `--insecure`.
 
 ## Run the demonstration
 
@@ -124,6 +173,30 @@ JSON-RPC interface using `X-A2A-Api-Key`. `GetTask` polls the returned task ID. 
 rejected without business work. Standard `/.well-known/agent-card.json` discovery requires an optional route to the
 direct discovery webhook; it has not been independently verified for this candidate.
 
+For a minimal external check, set `A2A_RPC_URL`, `A2A_AGENT_CARD_URL` and `A2A_API_KEY` in your local shell
+without committing their values or including them in screenshots. These shell variables do not configure connector
+secrets automatically. The examples below require curl and send synthetic data only:
+
+```sh
+curl --fail "$A2A_AGENT_CARD_URL"
+curl --fail "$A2A_RPC_URL" \
+  -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
+  -H "X-A2A-Api-Key: $A2A_API_KEY" \
+  --data '{"jsonrpc":"2.0","id":"demo-send","method":"SendMessage","params":{"message":{"messageId":"demo-request-1","role":"ROLE_USER","parts":[{"text":"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."}]}}}'
+```
+
+Read `result.task.id` from the response, set `TASK_ID` to that value and poll:
+
+```sh
+curl --fail "$A2A_RPC_URL" \
+  -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
+  -H "X-A2A-Api-Key: $A2A_API_KEY" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"demo-poll\",\"method\":\"GetTask\",\"params\":{\"id\":\"$TASK_ID\"}}"
+```
+
+HTTP 200 is not sufficient: inspect JSON-RPC `error`, the task status and the exact reconciliation artifact above.
+A working task needs further polling; an input-required task needs a follow-up message on the same task/context.
+
 ## Adapt the business process
 
 The process contract is independent of the card-dispute tool: a selected process receives `task` and `req`, calls
@@ -134,6 +207,19 @@ in the supplied agent. Do not start another task or discard its conversation whe
 [../bpmn/a2a-echo.bpmn](../bpmn/a2a-echo.bpmn) is the separately tested deterministic contract reference, not the
 public demonstration. When selecting a different process, update the discovery card's name, description and skills
 to describe that process. Selecting `A2A_AGENT_PROCESS` does not automatically rewrite the card.
+To try echo, download/import that linked BPMN separately, deploy it alongside the unchanged Basic protocol and
+validation DMN, and set connector secret `A2A_AGENT_PROCESS=a2a-echo`. Echo uses only the shared `a2a-task-update`
+process from the protocol: it needs no model, form or classification DMN. It is not in the default import manifest.
+In `a2a-card.bpmn`, select start event `CardRequested` and edit the `inbound.responseExpression` property:
+update `body.name`, `body.description` and `body.skills` (IDs, names, descriptions, tags and examples).
+Keep the complete endpoint URL, API-key scheme and disabled-capability declarations.
+
+The default outcome returns a Task. A business process can explicitly set `outcome.responseMode="message"` for a
+completed text-only reply. The protocol returns `result.message` only when the task is completed, has an agent status
+message and has no artifacts; all other outcomes still return `result.task`. The stored completed task remains
+available through the returned message's `taskId`. The internal response-mode field is omitted from Task views.
+The protocol never chooses this mode from a client message ID or request content. The supplied real-agent demo
+keeps the default Task response so its reconciliation artifact is not discarded.
 
 Leave the literal-input encoder and `data.userPrompt.prompt =jsonPrompt` mapping intact. They preserve numeric-leading,
 JSON-like, quoted, backslash, control-character and leading-equals text through the stock connector's string binding.
@@ -177,9 +263,28 @@ Docker, Python 3, OpenSSL, a JDK/keytool and the already-running local Ollama mo
 `PROOF_AGENT_PROCESS=a2a-echo` selects the deterministic contract check without model inference.
 Model-input diagnostics contain synthetic prompts only and are stored under ignored `experiment-3/reports/runtime`.
 `PROOF_REPORT_DIR` can select another report directory.
+The verifier applies `tests/runtime/exporter-low-latency.yml` to the base Compose file explicitly.
+`PROOF_EXPORTER_PROFILE=default` omits that override and captures the stock five-second configuration instead.
+Both modes save the actual logged exporter configuration; object identity fields are not connection evidence.
+Index observation has a bounded deadline and fails on absence, ambiguous root values or failed searches.
+
+For official Python SDK interoperability, create a separate Python 3.10+ environment, install
+`experiment-3/tests/runtime/requirements-sdk.txt`, then set `PROOF_SDK_PYTHON` to that environment's Python
+executable when running the verifier. This uses `a2a-sdk==1.2.3`, not the conformance suite's transport client,
+and checks discovery, polling, same-task clarification, exact real-tool evidence and context-filtered listing.
+
+For the unchanged pinned conformance suite, prepare a separate checkout at
+`263b9cfaf16a554bdfb166a7ba5b67716e946349`, apply `tck/patches/tck-pr-stack.patch` and run `uv sync` there.
+Set `PROOF_TCK_DIRECTORY` to its absolute path and run the same verifier. The runner checks the complete
+patched source fingerprint before execution and deploys a clearly nonshipping deterministic fixture.
+It preserves the raw five-second read timeout and the existing assertions/exclusions. The explicit test
+connection adaptations (CA trust, scoped API key, card path, runner-appended slash and local hostname) are
+recorded separately in `tck/provenance.json`. `tck/gate.json` lists every MUST requirement and every skipped
+test with requirement IDs and exclusion reasons; totals do not mean every A2A requirement passed.
+This contributor adapter is not proof of standard well-known-path ingress or SaaS conformance.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.
 `python3 experiment-3/tools/check_resources.py` checks the selected import set for template-version, form, decision
 and process reference closure. Add `--ref <full-public-commit-SHA>` to print the 12 immutable resource URLs.
-Neither command changes an adopter's deployment. A successful runtime check is not a conformance or Modeler-import pass.
+None of these commands changes an adopter's deployment. A successful runtime check is not a conformance or Modeler-import pass.

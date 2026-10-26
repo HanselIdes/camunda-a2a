@@ -9,9 +9,12 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from isolation import IsolatedCompose
+from observations import read_root_variable
+from conformance import run as run_conformance
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORTS = Path(os.environ.get("PROOF_REPORT_DIR", str(ROOT / "reports/runtime")))
@@ -19,11 +22,20 @@ REPORTS.mkdir(parents=True, exist_ok=True)
 COMPOSE = os.path.join(os.path.dirname(__file__), "compose.yml")
 env = dict(os.environ, PROOF_ENGINE_PASSWORD=secrets.token_urlsafe(32),
            PROOF_A2A_API_KEY=secrets.token_urlsafe(32), PROOF_TLS_PASSWORD=secrets.token_urlsafe(32))
-env.setdefault("PROOF_AGENT_PROCESS", "a2a-card-dispute")
-if env["PROOF_AGENT_PROCESS"] not in ("a2a-card-dispute", "a2a-echo"):
-    raise ValueError("PROOF_AGENT_PROCESS must select a2a-card-dispute or a2a-echo")
+conformance = bool(env.get("PROOF_TCK_DIRECTORY"))
+env.setdefault("PROOF_AGENT_PROCESS", "a2a-tck-fixture" if conformance else "a2a-card-dispute")
+allowed_agents = ("a2a-tck-fixture",) if conformance else ("a2a-card-dispute", "a2a-echo")
+if env["PROOF_AGENT_PROCESS"] not in allowed_agents:
+    raise ValueError("PROOF_AGENT_PROCESS must match the selected demo or conformance mode")
+if env.get("PROOF_SDK_PYTHON") and env["PROOF_AGENT_PROCESS"] != "a2a-card-dispute":
+    raise ValueError("PROOF_SDK_PYTHON checks the real card-dispute demo, not echo or the conformance fixture")
+exporter_profile = env.setdefault("PROOF_EXPORTER_PROFILE", "low-latency")
+if exporter_profile not in ("low-latency", "default"):
+    raise ValueError("PROOF_EXPORTER_PROFILE must be low-latency or default")
 stack = IsolatedCompose(COMPOSE, env)
 cmd = stack.command
+if exporter_profile == "low-latency":
+    cmd.extend(["-f", str(Path(__file__).with_name("exporter-low-latency.yml"))])
 engine_url = "http://127.0.0.1:" + env["PROOF_ENGINE_PORT"]
 connectors_url = "https://127.0.0.1:" + env["PROOF_CONNECTORS_PORT"]
 demo = env.get("PROOF_AGENT_PROCESS") == "a2a-card-dispute"
@@ -43,7 +55,7 @@ subprocess.run(["keytool", "-importcert", "-alias", "a2a-proof", "-file", str(tl
 tls_context = ssl.create_default_context(cafile=str(tls_path / "server.crt"))
 
 
-def request(path, body=None, authenticated=True):
+def request(path, body=None, authenticated=True, timeout=30):
     headers = {}
     if authenticated:
         token = base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode()
@@ -54,10 +66,31 @@ def request(path, body=None, authenticated=True):
                                  data=None if body is None else json.dumps(body).encode(),
                                  headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=30) as response:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
             return response.status, response.read().decode()
     except urllib.error.HTTPError as error:
         return error.code, error.read().decode()
+
+
+def redact(text):
+    sensitive = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD")]
+    sensitive.append(base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode())
+    for value in sensitive:
+        text = text.replace(value, "[REDACTED]")
+    return text
+
+
+def record_exporter_configuration():
+    logs = subprocess.check_output(cmd + ["logs", "--no-color", "camunda"], env=env, text=True)
+    configurations = {line.split("Configuring exporter with ", 1)[1]
+                      for line in logs.splitlines() if "Configuring exporter with " in line}
+    if not configurations:
+        raise RuntimeError("No effective exporter configuration found in startup logs")
+    (REPORTS / "exporter-configurations.json").write_text(
+        json.dumps([redact(config) for config in sorted(configurations)], indent=2) + "\n")
+    expected_delay = 1 if exporter_profile == "low-latency" else 5
+    if any(f"bulk=BulkConfiguration{{delay={expected_delay}," not in config for config in configurations):
+        raise RuntimeError("Effective exporter configuration differs from the declared profile")
 
 
 def deploy(files):
@@ -163,6 +196,7 @@ try:
         if time.monotonic() >= deadline:
             raise TimeoutError("Authenticated engine readiness deadline expired")
         time.sleep(1)
+    record_exporter_configuration()
     checks = [
         ("unauthenticated topology", "/v2/topology", None, False),
         ("authenticated topology", "/v2/topology", None, True),
@@ -174,11 +208,30 @@ try:
     for name, path, body, auth in checks:
         status, text = request(path, body, auth)
         print(json.dumps({"check": name, "status": status, "response": text[:2000]}), flush=True)
-    agent_file = ROOT / ("blueprint/demo/a2a-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
+    agent_file = ROOT / ("tck/fixture/a2a-tck-fixture.bpmn" if conformance else
+                         "blueprint/demo/a2a-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
     files = [ROOT / "blueprint/profiles/basic/a2a-protocol.bpmn", agent_file, ROOT / "dmn/a2a-validate.dmn"]
     if demo:
         files += list((ROOT / "blueprint/demo").glob("*.form"))
         files += [ROOT / "blueprint/demo/a2a-card.bpmn", ROOT / "blueprint/demo/a2a-client.bpmn"]
+    elif conformance:
+        card = ET.parse(ROOT / "blueprint/demo/a2a-card.bpmn")
+        expression = next(p for p in card.getroot().iter()
+                          if p.get("name") == "inbound.responseExpression")
+        expression.set("value", """={statusCode: 200, headers: {"Content-Type": "application/json"},
+          body: {name: "A2A lifecycle conformance fixture", version: "0.1.0",
+          description: "Nonshipping deterministic protocol verification only.",
+          supportedInterfaces: [{url: "{{secrets.A2A_RPC_URL}}", protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
+          capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
+          defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain", "application/json"],
+          securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-A2A-Api-Key"}}},
+          securityRequirements: [{schemes: {a2aApiKey: {}}}],
+          skills: [{id: "exercise_task_lifecycle", name: "Exercise task lifecycle",
+          description: "Simulates deterministic lifecycle and artifact scenarios for conformance checks.",
+          tags: ["test-only"], examples: ["Conformance lifecycle request"]}]}}""")
+        fixture_card = tls_path / "conformance-card.bpmn"
+        card.write(fixture_card, encoding="utf-8", xml_declaration=True)
+        files += [ROOT / "tck/fixture/a2a-classify.dmn", fixture_card]
     deploy(files)
     text = ("Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. "
             "The expected charge was USD 49.95. Reconcile the two charges with your tool." if demo else
@@ -276,17 +329,11 @@ try:
             if time.monotonic() >= deadline:
                 raise TimeoutError("BPMN client did not reach result review")
             time.sleep(1)
-        status, response = request("/v2/variables/search?truncateValues=false", {
-            "filter": {"processInstanceKey": client_key, "name": "rpc"}})
-        assert status == 200, (status, response)
-        client_rpc = json.loads(json.loads(response)["items"][0]["value"])
+        client_rpc = read_root_variable(request, client_key, "rpc")
         client_task = client_rpc["result"].get("task", client_rpc["result"])
         check_reconciliation(client_task)
         assert client_task["id"] != task["id"] and client_task["contextId"] != task["contextId"], client_task
-        status, response = request("/v2/variables/search?truncateValues=false", {
-            "filter": {"processInstanceKey": client_key, "name": "resultText"}})
-        assert status == 200, (status, response)
-        result_text = json.loads(json.loads(response)["items"][0]["value"])
+        result_text = read_root_variable(request, client_key, "resultText")
         assert "99.9 USD" in result_text and "49.95 USD" in result_text and "REQUEST_HUMAN_REVIEW" in result_text, result_text
         status, response = request(f"/v2/user-tasks/{review['userTaskKey']}/completion", {"variables": {}})
         assert status in (200, 204), (status, response)
@@ -303,31 +350,39 @@ try:
             time.sleep(0.25)
         print("BPMN client -> direct HTTPS A2A protocol -> real agent -> exact result -> user review: PASS", flush=True)
         record_model_inputs()
-    else:
+    elif not conformance:
         assert task["status"]["message"]["parts"][0]["text"] == "8.8 authenticated echo", task
     status, fetched = rpc({"jsonrpc": "2.0", "id": "proof-get", "method": "GetTask",
                            "params": {"id": task["id"]}})
     assert status == 200 and fetched["result"]["id"] == task["id"], (status, fetched)
     print("completed task polling preserves expected task: PASS", flush=True)
+    if conformance:
+        run_conformance(ROOT, REPORTS, env, engine_url, connectors_url, tls_path / "server.crt")
+    elif env.get("PROOF_SDK_PYTHON"):
+        sdk_env = dict(env, PROOF_SDK_CONNECTORS_URL=connectors_url,
+                       PROOF_SDK_CA=str(tls_path / "server.crt"), PROOF_SDK_REPORT=str(REPORTS / "sdk.json"))
+        subprocess.run([env["PROOF_SDK_PYTHON"], "-I",
+                        str(Path(__file__).with_name("independent_client.py"))], env=sdk_env, check=True)
     assert_no_persisted_credentials()
 except Exception:
-    status, incidents = request("/v2/incidents/search", {"filter": {"state": "ACTIVE"}})
-    for value in (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], env["PROOF_TLS_PASSWORD"]):
-        incidents = incidents.replace(value, "[REDACTED]")
-    print("Active incidents:", status, incidents, flush=True)
-    status, instances = request("/v2/process-instances/search", {"filter": {}, "page": {"limit": 20}})
-    if status == 200:
-        print("Process states:", [(p["processDefinitionId"], p["state"], p.get("tags"),
-                                   p["processInstanceKey"])
-                                  for p in json.loads(instances)["items"]], flush=True)
-    status, variables = request("/v2/variables/search?truncateValues=false",
-                                {"filter": {"name": "task"}, "page": {"limit": 20}})
-    print("Task variables:", status, variables, flush=True)
-    logs = subprocess.run(cmd + ["logs", "--tail", "100", "camunda", "connectors"], env=env,
-                          capture_output=True, text=True, check=True).stdout
-    for value in (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], env["PROOF_TLS_PASSWORD"]):
-        logs = logs.replace(value, "[REDACTED]")
-    print(logs, flush=True)
+    if stack.started:
+        logs = subprocess.run(cmd + ["logs", "--tail", "100", "camunda", "connectors"], env=env,
+                              capture_output=True, text=True)
+        print("Runtime diagnostic logs (exit code", logs.returncode, "):",
+              redact(logs.stdout + logs.stderr), flush=True)
+        try:
+            status, incidents = request("/v2/incidents/search", {"filter": {"state": "ACTIVE"}})
+            print("Active incidents:", status, redact(incidents), flush=True)
+            status, instances = request("/v2/process-instances/search", {"filter": {}, "page": {"limit": 20}})
+            if status == 200:
+                print("Process states:", [(p["processDefinitionId"], p["state"], p.get("tags"),
+                                           p["processInstanceKey"])
+                                          for p in json.loads(instances)["items"]], flush=True)
+            status, variables = request("/v2/variables/search?truncateValues=false",
+                                        {"filter": {"name": "task"}, "page": {"limit": 20}})
+            print("Task variables:", status, redact(variables), flush=True)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as diagnostic_error:
+            print("Engine diagnostics unavailable:", type(diagnostic_error).__name__, flush=True)
     raise
 finally:
     try:

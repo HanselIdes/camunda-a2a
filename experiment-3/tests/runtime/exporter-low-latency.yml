@@ -1,0 +1,5 @@
+services:
+  camunda:
+    environment:
+      ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_CLASSNAME: io.camunda.exporter.CamundaExporter
+      ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_ARGS_BULK_DELAY: "1"
