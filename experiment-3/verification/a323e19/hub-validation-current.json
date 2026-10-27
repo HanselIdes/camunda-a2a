@@ -1,0 +1,270 @@
+{
+  "status": "editor_ui_deployment_and_fresh_actual_form_journey_verified_with_retained_failures",
+  "scope": "Local Self-Managed Hub informed-agent prototype checks only; not Marketplace, SaaS, adoption timing, human usability, production readiness, or broad compatibility evidence",
+  "repository": "camunda/camunda-hub",
+  "repository_commit": "e1fa2b8cec1a8d402c3a47005ede5d954d26320f",
+  "application_version": "1.0-SNAPSHOT",
+  "product_source_changes": false,
+  "license_reassessment": {
+    "supersedes": "hub-validation-status.json blanket missing-license blocker and historical stopped topology",
+    "actual_initial_startup_blocker": "Spring explicitly rejected four inherited obsolete CAMUNDA_CONSOLE_* settings",
+    "supported_local_development": "LicenseChecker logs missing key without throwing; useLicense classifies no valid key as developer license; UI shows Non-production license and Non-commercial license; invitation checker permits at most five collaborators",
+    "observed": "Approved local demo login, single-user editor/import and actual deployment work with existing enforcement intact",
+    "key_fabricated_copied_or_printed": false,
+    "license_guards_or_terms_changed": false,
+    "production_or_commercial_permission_claim": false
+  },
+  "tool_versions": {
+    "java": "Temurin 25.0.5+8-LTS",
+    "maven": "3.10.0",
+    "node": "24.22.1",
+    "npm": "12.2.1",
+    "scope": "Repository-pinned asdf installations plus session-local npm prefix; explicit child JAVA_HOME/PATH; host defaults unchanged",
+    "warnings": "Supported build exited zero with warnings. Frontend install reported 34 audit findings and blocked install scripts. No auto-fix, dependency maintenance, or warning-free full pipeline claim."
+  },
+  "hub_topology": {
+    "frontend": "http://localhost:8088",
+    "backend": "http://localhost:8081",
+    "readiness": "http://localhost:8091/health/readiness",
+    "identity": "http://localhost:8085",
+    "identity_management_port": 8082,
+    "keycloak": "http://localhost:18080",
+    "websockets_port": 8060,
+    "mailpit_smtp_port": 1025,
+    "mailpit_ui_port": 8025,
+    "postgres_ports": {
+      "modeler": 5432,
+      "keycloak": 5433,
+      "identity": 5434
+    },
+    "compose_project": "a2a-hub-local",
+    "images": {
+      "postgres": "14.24-alpine@sha256:50fce0c9c54c43d8b02ce16cb9daff75eb94c09c4ee3d41c157852ebd9700c80",
+      "keycloak": "26.3.3@sha256:9b6f9763a199183d1c396565466be49bf75b88fbeba3ad087c2b03cce7b7fd54",
+      "identity": "8.10.2@sha256:5731e2c25013170e8de6db961d895c730f0f44aa73914e127da0e9062f06c488",
+      "mailpit": "1.32.0@sha256:0790692be935ea4420d085694f7985b1f692ca6a8771ab0e0bd8ba75ac180498",
+      "websockets": "SNAPSHOT@sha256:d36300159798e4684243d5134e0182bcb3ff8f0ccdc902bf0acb6648287043be"
+    },
+    "does_not_include_engine_or_connectors": true
+  },
+  "owned_deployment_target": {
+    "runtime_source_commit": "841468ecc2ff40e6fb7bf0fea381978833812ce9",
+    "engine_rest_and_ui": "http://127.0.0.1:60146",
+    "engine_grpc": "http://127.0.0.1:60148",
+    "connectors": "https://127.0.0.1:60147",
+    "engine_version": "8.8.21",
+    "connectors_version": "8.9.0",
+    "elasticsearch_version": "8.17.0",
+    "authentication": "Basic and platform authorizations enforced; generated credentials read from authorized 0600 artifact without printing",
+    "tls": "Trusted owned CA; no certificate-verification bypass",
+    "external_dns_deviation": "Client-only host.docker.internal resolution to loopback for advertised connector endpoint; no global hosts changes",
+    "shared_engines_8080_or_8180_used": false,
+    "runtime_lifecycle": "Owned and retained by runtime session, not this Hub session"
+  },
+  "approved_setup_deviations": [
+    "Only isolated Identity host port changed from 8080 to 8085; container port remains8080 and other Hub defaults retained.",
+    "Used supported Compose files under dedicated project and selected dependencies, without the Make env-up prerequisite that calls down -v.",
+    "Omitted exactly CAMUNDA_CONSOLE_BASE_URL, CAMUNDA_CONSOLE_CLIENT_ID, CAMUNDA_CONSOLE_CLIENT_SECRET and CAMUNDA_CONSOLE_OAUTH_AUDIENCE from the Hub child process only.",
+    "Added owned deployment cluster via child SPRING_APPLICATION_JSON while retaining all four baseline local cluster definitions; no repository or host-global configuration changes.",
+    "Supported local profile explicitly sets spring.flyway.clean-disabled=false; CleanFirstMigrationStrategy resets the owned development database on backend startup. Configuration restart removed first isolated workspace/imports. They were recreated from original immutable files before deployment; no restart-durability claim.",
+    "All four imported templates required Publish to workspace at their pinned versions before BPMN template properties resolved. No organization or Marketplace publication.",
+    "Playwright fill/early-reload attempts did not prove persistence. Real keyboard input with completed autosave did; explicit Meta+A/Backspace restored original documentation and reload confirmed it."
+  ],
+  "editor_observations": {
+    "login": "Actual local Keycloak demo login, after confirming localhost origin",
+    "isolation": "One validation workspace, one member, one project, assigned only owned8.8.21 environment",
+    "import": "All12 exact immutable files uploaded through actual BPMN-capable Hub project input",
+    "bpmn_rendering": "All four diagrams rendered: protocol278 diagram elements, card5, agent38, client38 in first run",
+    "dmn": "Actual DRD and decision table rendered; First hit policy,12 rules, labeled input/output columns; UI reports called by1 process",
+    "templates": [
+      {
+        "name": "a2a-core-card",
+        "version": 1,
+        "scope": "isolated workspace",
+        "status": "applied"
+      },
+      {
+        "name": "a2a-core-rpc",
+        "version": 1,
+        "scope": "isolated workspace",
+        "status": "applied"
+      },
+      {
+        "name": "http-json",
+        "version": 12,
+        "scope": "isolated workspace",
+        "status": "applied"
+      },
+      {
+        "name": "agenticai-aiagent-job-worker-5",
+        "version": 5,
+        "scope": "isolated workspace",
+        "status": "applied"
+      }
+    ],
+    "configuration": "Card/RPC webhook, HTTP endpoint/authentication, AI provider/model/prompt/memory/limits/error-handling groups render; AI endpoint/key/model retain secret references, not credential literals",
+    "references": "UI shows13 explicit external-reference notices: protocol8, agent2, client3. These were retained, not relabeled as zero problems. Form editors show Used in a2a-client; DMN table shows called by1 process. Actual deployment establishes supplied definition availability.",
+    "form_previews": "All three actual Hub form previews render; synthetic Form Input populates dynamic answer heading/question and result text; no runtime-task acceptance inferred from preview",
+    "save_reopen": "Temporary nonfunctional card-event documentation note persisted through browser reload after PATCH200/Autosaved; restored original blank persisted through reload. First-run evidence only, not service-restart durability.",
+    "offline_label": "Now working offline is the runtime-connection indicator when no environment is selected, not evidence that editor saving or websocket collaboration failed"
+  },
+  "deployment_observations": {
+    "workflow": "Actual Hub project Deploy & run dialog; only owned8.8.21 environment; Basic credentials entered securely; a2a-client selected; project resources automatically submitted",
+    "before": "Engine search returned0 process definitions before Hub action",
+    "ui_result": "Instance started!",
+    "after": "Eight process definitions at version1 plus a2a-validate decision at version1",
+    "process_ids": [
+      "a2a-card-dispute",
+      "a2a-card",
+      "a2a-client",
+      "a2a-rpc",
+      "a2a-task-update",
+      "a2a-await",
+      "a2a-correlate",
+      "a2a-list-collect"
+    ],
+    "integrity": "Engine readback of all four BPMN XML files was byte-for-byte identical to frozen originals and their SHA256 values",
+    "desktop_sequence": "Parent subsequently deployed same original8 resources through Desktop UI; parent reported no instance start/task claim/completion",
+    "not_rest_deployment_substitution": true
+  },
+  "actual_tasklist_observations": {
+    "actual_start_form": "Tasklist Processes lists a2a-client as Requires form input; actual deployed a2a-client-ask rendered and accepted deliberately incomplete synthetic question; UI Process has started",
+    "initial_hub_run_failure": "Immediate Hub-started client hit DiscoverAgent JOB_NO_RETRIES/HTTP404. Subsequent trusted-CA Agent Card GET returned200/protocol1.0. Timing cause not proven; not ignored or counted as successful execution.",
+    "tasklist_run_failure": "Separate actual start-form run reached RPC and agent, then client SendMessage JOB_NO_RETRIES/HTTP409 with ABORTED RemoteClientConnection closed. No answer/result user task appeared during bounded wait or refresh. Runtime owner read-only inspection confirms this request DID start business work and the original business task is INPUT_REQUIRED with the expected-amount question. Retrying SendMessage would create another independent task; do not retry.",
+    "answer_and_result_runtime_forms": "Verified only in the separately authorized fresh-H2 journey, not by retrying or repairing either earlier incident",
+    "no_rest_form_completion_substitution": true,
+    "runtime_owner_health_assessment": "All three owned containers running with zero restarts/OOM; topology8.8.21 partition1 healthy. Engine logged closing self-connection after missing client heartbeats; gateway explicitly warned request may or may not have been accepted and may not be safe to retry. No restart, leader loss, runtime repair or source/config change performed. Owner's independent external real-model guide journey passed; that is not visual-form acceptance.",
+    "failed_instance_cleanup": "Both incident clients and original INPUT_REQUIRED business task preserved as ambiguous-response evidence; no cancellation, retry or incident resolution.",
+    "fresh_journey": {
+      "authorization": "Parent explicitly approved one fresh distinct synthetic journey after runtime owner confirmed healthy current state; stop repetition if it failed",
+      "identity": "Distinct H2 question and new request/context; client identified through read-only stored-question match; answer/result task keys checked against that client and selected browser URL before interaction",
+      "indexing_observation": "An immediate2s read had not indexed the new client; a later read found exactly one matching H2 client. No second start was submitted.",
+      "start": "Actual Tasklist a2a-client-ask form submitted an intentionally incomplete synthetic question",
+      "answer": "Actual a2a-client-answer task displayed the agent's question asking the expected amount for Northwind Electronics; assigned, filled expected USD49.95 plus synthetic charge context, and completed through UI (HTTP204 observed)",
+      "answer_rendering_detail": "The actual8.8.21 answer heading displayed literal backslash-n separators before the question; text remained readable. No formatting fix or human-usability acceptance inferred.",
+      "result": "Actual a2a-client-result task showed paid99.9USD, expected49.95USD, overcharge49.95USD, next step REQUEST_HUMAN_REVIEW and explicit no-refund/no-financial-action text",
+      "completion": "Assigned and completed actual result task through UI; engine readback confirms this H2 client COMPLETED with hasIncident=false",
+      "earlier_failures_untouched": true,
+      "no_inferred_repair_or_exactly_once_claim": true
+    }
+  },
+  "asset_provenance": {
+    "candidate_repository": "HanselIdes/camunda-a2a",
+    "candidate_commit": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+    "guide_path": "experiment-3/blueprint/README.md",
+    "guide_blob": "49895a670bc0ad168e586393187ab088290b9cc3",
+    "upstream_repository": "camunda/connectors",
+    "upstream_commit": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+    "all12_match_immutable_blobs": true,
+    "files": [
+      {
+        "name": "a2a-card-dispute.bpmn",
+        "git_blob": "e6c0e98d6a59cff9822a761ad764106834636580",
+        "sha256": "3a695f96c43b15ae714b821fb9f2debe458c853392ee7358a210461bec063beb"
+      },
+      {
+        "name": "a2a-card.bpmn",
+        "git_blob": "e7c5a3e1f6043acc5e31860203e82bd059823897",
+        "sha256": "90dfc0d151787a78db9bb04bc3d631eba85fb8582e4012baaba4fced0bc5e5cc"
+      },
+      {
+        "name": "a2a-client.bpmn",
+        "git_blob": "eeaab0aa96172772f8e715cc0b45f00f962f4340",
+        "sha256": "02b69a0d74cf95e147b303bf9afb70f8ca7f4bce2675344a02f2bdae66ca78bf"
+      },
+      {
+        "name": "a2a-protocol.bpmn",
+        "git_blob": "8b272b2bbbc36aed1d25f307a42ca193449fba94",
+        "sha256": "6e10a1cbc8a20065b6685b0d0753bb568ba491df74e4b41e0c0989e26f4942bc"
+      },
+      {
+        "name": "a2a-validate.dmn",
+        "git_blob": "93170811ea4665ba4941a1d0f67002f8bd61bf8f",
+        "sha256": "c335fb5a5c127d4f9b145bd93e2428835589efb06bf9ffc7d92e2f4861174979"
+      },
+      {
+        "name": "a2a-client-answer.form",
+        "git_blob": "e4e2c95a5587dedba08f7372f8d64ee88e878707",
+        "sha256": "0cf13f81302e63ce6ef7f1b2bbe50a16934db7fe9120154a3dc9e5666c380251"
+      },
+      {
+        "name": "a2a-client-ask.form",
+        "git_blob": "1aa0e99847450b1d8d64a2dfb1dc239499862f07",
+        "sha256": "bb5ca4b1bf138266958c70c5af3d106b7c8e226a156f2c31da966dcea8cfd057"
+      },
+      {
+        "name": "a2a-client-result.form",
+        "git_blob": "8b85ce5a593de3d5f607e08fcb37ae009074d8dc",
+        "sha256": "5fc2c5f2918343e988a8fdad24ef1ccb48d526bc120b7ddfd98bd31cbb4c1e69"
+      },
+      {
+        "name": "a2a-core-card.json",
+        "git_blob": "3aa30ba2f16139fd235fa354b45e942180f056e3",
+        "sha256": "656532bacb4bff4409143b0a11ab66dd5552db85acfd827fba65a8694f5bd853"
+      },
+      {
+        "name": "a2a-core-rpc.json",
+        "git_blob": "d2378c7747375119f82e93ff87e9315f37765009",
+        "sha256": "1384ad621badb6f8a9b9571eaa251fbf496097ac171925f784a99a899104de34"
+      },
+      {
+        "name": "agenticai-aiagent-job-worker-5.json",
+        "git_blob": "02db883618475dac8ed413578cef4e81f4ecfed4",
+        "sha256": "3d9ac20785e2ae06b2f907a9a25bd0409db2eb3b2734ce45709f04ee2f92c0b6"
+      },
+      {
+        "name": "http-json.json",
+        "git_blob": "693f4a6e39a38abcb0fc73514e447b72fb86ec48",
+        "sha256": "af0668b3dbf8343aa3330cbc2dab748de26f19a10a429243095430b5ee22d420"
+      }
+    ]
+  },
+  "retained_evidence": {
+    "current_report": "hub-validation-current.json",
+    "historical_report": "hub-validation-status.json",
+    "editor": "hub-editor-observations.json",
+    "dmn": "hub-dmn-table-observations.json",
+    "references": "hub-reference-observations.json",
+    "form_previews": "hub-form-preview-observations.json",
+    "save_reopen": "hub-save-reopen-observations.json",
+    "deployment_ui": "hub-deployment-ui-observations.json",
+    "inventory_before_desktop": "hub-engine-inventory-after-deployment.json",
+    "deployed_bpmn_hashes": "hub-deployed-resource-integrity.json",
+    "actual_start_form": "tasklist-start-observations.json",
+    "fresh_actual_form_journey": [
+      "tasklist-fresh-answer-observations.json",
+      "tasklist-fresh-answer-completion.json",
+      "tasklist-fresh-result-observations.json",
+      "tasklist-fresh-journey-result.json"
+    ]
+  },
+  "lifecycle": {
+    "hub": "Stopped by Ctrl-C in owned terminal canvas hub-development-run after parent verified final evidence; terminal returned to prompt",
+    "dependencies": "All seven a2a-hub-local containers and its network removed by project-scoped Compose down without -v; no volume deletion or pruning",
+    "browser": "Owned persistent Chromium shell54 stopped after final screenshots and evidence handoff; no continuing browser work",
+    "engine": "Retained by runtime owner; this session must not stop its Compose project",
+    "unrelated_services": "No stop, kill, reconfiguration or deployment into native8080/8086, secondary8180/8186 or Karma9876",
+    "cleanup": "Complete at parent's explicit request. No owned Hub containers, networks, worktree-associated service processes or listeners remain. No restart, source change, license access, broad process kills, volume prune, shared cleanup or runtime-owner container stop.",
+    "final_before_shutdown": "Hub readiness HTTP200; final result/completion screenshots present and retained; browser helper was already stopped",
+    "ports_verified_absent": [
+      8081,
+      8088,
+      8091,
+      8085,
+      8082,
+      18080,
+      8060,
+      1025,
+      8025,
+      5432,
+      5433,
+      5434,
+      19222
+    ],
+    "unrelated_final_observations": {
+      "summary": "Native/secondary engines, Connectors and unrelated test listeners remained unchanged; validation-owned target was still running when Hub session stopped."
+    },
+    "source_worktree_clean": true
+  },
+  "documentation_gotcha_proposal": "Add to root AGENTS.md local-development guidance: The stock common-local profile sets spring.flyway.clean-disabled=false and cleans the configured development database on each backend startup. Configure required isolated clusters before importing validation assets; browser save/reopen is not restart durability. Do not restart a valuable/shared database under this profile."
+}

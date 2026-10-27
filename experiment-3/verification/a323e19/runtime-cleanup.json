@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-10-27T12:59:03.619048+00:00",
+  "authorization": "Coordinator requested owned target cleanup after all editor/form/external checks and final evidence capture",
+  "project": "a2a-proof-92e923cf734db8ae16c55e2611e73a5d",
+  "command": "docker compose with exact owned project, source files, session env and capacity override: down --volumes",
+  "removed": "Owned project containers/network and project-scoped named volumes only; no prune or shared-service action",
+  "remainingOwnedResources": {
+    "container": [],
+    "network": [],
+    "volume": []
+  },
+  "portsNoLongerListening": [
+    60146,
+    60147,
+    60148
+  ],
+  "secondaryContainerIdsUnchanged": true,
+  "preCleanupIncidentsPreserved": "runtime-final-before-cleanup.json plus previous immutable transport evidence; not retried/resolved",
+  "credentials": "Generated validation credentials remain only in restricted private session artifacts; not published"
+}

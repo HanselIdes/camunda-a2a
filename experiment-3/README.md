@@ -122,7 +122,8 @@ The [timed AI-agent execution report](verification/597b152/adoption.md) records 
 session with prior repository knowledge, not a fresh human adopter or usability study.
 Neither establishes full A2A conformance or support for unverified version combinations.
 Desktop deployment and exact external calls have [updated evidence](verification/a994f22/README.md);
-the combined editor/runtime-form criterion remains incomplete. The
+the [Hub/Tasklist report](verification/a323e19/README.md) records a separately successful actual
+ask/answer/result form journey while retaining earlier failures. The
 [prototype evidence matrix](verification/32f8d4e/prototype-evidence.md) records relevant-runtime gaps and
 partial Desktop checks. Fresh-adopter timing and human usability are not prototype criteria;
 actual Marketplace-to-Modeler import and external legal/eligibility approval remain deferred release gates.

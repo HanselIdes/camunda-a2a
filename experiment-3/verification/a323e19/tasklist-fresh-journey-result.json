@@ -1,0 +1,10 @@
+{
+  "journey": "fresh-H2",
+  "startForm": "actual deployed a2a-client-ask",
+  "answerForm": "actual deployed a2a-client-answer, dynamic expected-amount question, UI assign/fill/complete204",
+  "resultForm": "actual deployed a2a-client-result, dynamic synthetic result displayed, UI assign/complete",
+  "taskIdentitiesVerified": true,
+  "clientState": "COMPLETED",
+  "hasIncident": false,
+  "priorFailedRunsUntouched": true
+}

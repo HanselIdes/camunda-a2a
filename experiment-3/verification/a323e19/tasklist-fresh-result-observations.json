@@ -1,0 +1,5 @@
+{
+  "journey": "fresh-H2",
+  "taskIdentityMatches": true,
+  "text": "Skip to main content\nTasklist\nTasks\nProcesses\nNon-production license\nNon-commercial license\nAll open tasks\nReview the result\nA2A client: ask the agent\nUnassigned\nMedium\nNow\nAuto-select first available task\nAuto-select first available task\nReview the result\nA2A client: ask the agent\nUnassigned\nAssign to me\nTask\nProcess\nAnswer from Synthetic card-dispute reviewer\n\nSynthetic charges reconciled for human review. No refund or financial action was performed.\n\nA2A task [FRESH_H2_TASK], context [FRESH_H2_CONTEXT], final state TASK_STATE_COMPLETED\n\nSynthetic reconciliation\n\nMerchant: Northwind Electronics\n\nPaid: 99.9 USD\n\nExpected: 49.95 USD\n\nOvercharge: 49.95 USD\n\nNext step: REQUEST_HUMAN_REVIEW\n\nComplete Task\nDetails\nCreation date\n27 Oct 2026 - 1:52 PM\nCandidates\nNo candidates\nPriority\nMedium\nDue date\nNo due date"
+}

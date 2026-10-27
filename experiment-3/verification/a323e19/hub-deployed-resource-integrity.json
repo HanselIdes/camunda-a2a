@@ -1,0 +1,40 @@
+{
+  "resources": [
+    {
+      "resourceName": "a2a-card-dispute.bpmn",
+      "processId": "a2a-card-dispute",
+      "version": 1,
+      "sha256": "3a695f96c43b15ae714b821fb9f2debe458c853392ee7358a210461bec063beb",
+      "exactOriginalBytes": true
+    },
+    {
+      "resourceName": "a2a-card.bpmn",
+      "processId": "a2a-card",
+      "version": 1,
+      "sha256": "90dfc0d151787a78db9bb04bc3d631eba85fb8582e4012baaba4fced0bc5e5cc",
+      "exactOriginalBytes": true
+    },
+    {
+      "resourceName": "a2a-client.bpmn",
+      "processId": "a2a-client",
+      "version": 1,
+      "sha256": "02b69a0d74cf95e147b303bf9afb70f8ca7f4bce2675344a02f2bdae66ca78bf",
+      "exactOriginalBytes": true
+    },
+    {
+      "resourceName": "a2a-protocol.bpmn",
+      "processId": "a2a-rpc",
+      "version": 1,
+      "sha256": "6e10a1cbc8a20065b6685b0d0753bb568ba491df74e4b41e0c0989e26f4942bc",
+      "exactOriginalBytes": true
+    }
+  ],
+  "incidents": [
+    {
+      "type": "JOB_NO_RETRIES",
+      "message": "| Error variables: {error={type=io.camunda.connector.api.error.ConnectorException, message=, variables={response={headers={Keep-Alive=timeout=60, Connection=keep-alive, Content-Length=0, Date=Tue, 27 Oct 2026 12:42:34 GMT}, body=}}, code=404}}",
+      "processId": "a2a-client",
+      "elementId": "DiscoverAgent"
+    }
+  ]
+}

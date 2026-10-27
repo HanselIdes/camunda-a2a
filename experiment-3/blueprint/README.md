@@ -3,8 +3,9 @@
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
 [license and licensing limitations](../../README.md#license-and-support). This is a functional prototype:
 informed-agent checks are allowed; no adoption-time threshold or human-usability claim applies.
-Runtime form checks and the combined editor criterion remain incomplete. Marketplace import and external
-licensing/eligibility approval are separate deferred release gates, not prototype acceptance.
+The selected import set has actual Desktop/Hub deployment and Tasklist form evidence on the declared runtime.
+Historical version gaps remain explicit. Marketplace import and external licensing/eligibility approval
+are separate deferred release gates, not prototype acceptance.
 SaaS runtime support is unverified.
 
 The demonstration is a BPMN client calling an A2A 1.0 JSON-RPC endpoint, which starts a server-side AI agent.
@@ -32,7 +33,9 @@ The [cross-surface evidence matrix](../verification/32f8d4e/prototype-evidence.m
 versions, unknowns, included assets and per-outcome evidence gaps. Desktop Modeler 5.51.1 import/render,
 template configuration, form preview, save/reopen and actual eight-resource deployment have
 [updated evidence](../verification/a994f22/README.md). External exact guide commands also passed.
-Runtime form-UI completion and the complete supported Self-Managed Hub workflow remain separate checks.
+The [Hub and Tasklist report](../verification/a323e19/README.md) records actual import/configuration/deployment
+and a separate fresh ask/answer/result form journey. Earlier404/409 failures remain recorded; this is
+functional evidence, not human usability or a claim that every run succeeds.
 
 The execution-thread setting matters when client and server use the same Connectors runtime: a synchronous
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
@@ -291,7 +294,15 @@ Deploying a standalone diagram does not automatically include the other seven re
 Do not include roundtrip copies, archived resources or both profiles in this group.
 Desktop 5.51.1 submitted this eight-file deployment on the declared runtime. Engine readback matches seven
 process XMLs and the validation DMN exactly; the client XML differs only by an omitted final newline.
-Runtime form-UI completion remains a separate check.
+The Desktop deployment report itself does not prove runtime form-UI completion; the separate
+Tasklist journey is recorded in the Hub report.
+
+For Self-Managed Hub, use a project with an assigned authenticated deployment environment. Import the
+eight resources and four pinned templates, then **Publish to workspace** each template at its pinned
+version so the diagram properties resolve. This is workspace availability, not Marketplace publication.
+Use project **Deploy & run** against that environment. The observed local Hub source-build setup and
+its development-database reset caveat are recorded in the [setup evidence](../verification/a323e19/README.md);
+do not restart a valuable/shared database using a clean-first development profile.
 
 Deploy all eight BPMN/DMN/form resources together, so the forms and decision are available to the processes.
 No generator execution, protocol editing, custom worker, nginx route or standard-path ingress is required.
@@ -484,8 +495,10 @@ Do not blindly retry financial work: one observed internal connection closure le
 its agent task had reached input-required. A later successful request does not recover that original client.
 
 The source-specific checkpoints above distinguish functional prototype evidence from deferred release approval.
-The combined editor/form criterion remains incomplete; human usability and fresh-adopter timing
-are not prototype criteria. Actual Marketplace import and external legal/eligibility approval remain deferred.
+The selected editor/form flows have functional evidence on the declared runtime; human usability and
+fresh-adopter timing are not prototype criteria. The actual8.8.21 clarification heading displayed readable
+literal backslash-n separators, not a polished-layout pass. Unknown historical tool versions remain unknown.
+Actual Marketplace import and external legal/eligibility approval remain deferred.
 The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
