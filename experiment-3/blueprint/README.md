@@ -317,12 +317,17 @@ reconciles indexed state for up to five seconds. A visible canceled revision ret
 even if the correlation response reported no match. Otherwise, a confirmed no-match with readable noncanceled
 state returns `-32002`. No canceled state is written by the protocol. Missing state, or an accepted cancellation
 whose terminal revision remains invisible, returns internal error `-32603` with `DEADLINE_EXCEEDED`.
+A missing hook on an active task therefore incurs the full five-second reconciliation window, in addition
+to the correlation attempts and connector latency, before returning `-32002`.
 
 The correlation connector job has **one attempt** for transport/API failures: it does not automatically retry
 an ambiguous write after a lost response. Such failures remain actionable incidents, not a fabricated canceled
 result or `-32002`. The explicit three-attempt loop applies only to definite correlation-not-found responses.
 After an uncertain transport failure, inspect the failed execution and poll `GetTask` rather than assuming
 whether cancellation occurred.
+This connector is shared with follow-up `SendMessage`: its transport/API failures also exhaust the single
+attempt and create an incident without an RPC response, so the caller can time out. Inspect the incident and
+poll the task before retrying; do not assume that a missing response means the follow-up was not delivered.
 
 ## Operational boundary and remaining gates
 
@@ -336,6 +341,13 @@ returns `-32603 / DEADLINE_EXCEEDED`, never a partial successful list. Missing/r
 pages return `-32603 / DATA_LOSS`. The budget is checked between engine calls; each connector call retains its
 own connection/read timeouts. Large or slow collections can fail explicitly rather than silently truncating.
 Search reads the live index, not a transactionally frozen snapshot across separate A2A page requests.
+The native pagination evidence covers **context-filtered listing of 125 tasks only**; no unfiltered capacity
+ceiling has been measured. Only the context tag is pushed into the engine query. Status and timestamp filters
+are applied after collection, so without a context filter every retained instance of the selected agent process
+must be scanned. Retention is disabled in the reference stack. As history grows, an unfiltered scan can
+consistently exceed the ten-second budget even when the requested page is small. This is not an unlimited
+listing or production-capacity claim. A production deployment would need separately validated history cleanup
+or retention and completed-task availability policies; neither is established by these non-production checks.
 Push, streaming and A2A 0.3 interoperability are not advertised.
 Task requests must select the advertised `A2A-Version: 1.0`. Numeric patches such as `1.0.2` use the same
 semantics; other Major.Minor versions are rejected with `VERSION_NOT_SUPPORTED`.
