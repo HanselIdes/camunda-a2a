@@ -3,7 +3,7 @@
 Ask a client AI agent to delegate through Agent2Agent (A2A) 1.0 to a server-side AI agent, then review the synthetic result.
 
 This early-access community prototype uses stock Camunda Connectors, not native Camunda A2A support or a custom HTTP server.
-It is unmaintained, intended for non-production use, and subject to the [project license](../../../LICENSE.md).
+It is unmaintained, intended for non-production use, and subject to the [project license](https://github.com/HanselIdes/camunda-a2a/blob/main/LICENSE.md).
 Camunda does not support or certify it.
 
 ## What is in this blueprint?
@@ -70,7 +70,7 @@ The business agent and reconciliation tool are separate from the protocol. The m
 The tool uses only deterministically validated client fields from the current message.
 
 The protocol also supports task listing and cancellation. Business-process adaptation requires the documented task contract,
-including the interrupting `a2a-cancel` hook correlated by `task.id`. See the [extended setup and task-contract guide](../README.md).
+including the interrupting `a2a-cancel` hook correlated by `task.id`. See the [extended setup and task-contract guide](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md).
 
 ## Prerequisites
 
@@ -115,7 +115,7 @@ Do not disable certificate checks. Restart or recreate Connectors after changing
 The demonstrated same-runtime client/server flow requires `CAMUNDA_CLIENT_EXECUTION_THREADS=4`.
 The recorded profile also sets `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`.
 The Self-Managed low-latency profile requires explicit exporter settings and has resource-cost tradeoffs.
-Follow the [runtime setup guide](../README.md) before deployment. Import does not configure runtime settings.
+Follow the [runtime setup guide](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md) before deployment. Import does not configure runtime settings.
 
 ## Deploy and run
 
@@ -188,7 +188,7 @@ An external client can include one structured data part in the initial message f
 
 This is a message part, not a complete JSON-RPC request. For clarification, include it in a follow-up with the original
 `taskId` and `contextId`. Missing, partial, malformed, or duplicate confirmation returns `INPUT_REQUIRED` without a reconciliation
-artifact. The tool does not merge financial fields from earlier messages or model output. See the [complete request examples](../README.md#run-the-demonstration).
+artifact. The tool does not merge financial fields from earlier messages or model output. See the [complete request examples](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md#run-the-demonstration).
 
 ## Limits and troubleshooting
 
@@ -199,7 +199,7 @@ An HTTP failure can occur after business work starts. Never blindly retry an amb
 Duplicate submissions can create independent tasks; there is no side-effect deduplication or exactly-once guarantee.
 
 HTTP 404 at a webhook can mean its inbound Connector registration is pending. Inspect inbound status and engine incidents before repeating requests.
-Use the [extended guide](../README.md) for deployment and recovery details.
+Use the [extended guide](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md) for deployment and recovery details.
 
 Source and community issue reports: [HanselIdes/camunda-a2a](https://github.com/HanselIdes/camunda-a2a).
 Issue reports carry no response or maintenance commitment.
