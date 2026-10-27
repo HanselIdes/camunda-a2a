@@ -1,5 +1,6 @@
 """Run the authenticated client-agent-to-server-agent flow on the isolated 8.9 profile."""
 import base64
+import http.client
 import json
 import os
 from pathlib import Path
@@ -66,9 +67,28 @@ subprocess.run(
      "-passout", "env:PROOF_TLS_PASSWORD"],
     env=env, check=True, capture_output=True,
 )
+subprocess.run(
+    ["keytool", "-importcert", "-alias", "a2a-client-agent-proof",
+     "-file", str(tls_path / "server.crt"), "-keystore", str(tls_path / "trust.p12"),
+     "-storetype", "PKCS12", "-storepass:env", "PROOF_TLS_PASSWORD", "-noprompt"],
+    env=env, check=True, capture_output=True,
+)
 tls_context = ssl.create_default_context(cafile=str(tls_path / "server.crt"))
 engine_url = ""
 connectors_url = ""
+
+
+def redact(text):
+    sensitive = [env[name] for name in (
+        "PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD",
+        "PROOF_RESTRICTED_PASSWORD",
+    )]
+    sensitive.append(base64.b64encode(
+        ("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()
+    ).decode())
+    for value in sensitive:
+        text = text.replace(value, "[REDACTED]")
+    return text
 
 
 def engine_request(path, body=None, timeout=30):
@@ -197,6 +217,10 @@ try:
             break
         except urllib.error.HTTPError as error:
             if error.code != 404 or time.monotonic() >= deadline:
+                raise
+            time.sleep(1)
+        except (urllib.error.URLError, http.client.RemoteDisconnected):
+            if time.monotonic() >= deadline:
                 raise
             time.sleep(1)
     assert card["supportedInterfaces"][0]["url"] == expected_card_url, card
@@ -352,10 +376,16 @@ try:
     print(f"Client-agent 8.9 end-to-end verification PASS: {report_file}", flush=True)
 except Exception as failure:
     report.update({"verdict": "FAIL", "failureType": type(failure).__name__,
-                   "failureMessage": str(failure)})
-    for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD",
-                 "PROOF_RESTRICTED_PASSWORD"):
-        report["failureMessage"] = report["failureMessage"].replace(env[name], "[REDACTED]")
+                   "failureMessage": redact(str(failure))})
+    if stack.started:
+        diagnostics = subprocess.run(
+            stack.command + ["logs", "--tail", "100", "camunda", "connectors"],
+            env=env, capture_output=True, text=True, check=False,
+        )
+        log_path = report_dir / "runtime-diagnostic.log"
+        log_path.write_text(redact(diagnostics.stdout + diagnostics.stderr))
+        report["diagnosticLog"] = str(log_path)
+        report["diagnosticLogExitCode"] = diagnostics.returncode
     report_file.write_text(json.dumps(report, indent=2) + "\n")
     print(f"Client-agent runtime verification failed ({type(failure).__name__}); evidence: {report_file}",
           flush=True)
