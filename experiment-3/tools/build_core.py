@@ -5,10 +5,12 @@ Preserves the layout of surviving elements. Adopters deploy the committed output
 this command is only for contributors changing the protocol.
 """
 import argparse
+from copy import deepcopy
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
 from bpmn_gen import feel
+from bpmn_gen.lib import Proc
 
 ROOT = Path(__file__).resolve().parents[1]
 B = "http://www.omg.org/spec/BPMN/20100524/MODEL"
@@ -153,9 +155,8 @@ def cancellation(root):
                            ("tries", "=3"), ("payload", "={}")):
         ET.SubElement(mapping, f"{{{Z}}}input", target=target, source=source)
     ET.SubElement(mapping, f"{{{Z}}}output", source="=correlated", target="correlated")
-    for identifier, name in (("CancellationCorrelated", "Cancellation accepted?"),
-                              ("CancellationOutcome", "Terminal outcome visible?")):
-        ET.SubElement(process, f"{{{B}}}exclusiveGateway", id=identifier, name=name)
+    ET.SubElement(process, f"{{{B}}}exclusiveGateway", id="CancellationOutcome",
+                  name="Terminal outcome visible?")
     timeout = ET.SubElement(process, f"{{{B}}}scriptTask", id="CancellationTimeout",
                             name="Report cancellation visibility failure")
     extension = ET.SubElement(timeout, f"{{{B}}}extensionElements")
@@ -165,7 +166,6 @@ def cancellation(root):
     plane = root.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane")
     for identifier, x, y, width, height in (
             ("RequestCancellation", 2200, 1120, 100, 80),
-            ("CancellationCorrelated", 2375, 1135, 50, 50),
             ("CancellationOutcome", 3100, 1135, 50, 50),
             ("CancellationTimeout", 3100, 1240, 100, 80),
             ("CancellationErrorReady", 3282, 1262, 36, 36)):
@@ -173,15 +173,14 @@ def cancellation(root):
         ET.SubElement(shape, f"{{{DC}}}Bounds", x=str(x), y=str(y), width=str(width), height=str(height))
     connect(root, "a2a-rpc", "Cancelable", "RequestCancellation",
             condition=f"=not(list contains({feel.TERMINAL}, task.status.state))", name="active")
-    connect(root, "a2a-rpc", "RequestCancellation", "CancellationCorrelated")
-    connect(root, "a2a-rpc", "CancellationCorrelated", "AwaitCanceled", condition="=correlated", name="accepted")
-    connect(root, "a2a-rpc", "CancellationCorrelated", "NotCancelableJoin", default=True, name="not accepted")
+    connect(root, "a2a-rpc", "RequestCancellation", "AwaitCanceled")
     connect(root, "a2a-rpc", "AwaitCanceled", "CancellationOutcome")
     connect(root, "a2a-rpc", "CancellationOutcome", "BuildCanceledView",
             condition='=visible and seen.status.state = "TASK_STATE_CANCELED"', name="canceled")
     connect(root, "a2a-rpc", "CancellationOutcome", "NotCancelableJoin",
-            condition=f'=visible and seen.status.state != "TASK_STATE_CANCELED" '
-                      f'and list contains({feel.TERMINAL}, seen.status.state)', name="completed first")
+            condition=f'=seen != null and seen.status.state != "TASK_STATE_CANCELED" and '
+                      f'((visible and list contains({feel.TERMINAL}, seen.status.state)) or not(correlated))',
+            name="not canceled")
     connect(root, "a2a-rpc", "CancellationOutcome", "CancellationTimeout", default=True, name="not visible")
     connect(root, "a2a-rpc", "CancellationTimeout", "CancellationErrorReady")
     waiter = next(e for e in process if e.get("id") == "AwaitCanceled")
@@ -195,6 +194,153 @@ def cancellation(root):
     script.set("expression", "=" + feel.resp_from(feel.err(
         -32002, "Task is terminal or its process did not accept the required a2a-cancel message",
         "TASK_NOT_CANCELABLE")))
+    correlate = next(e for e in root.iter() if e.get("id") == "CorrelateMessage")
+    correlate.find(f"{{{B}}}extensionElements/{{{Z}}}taskDefinition").set("retries", "1")
+    headers = correlate.find(f"{{{B}}}extensionElements/{{{Z}}}taskHeaders")
+    for header in list(headers):
+        if header.get("key") == "retryBackoff":
+            headers.remove(header)
+
+
+def pagination(root):
+    process = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
+    originals = {identifier: deepcopy(next(e for e in process if e.get("id") == identifier))
+                 for identifier in ("SearchTasks", "ReadTasks")}
+    shapes = {e.get("bpmnElement"): deepcopy(e.find(f"{{{DC}}}Bounds"))
+              for e in root.iter(f"{{{D}}}BPMNShape")}
+    collector = Proc("a2a-list-collect", "A2A collect indexed task pages")
+    collector.start("ListScanRequested", "Collect tasks", 150, 162)
+    collector.script("StartListScan", "Start bounded scan", 230, 140,
+                     '={items: [], keys: [], cursor: null, cursors: [], '
+                     'deadline: string(now() + duration("PT10S"))}', "listScan")
+    collector.xor("ListProcessPageJoin", "", 350, 155)
+    collector.node("serviceTask", "SearchTasks", "Search next process page", 430, 140)
+    collector.xor("AnyTasks", "Any tasks?", 580, 155)
+    collector.xor("ListVariablesJoin", "", 660, 155)
+    collector.node("serviceTask", "ReadTasks", "Read complete root-state batch", 740, 140)
+    collector.xor("ListBatchJoin", "", 880, 155)
+    collector.script("CollectListBatch", "Validate and collect batch", 960, 140,
+        '=(for ready in [if count(taskKeys) = 0 then true else '
+        'taskBatch instance of list and count(distinct values(taskKeys)) = count(taskKeys) '
+        'and count(taskBatch) = count(taskKeys) and '
+        'count(distinct values(taskBatch.scopeKey)) = count(taskKeys) and '
+        '(every i in taskBatch satisfies i.scopeKey = i.processInstanceKey and '
+        'list contains(taskKeys, i.scopeKey) and i.value instance of context and '
+        'i.value.id instance of string and i.value.contextId instance of string and '
+        'i.value.rev instance of number and i.value.status instance of context and '
+        'i.value.status.state instance of string and i.value.status.timestamp instance of string and '
+        'i.value.history instance of list and i.value.artifacts instance of list)] '
+        'return for overlap in [some k in taskKeys satisfies list contains(listScan.keys, k)] '
+        'return for nextOk in [listPage.cursor instance of string and listPage.cursor != "" and '
+        'not(list contains(listScan.cursors, listPage.cursor))] '
+        'return for action in [if not(ready) then '
+        '(if now() >= date and time(listScan.deadline) then "deadline" else "variables") '
+        'else if overlap then "overlap" else if listPage.count < 100 then "done" '
+        'else if listPage.count != 100 or not(nextOk) then "cursor" '
+        'else if now() >= date and time(listScan.deadline) then "deadline" else "page"] '
+        'return context merge([listScan, {action: action, '
+        'items: if ready and not(overlap) and count(taskKeys) > 0 '
+        'then concatenate(listScan.items, taskBatch) else listScan.items, '
+        'keys: if ready then concatenate(listScan.keys, taskKeys) else listScan.keys, '
+        'cursor: if action = "page" then listPage.cursor else listScan.cursor, '
+        'cursors: if action = "page" then append(listScan.cursors, listPage.cursor) else listScan.cursors}]))'
+        '[1][1][1][1]', "listScan")
+    collector.xor("ListScanDecision", "Scan outcome?", 1100, 155)
+    collector.script("FinishListScan", "Return complete collection", 1240, 140,
+                     '={items: listScan.items, failure: null}', "listing")
+    collector.xor("ListResultJoin", "", 1400, 155)
+    collector.end("ListScanReady", "Collection ready", 1480, 162)
+    collector.catch_timer("WaitListVariables", "Await root-state index", 1107, 302, '="PT0.25S"')
+    failure = ('if listScan.action = "deadline" then '
+               + feel.err(-32603, "Task listing did not become complete before the deadline", "DEADLINE_EXCEEDED")
+               + " else " + feel.err(-32603, "Task search pagination did not make progress", "DATA_LOSS"))
+    collector.script("FailListScan", "Reject incomplete collection", 1240, 290,
+                     '={items: [], failure: ' + failure + '}', "listing")
+    collector.flow("ListScanRequested", "StartListScan")
+    collector.flow("StartListScan", "ListProcessPageJoin")
+    collector.flow("ListProcessPageJoin", "SearchTasks")
+    collector.flow("SearchTasks", "AnyTasks")
+    collector.flow("AnyTasks", "ListVariablesJoin", "read", "=count(taskKeys) > 0")
+    collector.flow("ListVariablesJoin", "ReadTasks")
+    collector.flow("AnyTasks", "ListBatchJoin", "empty", default=True, route="over:60")
+    collector.flow("ReadTasks", "ListBatchJoin")
+    collector.flow("ListBatchJoin", "CollectListBatch")
+    collector.flow("CollectListBatch", "ListScanDecision")
+    collector.flow("ListScanDecision", "FinishListScan", "complete", '=listScan.action = "done"')
+    collector.flow("ListScanDecision", "ListProcessPageJoin", "next page", '=listScan.action = "page"', route="over:100")
+    collector.flow("ListScanDecision", "WaitListVariables", "retry state", '=listScan.action = "variables"')
+    collector.flow("WaitListVariables", "ListVariablesJoin", route="back:60")
+    collector.flow("ListScanDecision", "FailListScan", "incomplete", default=True)
+    collector.flow("FinishListScan", "ListResultJoin")
+    collector.flow("FailListScan", "ListResultJoin")
+    collector.flow("ListResultJoin", "ListScanReady")
+    bottom = max(float(bounds.get("y")) + float(bounds.get("height")) for bounds in shapes.values())
+    collector._shift(0, bottom + 200)
+    helper = ET.fromstring(collector.xml())
+    helper_process = helper.find(f"{{{B}}}process")
+    for identifier, original in originals.items():
+        placeholder = next(e for e in helper_process if e.get("id") == identifier)
+        for reference in list(original):
+            if reference.tag in (f"{{{B}}}incoming", f"{{{B}}}outgoing"):
+                original.remove(reference)
+        original.extend(deepcopy(reference) for reference in placeholder)
+        original.set("name", placeholder.get("name"))
+        helper_process.insert(list(helper_process).index(placeholder), original)
+        helper_process.remove(placeholder)
+    search = next(e for e in helper_process if e.get("id") == "SearchTasks")
+    body = next(e for e in search.iter(f"{{{Z}}}input") if e.get("target") == "body")
+    body.set("source", body.get("source").replace(
+        'order: "DESC"}]', 'order: "DESC"}, {field: "processInstanceKey", order: "DESC"}]').replace(
+        "page: {limit: 100}", "page: {limit: 100, after: listScan.cursor}"))
+    header = next(e for e in search.iter(f"{{{Z}}}header") if e.get("key") == "resultExpression")
+    header.set("value", "={taskKeys: for i in response.body.items return i.processInstanceKey, "
+               "listPage: {count: count(response.body.items), cursor: response.body.page.endCursor}}")
+    remove(root, {"SearchTasks", "AnyTasks", "ReadTasks", "ListJoin"})
+    call = ET.SubElement(process, f"{{{B}}}callActivity", id="CollectTaskList", name="Collect all task pages")
+    extension = ET.SubElement(call, f"{{{B}}}extensionElements")
+    ET.SubElement(extension, f"{{{Z}}}calledElement", processId="a2a-list-collect",
+                  propagateAllChildVariables="false", propagateAllParentVariables="false")
+    mapping = ET.SubElement(extension, f"{{{Z}}}ioMapping")
+    ET.SubElement(mapping, f"{{{Z}}}input", source="=listReq", target="listReq")
+    for source, target in (("=listing.items", "taskItems"), ("=listing.failure", "listFailure")):
+        ET.SubElement(mapping, f"{{{Z}}}output", source=source, target=target)
+    ET.SubElement(process, f"{{{B}}}exclusiveGateway", id="ListCollected", name="Complete task collection?")
+    error = ET.SubElement(process, f"{{{B}}}scriptTask", id="BuildListFailure", name="Report incomplete task list")
+    extension = ET.SubElement(error, f"{{{B}}}extensionElements")
+    ET.SubElement(extension, f"{{{Z}}}script", resultVariable="rpcResponse",
+                  expression="=" + feel.resp_from("listFailure"))
+    ET.SubElement(process, f"{{{B}}}endEvent", id="ListFailureReady", name="Listing failed")
+    plane = root.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane")
+    for identifier, original, width in (("CollectTaskList", "SearchTasks", 100),
+                                         ("ListCollected", "AnyTasks", 50),
+                                         ("BuildListFailure", "ReadTasks", 100),
+                                         ("ListFailureReady", "ListJoin", 36)):
+        shape = ET.SubElement(plane, f"{{{D}}}BPMNShape", id=identifier + "_di", bpmnElement=identifier)
+        bounds = deepcopy(shapes[original])
+        bounds.set("width", str(width))
+        bounds.set("height", str(80 if width == 100 else width))
+        shape.append(bounds)
+    connect(root, "a2a-rpc", "PrepareList", "CollectTaskList")
+    connect(root, "a2a-rpc", "CollectTaskList", "ListCollected")
+    connect(root, "a2a-rpc", "ListCollected", "BuildTaskList", condition="=listFailure = null", name="complete")
+    connect(root, "a2a-rpc", "ListCollected", "BuildListFailure", default=True, name="incomplete")
+    connect(root, "a2a-rpc", "BuildListFailure", "ListFailureReady")
+    script = next(e for e in process if e.get("id") == "BuildTaskList").find(
+        f"{{{B}}}extensionElements/{{{Z}}}script")
+    script.set("expression", script.get("expression").replace(
+        "function(a, b) a.status.timestamp > b.status.timestamp",
+        "function(a, b) if a.status.timestamp = b.status.timestamp then a.id > b.id "
+        "else a.status.timestamp > b.status.timestamp"))
+    root.insert(list(root).index(root.find(f"{{{D}}}BPMNDiagram")), helper_process)
+    pool_id = "Pool_a2a-list-collect"
+    ET.SubElement(root.find(f"{{{B}}}collaboration"), f"{{{B}}}participant",
+                  id=pool_id, name="Collect all indexed task pages", processRef=collector.pid)
+    pool = ET.SubElement(plane, f"{{{D}}}BPMNShape", id=pool_id + "_di", bpmnElement=pool_id, isHorizontal="true")
+    _, _, right, low = collector.bbox()
+    ET.SubElement(pool, f"{{{DC}}}Bounds", x="60", y=str(bottom + 180),
+                  width=str(max(right + 100, max(float(b.get("width")) for b in shapes.values()))),
+                  height=str(low - bottom - 100))
+    plane.extend(helper.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane"))
 
 
 def build(authentication):
@@ -225,6 +371,7 @@ def build(authentication):
     lookup_retry(root)
     response_mode(root)
     cancellation(root)
+    pagination(root)
     parse = next(e for e in root.iter() if e.get("id") == "ParseRequest").find(
         f"{{{B}}}extensionElements/{{{Z}}}script")
     old_version = ('versionOk: if ver instance of string then '
@@ -274,7 +421,7 @@ def build(authentication):
         if node.get("id") in ("ReadState", "ReadTasks"):
             for header in node.iter(f"{{{Z}}}header"):
                 if header.get("key") == "resultExpression":
-                    target = "items" if node.get("id") == "ReadState" else "taskItems"
+                    target = "items" if node.get("id") == "ReadState" else "taskBatch"
                     header.set("value", "={%s: for i in response.body.items return "
                                "context merge([i, {value: from json(i.value)}])}" % target)
     for properties in root.iter(f"{{{Z}}}properties"):

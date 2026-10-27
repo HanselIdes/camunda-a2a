@@ -302,18 +302,31 @@ Subsequent `GetTask` and `ListTasks` retain that outcome. A repeated cancel retu
 If the business terminal update wins first, its status/text/artifacts remain intact and cancellation returns
 `-32002`, never a canceled result. An unknown task returns `TaskNotFoundError` (`-32001`).
 
-A missing hook or no remaining matching subscription returns `-32002` after at most three correlation attempts
-with 0.3-second retry waits. It does not write canceled state. After successful correlation, the protocol waits
-up to five seconds for the indexed terminal revision; expiry returns internal error `-32603` with
-`DEADLINE_EXCEEDED`, not a fabricated canceled response. Engine API failures remain connector failures/retries
-or incidents, not successful cancellation. After an uncertain transport failure, inspect the failed execution
-and poll `GetTask` rather than assuming whether cancellation occurred.
+A missing hook or no remaining matching subscription permits at most three correlation attempts with
+0.3-second retry waits. Whether correlation reports success or no matching subscription, the protocol then
+reconciles indexed state for up to five seconds. A visible canceled revision returns that persisted outcome,
+even if the correlation response reported no match. Otherwise, a confirmed no-match with readable noncanceled
+state returns `-32002`. No canceled state is written by the protocol. Missing state, or an accepted cancellation
+whose terminal revision remains invisible, returns internal error `-32603` with `DEADLINE_EXCEEDED`.
+
+The correlation connector job has **one attempt** for transport/API failures: it does not automatically retry
+an ambiguous write after a lost response. Such failures remain actionable incidents, not a fabricated canceled
+result or `-32002`. The explicit three-attempt loop applies only to definite correlation-not-found responses.
+After an uncertain transport failure, inspect the failed execution and poll `GetTask` rather than assuming
+whether cancellation occurred.
 
 ## Operational boundary and remaining gates
 
 The API key establishes one shared trust boundary, not per-user task authorization. Possession of the key permits
 operations on this agent's tasks. Engine permissions and secret distribution must match that boundary.
 Task search uses the selected agent process; existing-task lookups have a three-second indexing/variable window.
+`ListTasks` collects engine pages of 100 process instances and their complete root-variable batches before
+applying A2A filters, sorting and pagination. Equal status timestamps are ordered by task ID descending.
+Missing root state is retried at 0.25-second intervals within a ten-second scan budget; an incomplete collection
+returns `-32603 / DEADLINE_EXCEEDED`, never a partial successful list. Missing/repeated engine cursors or overlapping
+pages return `-32603 / DATA_LOSS`. The budget is checked between engine calls; each connector call retains its
+own connection/read timeouts. Large or slow collections can fail explicitly rather than silently truncating.
+Search reads the live index, not a transactionally frozen snapshot across separate A2A page requests.
 Push, streaming and A2A 0.3 interoperability are not advertised.
 Task requests must select the advertised `A2A-Version: 1.0`. Numeric patches such as `1.0.2` use the same
 semantics; other Major.Minor versions are rejected with `VERSION_NOT_SUPPORTED`.
@@ -324,7 +337,7 @@ Repeating a new-task submission with the same `messageId` creates independent ta
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
 The source-specific checkpoints above distinguish demonstrated cancellation, load/restart, duplicate and matrix
-checks from final-candidate acceptance. Pagination beyond 100 tasks, expired/insufficient credentials and other
+checks from final-candidate acceptance. Native proof of pagination beyond 100 tasks, expired/insufficient credentials and other
 error injection/recovery, final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
 open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
@@ -397,6 +410,12 @@ races, four concurrent-follow-up pairs, cancellation while input-required, repea
 task listing and missing-hook failure. `terminal-checks.json` records exact outcomes;
 `runtime-provenance.json` identifies the tested source.
 This is not evidence of a pass until that exact-source run completes.
+
+`PROOF_AGENT_PROCESS=a2a-echo PROOF_LISTING_CHECKS=1 python3 experiment-3/tests/runtime/verify.py`
+submits 125 exact echo tasks with eight callers, then compares every field across four A2A pages of 37/37/37/14
+tasks. It also checks unique IDs, deterministic ordering, status/timestamp filters and total size.
+`listing-checks.json` records the result. Combine `PROOF_LISTING_CHECKS=1` with the operational flag above to
+exercise both against one owned runtime; neither flag is used by adopters.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.

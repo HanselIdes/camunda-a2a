@@ -38,9 +38,9 @@ if env.get("PROOF_LOAD_AGENT"):
         raise ValueError("Workload mode requires alpha/beta, echo and no SDK/TCK mode")
     if not (Path(env["PROOF_CONTROL_DIR"]) / env["PROOF_LOAD_AGENT"]).is_dir():
         raise ValueError("Workload mode requires an existing coordinator control directory")
-if env.get("PROOF_OPERATIONAL_CHECKS") and (env["PROOF_AGENT_PROCESS"] != "a2a-echo"
+if (env.get("PROOF_OPERATIONAL_CHECKS") or env.get("PROOF_LISTING_CHECKS")) and (env["PROOF_AGENT_PROCESS"] != "a2a-echo"
         or conformance or env.get("PROOF_LOAD_AGENT")):
-    raise ValueError("Operational checks require isolated echo mode, without workload/TCK mode")
+    raise ValueError("Operational/listing checks require isolated echo mode, without workload/TCK mode")
 exporter_profile = env.setdefault("PROOF_EXPORTER_PROFILE", "low-latency")
 if exporter_profile not in ("low-latency", "default"):
     raise ValueError("PROOF_EXPORTER_PROFILE must be low-latency or default")
@@ -54,7 +54,9 @@ def record_provenance(verdict, **details):
         "exporterProfile": exporter_profile,
         "exporterBulkDelaySeconds": 1 if exporter_profile == "low-latency" else 5,
         "clientExecutionThreads": 4, "activeVersionPolling": False,
-        "operationalChecks": bool(env.get("PROOF_OPERATIONAL_CHECKS")), **details,
+        "operationalChecks": bool(env.get("PROOF_OPERATIONAL_CHECKS")),
+        "listingChecks": bool(env.get("PROOF_LISTING_CHECKS")),
+        **details,
     }, indent=2) + "\n")
 
 
@@ -433,6 +435,9 @@ try:
     if env.get("PROOF_OPERATIONAL_CHECKS"):
         from operations import run as run_operations
         run_operations(ROOT, REPORTS, rpc, request, deploy, env["PROOF_AGENT_PROCESS"])
+    if env.get("PROOF_LISTING_CHECKS"):
+        from listing import run as run_listing
+        run_listing(REPORTS, rpc)
     assert_no_persisted_credentials()
     source_after = source_snapshot(ROOT)
     if source_after != source_before:

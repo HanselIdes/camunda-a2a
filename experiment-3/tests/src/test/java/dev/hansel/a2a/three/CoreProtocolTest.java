@@ -29,6 +29,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @CamundaProcessTest
 @TestDeployment(resources = {"core/a2a-protocol.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn",
@@ -135,6 +137,62 @@ class CoreProtocolTest {
           .filter(filter -> filter.processDefinitionId("a2a-controlled-business")).send().join().items())
           .hasSize(1).allSatisfy(instance -> assertThat(instance.getState().toString()).isEqualTo("COMPLETED"));
     });
+  }
+
+  @Test
+  void notFoundAfterCommittedCorrelationReturnsThePersistedCanceledOutcome() throws Exception {
+    h.agentProcess = "a2a-controlled-business";
+    final var working = task(h.sendWith("committed-correlation-response-lost", "{\"returnImmediately\":true}"));
+    final String id = (String) working.get("id");
+    final long workKey = controlledWorkKey();
+    final var injected = new AtomicBoolean();
+    h.afterEngineStatus = (call, status) -> {
+      if (call.equals("POST /v2/messages/correlation") && injected.compareAndSet(false, true)) {
+        assertThat(status).isBetween(200, 299);
+        return 404;
+      }
+      return status;
+    };
+    final var response = h.cancel(id);
+    h.afterEngineStatus = (call, status) -> status;
+    assertThat(injected).as("the engine committed correlation before its response was replaced").isTrue();
+    final var canceled = Harness.bareTask(response);
+    assertThat(state(canceled)).isEqualTo("TASK_STATE_CANCELED");
+    assertThat(canceled).doesNotContainKey("artifacts");
+    assertThat(((Map<?, ?>) canceled.get("status")).containsKey("message")).isFalse();
+    assertThat(Harness.bareTask(h.get(id))).isEqualTo(canceled);
+    assertThat(completeControlledWork(workKey).statusCode()).isEqualTo(404);
+    assertThat(Harness.errorCode(h.cancel(id))).isEqualTo(-32002);
+    assertThat(Harness.bareTask(h.get(id))).isEqualTo(canceled);
+  }
+
+  @Test
+  void lostCorrelationResponseFailsVisiblyWithoutInventingAProtocolOutcome() {
+    h.agentProcess = "a2a-controlled-business";
+    final var working = task(h.sendWith("lost-correlation-response", "{\"returnImmediately\":true}"));
+    final String id = (String) working.get("id");
+    final var injected = new AtomicBoolean();
+    h.afterEngineResponse = (call, body) -> {
+      if (call.equals("POST /v2/messages/correlation") && injected.compareAndSet(false, true)) {
+        throw new IllegalStateException("Injected lost cancellation response after engine commit");
+      }
+      return body;
+    };
+    final var request = client.newCreateInstanceCommand().bpmnProcessId("a2a-rpc").latestVersion()
+        .variables(Map.of("rpc", Harness.request("CancelTask", "{\"id\":\"" + id + "\"}"),
+            "hdr", Harness.headers())).send().join();
+    org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(15)).untilAsserted(() ->
+        assertThat(client.newIncidentSearchRequest().send().join().items()).hasSize(1)
+            .allSatisfy(incident -> {
+              assertThat(incident.getElementId()).isEqualTo("CorrelateMessage");
+              assertThat(incident.getErrorMessage()).contains("Injected lost cancellation response");
+            }));
+    h.afterEngineResponse = (call, body) -> body;
+    assertThat(injected).isTrue();
+    assertThat(client.newVariableSearchRequest()
+        .filter(filter -> filter.processInstanceKey(request.getProcessInstanceKey()).name("rpcResponse"))
+        .send().join().items()).isEmpty();
+    assertThat(state(Harness.bareTask(h.get(id)))).isEqualTo("TASK_STATE_CANCELED");
   }
 
   @Test
@@ -283,12 +341,21 @@ class CoreProtocolTest {
         assertThat(state(Harness.bareTask(h.get(id)))).isEqualTo("TASK_STATE_COMPLETED"));
   }
 
-  @Test
-  void invisibleCancellationOutcomeIsAnExplicitBoundedFailure() {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  void invisibleCancellationOutcomeIsAnExplicitBoundedFailure(final boolean accepted) {
     h.agentProcess = "a2a-controlled-business";
     final var working = task(h.sendWith("cancel-index-expiry", "{\"returnImmediately\":true}"));
     final String id = (String) working.get("id");
     final var cancellationRequested = new AtomicBoolean();
+    final var lostResponse = new AtomicBoolean();
+    h.afterEngineStatus = (call, status) -> {
+      if (!accepted && call.equals("POST /v2/messages/correlation") && status >= 200 && status < 300) {
+        lostResponse.set(true);
+        return 404;
+      }
+      return status;
+    };
     h.beforeEngineCall = call -> {
       if (call.equals("POST /v2/messages/correlation")) {
         cancellationRequested.set(true);
@@ -300,6 +367,8 @@ class CoreProtocolTest {
     final var response = h.cancel(id);
     h.beforeEngineCall = call -> {};
     h.afterEngineResponse = (call, body) -> body;
+    h.afterEngineStatus = (call, status) -> status;
+    assertThat(lostResponse.get()).isEqualTo(!accepted);
     assertThat(Harness.errorCode(response)).isEqualTo(-32603);
     assertThat(response.toString()).contains("DEADLINE_EXCEEDED").doesNotContain("result=");
     assertThat(Duration.ofNanos(System.nanoTime() - start)).isLessThan(Duration.ofSeconds(12));
@@ -346,6 +415,11 @@ class CoreProtocolTest {
         "artifactId", "evidence", "name", "business-evidence",
         "parts", List.of(Map.of("text", "Retain this evidence")))));
     assertThat(completed).doesNotContainKey("responseMode");
+    final var withArtifacts = (Map<?, ?>) ((List<?>) Harness.result(
+        h.list("{\"includeArtifacts\":true}")).get("tasks")).getFirst();
+    assertThat(withArtifacts.get("artifacts")).isEqualTo(completed.get("artifacts"));
+    final var withoutArtifacts = (Map<?, ?>) ((List<?>) Harness.result(h.list("{}")).get("tasks")).getFirst();
+    assertThat(withoutArtifacts.containsKey("artifacts")).isFalse();
   }
 
   @Test
@@ -409,8 +483,21 @@ class CoreProtocolTest {
     final var expressions = new java.util.ArrayList<String>();
     for (final String resource : List.of("core/a2a-protocol.bpmn", "core-oauth/a2a-protocol.bpmn")) {
       try (var input = getClass().getClassLoader().getResourceAsStream(resource)) {
-        final var properties = factory.newDocumentBuilder().parse(input)
-            .getElementsByTagNameNS("http://camunda.org/schema/zeebe/1.0", "property");
+        final var document = factory.newDocumentBuilder().parse(input);
+        final var services = document.getElementsByTagNameNS(
+            "http://www.omg.org/spec/BPMN/20100524/MODEL", "serviceTask");
+        int correlationCalls = 0;
+        for (int i = 0; i < services.getLength(); i++) {
+          final var service = (org.w3c.dom.Element) services.item(i);
+          if (service.getAttribute("id").equals("CorrelateMessage")) {
+            correlationCalls++;
+            final var definition = (org.w3c.dom.Element) service.getElementsByTagNameNS(
+                "http://camunda.org/schema/zeebe/1.0", "taskDefinition").item(0);
+            assertThat(definition.getAttribute("retries")).isEqualTo("1");
+          }
+        }
+        assertThat(correlationCalls).isEqualTo(1);
+        final var properties = document.getElementsByTagNameNS("http://camunda.org/schema/zeebe/1.0", "property");
         for (int i = 0; i < properties.getLength(); i++) {
           final var property = (org.w3c.dom.Element) properties.item(i);
           if (property.getAttribute("name").equals("resultExpression")) {
