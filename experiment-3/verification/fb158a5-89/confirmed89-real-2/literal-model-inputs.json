@@ -1,0 +1,1061 @@
+{
+  "records": [
+    {
+      "case": "numeric",
+      "inputText": "49.95 USD: synthetic diagnostic only. Please ask for missing details.",
+      "requestRoot": {
+        "message": {
+          "parts": [
+            {
+              "text": "49.95 USD: synthetic diagnostic only. Please ask for missing details."
+            }
+          ],
+          "messageId": "ead50f7a-17fa-4a2e-b09a-407ac405fff8",
+          "role": "ROLE_USER"
+        },
+        "blocking": true
+      },
+      "agent": {
+        "context": {
+          "state": "READY",
+          "metadata": {
+            "processDefinitionKey": 2251799813685332,
+            "processInstanceKey": 2251799813687605
+          },
+          "metrics": {
+            "modelCalls": 2,
+            "tokenUsage": {
+              "inputTokenCount": 858,
+              "outputTokenCount": 156
+            }
+          },
+          "toolDefinitions": [
+            {
+              "name": "review_duplicate_charge",
+              "description": "Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+              "inputSchema": {
+                "properties": {},
+                "type": "object",
+                "required": []
+              }
+            }
+          ],
+          "conversation": {
+            "type": "in-process",
+            "conversationId": "f99f763a-1fbe-4e4e-b9b9-dc45f6f8501e",
+            "messages": [
+              {
+                "role": "system",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                  }
+                ]
+              },
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "49.95 USD: synthetic diagnostic only. Please ask for missing details."
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:07.337568503Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "toolCalls": [
+                  {
+                    "id": "call_3de3ovwv",
+                    "name": "review_duplicate_charge",
+                    "arguments": {}
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:07.970746753Z",
+                  "framework": {
+                    "id": "chatcmpl-447",
+                    "finishReason": "TOOL_EXECUTION",
+                    "tokenUsage": {
+                      "inputTokenCount": 383,
+                      "outputTokenCount": 14,
+                      "totalTokenCount": 397,
+                      "inputTokensDetails": {
+                        "cachedTokens": 361,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  }
+                }
+              },
+              {
+                "role": "tool_call_result",
+                "results": [
+                  {
+                    "id": "call_3de3ovwv",
+                    "name": "review_duplicate_charge",
+                    "content": {
+                      "confirmationRequired": true,
+                      "instruction": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+                    }
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:08.123130045Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide the following details for the synthetic diagnostic:\n\n1. Merchant name (nonempty text)\n2. Currency (nonempty text, e.g., \"USD\")\n3. Two charge amounts (exactly two finite nonnegative numbers)\n4. Expected amount (a finite nonnegative number)\n5. Indicate \"syntheticOnly=true\"\n\nExample format:\n{\n  \"syntheticClaim\": {\n    \"merchant\": \"Example Merchant\",\n    \"currency\": \"USD\"\n  },\n  \"chargeAmounts\": [49.95, 49.95],\n  \"expectedAmount\": 49.95,\n  \"syntheticOnly\": true\n}"
+                  }
+                ],
+                "metadata": {
+                  "framework": {
+                    "id": "chatcmpl-164",
+                    "finishReason": "STOP",
+                    "tokenUsage": {
+                      "inputTokenCount": 475,
+                      "outputTokenCount": 142,
+                      "totalTokenCount": 617,
+                      "inputTokensDetails": {
+                        "cachedTokens": 382,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  },
+                  "timestamp": "2026-10-27T15:54:12.841233839Z"
+                }
+              }
+            ]
+          }
+        },
+        "responseText": "NEED_INPUT: Please provide the following details for the synthetic diagnostic:\n\n1. Merchant name (nonempty text)\n2. Currency (nonempty text, e.g., \"USD\")\n3. Two charge amounts (exactly two finite nonnegative numbers)\n4. Expected amount (a finite nonnegative number)\n5. Indicate \"syntheticOnly=true\"\n\nExample format:\n{\n  \"syntheticClaim\": {\n    \"merchant\": \"Example Merchant\",\n    \"currency\": \"USD\"\n  },\n  \"chargeAmounts\": [49.95, 49.95],\n  \"expectedAmount\": 49.95,\n  \"syntheticOnly\": true\n}"
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "ead50f7a-17fa-4a2e-b09a-407ac405fff8",
+            "taskId": "01a17e11-a204-7b6d-aeb7-5cdadbcbe020",
+            "contextId": "01a17e11-a204-7055-9f8b-e2918e1604eb",
+            "parts": [
+              {
+                "text": "49.95 USD: synthetic diagnostic only. Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-b874-7918-ad05-5bcdc028be3a",
+            "taskId": "01a17e11-a204-7b6d-aeb7-5cdadbcbe020",
+            "contextId": "01a17e11-a204-7055-9f8b-e2918e1604eb",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          }
+        ],
+        "id": "01a17e11-a204-7b6d-aeb7-5cdadbcbe020",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-b874-7918-ad05-5bcdc028be3a",
+            "taskId": "01a17e11-a204-7b6d-aeb7-5cdadbcbe020",
+            "contextId": "01a17e11-a204-7055-9f8b-e2918e1604eb",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:54:12Z"
+        },
+        "contextId": "01a17e11-a204-7055-9f8b-e2918e1604eb"
+      },
+      "modelUserText": "49.95 USD: synthetic diagnostic only. Please ask for missing details.",
+      "verbatim": true,
+      "requiredState": "TASK_STATE_INPUT_REQUIRED",
+      "semanticStateMatches": true,
+      "noPublishedArithmetic": true
+    },
+    {
+      "case": "quotes",
+      "inputText": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details.",
+      "requestRoot": {
+        "message": {
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+            }
+          ],
+          "messageId": "44fb26b7-8a0c-4c1e-b531-5d984bf70629",
+          "role": "ROLE_USER"
+        },
+        "blocking": true
+      },
+      "agent": {
+        "context": {
+          "state": "READY",
+          "metadata": {
+            "processDefinitionKey": 2251799813685332,
+            "processInstanceKey": 2251799813687973
+          },
+          "metrics": {
+            "modelCalls": 2,
+            "tokenUsage": {
+              "inputTokenCount": 887,
+              "outputTokenCount": 120
+            }
+          },
+          "toolDefinitions": [
+            {
+              "name": "review_duplicate_charge",
+              "description": "Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+              "inputSchema": {
+                "properties": {},
+                "type": "object",
+                "required": []
+              }
+            }
+          ],
+          "conversation": {
+            "type": "in-process",
+            "conversationId": "702b3c0d-1479-43c3-b7ed-08f194cf46c2",
+            "messages": [
+              {
+                "role": "system",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                  }
+                ]
+              },
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:14.806752464Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide the amount of the duplicate charge and the date it was processed, so I can proceed with the review."
+                  }
+                ],
+                "toolCalls": [
+                  {
+                    "id": "call_nnx5rtsd",
+                    "name": "review_duplicate_charge",
+                    "arguments": {}
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:15.50068084Z",
+                  "framework": {
+                    "id": "chatcmpl-917",
+                    "finishReason": "TOOL_EXECUTION",
+                    "tokenUsage": {
+                      "inputTokenCount": 384,
+                      "outputTokenCount": 41,
+                      "totalTokenCount": 425,
+                      "inputTokensDetails": {
+                        "cachedTokens": 361,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  }
+                }
+              },
+              {
+                "role": "tool_call_result",
+                "results": [
+                  {
+                    "id": "call_nnx5rtsd",
+                    "name": "review_duplicate_charge",
+                    "content": {
+                      "confirmationRequired": true,
+                      "instruction": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+                    }
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:15.604554965Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Please provide the following synthetic data for review:\n\n1. Merchant name (e.g., \"example\")\n2. Currency (e.g., \"USD\")\n3. Two charge amounts (e.g., 50.00 and 50.00)\n4. Expected amount (e.g., 50.00)\n\nThis is for diagnostic purposes only using synthetic data."
+                  }
+                ],
+                "metadata": {
+                  "framework": {
+                    "id": "chatcmpl-798",
+                    "finishReason": "STOP",
+                    "tokenUsage": {
+                      "inputTokenCount": 503,
+                      "outputTokenCount": 79,
+                      "totalTokenCount": 582,
+                      "inputTokensDetails": {
+                        "cachedTokens": 410,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  },
+                  "timestamp": "2026-10-27T15:54:18.4554278Z"
+                }
+              }
+            ]
+          }
+        },
+        "responseText": "Please provide the following synthetic data for review:\n\n1. Merchant name (e.g., \"example\")\n2. Currency (e.g., \"USD\")\n3. Two charge amounts (e.g., 50.00 and 50.00)\n4. Expected amount (e.g., 50.00)\n\nThis is for diagnostic purposes only using synthetic data."
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "44fb26b7-8a0c-4c1e-b531-5d984bf70629",
+            "taskId": "01a17e11-bf30-73e1-a0f7-7d962399194d",
+            "contextId": "01a17e11-bf30-7d85-ab4d-8c01a3f3a7d1",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-ce70-7b04-9556-09725ee61255",
+            "taskId": "01a17e11-bf30-73e1-a0f7-7d962399194d",
+            "contextId": "01a17e11-bf30-7d85-ab4d-8c01a3f3a7d1",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          }
+        ],
+        "id": "01a17e11-bf30-73e1-a0f7-7d962399194d",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-ce70-7b04-9556-09725ee61255",
+            "taskId": "01a17e11-bf30-73e1-a0f7-7d962399194d",
+            "contextId": "01a17e11-bf30-7d85-ab4d-8c01a3f3a7d1",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:54:18Z"
+        },
+        "contextId": "01a17e11-bf30-7d85-ab4d-8c01a3f3a7d1"
+      },
+      "modelUserText": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details.",
+      "verbatim": true,
+      "requiredState": "TASK_STATE_INPUT_REQUIRED",
+      "semanticStateMatches": true,
+      "noPublishedArithmetic": true
+    },
+    {
+      "case": "backslashes",
+      "inputText": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details.",
+      "requestRoot": {
+        "message": {
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details."
+            }
+          ],
+          "messageId": "94d9ebbc-1bb3-457e-836f-09ffd05e614d",
+          "role": "ROLE_USER"
+        },
+        "blocking": true
+      },
+      "agent": {
+        "context": {
+          "state": "READY",
+          "metadata": {
+            "processDefinitionKey": 2251799813685332,
+            "processInstanceKey": 2251799813688274
+          },
+          "metrics": {
+            "modelCalls": 2,
+            "tokenUsage": {
+              "inputTokenCount": 913,
+              "outputTokenCount": 142
+            }
+          },
+          "toolDefinitions": [
+            {
+              "name": "review_duplicate_charge",
+              "description": "Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+              "inputSchema": {
+                "properties": {},
+                "type": "object",
+                "required": []
+              }
+            }
+          ],
+          "conversation": {
+            "type": "in-process",
+            "conversationId": "dd670b94-0790-4a03-b449-4884f06212e0",
+            "messages": [
+              {
+                "role": "system",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                  }
+                ]
+              },
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details."
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:20.997616926Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide the amount and date of the duplicate charge you want to review, as well as the amount and date of the original charge. Also, confirm if you have the order number or any other identifying information for the charges."
+                  }
+                ],
+                "toolCalls": [
+                  {
+                    "id": "call_n6tfj3is",
+                    "name": "review_duplicate_charge",
+                    "arguments": {}
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:22.280969093Z",
+                  "framework": {
+                    "id": "chatcmpl-852",
+                    "finishReason": "TOOL_EXECUTION",
+                    "tokenUsage": {
+                      "inputTokenCount": 386,
+                      "outputTokenCount": 63,
+                      "totalTokenCount": 449,
+                      "inputTokensDetails": {
+                        "cachedTokens": 366,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  }
+                }
+              },
+              {
+                "role": "tool_call_result",
+                "results": [
+                  {
+                    "id": "call_n6tfj3is",
+                    "name": "review_duplicate_charge",
+                    "content": {
+                      "confirmationRequired": true,
+                      "instruction": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+                    }
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:22.42291851Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide the following details for the duplicate charge review:\n\n1. Merchant name (nonempty text)\n2. Currency (nonempty text)\n3. Two charge amounts (exactly two finite nonnegative numbers)\n4. Expected amount (a finite nonnegative number)\n\nPlease note that this is synthetic diagnostic data only, and all values must be clearly specified in the message."
+                  }
+                ],
+                "metadata": {
+                  "framework": {
+                    "id": "chatcmpl-940",
+                    "finishReason": "STOP",
+                    "tokenUsage": {
+                      "inputTokenCount": 527,
+                      "outputTokenCount": 79,
+                      "totalTokenCount": 606,
+                      "inputTokensDetails": {
+                        "cachedTokens": 434,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  },
+                  "timestamp": "2026-10-27T15:54:25.320644969Z"
+                }
+              }
+            ]
+          }
+        },
+        "responseText": "NEED_INPUT: Please provide the following details for the duplicate charge review:\n\n1. Merchant name (nonempty text)\n2. Currency (nonempty text)\n3. Two charge amounts (exactly two finite nonnegative numbers)\n4. Expected amount (a finite nonnegative number)\n\nPlease note that this is synthetic diagnostic data only, and all values must be clearly specified in the message."
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "94d9ebbc-1bb3-457e-836f-09ffd05e614d",
+            "taskId": "01a17e11-d760-7f7f-84fb-30034bb730f4",
+            "contextId": "01a17e11-d760-722d-9770-f49c0cf3baca",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-e92e-7108-a5d5-ed2f52642b32",
+            "taskId": "01a17e11-d760-7f7f-84fb-30034bb730f4",
+            "contextId": "01a17e11-d760-722d-9770-f49c0cf3baca",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          }
+        ],
+        "id": "01a17e11-d760-7f7f-84fb-30034bb730f4",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-e92e-7108-a5d5-ed2f52642b32",
+            "taskId": "01a17e11-d760-7f7f-84fb-30034bb730f4",
+            "contextId": "01a17e11-d760-722d-9770-f49c0cf3baca",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:54:25Z"
+        },
+        "contextId": "01a17e11-d760-722d-9770-f49c0cf3baca"
+      },
+      "modelUserText": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details.",
+      "verbatim": true,
+      "requiredState": "TASK_STATE_INPUT_REQUIRED",
+      "semanticStateMatches": true,
+      "noPublishedArithmetic": true
+    },
+    {
+      "case": "newlines",
+      "inputText": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details.",
+      "requestRoot": {
+        "message": {
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+            }
+          ],
+          "messageId": "7fa1bde5-5e52-4522-b122-9b0f049dcbaa",
+          "role": "ROLE_USER"
+        },
+        "blocking": true
+      },
+      "agent": {
+        "context": {
+          "state": "READY",
+          "metadata": {
+            "processDefinitionKey": 2251799813685332,
+            "processInstanceKey": 2251799813688642
+          },
+          "metrics": {
+            "modelCalls": 1,
+            "tokenUsage": {
+              "inputTokenCount": 383,
+              "outputTokenCount": 32
+            }
+          },
+          "toolDefinitions": [
+            {
+              "name": "review_duplicate_charge",
+              "description": "Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+              "inputSchema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              }
+            }
+          ],
+          "conversation": {
+            "type": "in-process",
+            "conversationId": "a71ffba0-c5aa-4e0f-9244-f01a5dc55527",
+            "messages": [
+              {
+                "role": "system",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                  }
+                ]
+              },
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:27.912663054Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide the amount and date of the duplicate charge you want to review, as well as the merchant name or description of the charge."
+                  }
+                ],
+                "metadata": {
+                  "framework": {
+                    "id": "chatcmpl-641",
+                    "finishReason": "STOP",
+                    "tokenUsage": {
+                      "inputTokenCount": 383,
+                      "outputTokenCount": 32,
+                      "totalTokenCount": 415,
+                      "inputTokensDetails": {
+                        "cachedTokens": 365,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  },
+                  "timestamp": "2026-10-27T15:54:28.482934763Z"
+                }
+              }
+            ]
+          }
+        },
+        "responseText": "NEED_INPUT: Please provide the amount and date of the duplicate charge you want to review, as well as the merchant name or description of the charge."
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "7fa1bde5-5e52-4522-b122-9b0f049dcbaa",
+            "taskId": "01a17e11-f265-7162-9f01-c86e2d5b2d1f",
+            "contextId": "01a17e11-f265-7d74-a1e6-7d94b43268e3",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-f562-7f8e-9b56-9f2d42b1f44b",
+            "taskId": "01a17e11-f265-7162-9f01-c86e2d5b2d1f",
+            "contextId": "01a17e11-f265-7d74-a1e6-7d94b43268e3",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          }
+        ],
+        "id": "01a17e11-f265-7162-9f01-c86e2d5b2d1f",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e11-f562-7f8e-9b56-9f2d42b1f44b",
+            "taskId": "01a17e11-f265-7162-9f01-c86e2d5b2d1f",
+            "contextId": "01a17e11-f265-7d74-a1e6-7d94b43268e3",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:54:28Z"
+        },
+        "contextId": "01a17e11-f265-7d74-a1e6-7d94b43268e3"
+      },
+      "modelUserText": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details.",
+      "verbatim": true,
+      "requiredState": "TASK_STATE_INPUT_REQUIRED",
+      "semanticStateMatches": true,
+      "noPublishedArithmetic": true
+    },
+    {
+      "case": "controls",
+      "inputText": "Synthetic diagnostic only: A\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f\u007fZ. Please ask for missing details.",
+      "requestRoot": {
+        "message": {
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only: A\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f\u007fZ. Please ask for missing details."
+            }
+          ],
+          "messageId": "f262b628-8d7e-4004-a564-8243f2ecc910",
+          "role": "ROLE_USER"
+        },
+        "blocking": true
+      },
+      "agent": {
+        "context": {
+          "state": "READY",
+          "metadata": {
+            "processDefinitionKey": 2251799813685332,
+            "processInstanceKey": 2251799813688854
+          },
+          "metrics": {
+            "modelCalls": 1,
+            "tokenUsage": {
+              "inputTokenCount": 412,
+              "outputTokenCount": 44
+            }
+          },
+          "toolDefinitions": [
+            {
+              "name": "review_duplicate_charge",
+              "description": "Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+              "inputSchema": {
+                "properties": {},
+                "required": [],
+                "type": "object"
+              }
+            }
+          ],
+          "conversation": {
+            "type": "in-process",
+            "conversationId": "a3f954ec-9bdc-454c-a6d0-17ad68f9aa54",
+            "messages": [
+              {
+                "role": "system",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                  }
+                ]
+              },
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Synthetic diagnostic only: A\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f\u007fZ. Please ask for missing details."
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:31.4007335Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide the details of the duplicate charge you'd like me to review. Specifically, I need the amount and description of the charge, as well as any confirmation from the client about these details."
+                  }
+                ],
+                "metadata": {
+                  "framework": {
+                    "id": "chatcmpl-744",
+                    "finishReason": "STOP",
+                    "tokenUsage": {
+                      "inputTokenCount": 412,
+                      "outputTokenCount": 44,
+                      "totalTokenCount": 456,
+                      "inputTokensDetails": {
+                        "cachedTokens": 365,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  },
+                  "timestamp": "2026-10-27T15:54:32.974569167Z"
+                }
+              }
+            ]
+          }
+        },
+        "responseText": "NEED_INPUT: Please provide the details of the duplicate charge you'd like me to review. Specifically, I need the amount and description of the charge, as well as any confirmation from the client about these details."
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "f262b628-8d7e-4004-a564-8243f2ecc910",
+            "taskId": "01a17e12-0005-7eb9-b603-c9d9a1ab5529",
+            "contextId": "01a17e12-0005-7758-96a7-0b9bea70e619",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only: A\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f\u007fZ. Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e12-0708-76aa-b202-d13de1f642cb",
+            "taskId": "01a17e12-0005-7eb9-b603-c9d9a1ab5529",
+            "contextId": "01a17e12-0005-7758-96a7-0b9bea70e619",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          }
+        ],
+        "id": "01a17e12-0005-7eb9-b603-c9d9a1ab5529",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e12-0708-76aa-b202-d13de1f642cb",
+            "taskId": "01a17e12-0005-7eb9-b603-c9d9a1ab5529",
+            "contextId": "01a17e12-0005-7758-96a7-0b9bea70e619",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:54:33Z"
+        },
+        "contextId": "01a17e12-0005-7758-96a7-0b9bea70e619"
+      },
+      "modelUserText": "Synthetic diagnostic only: A\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f\u007fZ. Please ask for missing details.",
+      "verbatim": true,
+      "requiredState": "TASK_STATE_INPUT_REQUIRED",
+      "semanticStateMatches": true,
+      "noPublishedArithmetic": true
+    },
+    {
+      "case": "expression",
+      "inputText": "={\"synthetic\":true}",
+      "requestRoot": {
+        "message": {
+          "parts": [
+            {
+              "text": "={\"synthetic\":true}"
+            }
+          ],
+          "messageId": "35a4ff68-1b02-4e1d-8472-f04eecd7c137",
+          "role": "ROLE_USER"
+        },
+        "blocking": true
+      },
+      "agent": {
+        "context": {
+          "state": "READY",
+          "metadata": {
+            "processDefinitionKey": 2251799813685332,
+            "processInstanceKey": 2251799813689095
+          },
+          "metrics": {
+            "modelCalls": 2,
+            "tokenUsage": {
+              "inputTokenCount": 836,
+              "outputTokenCount": 54
+            }
+          },
+          "toolDefinitions": [
+            {
+              "name": "review_duplicate_charge",
+              "description": "Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+              "inputSchema": {
+                "properties": {},
+                "type": "object",
+                "required": []
+              }
+            }
+          ],
+          "conversation": {
+            "type": "in-process",
+            "conversationId": "76bdfbf0-5818-45a2-927c-10dd28788cb8",
+            "messages": [
+              {
+                "role": "system",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                  }
+                ]
+              },
+              {
+                "role": "user",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "={\"synthetic\":true}"
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:35.28813721Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "toolCalls": [
+                  {
+                    "id": "call_579md4yd",
+                    "name": "review_duplicate_charge",
+                    "arguments": {}
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:35.611752668Z",
+                  "framework": {
+                    "id": "chatcmpl-511",
+                    "finishReason": "TOOL_EXECUTION",
+                    "tokenUsage": {
+                      "inputTokenCount": 372,
+                      "outputTokenCount": 14,
+                      "totalTokenCount": 386,
+                      "inputTokensDetails": {
+                        "cachedTokens": 361,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  }
+                }
+              },
+              {
+                "role": "tool_call_result",
+                "results": [
+                  {
+                    "id": "call_579md4yd",
+                    "name": "review_duplicate_charge",
+                    "content": {
+                      "confirmationRequired": true,
+                      "instruction": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+                    }
+                  }
+                ],
+                "metadata": {
+                  "timestamp": "2026-10-27T15:54:35.708116252Z"
+                }
+              },
+              {
+                "role": "assistant",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "NEED_INPUT: Please provide synthetic data confirming the duplicate charge. Include the merchant name, currency, two charge amounts, and the expected amount. All values must be synthetic and non-negative.<tool_call>"
+                  }
+                ],
+                "metadata": {
+                  "framework": {
+                    "id": "chatcmpl-597",
+                    "finishReason": "STOP",
+                    "tokenUsage": {
+                      "inputTokenCount": 464,
+                      "outputTokenCount": 40,
+                      "totalTokenCount": 504,
+                      "inputTokensDetails": {
+                        "cachedTokens": 371,
+                        "cacheWriteTokens": null
+                      },
+                      "outputTokensDetails": null
+                    }
+                  },
+                  "timestamp": "2026-10-27T15:54:36.749764794Z"
+                }
+              }
+            ]
+          }
+        },
+        "responseText": "NEED_INPUT: Please provide synthetic data confirming the duplicate charge. Include the merchant name, currency, two charge amounts, and the expected amount. All values must be synthetic and non-negative.<tool_call>"
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "35a4ff68-1b02-4e1d-8472-f04eecd7c137",
+            "taskId": "01a17e12-0f33-72c2-98da-8d10d91c43ab",
+            "contextId": "01a17e12-0f33-700a-aa31-561a37a0f8e7",
+            "parts": [
+              {
+                "text": "={\"synthetic\":true}"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e12-15db-7227-b3f2-f56bc5f28a81",
+            "taskId": "01a17e12-0f33-72c2-98da-8d10d91c43ab",
+            "contextId": "01a17e12-0f33-700a-aa31-561a37a0f8e7",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          }
+        ],
+        "id": "01a17e12-0f33-72c2-98da-8d10d91c43ab",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17e12-15db-7227-b3f2-f56bc5f28a81",
+            "taskId": "01a17e12-0f33-72c2-98da-8d10d91c43ab",
+            "contextId": "01a17e12-0f33-700a-aa31-561a37a0f8e7",
+            "parts": [
+              {
+                "text": "Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:54:36Z"
+        },
+        "contextId": "01a17e12-0f33-700a-aa31-561a37a0f8e7"
+      },
+      "modelUserText": "={\"synthetic\":true}",
+      "verbatim": true,
+      "requiredState": "TASK_STATE_INPUT_REQUIRED",
+      "semanticStateMatches": true,
+      "noPublishedArithmetic": true
+    }
+  ],
+  "literalInputVerdict": "PASS",
+  "semanticVerdict": "PASS",
+  "verdict": "PASS"
+}

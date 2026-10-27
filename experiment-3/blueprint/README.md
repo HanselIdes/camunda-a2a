@@ -1,6 +1,6 @@
 # A2A community blueprint candidate
 
-**Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
+**Early-access, non-production prototype.** This unmaintained community blueprint is subject to the
 [license and licensing limitations](../../README.md#license-and-support). This is a functional prototype:
 informed-agent checks are allowed; no adoption-time threshold or human-usability claim applies.
 Earlier selected assets have Desktop/Hub deployment and Tasklist form evidence on a separately pinned mixed-minor runtime.
@@ -13,8 +13,9 @@ leading-equals JSON input caused the real model to invent reconciliation fields 
 complete instead of asking for missing input. The existing synthetic-result guard does not validate
 that fields came from the request. This is a material missing-input/grounding limitation, not a
 formatting issue or a passed release gate. See the [versioned results and preserved failures](../verification/3634072-89/README.md).
-The current candidate adds explicit client confirmation and deterministic validation; it requires
-its own affected runtime checks before acceptance. No changed-form UI or SaaS verification is claimed.
+The [current confirmed-input prototype](../verification/fb158a5-89/README.md) passes its bounded
+checks on engine 8.9.26 / Connectors 8.9.17 / Elasticsearch 8.19.23. It adds explicit client
+confirmation and deterministic validation. No changed-form UI or SaaS verification is claimed.
 
 The demonstration is a BPMN client calling an A2A 1.0 JSON-RPC endpoint, which starts a server-side AI agent.
 The agent asks for explicit structured confirmation or calls a native BPMN tool to reconcile two synthetic charges.
@@ -26,7 +27,7 @@ fraud determination, financial integration, document processing or unreleased pr
 The minimum release line is **8.9 for both engine and stock Connectors**. Use only a recorded exact
 combination, not an arbitrary pair of 8.9+ images. Engine 8.8.44 with Connectors 8.8.24 fails the
 required synchronous webhook result, so 8.8 is not supported. The current candidate targets the
-same-minor versions below; affected runtime checks must pass on its own clean source.
+same-minor versions below, checked on its own clean source.
 The exact-source runs below preserve both the input-preservation pass and the remaining semantic failure.
 
 | Component            | Version or setting                                                                                                   |

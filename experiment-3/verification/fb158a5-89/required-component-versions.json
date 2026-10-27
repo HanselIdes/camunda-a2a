@@ -1,0 +1,67 @@
+[
+  {
+    "attempt": "confirmed89-real-1",
+    "source": "081846361ede65acfb2d2b931819a04ba50bec79",
+    "sourceVerdict": "FAIL",
+    "engine": "camunda/camunda:8.9.26",
+    "connectors": "camunda/connectors-bundle:8.9.17",
+    "secondaryStorage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "modeler": "N/A: no editor used",
+    "deploymentApi": "camunda/camunda:8.9.26",
+    "deploymentMechanism": "Engine REST API /v2/deployments",
+    "actualImages": "confirmed89-real-1/control/images.json",
+    "otherToolVersions": "confirmed89-real-1/control/ownership.json"
+  },
+  {
+    "attempt": "confirmed89-real-2",
+    "source": "893587670b5f6bc20822643ac916932d938a87d2",
+    "sourceVerdict": "FAIL",
+    "engine": "camunda/camunda:8.9.26",
+    "connectors": "camunda/connectors-bundle:8.9.17",
+    "secondaryStorage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "modeler": "N/A: no editor used",
+    "deploymentApi": "camunda/camunda:8.9.26",
+    "deploymentMechanism": "Engine REST API /v2/deployments",
+    "actualImages": "confirmed89-real-2/control/images.json",
+    "otherToolVersions": "confirmed89-real-2/control/ownership.json"
+  },
+  {
+    "attempt": "confirmed89-real-3",
+    "source": "994c3f5c89b52b165782b3019e761ecb68d58196",
+    "sourceVerdict": "FAIL",
+    "engine": "camunda/camunda:8.9.26",
+    "connectors": "camunda/connectors-bundle:8.9.17",
+    "secondaryStorage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "modeler": "N/A: no editor used",
+    "deploymentApi": "camunda/camunda:8.9.26",
+    "deploymentMechanism": "Engine REST API /v2/deployments",
+    "actualImages": "confirmed89-real-3/control/images.json",
+    "otherToolVersions": "confirmed89-real-3/control/ownership.json"
+  },
+  {
+    "attempt": "confirmed89-real-4",
+    "source": "fb158a5798baa5cdbba9514a537c5e16098ef936",
+    "sourceVerdict": "PASS",
+    "engine": "camunda/camunda:8.9.26",
+    "connectors": "camunda/connectors-bundle:8.9.17",
+    "secondaryStorage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "modeler": "N/A: no editor used",
+    "deploymentApi": "camunda/camunda:8.9.26",
+    "deploymentMechanism": "Engine REST API /v2/deployments",
+    "actualImages": "confirmed89-real-4/control/images.json",
+    "otherToolVersions": "confirmed89-real-4/control/ownership.json"
+  },
+  {
+    "attempt": "confirmed89-tck-1",
+    "source": "fb158a5798baa5cdbba9514a537c5e16098ef936",
+    "sourceVerdict": "PASS",
+    "engine": "camunda/camunda:8.9.26",
+    "connectors": "camunda/connectors-bundle:8.9.17",
+    "secondaryStorage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "modeler": "N/A: no editor used",
+    "deploymentApi": "camunda/camunda:8.9.26",
+    "deploymentMechanism": "Engine REST API /v2/deployments",
+    "actualImages": "confirmed89-tck-1/control/images.json",
+    "otherToolVersions": "confirmed89-tck-1/control/ownership.json"
+  }
+]

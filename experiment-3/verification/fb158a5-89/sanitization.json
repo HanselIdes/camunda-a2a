@@ -1,0 +1,581 @@
+{
+  "scope": "Selected synthetic technical evidence only; no profiles, screenshots or private planning",
+  "transformations": [
+    "Replace workspace, session, home and temporary absolute paths with role placeholders",
+    "Redact Authorization and literal API-key header values",
+    "Retain only warning/error/known-process anchors from already credential-redacted runtime logs",
+    "Console logs and structured request/model/task strings retained after path/header sanitation",
+    "Do not include generated controlled BPMN, HTML, private profiles or live environment variables",
+    "Original full artifacts retained privately; input/output SHA256 values preserve the selection trail",
+    "Represent non-JSON Infinity/NaN constants in the first structured diagnostic as explicit nonJsonToken markers; preserve raw input hash and original rejected request meaning"
+  ],
+  "artifacts": [
+    {
+      "artifact": "confirmed89-real-1/bpmn-client-versions.json",
+      "inputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "outputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/exporter-configurations.json",
+      "inputSha256": "1240feec385e6a65c45bb43e61975aab09f88340c3797b4db207ee3a3a8a1e62",
+      "outputSha256": "1240feec385e6a65c45bb43e61975aab09f88340c3797b4db207ee3a3a8a1e62",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/real-model-inputs.json",
+      "inputSha256": "98669c42bcfe8904b1922e812697bc2f0ddde4683754e30d33907b83e4836003",
+      "outputSha256": "98669c42bcfe8904b1922e812697bc2f0ddde4683754e30d33907b83e4836003",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/runtime-provenance.json",
+      "inputSha256": "14b516821bd84ab78844d39ba3f2722073ba898c39158d396d806ece8c23e3c3",
+      "outputSha256": "14b516821bd84ab78844d39ba3f2722073ba898c39158d396d806ece8c23e3c3",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/console.log",
+      "inputSha256": "1811aef4672fcc6c9b37e9cb607096aafa429ef2cbc3e5ffc40e8e0b11107214",
+      "outputSha256": "b8d7da96d8497e47c5396f888a33b1ea85d19da2f479668205a845432952e441",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-1/control/ownership.json",
+      "inputSha256": "01baaf1633051182c67d82d45d819f2497bb9bf52734c8a3dec292e59a3eaeff",
+      "outputSha256": "01baaf1633051182c67d82d45d819f2497bb9bf52734c8a3dec292e59a3eaeff",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/control/images.json",
+      "inputSha256": "a4a1f52787b42720316be7a884f7b39e4f57b58a8b0253ade0242a990abbbaba",
+      "outputSha256": "a4a1f52787b42720316be7a884f7b39e4f57b58a8b0253ade0242a990abbbaba",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/control/containers-before-cleanup.json",
+      "inputSha256": "a92e1f3b45e183f003fcf245ffc811d235d8401d226b891eb496b90f1a35de43",
+      "outputSha256": "5263e623590a84a16a69fd412c4b7198bd8a14e13c938861993576cd31434f81",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-1/control/cleanup.json",
+      "inputSha256": "7b63de26419513aaba22ac22b9ac333216e8af66fb9318b7e2f7dff0997d2e89",
+      "outputSha256": "7b63de26419513aaba22ac22b9ac333216e8af66fb9318b7e2f7dff0997d2e89",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/control/infrastructure.yml",
+      "inputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "outputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-1/control/runtime-diagnostic-lines.log",
+      "inputSha256": "7be8e668af3a16a54f66c944285ce7c6ccb9b7907b04bdcf1943f4b542eabd8a",
+      "outputSha256": "290c1e62762a82679910aa2535943d7f3898c0bc8da46a3aa5bd577d4a05e6c9",
+      "selection": "runtime warning/error/process anchors",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-2/bpmn-client-versions.json",
+      "inputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "outputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/confirmation-checks.json",
+      "inputSha256": "1b4ade3c98f5f84e0129cac3f5584f15e76c6f804235ccdb74ba550e91d40006",
+      "outputSha256": "151b0c0165a491684e317c8baf50e64fa540fabebcb26410dcc2f935a4e24aa8",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-2/exporter-configurations.json",
+      "inputSha256": "4f32a7baa0e41a516cd92a1f705095b17e34652f05a6aa15530e05f9208b3df3",
+      "outputSha256": "4f32a7baa0e41a516cd92a1f705095b17e34652f05a6aa15530e05f9208b3df3",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/literal-model-inputs.json",
+      "inputSha256": "2078431222b42295982560cd733a9748ce49b17e5bfe0d287147a718f6bffac6",
+      "outputSha256": "2078431222b42295982560cd733a9748ce49b17e5bfe0d287147a718f6bffac6",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/real-model-inputs.json",
+      "inputSha256": "5dec77ab4868f8aedf6c78c1e02c5c9a98285f52ebe2ddd23bca6aba5591e5ec",
+      "outputSha256": "5dec77ab4868f8aedf6c78c1e02c5c9a98285f52ebe2ddd23bca6aba5591e5ec",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/runtime-provenance.json",
+      "inputSha256": "df583ddb77369e5d3b4e5e21f7f88c8c6e2051bd0f3f3606dee5bc14053f493f",
+      "outputSha256": "df583ddb77369e5d3b4e5e21f7f88c8c6e2051bd0f3f3606dee5bc14053f493f",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/console.log",
+      "inputSha256": "47d7a631acd9e801dc048195fc4bfd7202360cb4bac68f6fb3d5fe637bc47f9d",
+      "outputSha256": "5ab86ba0a235ab9903da32dfc6824dc0ee96b42d5573e89552419f4106256722",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-2/control/ownership.json",
+      "inputSha256": "7cef9edb2e3b8f437fa9b79b5f78e350374d774a9696749b6a92a82848bebcf6",
+      "outputSha256": "7cef9edb2e3b8f437fa9b79b5f78e350374d774a9696749b6a92a82848bebcf6",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/control/images.json",
+      "inputSha256": "21c3cb6371e0d2871e96bb95bbf2ff36cf6b93d5a7810712f7af06e257973e21",
+      "outputSha256": "21c3cb6371e0d2871e96bb95bbf2ff36cf6b93d5a7810712f7af06e257973e21",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/control/containers-before-cleanup.json",
+      "inputSha256": "6b5e71031fbbef815f91d87b386536099162438c1450a1598b4cbb0a837a46ee",
+      "outputSha256": "c7f0410814a1598e6f434a5d062c8093da50d4a90b7209b4fd64f57c7b382544",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-2/control/cleanup.json",
+      "inputSha256": "580b37e69f82f9de4bde71af584ee6047b00bdbfa98a17af6aa063bad3a420f2",
+      "outputSha256": "580b37e69f82f9de4bde71af584ee6047b00bdbfa98a17af6aa063bad3a420f2",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/control/infrastructure.yml",
+      "inputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "outputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-2/control/runtime-diagnostic-lines.log",
+      "inputSha256": "0b87e72510ca5f0f85659a37f91cf34d8c987ed92afeef6eaef9b941fa04ed69",
+      "outputSha256": "f1234b810d9aef2bb7777052e0ff3b9ebc9b15550903026b76feb898140865ac",
+      "selection": "runtime warning/error/process anchors",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-3/bpmn-client-versions.json",
+      "inputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "outputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/confirmation-checks.json",
+      "inputSha256": "fce0577139f30a5de15b95b4cc5fcd6b2c042c34c36d53ffad755cd744cf107e",
+      "outputSha256": "fce0577139f30a5de15b95b4cc5fcd6b2c042c34c36d53ffad755cd744cf107e",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/exporter-configurations.json",
+      "inputSha256": "45aafe0b40ce47ab9855a7816635c13312327715dfe3db432bc413a6b5cd2c9e",
+      "outputSha256": "45aafe0b40ce47ab9855a7816635c13312327715dfe3db432bc413a6b5cd2c9e",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/literal-model-inputs.json",
+      "inputSha256": "5688432e42b8f5aad1cfcef8a79e08a09985b5b5d67cc7f83dde29275ad087e9",
+      "outputSha256": "5688432e42b8f5aad1cfcef8a79e08a09985b5b5d67cc7f83dde29275ad087e9",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/native-checks.json",
+      "inputSha256": "a5b7a4bfaf5dcfbf3b11ebec273b59a9a0ef67c21fbed561dfe616baae451f37",
+      "outputSha256": "a5b7a4bfaf5dcfbf3b11ebec273b59a9a0ef67c21fbed561dfe616baae451f37",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/real-model-inputs.json",
+      "inputSha256": "8ec76fdf172e46b42bce916dd6c3ac406348467046324a2cd947724a80340225",
+      "outputSha256": "8ec76fdf172e46b42bce916dd6c3ac406348467046324a2cd947724a80340225",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/runtime-provenance.json",
+      "inputSha256": "fec019d2dead1f1186612719ade4707fc78da72281e367a59e232fd0161b0c7f",
+      "outputSha256": "fec019d2dead1f1186612719ade4707fc78da72281e367a59e232fd0161b0c7f",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/console.log",
+      "inputSha256": "03957f04bc1906bdb918c105e84724bc984797cb220e547a0faeb50205fcbd15",
+      "outputSha256": "6393846ffeb434efd9f61786e055083dd3023e8c6c79b3ef667c7ef608657733",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-3/control/ownership.json",
+      "inputSha256": "6204bc38c883d8d21ad6befd37707964f46b7e549b1ea2df7a7b4b008f435b9d",
+      "outputSha256": "6204bc38c883d8d21ad6befd37707964f46b7e549b1ea2df7a7b4b008f435b9d",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/control/images.json",
+      "inputSha256": "001a5794a7ed304f575e845b969f19e82eea642923f653b595326cfafe6459ff",
+      "outputSha256": "001a5794a7ed304f575e845b969f19e82eea642923f653b595326cfafe6459ff",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/control/containers-before-cleanup.json",
+      "inputSha256": "c2e1157b9372d68997dca6378e6c032c50290a5e92625f50e96108f383042aa5",
+      "outputSha256": "e2291821f9529c364d79d11345e3822508835c595bf194d5c0446058ca864cae",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-3/control/cleanup.json",
+      "inputSha256": "a31b0a24464f8897571fc43066ffe4975b5724f5b1e6a5c80de3a650d8dee5a3",
+      "outputSha256": "a31b0a24464f8897571fc43066ffe4975b5724f5b1e6a5c80de3a650d8dee5a3",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/control/infrastructure.yml",
+      "inputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "outputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-3/control/runtime-diagnostic-lines.log",
+      "inputSha256": "45ec286238bc8605bf067fdeff6670513a9277649b4cf8211310db4a1d348174",
+      "outputSha256": "cb8c293c13526717b4da04ee96c4ec7b33fc296053d8ecc0347d751410a8e1c0",
+      "selection": "runtime warning/error/process anchors",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-4/bpmn-client-versions.json",
+      "inputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "outputSha256": "4f149d5f1fa05d6dcbe64f9e7c5036ba5e07721c49e5a3555a1d94eeebcff6f1",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/confirmation-checks.json",
+      "inputSha256": "1b89bdd7a6a414706e49c59df1083f5c474b64c73ba0fe39963a7db302e46b1c",
+      "outputSha256": "1b89bdd7a6a414706e49c59df1083f5c474b64c73ba0fe39963a7db302e46b1c",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/assertions.json",
+      "inputSha256": "2d2c9c04d45659dc15d09f2589c1b0c34b207176a92cac11681b92c31bb6a57c",
+      "outputSha256": "2d2c9c04d45659dc15d09f2589c1b0c34b207176a92cac11681b92c31bb6a57c",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/card.body",
+      "inputSha256": "4d20d9b2b1b916c2317c67550a3dcfcb8ead9df2e28b82b802ea1aa80096f044",
+      "outputSha256": "4d20d9b2b1b916c2317c67550a3dcfcb8ead9df2e28b82b802ea1aa80096f044",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/card.stderr",
+      "inputSha256": "48854dec736a54a237eac147d5fd8189cf62f8e75e29043cf48a6456dee8116b",
+      "outputSha256": "48854dec736a54a237eac147d5fd8189cf62f8e75e29043cf48a6456dee8116b",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/commands.json",
+      "inputSha256": "414fde19c1892d07ada8fd25ff7dfefb5e5ee766cbe46ec281b39909f6a420db",
+      "outputSha256": "414fde19c1892d07ada8fd25ff7dfefb5e5ee766cbe46ec281b39909f6a420db",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/poll-0.body",
+      "inputSha256": "5aa3c64e53e1781e45adc56813f8a5a4ae22b7b621676bb02ffb0236d1860649",
+      "outputSha256": "5aa3c64e53e1781e45adc56813f8a5a4ae22b7b621676bb02ffb0236d1860649",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/poll-0.stderr",
+      "inputSha256": "6c8853e18c6980ebb7647c1a12f3d0a66d9ff4cf126d02d62ab8c250a826cff2",
+      "outputSha256": "6c8853e18c6980ebb7647c1a12f3d0a66d9ff4cf126d02d62ab8c250a826cff2",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/send.body",
+      "inputSha256": "5e6a9ae03f8f129f83ce3f4319b00cf6ae9ea1c8e9f0e573f8bef877716c2371",
+      "outputSha256": "5e6a9ae03f8f129f83ce3f4319b00cf6ae9ea1c8e9f0e573f8bef877716c2371",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exact-guide/send.stderr",
+      "inputSha256": "eb8a7d0434eefe14173c40fd8c4f7495908ca02f3053b6282920d78f9b17db6b",
+      "outputSha256": "eb8a7d0434eefe14173c40fd8c4f7495908ca02f3053b6282920d78f9b17db6b",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/exporter-configurations.json",
+      "inputSha256": "8c9788c615768576365c31d9f7220abef6747bb3fddd433d91d27448c4814893",
+      "outputSha256": "8c9788c615768576365c31d9f7220abef6747bb3fddd433d91d27448c4814893",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/literal-model-inputs.json",
+      "inputSha256": "b6476b3e7803a5c42bd89ab1e7a91de1f223426e0666c0d8b66620d4c85e6322",
+      "outputSha256": "b6476b3e7803a5c42bd89ab1e7a91de1f223426e0666c0d8b66620d4c85e6322",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/native-checks.json",
+      "inputSha256": "a5b7a4bfaf5dcfbf3b11ebec273b59a9a0ef67c21fbed561dfe616baae451f37",
+      "outputSha256": "a5b7a4bfaf5dcfbf3b11ebec273b59a9a0ef67c21fbed561dfe616baae451f37",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/real-model-inputs.json",
+      "inputSha256": "0c3de2ba1b1297eb5ca0429512a0596da8998961d0571673f9e357a028e580be",
+      "outputSha256": "0c3de2ba1b1297eb5ca0429512a0596da8998961d0571673f9e357a028e580be",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/runtime-provenance.json",
+      "inputSha256": "d30391c0f50a5b91a4ef1991a2dd55868e15a9e663950452ac38de8e94e98889",
+      "outputSha256": "d30391c0f50a5b91a4ef1991a2dd55868e15a9e663950452ac38de8e94e98889",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/sdk.json",
+      "inputSha256": "be7051838c4709bd4894d8e844a79b79a272414772c914f4051506e0921f74f2",
+      "outputSha256": "be7051838c4709bd4894d8e844a79b79a272414772c914f4051506e0921f74f2",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/console.log",
+      "inputSha256": "c6d13d337f28132f94b5756fd5dbfc7df30962d23a1557e7d691e7e32c2c07f5",
+      "outputSha256": "c6d13d337f28132f94b5756fd5dbfc7df30962d23a1557e7d691e7e32c2c07f5",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/control/ownership.json",
+      "inputSha256": "c8554f67a4284470bdaa081e09d4cfa5afcba5454be74feabc1a00728d78e985",
+      "outputSha256": "c8554f67a4284470bdaa081e09d4cfa5afcba5454be74feabc1a00728d78e985",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/control/images.json",
+      "inputSha256": "f258da8ba9d849c715ad7e6a26c4a425959a64ee6eaf143972f24e22e8aa455c",
+      "outputSha256": "f258da8ba9d849c715ad7e6a26c4a425959a64ee6eaf143972f24e22e8aa455c",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/control/containers-before-cleanup.json",
+      "inputSha256": "beca3add7c2bfe69c31da526486dfdea680710038faa3065ace26d71ac685c4c",
+      "outputSha256": "8f1eb46e09a6a8665d4397dc32d2a45185f6d26347fdcc54d4ad20dfda916d87",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-real-4/control/cleanup.json",
+      "inputSha256": "686f0ccbcaaac84386756b071b3b3408b0cd3364d376ac22a526608ca6805846",
+      "outputSha256": "686f0ccbcaaac84386756b071b3b3408b0cd3364d376ac22a526608ca6805846",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/control/infrastructure.yml",
+      "inputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "outputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-real-4/control/runtime-diagnostic-lines.log",
+      "inputSha256": "3ff24ba978cadb0082c730f86031a69906792267139af84a90715b355e39273d",
+      "outputSha256": "fdbb44af3ae6b06c19dead3689bcb5b15d29a91a00109c3581d61fb315ee0a0c",
+      "selection": "runtime warning/error/process anchors",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-tck-1/exporter-configurations.json",
+      "inputSha256": "daa606fa4a0c8998b9bebb01df87d3305ffa78920226d55186cd5807dce472ae",
+      "outputSha256": "daa606fa4a0c8998b9bebb01df87d3305ffa78920226d55186cd5807dce472ae",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/native-checks.json",
+      "inputSha256": "a5b7a4bfaf5dcfbf3b11ebec273b59a9a0ef67c21fbed561dfe616baae451f37",
+      "outputSha256": "a5b7a4bfaf5dcfbf3b11ebec273b59a9a0ef67c21fbed561dfe616baae451f37",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/runtime-provenance.json",
+      "inputSha256": "d30391c0f50a5b91a4ef1991a2dd55868e15a9e663950452ac38de8e94e98889",
+      "outputSha256": "d30391c0f50a5b91a4ef1991a2dd55868e15a9e663950452ac38de8e94e98889",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/tck/compatibility.json",
+      "inputSha256": "e6414c1f7be18048d7ad900f4f90c72054d9c19824c83ff87d1a596544baa4b4",
+      "outputSha256": "e6414c1f7be18048d7ad900f4f90c72054d9c19824c83ff87d1a596544baa4b4",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/tck/gate.json",
+      "inputSha256": "8f7fffa25d1bdbc68c032f1c3d556d74925dd7d95dca16c897457acbdcd62e98",
+      "outputSha256": "8f7fffa25d1bdbc68c032f1c3d556d74925dd7d95dca16c897457acbdcd62e98",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/tck/junitreport.xml",
+      "inputSha256": "3fe5cb89604850d440bef43babe4dc9e989d58bc67e72eb1531980535554e79a",
+      "outputSha256": "81708e1b7f76e971f626fee90d7a61974c0df694939a532fce65de21673059ef",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-tck-1/tck/provenance.json",
+      "inputSha256": "b700ada9a5285920133db0802a9c190e70655598335e741b3502c4616d7d652e",
+      "outputSha256": "b700ada9a5285920133db0802a9c190e70655598335e741b3502c4616d7d652e",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/tck/request-timings.json",
+      "inputSha256": "3798dbce1b8532299d4e8f3a660b68562187ecedc34b46ead908f02759c7afaf",
+      "outputSha256": "3798dbce1b8532299d4e8f3a660b68562187ecedc34b46ead908f02759c7afaf",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/console.log",
+      "inputSha256": "df54cac99eb5ede9bb97b1eb80f7b4d7e667bc1ddfb9b1b9076b104299255bdb",
+      "outputSha256": "df54cac99eb5ede9bb97b1eb80f7b4d7e667bc1ddfb9b1b9076b104299255bdb",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/control/ownership.json",
+      "inputSha256": "adea95a24127bee31ed653a12bec603db04ae8d9dec43f1350ed27619217ec8b",
+      "outputSha256": "adea95a24127bee31ed653a12bec603db04ae8d9dec43f1350ed27619217ec8b",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/control/images.json",
+      "inputSha256": "06e3402f8b363cfb8c499585c41ecda16a73ab00fe1fe362d911ec157ba2a2f1",
+      "outputSha256": "06e3402f8b363cfb8c499585c41ecda16a73ab00fe1fe362d911ec157ba2a2f1",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/control/containers-before-cleanup.json",
+      "inputSha256": "472402717846940df0d70bef0934452d1e7cb5c8240c4efd05b9a5517c0d9faa",
+      "outputSha256": "8500706777193811638c75020e2f50cbcd640f162103660d50863f28db49be4f",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "confirmed89-tck-1/control/cleanup.json",
+      "inputSha256": "3a781fded966c95bc49ff45859f2598448cd8063c628b39066a33dafdaf6c443",
+      "outputSha256": "3a781fded966c95bc49ff45859f2598448cd8063c628b39066a33dafdaf6c443",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/control/infrastructure.yml",
+      "inputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "outputSha256": "b2fe3ea4c1f429b013981ecb60e70acc8e68cbac5a71dad3fe7a365a6edc2e3a",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "confirmed89-tck-1/control/runtime-diagnostic-lines.log",
+      "inputSha256": "eb6458d8b53bc680fa0f0cb1b806f48054e36a0922ddd285029535f5cab40ca8",
+      "outputSha256": "3e07902120bf2fbfd7018e64b1c81a40b794572f17ccb4f45eb0bdff86e6a2a8",
+      "selection": "runtime warning/error/process anchors",
+      "changedBySanitizationOrSelection": true
+    },
+    {
+      "artifact": "discovery.json",
+      "inputSha256": "e4024aa742cea5d3690f1e3d43e20b7e065c6de55cfaed6f938960a2caff5140",
+      "outputSha256": "e4024aa742cea5d3690f1e3d43e20b7e065c6de55cfaed6f938960a2caff5140",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "image-manifests.json",
+      "inputSha256": "f39e6e64e8d32639ed5b9784d5c25966037a78a4908819245224443ece924d14",
+      "outputSha256": "f39e6e64e8d32639ed5b9784d5c25966037a78a4908819245224443ece924d14",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "nonshipping-harness/matched-latest-run.py",
+      "inputSha256": "a0ad69855d8e9907a3ed56c75f0ec0bc84980441936911a788f23732ef5928b3",
+      "outputSha256": "a0ad69855d8e9907a3ed56c75f0ec0bc84980441936911a788f23732ef5928b3",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "nonshipping-harness/matched-latest-external.py",
+      "inputSha256": "f51db74b4590bcb4785623fec0ec363c355c176ec1e4777720fd2b06a6e9bb81",
+      "outputSha256": "f51db74b4590bcb4785623fec0ec363c355c176ec1e4777720fd2b06a6e9bb81",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    },
+    {
+      "artifact": "nonshipping-harness/matched-latest-quoting.py",
+      "inputSha256": "f55e8e8b20e1f9d322425ebcb545bdfc1b7cd015f8da4264f6021bd682dfe4b7",
+      "outputSha256": "f55e8e8b20e1f9d322425ebcb545bdfc1b7cd015f8da4264f6021bd682dfe4b7",
+      "selection": "complete text",
+      "changedBySanitizationOrSelection": false
+    }
+  ]
+}

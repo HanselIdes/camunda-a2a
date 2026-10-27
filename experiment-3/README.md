@@ -100,8 +100,9 @@ by `SendMessage` before its process is visible in search; unknown and cross-agen
 `TASK_NOT_FOUND`. It does not extend task retention or turn engine API failures into missing-task responses.
 
 The current candidate minimum is **8.9 for both engine and Connectors**. Exact 8.9.26 / 8.9.17 checks
-preserve original model input but **fail overall** on incomplete-input grounding; see the
-[current evidence](verification/3634072-89/README.md). Engine 8.8 is unsupported.
+now pass the [bounded confirmed-input prototype checks](verification/fb158a5-89/README.md).
+The [earlier input-only repair failure](verification/3634072-89/README.md) remains preserved.
+Engine 8.8 is unsupported. Changed-form UI and SaaS runtime are unverified.
 The following results are historical, source-pinned evidence, not current candidate acceptance.
 
 A fresh, isolated historical Self-Managed check of the exact Basic profile passed on **engine 8.8.21, stock Connectors 8.9.0,

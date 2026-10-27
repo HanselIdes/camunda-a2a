@@ -1,0 +1,201 @@
+[
+  {
+    "Id": "30217f09bcbd4fb96e5d8befdcbad0a29f7d1c25345d5738633c6aae13a80f3a",
+    "Name": "/a2a-proof-083a245c0f5665a65b60b814cf3e0bd7-camunda-1",
+    "Image": "sha256:cf6c42ee0eb64837bf04fd414b22c3761cf4db67e9e71b9294788bcc617d22e7",
+    "State": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 99380,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-27T16:02:54.642841927Z",
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "Health": {
+        "Status": "healthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-27T16:04:50.536268675Z",
+            "End": "2026-10-27T16:04:50.55674505Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:04:55.557659011Z",
+            "End": "2026-10-27T16:04:55.578379511Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:05:00.58091518Z",
+            "End": "2026-10-27T16:05:00.600854264Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:05:05.601671752Z",
+            "End": "2026-10-27T16:05:05.62885171Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:05:10.630360212Z",
+            "End": "2026-10-27T16:05:10.651252587Z",
+            "ExitCode": 0,
+            "Output": ""
+          }
+        ]
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "66be1218d07d2889ff40b7943a27cc43c0bb980bdd9f710cb43baac1a96c6165",
+        "Source": "/var/lib/docker/volumes/66be1218d07d2889ff40b7943a27cc43c0bb980bdd9f710cb43baac1a96c6165/_data",
+        "Destination": "/driver-lib",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "92313ad5209665e32f4305d915d3fbe56386ac0aba41a0baa5f8e9806473c573",
+        "Source": "/var/lib/docker/volumes/92313ad5209665e32f4305d915d3fbe56386ac0aba41a0baa5f8e9806473c573/_data",
+        "Destination": "/tmp",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "9d3b14d0b75db2e2227905076d37f0bb5bd8ae0eeefc980f28bf39778251a541",
+        "Source": "/var/lib/docker/volumes/9d3b14d0b75db2e2227905076d37f0bb5bd8ae0eeefc980f28bf39778251a541/_data",
+        "Destination": "/usr/local/camunda/data",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "f2a01972b6303f75e7b41cdf9632453badf8b420eaaa3d2af0ba8fd41992a96d",
+        "Source": "/var/lib/docker/volumes/f2a01972b6303f75e7b41cdf9632453badf8b420eaaa3d2af0ba8fd41992a96d/_data",
+        "Destination": "/usr/local/camunda/documents",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "d9134fb1af3269d92e43d90542d3f22a891d0d17d8f91455061d44bf82df811d",
+        "Source": "/var/lib/docker/volumes/d9134fb1af3269d92e43d90542d3f22a891d0d17d8f91455061d44bf82df811d/_data",
+        "Destination": "/usr/local/camunda/logs",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "b1d8f7f0abc8a228062858cc941eee9e86950988729bfdf46ea55d2b7b098193",
+    "Name": "/a2a-proof-083a245c0f5665a65b60b814cf3e0bd7-connectors-1",
+    "Image": "sha256:819ddf39ff43b1bd779873160a228b59b6cfa4e3e17ded648ed6b299f66eef41",
+    "State": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 473,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-27T16:03:05.284137335Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "<VALIDATION_TEMP>",
+        "Destination": "/certificates",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "0b73b6295679db12dc8da8a397cbf660f1aa6def106f07a5893f89d3528dea85",
+        "Source": "/var/lib/docker/volumes/0b73b6295679db12dc8da8a397cbf660f1aa6def106f07a5893f89d3528dea85/_data",
+        "Destination": "/tmp",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "3e62a0844de5c448179fa311f0690c12de93422892bdfc3bc2963739d6df1238",
+    "Name": "/a2a-proof-083a245c0f5665a65b60b814cf3e0bd7-elasticsearch-1",
+    "Image": "sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1",
+    "State": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 98907,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-27T16:02:39.048720337Z",
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "Health": {
+        "Status": "healthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-27T16:04:50.135559175Z",
+            "End": "2026-10-27T16:04:50.162418967Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:04:55.163379969Z",
+            "End": "2026-10-27T16:04:55.184645678Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:05:00.186036263Z",
+            "End": "2026-10-27T16:05:00.207403513Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:05:05.208428085Z",
+            "End": "2026-10-27T16:05:05.242382627Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T16:05:10.243856046Z",
+            "End": "2026-10-27T16:05:10.266510171Z",
+            "ExitCode": 0,
+            "Output": ""
+          }
+        ]
+      }
+    },
+    "Mounts": []
+  }
+]

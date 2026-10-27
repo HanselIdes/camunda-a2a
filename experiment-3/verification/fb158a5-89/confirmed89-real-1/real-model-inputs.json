@@ -1,0 +1,142 @@
+{
+  "agent": {
+    "page": {
+      "totalItems": 3,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODU5ODRd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODcxMjJd"
+    },
+    "items": [
+      {
+        "name": "agent",
+        "tenantId": "<default>",
+        "variableKey": "2251799813685984",
+        "scopeKey": "2251799813685410",
+        "processInstanceKey": "2251799813685410",
+        "rootProcessInstanceKey": "2251799813685410",
+        "value": "{\"context\":{\"state\":\"READY\",\"metadata\":{\"processDefinitionKey\":2251799813685332,\"processInstanceKey\":2251799813685410},\"metrics\":{\"modelCalls\":2,\"tokenUsage\":{\"inputTokenCount\":921,\"outputTokenCount\":98}},\"toolDefinitions\":[{\"name\":\"review_duplicate_charge\",\"description\":\"Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.\",\"inputSchema\":{\"properties\":{},\"type\":\"object\",\"required\":[]}}],\"conversation\":{\"type\":\"in-process\",\"conversationId\":\"900c71d5-f5a0-4983-8fef-190a6769ef8d\",\"messages\":[{\"role\":\"system\",\"content\":[{\"type\":\"text\",\"text\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool. \"}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:05.38910196Z\"}},{\"role\":\"assistant\",\"toolCalls\":[{\"id\":\"call_8dsrmjev\",\"name\":\"review_duplicate_charge\",\"arguments\":{}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:16.846483465Z\",\"framework\":{\"id\":\"chatcmpl-261\",\"finishReason\":\"TOOL_EXECUTION\",\"tokenUsage\":{\"inputTokenCount\":410,\"outputTokenCount\":14,\"totalTokenCount\":424,\"inputTokensDetails\":{\"cachedTokens\":0,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}}}},{\"role\":\"tool_call_result\",\"results\":[{\"id\":\"call_8dsrmjev\",\"name\":\"review_duplicate_charge\",\"content\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:17.236205049Z\"}},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"The tool confirmed the duplicate charge for Northwind Electronics. It shows two charges of USD 49.95 each, totaling USD 99.90, while the expected amount was USD 49.95. The overcharge amount is USD 49.95. The system recommends human review for further action. This is based solely on the provided synthetic data and explicit client confirmation.\"}],\"metadata\":{\"framework\":{\"id\":\"chatcmpl-878\",\"finishReason\":\"STOP\",\"tokenUsage\":{\"inputTokenCount\":511,\"outputTokenCount\":84,\"totalTokenCount\":595,\"inputTokensDetails\":{\"cachedTokens\":409,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}},\"timestamp\":\"2026-10-27T15:51:20.453500759Z\"}}]}},\"responseText\":\"The tool confirmed the duplicate charge for Northwind Electronics. It shows two charges of USD 49.95 each, totaling USD 99.90, while the expected amount was USD 49.95. The overcharge amount is USD 49.95. The system recommends human review for further action. This is based solely on the provided synthetic data and explicit client confirmation.\"}",
+        "isTruncated": false
+      },
+      {
+        "name": "agent",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686377",
+        "scopeKey": "2251799813686167",
+        "processInstanceKey": "2251799813686167",
+        "rootProcessInstanceKey": "2251799813686167",
+        "value": "{\"context\":{\"state\":\"READY\",\"metadata\":{\"processDefinitionKey\":2251799813685332,\"processInstanceKey\":2251799813686167},\"metrics\":{\"modelCalls\":4,\"tokenUsage\":{\"inputTokenCount\":2211,\"outputTokenCount\":266}},\"toolDefinitions\":[{\"name\":\"review_duplicate_charge\",\"description\":\"Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.\",\"inputSchema\":{\"properties\":{},\"type\":\"object\",\"required\":[]}}],\"conversation\":{\"type\":\"in-process\",\"conversationId\":\"6a364f02-5a27-4a65-ab62-f84b30c80e9b\",\"messages\":[{\"role\":\"system\",\"content\":[{\"type\":\"text\",\"text\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Please review a synthetic card dispute.\"}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:22.827823885Z\"}},{\"role\":\"assistant\",\"toolCalls\":[{\"id\":\"call_wurif2xn\",\"name\":\"review_duplicate_charge\",\"arguments\":{}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:23.154111385Z\",\"framework\":{\"id\":\"chatcmpl-60\",\"finishReason\":\"TOOL_EXECUTION\",\"tokenUsage\":{\"inputTokenCount\":373,\"outputTokenCount\":14,\"totalTokenCount\":387,\"inputTokensDetails\":{\"cachedTokens\":361,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}}}},{\"role\":\"tool_call_result\",\"results\":[{\"id\":\"call_wurif2xn\",\"name\":\"review_duplicate_charge\",\"content\":{\"confirmationRequired\":true,\"instruction\":\"Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation.\"}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:23.25291251Z\"}},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"NEED_INPUT: Please provide synthetic data for the dispute review. This must include:\\n\\n1. A message data part with:\\n   - merchant (nonempty text)\\n   - currency (nonempty text)\\n   - chargeAmounts (exactly two finite nonnegative numbers)\\n   - expectedAmount (a finite nonnegative number)\\n   - syntheticOnly=true\\n\\n2. Free text context (optional, for background)\\n\\nExample format:\\n{\\n  \\\"merchant\\\": \\\"Example Store\\\",\\n  \\\"currency\\\": \\\"USD\\\",\\n  \\\"chargeAmounts\\\": [50.00, 50.00],\\n  \\\"expectedAmount\\\": 50.00\\n}\"}],\"metadata\":{\"framework\":{\"id\":\"chatcmpl-270\",\"finishReason\":\"STOP\",\"tokenUsage\":{\"inputTokenCount\":465,\"outputTokenCount\":136,\"totalTokenCount\":601,\"inputTokensDetails\":{\"cachedTokens\":372,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}},\"timestamp\":\"2026-10-27T15:51:27.37695497Z\"}},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD. \"}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:30.017514388Z\"}},{\"role\":\"assistant\",\"toolCalls\":[{\"id\":\"call_8mg096bl\",\"name\":\"review_duplicate_charge\",\"arguments\":{}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:30.39474143Z\",\"framework\":{\"id\":\"chatcmpl-478\",\"finishReason\":\"TOOL_EXECUTION\",\"tokenUsage\":{\"inputTokenCount\":636,\"outputTokenCount\":14,\"totalTokenCount\":650,\"inputTokensDetails\":{\"cachedTokens\":600,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}}}},{\"role\":\"tool_call_result\",\"results\":[{\"id\":\"call_8mg096bl\",\"name\":\"review_duplicate_charge\",\"content\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:30.495544972Z\"}},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"The system confirmed the duplicate charge review with the following details:\\n\\n- Merchant: Northwind Electronics\\n- Currency: USD\\n- Charge amounts: $49.95 and $49.95 (total paid: $99.90)\\n- Expected amount: $49.95\\n- Overcharge amount: $49.95\\n\\nThe system indicates matching amounts and recommends human review. This is synthetic data only - no actual refund authorization or fraud determination was made.\"}],\"metadata\":{\"framework\":{\"id\":\"chatcmpl-268\",\"finishReason\":\"STOP\",\"tokenUsage\":{\"inputTokenCount\":737,\"outputTokenCount\":102,\"totalTokenCount\":839,\"inputTokensDetails\":{\"cachedTokens\":635,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}},\"timestamp\":\"2026-10-27T15:51:34.228760084Z\"}}]}},\"responseText\":\"The system confirmed the duplicate charge review with the following details:\\n\\n- Merchant: Northwind Electronics\\n- Currency: USD\\n- Charge amounts: $49.95 and $49.95 (total paid: $99.90)\\n- Expected amount: $49.95\\n- Overcharge amount: $49.95\\n\\nThe system indicates matching amounts and recommends human review. This is synthetic data only - no actual refund authorization or fraud determination was made.\"}",
+        "isTruncated": false
+      },
+      {
+        "name": "agent",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687122",
+        "scopeKey": "2251799813686993",
+        "processInstanceKey": "2251799813686993",
+        "rootProcessInstanceKey": "2251799813686993",
+        "value": "{\"context\":{\"state\":\"READY\",\"metadata\":{\"processDefinitionKey\":2251799813685332,\"processInstanceKey\":2251799813686993},\"metrics\":{\"modelCalls\":4,\"tokenUsage\":{\"inputTokenCount\":2227,\"outputTokenCount\":169}},\"toolDefinitions\":[{\"name\":\"review_duplicate_charge\",\"description\":\"Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.\",\"inputSchema\":{\"properties\":{},\"type\":\"object\",\"required\":[]}}],\"conversation\":{\"type\":\"in-process\",\"conversationId\":\"0ddaabd9-cd09-4ad5-a461-d25581d696c0\",\"messages\":[{\"role\":\"system\",\"content\":[{\"type\":\"text\",\"text\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"}]},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:37.401137711Z\"}},{\"role\":\"assistant\",\"toolCalls\":[{\"id\":\"call_w0dl4wkn\",\"name\":\"review_duplicate_charge\",\"arguments\":{}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:38.145961586Z\",\"framework\":{\"id\":\"chatcmpl-582\",\"finishReason\":\"TOOL_EXECUTION\",\"tokenUsage\":{\"inputTokenCount\":409,\"outputTokenCount\":14,\"totalTokenCount\":423,\"inputTokensDetails\":{\"cachedTokens\":361,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}}}},{\"role\":\"tool_call_result\",\"results\":[{\"id\":\"call_w0dl4wkn\",\"name\":\"review_duplicate_charge\",\"content\":{\"confirmationRequired\":true,\"instruction\":\"Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation.\"}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:38.308011711Z\"}},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"NEED_INPUT: Please confirm the following synthetic data for review:\\n\\n- Merchant: Northwind Electronics\\n- Currency: USD\\n- Charge Amounts: 49.95, 49.95\\n- Expected Amount: 49.95\\n- syntheticOnly: true\\n\\nConfirm this data exactly as shown for processing.<tool_call>\"}],\"metadata\":{\"framework\":{\"id\":\"chatcmpl-966\",\"finishReason\":\"STOP\",\"tokenUsage\":{\"inputTokenCount\":501,\"outputTokenCount\":72,\"totalTokenCount\":573,\"inputTokensDetails\":{\"cachedTokens\":408,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}},\"timestamp\":\"2026-10-27T15:51:41.581111671Z\"}},{\"role\":\"user\",\"content\":[{\"type\":\"text\",\"text\":\"49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD. \"}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:47.025609299Z\"}},{\"role\":\"assistant\",\"toolCalls\":[{\"id\":\"call_dnsw6535\",\"name\":\"review_duplicate_charge\",\"arguments\":{}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:47.463868091Z\",\"framework\":{\"id\":\"chatcmpl-793\",\"finishReason\":\"TOOL_EXECUTION\",\"tokenUsage\":{\"inputTokenCount\":608,\"outputTokenCount\":14,\"totalTokenCount\":622,\"inputTokensDetails\":{\"cachedTokens\":570,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}}}},{\"role\":\"tool_call_result\",\"results\":[{\"id\":\"call_dnsw6535\",\"name\":\"review_duplicate_charge\",\"content\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}],\"metadata\":{\"timestamp\":\"2026-10-27T15:51:47.563624049Z\"}},{\"role\":\"assistant\",\"content\":[{\"type\":\"text\",\"text\":\"The tool confirmed that Northwind Electronics charged USD 49.95 twice for a single order with an expected charge of USD 49.95. The total paid was USD 99.90, and the overcharge amount is USD 49.95. The system recommends human review for further action.\"}],\"metadata\":{\"framework\":{\"id\":\"chatcmpl-892\",\"finishReason\":\"STOP\",\"tokenUsage\":{\"inputTokenCount\":709,\"outputTokenCount\":69,\"totalTokenCount\":778,\"inputTokensDetails\":{\"cachedTokens\":607,\"cacheWriteTokens\":null},\"outputTokensDetails\":null}},\"timestamp\":\"2026-10-27T15:51:50.079802342Z\"}}]}},\"responseText\":\"The tool confirmed that Northwind Electronics charged USD 49.95 twice for a single order with an expected charge of USD 49.95. The total paid was USD 99.90, and the overcharge amount is USD 49.95. The system recommends human review for further action.\"}",
+        "isTruncated": false
+      }
+    ]
+  },
+  "data": {
+    "page": {
+      "totalItems": 5,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODU0MzJd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODc0NTRd"
+    },
+    "items": [
+      {
+        "name": "data",
+        "tenantId": "<default>",
+        "variableKey": "2251799813685432",
+        "scopeKey": "2251799813685428",
+        "processInstanceKey": "2251799813685410",
+        "rootProcessInstanceKey": "2251799813685410",
+        "value": "{\"systemPrompt\":{\"prompt\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"},\"response\":{\"format\":{\"type\":\"text\",\"parseJson\":false},\"includeAssistantMessage\":false,\"includeAgentContext\":\"true\"},\"userPrompt\":{\"prompt\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool. \"},\"limits\":{\"maxModelCalls\":8},\"events\":{\"behavior\":\"WAIT_FOR_TOOL_CALL_RESULTS\"},\"memory\":{\"storage\":{\"type\":\"in-process\"},\"contextWindowSize\":20}}",
+        "isTruncated": false
+      },
+      {
+        "name": "data",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686190",
+        "scopeKey": "2251799813686185",
+        "processInstanceKey": "2251799813686167",
+        "rootProcessInstanceKey": "2251799813686167",
+        "value": "{\"systemPrompt\":{\"prompt\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"},\"response\":{\"format\":{\"type\":\"text\",\"parseJson\":false},\"includeAssistantMessage\":false,\"includeAgentContext\":\"true\"},\"userPrompt\":{\"prompt\":\"Please review a synthetic card dispute.\"},\"limits\":{\"maxModelCalls\":8},\"events\":{\"behavior\":\"WAIT_FOR_TOOL_CALL_RESULTS\"},\"memory\":{\"storage\":{\"type\":\"in-process\"},\"contextWindowSize\":20}}",
+        "isTruncated": false
+      },
+      {
+        "name": "data",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686622",
+        "scopeKey": "2251799813686618",
+        "processInstanceKey": "2251799813686167",
+        "rootProcessInstanceKey": "2251799813686167",
+        "value": "{\"systemPrompt\":{\"prompt\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"},\"response\":{\"format\":{\"type\":\"text\",\"parseJson\":false},\"includeAssistantMessage\":false,\"includeAgentContext\":\"true\"},\"userPrompt\":{\"prompt\":\"49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD. \"},\"limits\":{\"maxModelCalls\":8},\"events\":{\"behavior\":\"WAIT_FOR_TOOL_CALL_RESULTS\"},\"memory\":{\"storage\":{\"type\":\"in-process\"},\"contextWindowSize\":20}}",
+        "isTruncated": false
+      },
+      {
+        "name": "data",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687015",
+        "scopeKey": "2251799813687011",
+        "processInstanceKey": "2251799813686993",
+        "rootProcessInstanceKey": "2251799813686993",
+        "value": "{\"systemPrompt\":{\"prompt\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"},\"response\":{\"format\":{\"type\":\"text\",\"parseJson\":false},\"includeAssistantMessage\":false,\"includeAgentContext\":\"true\"},\"userPrompt\":{\"prompt\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"},\"limits\":{\"maxModelCalls\":8},\"events\":{\"behavior\":\"WAIT_FOR_TOOL_CALL_RESULTS\"},\"memory\":{\"storage\":{\"type\":\"in-process\"},\"contextWindowSize\":20}}",
+        "isTruncated": false
+      },
+      {
+        "name": "data",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687454",
+        "scopeKey": "2251799813687450",
+        "processInstanceKey": "2251799813686993",
+        "rootProcessInstanceKey": "2251799813686993",
+        "value": "{\"systemPrompt\":{\"prompt\":\"You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.\"},\"response\":{\"format\":{\"type\":\"text\",\"parseJson\":false},\"includeAssistantMessage\":false,\"includeAgentContext\":\"true\"},\"userPrompt\":{\"prompt\":\"49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD. \"},\"limits\":{\"maxModelCalls\":8},\"events\":{\"behavior\":\"WAIT_FOR_TOOL_CALL_RESULTS\"},\"memory\":{\"storage\":{\"type\":\"in-process\"},\"contextWindowSize\":20}}",
+        "isTruncated": false
+      }
+    ]
+  },
+  "req": {
+    "page": {
+      "totalItems": 3,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODU0MTJd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODY5OTRd"
+    },
+    "items": [
+      {
+        "name": "req",
+        "tenantId": "<default>",
+        "variableKey": "2251799813685412",
+        "scopeKey": "2251799813685410",
+        "processInstanceKey": "2251799813685410",
+        "rootProcessInstanceKey": "2251799813685410",
+        "value": "{\"message\":{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"},{\"data\":{\"syntheticClaim\":{\"merchant\":\"Northwind Electronics\",\"syntheticOnly\":true,\"currency\":\"USD\",\"expectedAmount\":49.95,\"chargeAmounts\":[49.95,49.95]}}}],\"messageId\":\"proof-message\",\"role\":\"ROLE_USER\"},\"blocking\":true}",
+        "isTruncated": false
+      },
+      {
+        "name": "req",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686169",
+        "scopeKey": "2251799813686167",
+        "processInstanceKey": "2251799813686167",
+        "rootProcessInstanceKey": "2251799813686167",
+        "value": "{\"message\":{\"parts\":[{\"text\":\"49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD.\"},{\"data\":{\"syntheticClaim\":{\"merchant\":\"Northwind Electronics\",\"syntheticOnly\":true,\"currency\":\"USD\",\"expectedAmount\":49.95,\"chargeAmounts\":[49.95,49.95]}}}],\"messageId\":\"dispute-complete\",\"contextId\":\"01a17e0f-1f5f-7153-aff7-338460b0c1c3\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17e0f-1f5f-7a47-aaea-3bd561fd79ca\"},\"blocking\":true}",
+        "isTruncated": false
+      },
+      {
+        "name": "req",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686994",
+        "scopeKey": "2251799813686993",
+        "processInstanceKey": "2251799813686993",
+        "rootProcessInstanceKey": "2251799813686993",
+        "value": "{\"message\":{\"parts\":[{\"text\":\"49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD.\"},{\"data\":{\"syntheticClaim\":{\"merchant\":\"Northwind Electronics\",\"syntheticOnly\":true,\"currency\":\"USD\",\"expectedAmount\":49.95,\"chargeAmounts\":[49.95,49.95]}}}],\"messageId\":\"01a17e0f-7bb9-705f-94f7-94d607ed9f0a\",\"contextId\":\"01a17e0f-5850-7003-9c13-786f99ab3d88\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17e0f-5850-72f6-9e3f-33fde283a339\"},\"blocking\":true}",
+        "isTruncated": false
+      }
+    ]
+  }
+}
