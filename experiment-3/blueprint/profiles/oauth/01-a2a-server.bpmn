@@ -903,6 +903,7 @@
     <bpmn:sequenceFlow id="Flow_FailListScan_ListResultJoin" sourceRef="FailListScan" targetRef="ListResultJoin" />
     <bpmn:sequenceFlow id="Flow_ListResultJoin_ListScanReady" sourceRef="ListResultJoin" targetRef="ListScanReady" />
   </bpmn:process>
+  <bpmn:message id="AgentCardRequestMessage" name="Agent Card request" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_a2a_protocol">
       <bpmndi:BPMNShape id="Pool_a2a-rpc_di" bpmnElement="Pool_a2a-rpc" isHorizontal="true">
@@ -1735,5 +1736,4 @@
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-  <bpmn:message id="AgentCardRequestMessage" name="Agent Card request" />
 </bpmn:definitions>

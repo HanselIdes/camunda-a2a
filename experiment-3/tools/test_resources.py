@@ -98,6 +98,13 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertLess(tags.index(f"{{{B}}}extensionElements"), tags.index(f"{{{B}}}outgoing"))
         self.assertLess(tags.index(f"{{{B}}}outgoing"), tags.index(f"{{{B}}}messageEventDefinition"))
 
+    def test_agent_card_message_precedes_bpmn_diagrams(self):
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        message = next(element for element in protocol
+                       if element.get("id") == "AgentCardRequestMessage")
+        diagram = protocol.find(f"{{{D}}}BPMNDiagram")
+        self.assertLess(list(protocol).index(message), list(protocol).index(diagram))
+
     def test_shipping_agent_loops_avoid_host_and_gateway_label(self):
         server = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
         server_plane = server.find(f".//{{{D}}}BPMNPlane")

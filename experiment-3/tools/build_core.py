@@ -362,10 +362,14 @@ def card_response_expression(agent_path):
 
 def add_card_endpoint(root, agent_path):
     process = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
-    message = ET.SubElement(root, f"{{{B}}}message", {
+    message = ET.Element(f"{{{B}}}message", {
         "id": "AgentCardRequestMessage",
         "name": "Agent Card request",
     })
+    diagram = root.find(f"{{{D}}}BPMNDiagram")
+    if diagram is None:
+        raise ValueError("Protocol definitions must contain a BPMN diagram")
+    root.insert(list(root).index(diagram), message)
     start = ET.SubElement(process, f"{{{B}}}startEvent", {
         "id": "CardRequested",
         "name": "Agent Card requested",
