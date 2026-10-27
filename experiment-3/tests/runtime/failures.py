@@ -1,5 +1,6 @@
 """Nonshipping stock-connector failure injection and operator recovery."""
 import base64
+import http.client
 import json
 import secrets
 import subprocess
@@ -80,6 +81,23 @@ def run(root, reports, rpc, request, deploy, env, stack):
         except urllib.error.HTTPError as error:
             return error.code
 
+    def restart_connectors():
+        subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
+                                       "--wait-timeout", "300", "connectors"], env=env, check=True,
+                       capture_output=True)
+
+        def ready():
+            try:
+                status, _ = rpc({"jsonrpc": "2.0", "id": "readiness-no-work", "method": "GetTask",
+                                 "params": {"id": "readiness-no-work"}}, key=False, timeout=5)
+            except (urllib.error.URLError, http.client.RemoteDisconnected):
+                return False
+            assert status in (401, 404), ("unexpected unauthenticated readiness status", status)
+            return status == 401
+
+        wait("owned Connectors TLS/webhook readiness after recreation", ready, bool, seconds=120)
+        print("Owned Connectors TLS endpoint and API-key rejection ready after recreation", flush=True)
+
     def call(method, params):
         identifier = str(uuid.uuid4())
         status, response = rpc({"jsonrpc": "2.0", "id": identifier, "method": method, "params": params})
@@ -159,9 +177,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
                             "recoveredExactTask": True})
         deploy([protocol])
         env["PROOF_PROTOCOL_ENGINE_PASSWORD"] = "deliberately-invalid-noncredential"
-        subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
-                                       "--wait-timeout", "300", "connectors"], env=env, check=True,
-                       capture_output=True)
+        restart_connectors()
         identifier = "secret-failure-" + str(uuid.uuid4())
         text = "Exact result after deployment secret repair"
         started = time.monotonic()
@@ -183,9 +199,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
         assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"})
         incident_seconds = time.monotonic() - started
         env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD")
-        subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
-                                       "--wait-timeout", "300", "connectors"], env=env, check=True,
-                       capture_output=True)
+        restart_connectors()
         status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
         assert status == 204, ("retry after deployment secret repair", status)
         status, _ = request(f'/v2/incidents/{incident["incidentKey"]}/resolution', {}, method="POST")
@@ -249,9 +263,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
         raise
     finally:
         if env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD", None) is not None:
-            subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
-                                           "--wait-timeout", "300", "connectors"], env=env, check=True,
-                           capture_output=True)
+            restart_connectors()
         deploy([protocol, echo])
         if created_user:
             status, _ = request(f"/v2/users/{user}", method="DELETE")
