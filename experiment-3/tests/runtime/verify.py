@@ -24,7 +24,8 @@ REPORTS = Path(os.environ.get("PROOF_REPORT_DIR", str(ROOT / "reports/runtime"))
 REPORTS.mkdir(parents=True, exist_ok=False)
 COMPOSE = os.path.join(os.path.dirname(__file__), "compose.yml")
 env = dict(os.environ, PROOF_ENGINE_PASSWORD=secrets.token_urlsafe(32),
-           PROOF_A2A_API_KEY=secrets.token_urlsafe(32), PROOF_TLS_PASSWORD=secrets.token_urlsafe(32))
+           PROOF_A2A_API_KEY=secrets.token_urlsafe(32), PROOF_TLS_PASSWORD=secrets.token_urlsafe(32),
+           PROOF_RESTRICTED_PASSWORD=secrets.token_urlsafe(32))
 conformance = bool(env.get("PROOF_TCK_DIRECTORY"))
 env.setdefault("PROOF_AGENT_PROCESS", "a2a-tck-fixture" if conformance else "a2a-card-dispute")
 allowed_agents = ("a2a-tck-fixture",) if conformance else ("a2a-card-dispute", "a2a-echo")
@@ -38,7 +39,7 @@ if env.get("PROOF_LOAD_AGENT"):
         raise ValueError("Workload mode requires alpha/beta, echo and no SDK/TCK mode")
     if not (Path(env["PROOF_CONTROL_DIR"]) / env["PROOF_LOAD_AGENT"]).is_dir():
         raise ValueError("Workload mode requires an existing coordinator control directory")
-if (env.get("PROOF_OPERATIONAL_CHECKS") or env.get("PROOF_LISTING_CHECKS")) and (env["PROOF_AGENT_PROCESS"] != "a2a-echo"
+if any(env.get(name) for name in ("PROOF_OPERATIONAL_CHECKS", "PROOF_LISTING_CHECKS", "PROOF_FAILURE_CHECKS")) and (env["PROOF_AGENT_PROCESS"] != "a2a-echo"
         or conformance or env.get("PROOF_LOAD_AGENT")):
     raise ValueError("Operational/listing checks require isolated echo mode, without workload/TCK mode")
 exporter_profile = env.setdefault("PROOF_EXPORTER_PROFILE", "low-latency")
@@ -56,6 +57,7 @@ def record_provenance(verdict, **details):
         "clientExecutionThreads": 4, "activeVersionPolling": False,
         "operationalChecks": bool(env.get("PROOF_OPERATIONAL_CHECKS")),
         "listingChecks": bool(env.get("PROOF_LISTING_CHECKS")),
+        "failureChecks": bool(env.get("PROOF_FAILURE_CHECKS")),
         **details,
     }, indent=2) + "\n")
 
@@ -84,7 +86,7 @@ subprocess.run(["keytool", "-importcert", "-alias", "a2a-proof", "-file", str(tl
 tls_context = ssl.create_default_context(cafile=str(tls_path / "server.crt"))
 
 
-def request(path, body=None, authenticated=True, timeout=30):
+def request(path, body=None, authenticated=True, timeout=30, method=None):
     headers = {}
     if authenticated:
         token = base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode()
@@ -93,7 +95,7 @@ def request(path, body=None, authenticated=True, timeout=30):
         headers["Content-Type"] = "application/json"
     req = urllib.request.Request(engine_url + path,
                                  data=None if body is None else json.dumps(body).encode(),
-                                 headers=headers)
+                                 headers=headers, method=method)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
             return response.status, response.read().decode()
@@ -102,7 +104,8 @@ def request(path, body=None, authenticated=True, timeout=30):
 
 
 def redact(text):
-    sensitive = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD")]
+    sensitive = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD",
+                                      "PROOF_RESTRICTED_PASSWORD")]
     sensitive.append(base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode())
     for value in sensitive:
         text = text.replace(value, "[REDACTED]")
@@ -204,7 +207,8 @@ def assert_no_persisted_credentials():
         status, body = request("/v2/variables/search?truncateValues=false", {"filter": {}, "page": page})
         assert status == 200, "Cannot verify credential exclusion: variable search failed"
         variables = json.loads(body)
-        forbidden = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD")]
+        forbidden = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD",
+                                          "PROOF_RESTRICTED_PASSWORD")]
         forbidden.append(base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode())
         assert not any(value in body for value in forbidden), "Credential persisted in engine variables"
         for item in variables["items"]:
@@ -438,6 +442,9 @@ try:
     if env.get("PROOF_LISTING_CHECKS"):
         from listing import run as run_listing
         run_listing(REPORTS, rpc)
+    if env.get("PROOF_FAILURE_CHECKS"):
+        from failures import run as run_failures
+        run_failures(ROOT, REPORTS, rpc, request, deploy, env)
     assert_no_persisted_credentials()
     source_after = source_snapshot(ROOT)
     if source_after != source_before:

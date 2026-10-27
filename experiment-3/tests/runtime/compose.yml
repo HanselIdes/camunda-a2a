@@ -58,6 +58,7 @@ services:
       SECRET_ENGINE_URL: http://camunda:8080
       SECRET_ENGINE_USERNAME: proof
       SECRET_ENGINE_PASSWORD: ${PROOF_ENGINE_PASSWORD:?required}
+      SECRET_PROOF_RESTRICTED_PASSWORD: ${PROOF_RESTRICTED_PASSWORD:?required}
       SECRET_A2A_API_KEY: ${PROOF_A2A_API_KEY:?required}
       SECRET_A2A_RPC_URL: https://host.docker.internal:${PROOF_CONNECTORS_PORT:?required}/inbound/a2a
       SECRET_A2A_AGENT_CARD_URL: https://host.docker.internal:${PROOF_CONNECTORS_PORT:?required}/inbound/a2a-card
