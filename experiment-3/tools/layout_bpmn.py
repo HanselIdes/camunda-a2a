@@ -2,6 +2,7 @@
 """Use the pinned bpmn-io auto-layout engine on every experiment-3 BPMN diagram."""
 import argparse
 from copy import deepcopy
+from math import hypot
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -95,6 +96,67 @@ def _move_di(element, dx, dy):
             part.set("y", str(float(part.get("y")) + dy))
 
 
+def _edge_midpoint(edge):
+    points = [(float(point.get("x")), float(point.get("y")))
+              for point in edge.findall(DI_WAYPOINT)]
+    if not points:
+        return None
+    lengths = [hypot(end[0] - start[0], end[1] - start[1])
+               for start, end in zip(points, points[1:])]
+    half_length = sum(lengths) / 2
+    traversed = 0
+    for (start, end), length in zip(zip(points, points[1:]), lengths):
+        if traversed + length >= half_length:
+            fraction = (half_length - traversed) / length if length else 0
+            return (start[0] + (end[0] - start[0]) * fraction,
+                    start[1] + (end[1] - start[1]) * fraction)
+        traversed += length
+    return points[-1]
+
+
+def _reposition_label(existing, replacement):
+    label = existing.find(BPMN_LABEL)
+    if label is None or replacement.find(BPMN_LABEL) is not None:
+        return
+    label = deepcopy(label)
+    label_bounds = label.find(DC_BOUNDS)
+    if label_bounds is None:
+        replacement.append(label)
+        return
+
+    if existing.tag == BPMN_SHAPE:
+        old_bounds = existing.find(DC_BOUNDS)
+        new_bounds = replacement.find(DC_BOUNDS)
+        if old_bounds is None or new_bounds is None:
+            replacement.append(label)
+            return
+        old_anchor = (
+            float(old_bounds.get("x")) + float(old_bounds.get("width")) / 2,
+            float(old_bounds.get("y")) + float(old_bounds.get("height")) / 2,
+        )
+        new_anchor = (
+            float(new_bounds.get("x")) + float(new_bounds.get("width")) / 2,
+            float(new_bounds.get("y")) + float(new_bounds.get("height")) / 2,
+        )
+    else:
+        old_anchor = _edge_midpoint(existing)
+        new_anchor = _edge_midpoint(replacement)
+        if old_anchor is None or new_anchor is None:
+            replacement.append(label)
+            return
+
+    label_center = (
+        float(label_bounds.get("x")) + float(label_bounds.get("width")) / 2,
+        float(label_bounds.get("y")) + float(label_bounds.get("height")) / 2,
+    )
+    if hypot(label_center[0] - old_anchor[0], label_center[1] - old_anchor[1]) > 80:
+        return
+    dx, dy = new_anchor[0] - old_anchor[0], new_anchor[1] - old_anchor[1]
+    label_bounds.set("x", str(float(label_bounds.get("x")) + dx))
+    label_bounds.set("y", str(float(label_bounds.get("y")) + dy))
+    replacement.append(label)
+
+
 def _merge_plane(target_plane, generated_plane, dx=0, dy=0):
     generated = []
     for element in generated_plane:
@@ -112,10 +174,7 @@ def _merge_plane(target_plane, generated_plane, dx=0, dy=0):
                 continue
             if existing.tag == BPMN_SHAPE and existing.get("isExpanded") == "true":
                 replacement.set("isExpanded", "true")
-            if replacement.find(BPMN_LABEL) is None:
-                label = existing.find(BPMN_LABEL)
-                if label is not None:
-                    replacement.append(deepcopy(label))
+            _reposition_label(existing, replacement)
             position = list(target_plane).index(existing)
             target_plane.remove(existing)
             target_plane.insert(position, replacement)
@@ -126,6 +185,168 @@ def _merge_plane(target_plane, generated_plane, dx=0, dy=0):
 
     for element in generated:
         target_plane.append(element)
+
+
+def _shape_bounds(plane, element_id):
+    shape = next((element for element in plane.findall(BPMN_SHAPE)
+                  if element.get("bpmnElement") == element_id), None)
+    return shape.find(DC_BOUNDS) if shape is not None else None
+
+
+def _route_server_follow_up(plane):
+    edge = next((element for element in plane.findall(BPMN_EDGE)
+                 if element.get("bpmnElement") == "Flow_FollowUp_NextTurn"), None)
+    follow_up = _shape_bounds(plane, "FollowUp")
+    next_turn = _shape_bounds(plane, "NextTurn")
+    host = _shape_bounds(plane, "AgentTools")
+    if edge is None or follow_up is None or next_turn is None or host is None:
+        return
+
+    source_x = float(follow_up.get("x")) + float(follow_up.get("width"))
+    source_y = float(follow_up.get("y")) + float(follow_up.get("height")) / 2
+    target_x = float(next_turn.get("x")) + float(next_turn.get("width")) / 2
+    target_y = float(next_turn.get("y"))
+    route_y = max(0, float(host.get("y")) - 20)
+    for waypoint in edge.findall(DI_WAYPOINT):
+        edge.remove(waypoint)
+    for x, y in ((source_x, source_y), (source_x, route_y),
+                 (target_x, route_y), (target_x, target_y)):
+        ET.SubElement(edge, DI_WAYPOINT, {"x": str(x), "y": str(y)})
+
+
+def _set_edge_route(plane, edge_id, points):
+    edge = next((element for element in plane.findall(BPMN_EDGE)
+                 if element.get("bpmnElement") == edge_id), None)
+    if edge is None:
+        return
+    for waypoint in edge.findall(DI_WAYPOINT):
+        edge.remove(waypoint)
+    for x, y in points:
+        ET.SubElement(edge, DI_WAYPOINT, {"x": str(x), "y": str(y)})
+
+
+def _set_edge_label(plane, edge_id, x, y, width):
+    edge = next((element for element in plane.findall(BPMN_EDGE)
+                 if element.get("bpmnElement") == edge_id), None)
+    if edge is None:
+        return
+    label = edge.find(BPMN_LABEL)
+    if label is None:
+        label = ET.Element(BPMN_LABEL)
+    else:
+        for child in list(label):
+            label.remove(child)
+        edge.remove(label)
+    edge.append(label)
+    ET.SubElement(label, DC_BOUNDS, {
+        "x": str(x), "y": str(y), "width": str(width), "height": "14",
+    })
+
+
+def _route_list_scan_decision(plane):
+    decision = _shape_bounds(plane, "ListScanDecision")
+    wait = _shape_bounds(plane, "WaitListVariables")
+    fail = _shape_bounds(plane, "FailListScan")
+    page_join = _shape_bounds(plane, "ListProcessPageJoin")
+    if any(bounds is None for bounds in (decision, wait, fail, page_join)):
+        return
+
+    source_center_x = float(decision.get("x")) + float(decision.get("width")) / 2
+    source_bottom_y = float(decision.get("y")) + float(decision.get("height"))
+    source_right_x = float(decision.get("x")) + float(decision.get("width"))
+    source_center_y = float(decision.get("y")) + float(decision.get("height")) / 2
+    wait_bottom = float(wait.get("y")) + float(wait.get("height"))
+    wait_route_x = min(float(page_join.get("x")), float(wait.get("x"))) - 20
+    wait_route_y = wait_bottom + 24
+    wait_x = float(wait.get("x")) + float(wait.get("width")) / 2
+    wait_y = wait_bottom
+    _set_edge_route(plane, "Flow_ListScanDecision_WaitListVariables", (
+        (source_center_x, source_bottom_y),
+        (source_center_x, wait_route_y),
+        (wait_route_x, wait_route_y),
+        (wait_route_x, wait_y),
+        (wait_x, wait_y),
+    ))
+    _set_edge_label(plane, "Flow_ListScanDecision_WaitListVariables",
+                    (source_center_x + wait_route_x) / 2 - 45, wait_route_y - 20, 90)
+
+    fail_x = float(fail.get("x"))
+    fail_y = float(fail.get("y"))
+    fail_route_x = fail_x + float(fail.get("width")) + 72
+    fail_route_y = fail_y - 28
+    _set_edge_route(plane, "Flow_ListScanDecision_FailListScan", (
+        (source_right_x, source_center_y),
+        (source_right_x, fail_route_y),
+        (fail_route_x, fail_route_y),
+        (fail_route_x, fail_y),
+        (fail_x + float(fail.get("width")) / 2, fail_y),
+    ))
+    _set_edge_label(plane, "Flow_ListScanDecision_FailListScan",
+                    (source_right_x + fail_route_x) / 2 - 40, fail_route_y - 20, 80)
+
+
+def _place_client_gateway_label(plane):
+    shape = next((element for element in plane.findall(BPMN_SHAPE)
+                  if element.get("bpmnElement") == "ClientHasTools"), None)
+    bounds = shape.find(DC_BOUNDS) if shape is not None else None
+    if bounds is None:
+        return
+    label = shape.find(BPMN_LABEL)
+    if label is None:
+        label = ET.SubElement(shape, BPMN_LABEL)
+    else:
+        for child in list(label):
+            label.remove(child)
+    ET.SubElement(label, DC_BOUNDS, {
+        "x": str(float(bounds.get("x")) + float(bounds.get("width")) / 2 - 70),
+        "y": str(float(bounds.get("y")) - 35),
+        "width": "140",
+        "height": "30",
+    })
+
+
+def _place_gateway_labels(plane, process):
+    shapes = {shape.get("bpmnElement"): shape for shape in plane.findall(BPMN_SHAPE)}
+    for gateway in process.iter():
+        if not gateway.tag.endswith("Gateway") or not gateway.get("name"):
+            continue
+        shape = shapes.get(gateway.get("id"))
+        bounds = shape.find(DC_BOUNDS) if shape is not None else None
+        if bounds is None:
+            continue
+        label = shape.find(BPMN_LABEL)
+        label_bounds = label.find(DC_BOUNDS) if label is not None else None
+        width = float(label_bounds.get("width")) if label_bounds is not None else min(
+            180, max(50, len(gateway.get("name")) * 7))
+        height = float(label_bounds.get("height")) if label_bounds is not None else (
+            28 if len(gateway.get("name")) * 7 > width else 14
+        )
+        x = float(bounds.get("x")) + float(bounds.get("width")) / 2 - width / 2
+        y = float(bounds.get("y")) - height - 8
+        if label is None:
+            label = ET.SubElement(shape, BPMN_LABEL)
+        else:
+            for child in list(label):
+                label.remove(child)
+        ET.SubElement(label, DC_BOUNDS, {
+            "x": str(x),
+            "y": str(y),
+            "width": f"{width:g}",
+            "height": f"{height:g}",
+        })
+
+
+def _apply_process_layout_fixes(plane, process_id, process):
+    if process is not None and process_id.startswith("a2a-"):
+        _place_gateway_labels(plane, process)
+    if process_id == "a2a-card-dispute":
+        _route_server_follow_up(plane)
+    elif process_id == "a2a-list-collect":
+        _route_list_scan_decision(plane)
+    elif process_id == "a2a-client":
+        _place_client_gateway_label(plane)
+        _set_edge_label(
+            plane, "Flow_ClientHasTools_PrepareClientResult", 425, 420, 90)
 
 
 def _compact_collaboration(plane, collaboration, processes, participants):
@@ -218,6 +439,7 @@ def layout_xml(source):
         if reference in process_planes:
             generated_plane = process_planes.pop(reference)
             _merge_plane(plane, generated_plane)
+            _apply_process_layout_fixes(plane, reference, processes.get(reference))
             continue
         collaboration = collaborations.get(reference)
         if collaboration is None:
@@ -243,6 +465,9 @@ def layout_xml(source):
             _merge_plane(plane, generated_plane, dx, dy)
         if not any(element.tag.endswith("}messageFlow") for element in collaboration):
             _compact_collaboration(plane, collaboration, processes, process_participants)
+        for process in collaboration:
+            process_ref = process.get("processRef")
+            _apply_process_layout_fixes(plane, process_ref, processes.get(process_ref))
 
     if process_planes:
         raise ValueError("No Diagram Interchange plane found for process(es): "

@@ -179,12 +179,18 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClientAgentInputJoin_di" bpmnElement="ClientAgentInputJoin" isMarkerVisible="true">
         <dc:Bounds x="200.0" y="45.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="135.0" y="9.0" width="180" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClientAgent_di" bpmnElement="ClientAgent">
         <dc:Bounds x="325.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClientHasTools_di" bpmnElement="ClientHasTools" isMarkerVisible="true">
         <dc:Bounds x="500.0" y="45.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="455.0" y="10.0" width="140" height="30" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClientTools_di" bpmnElement="ClientTools" isExpanded="true">
         <dc:Bounds x="625.0" y="30.0" width="250" height="640" />
@@ -230,6 +236,9 @@
         <di:waypoint x="525.0" y="95.0" />
         <di:waypoint x="525.0" y="770.0" />
         <di:waypoint x="625.0" y="770.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="425" y="420" width="90" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ClientTools_ClientAgentInputJoin_di" bpmnElement="Flow_ClientTools_ClientAgentInputJoin">
         <di:waypoint x="750.0" y="670.0" />

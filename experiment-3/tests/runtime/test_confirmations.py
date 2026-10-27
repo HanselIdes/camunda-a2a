@@ -39,9 +39,15 @@ class ConfirmationContractTest(unittest.TestCase):
             if fields[key]["type"] == "number":
                 self.assertEqual(fields[key]["validate"]["min"], 0)
         root = ET.parse(ROOT / "blueprint/demo/03-client-agent.bpmn").getroot()
-        task = next(e for e in root.iter() if e.get("id") == "AnswerAgent")
+        task = next(e for e in root.iter() if e.get("id") == "AskClientForInput")
         inputs = {e.get("target"): e.get("source") for e in task.iter(Z + "input")}
-        self.assertEqual(inputs, {key: "=null" for key in fields})
+        outputs = {e.get("target"): e.get("source") for e in task.iter(Z + "output")}
+        self.assertEqual(set(inputs), {"question"})
+        self.assertIn("fromAi(toolCall.question", inputs["question"])
+        self.assertEqual(set(outputs), {"toolCallResult"})
+        for key in fields:
+            self.assertIn(key, outputs["toolCallResult"])
+        self.assertIn("followUp", outputs["toolCallResult"])
 
     def test_regression_matrix_includes_malformed_and_nonfinite_values(self):
         names = {name for name, value in invalid_claims()}

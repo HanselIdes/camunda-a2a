@@ -198,13 +198,13 @@
       <bpmndi:BPMNShape id="CardRequested_di" bpmnElement="CardRequested">
         <dc:Bounds x="260.0" y="70.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="240" y="116" width="56" height="27" />
+          <dc:Bounds x="240.0" y="116.0" width="56" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CardServed_di" bpmnElement="CardServed">
         <dc:Bounds x="410.0" y="70.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="368" y="116" width="60" height="14" />
+          <dc:Bounds x="368.0" y="116.0" width="60" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_CardRequested_CardServed_di" bpmnElement="Flow_CardRequested_CardServed">
@@ -219,30 +219,21 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUp_di" bpmnElement="FollowUp">
         <dc:Bounds x="1160.0" y="252.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1154.0" y="392.0" width="48" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired" isMarkerVisible="true">
         <dc:Bounds x="1003.0" y="245.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1038.0" y="399.0" width="74" height="14" />
+          <dc:Bounds x="991.0" y="223.0" width="74" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskDone_di" bpmnElement="TaskDone">
         <dc:Bounds x="1160.0" y="672.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1153.0" y="502.0" width="51" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NextTurn_di" bpmnElement="NextTurn" isMarkerVisible="true">
         <dc:Bounds x="403.0" y="245.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskReceived_di" bpmnElement="TaskReceived">
         <dc:Bounds x="260.0" y="252.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="224.0" y="398.0" width="89" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AgentTools_di" bpmnElement="AgentTools" isExpanded="true">
         <dc:Bounds x="528.0" y="230.0" width="250" height="360" />
@@ -264,9 +255,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AgentError_di" bpmnElement="AgentError">
         <dc:Bounds x="635.0" y="572.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="779.0" y="538.0" width="59" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_NextTurn_AgentTools_di" bpmnElement="Flow_NextTurn_AgentTools">
         <di:waypoint x="453.0" y="270.0" />
@@ -298,9 +286,6 @@
       <bpmndi:BPMNEdge id="Flow_InputRequired_FollowUp_di" bpmnElement="Flow_InputRequired_FollowUp">
         <di:waypoint x="1053.0" y="270.0" />
         <di:waypoint x="1160.0" y="270.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1121.0" y="349.0" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_TaskDone_di" bpmnElement="Flow_InputRequired_TaskDone">
         <di:waypoint x="1053.0" y="270.0" />

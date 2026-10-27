@@ -29,9 +29,6 @@
     <bpmndi:BPMNPlane id="P" bpmnElement="h-card">
       <bpmndi:BPMNShape id="Card_di" bpmnElement="Card">
         <dc:Bounds x="57.0" y="52.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="123" y="136" width="90" height="20" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_di" bpmnElement="End">
         <dc:Bounds x="207.0" y="52.0" width="36" height="36" />

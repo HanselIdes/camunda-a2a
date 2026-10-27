@@ -1223,14 +1223,11 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RpcReceived_di" bpmnElement="RpcReceived">
         <dc:Bounds x="260.0" y="92.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="270" y="658" width="61" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IsPushMethod_di" bpmnElement="IsPushMethod" isMarkerVisible="true">
         <dc:Bounds x="403.0" y="85.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="413" y="665" width="75" height="14" />
+          <dc:Bounds x="379.0" y="63.0" width="98" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadPushSetting_di" bpmnElement="ReadPushSetting">
@@ -1248,7 +1245,7 @@
       <bpmndi:BPMNShape id="RouteRequest_di" bpmnElement="RouteRequest" isMarkerVisible="true">
         <dc:Bounds x="1153.0" y="85.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1165" y="665" width="70" height="14" />
+          <dc:Bounds x="1132.5" y="63.0" width="91" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildValidationError_di" bpmnElement="BuildValidationError">
@@ -1257,7 +1254,7 @@
       <bpmndi:BPMNShape id="ValidationErrorReady_di" bpmnElement="ValidationErrorReady">
         <dc:Bounds x="1460.0" y="92.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1464" y="138" width="73" height="27" />
+          <dc:Bounds x="1464.0" y="138.0" width="73" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildDirectMessage_di" bpmnElement="BuildDirectMessage">
@@ -1266,7 +1263,7 @@
       <bpmndi:BPMNShape id="DirectMessageReady_di" bpmnElement="DirectMessageReady">
         <dc:Bounds x="1460.0" y="232.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1462" y="268" width="76" height="27" />
+          <dc:Bounds x="1462.0" y="268.0" width="76" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareList_di" bpmnElement="PrepareList">
@@ -1278,7 +1275,7 @@
       <bpmndi:BPMNShape id="AnyTasks_di" bpmnElement="AnyTasks" isMarkerVisible="true">
         <dc:Bounds x="1603.0" y="365.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1623" y="405" width="54" height="14" />
+          <dc:Bounds x="1601.0" y="343.0" width="54" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadTasks_di" bpmnElement="ReadTasks">
@@ -1293,7 +1290,7 @@
       <bpmndi:BPMNShape id="TaskListReady_di" bpmnElement="TaskListReady">
         <dc:Bounds x="2210.0" y="372.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2215" y="398" width="70" height="14" />
+          <dc:Bounds x="2215.0" y="398.0" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareNewTask_di" bpmnElement="PrepareNewTask">
@@ -1302,7 +1299,7 @@
       <bpmndi:BPMNShape id="HasInlinePush_di" bpmnElement="HasInlinePush" isMarkerVisible="true">
         <dc:Bounds x="1453.0" y="505.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1471" y="665" width="58" height="27" />
+          <dc:Bounds x="1449.0" y="470.0" width="58" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StoreInlineConfig_di" bpmnElement="StoreInlineConfig">
@@ -1325,9 +1322,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NewTaskReady_di" bpmnElement="NewTaskReady">
         <dc:Bounds x="2510.0" y="512.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2515" y="658" width="71" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareLookup_di" bpmnElement="PrepareLookup">
         <dc:Bounds x="1278.0" y="630.0" width="100" height="80" />
@@ -1338,7 +1332,7 @@
       <bpmndi:BPMNShape id="TaskKnown_di" bpmnElement="TaskKnown" isMarkerVisible="true">
         <dc:Bounds x="1603.0" y="645.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1618" y="1055" width="64" height="14" />
+          <dc:Bounds x="1589.5" y="623.0" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadTask_di" bpmnElement="ReadTask">
@@ -1347,7 +1341,7 @@
       <bpmndi:BPMNShape id="RouteMethod_di" bpmnElement="RouteMethod" isMarkerVisible="true">
         <dc:Bounds x="1903.0" y="645.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1932" y="1055" width="37" height="14" />
+          <dc:Bounds x="1903.0" y="623.0" width="50" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotFoundJoin_di" bpmnElement="NotFoundJoin" isMarkerVisible="true">
@@ -1358,23 +1352,17 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotFoundReady_di" bpmnElement="NotFoundReady">
         <dc:Bounds x="2360.0" y="652.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2362" y="918" width="76" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTaskView_di" bpmnElement="BuildTaskView">
         <dc:Bounds x="2028.0" y="770.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskViewReady_di" bpmnElement="TaskViewReady">
         <dc:Bounds x="2210.0" y="792.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2215" y="1048" width="71" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Cancelable_di" bpmnElement="Cancelable" isMarkerVisible="true">
         <dc:Bounds x="2353.0" y="785.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2069" y="1185" width="62" height="14" />
+          <dc:Bounds x="2339.5" y="763.0" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkCanceled_di" bpmnElement="MarkCanceled">
@@ -1398,7 +1386,7 @@
       <bpmndi:BPMNShape id="AnyCancelPush_di" bpmnElement="AnyCancelPush" isMarkerVisible="true">
         <dc:Bounds x="3403.0" y="785.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="3115" y="1185" width="70" height="14" />
+          <dc:Bounds x="3382.5" y="763.0" width="91" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartCancelPush_di" bpmnElement="StartCancelPush">
@@ -1412,9 +1400,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CanceledReady_di" bpmnElement="CanceledReady">
         <dc:Bounds x="4010.0" y="792.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3709" y="1178" width="83" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotCancelableJoin_di" bpmnElement="NotCancelableJoin" isMarkerVisible="true">
         <dc:Bounds x="2803.0" y="925.0" width="50" height="50" />
@@ -1424,9 +1409,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotCancelableReady_di" bpmnElement="NotCancelableReady">
         <dc:Bounds x="3110.0" y="932.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2812" y="1438" width="76" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CheckFollowUp_di" bpmnElement="CheckFollowUp">
         <dc:Bounds x="2178.0" y="1050.0" width="100" height="80" />
@@ -1434,7 +1416,7 @@
       <bpmndi:BPMNShape id="FollowUpAccepted_di" bpmnElement="FollowUpAccepted" isMarkerVisible="true">
         <dc:Bounds x="2353.0" y="1065.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2224" y="1575" width="52" height="14" />
+          <dc:Bounds x="2346.5" y="1043.0" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateFollowUp_di" bpmnElement="CorrelateFollowUp">
@@ -1443,7 +1425,7 @@
       <bpmndi:BPMNShape id="TaskWaiting_di" bpmnElement="TaskWaiting" isMarkerVisible="true">
         <dc:Bounds x="2653.0" y="1065.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2506" y="1575" width="89" height="14" />
+          <dc:Bounds x="2618.5" y="1043.0" width="119" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitFollowUp_di" bpmnElement="AwaitFollowUp">
@@ -1454,9 +1436,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpReady_di" bpmnElement="FollowUpReady">
         <dc:Bounds x="3110.0" y="1072.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2965" y="1568" width="71" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildFollowUpError_di" bpmnElement="BuildFollowUpError">
         <dc:Bounds x="3378.0" y="1050.0" width="100" height="80" />
@@ -1466,9 +1445,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpErrorReady_di" bpmnElement="FollowUpErrorReady">
         <dc:Bounds x="3560.0" y="1072.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2964" y="1698" width="73" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadConfigs_di" bpmnElement="ReadConfigs">
         <dc:Bounds x="2178.0" y="1190.0" width="100" height="80" />
@@ -1479,7 +1455,7 @@
       <bpmndi:BPMNShape id="WriteConfig_di" bpmnElement="WriteConfig" isMarkerVisible="true">
         <dc:Bounds x="2503.0" y="1205.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2368" y="1835" width="64" height="14" />
+          <dc:Bounds x="2482.5" y="1183.0" width="91" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CreateConfig_di" bpmnElement="CreateConfig">
@@ -1505,27 +1481,15 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PushResponseReady_di" bpmnElement="PushResponseReady">
         <dc:Bounds x="3410.0" y="1212.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3263" y="1828" width="74" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ConfigGone_di" bpmnElement="ConfigGone">
         <dc:Bounds x="2660.0" y="1532.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2544" y="2128" width="77" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AgentGone_di" bpmnElement="AgentGone">
         <dc:Bounds x="2810.0" y="832.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2547" y="1218" width="71" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskGone_di" bpmnElement="TaskGone">
         <dc:Bounds x="2660.0" y="832.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2404" y="1218" width="57" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_RpcReceived_IsPushMethod_di" bpmnElement="Flow_RpcReceived_IsPushMethod">
         <di:waypoint x="296.0" y="110.0" />
@@ -1534,18 +1498,12 @@
       <bpmndi:BPMNEdge id="Flow_IsPushMethod_ReadPushSetting_di" bpmnElement="Flow_IsPushMethod_ReadPushSetting">
         <di:waypoint x="453.0" y="110.0" />
         <di:waypoint x="528.0" y="110.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="453" y="553" width="24" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPushMethod_PushSettingKnown_di" bpmnElement="Flow_IsPushMethod_PushSettingKnown">
         <di:waypoint x="428.0" y="135.0" />
         <di:waypoint x="428.0" y="180.0" />
         <di:waypoint x="728.0" y="180.0" />
         <di:waypoint x="728.0" y="135.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="587" y="615" width="26" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadPushSetting_PushSettingKnown_di" bpmnElement="Flow_ReadPushSetting_PushSettingKnown">
         <di:waypoint x="628.0" y="110.0" />
@@ -1566,41 +1524,26 @@
       <bpmndi:BPMNEdge id="Flow_RouteRequest_BuildValidationError_di" bpmnElement="Flow_RouteRequest_BuildValidationError">
         <di:waypoint x="1203.0" y="110.0" />
         <di:waypoint x="1278.0" y="110.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1199" y="358" width="32" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_BuildDirectMessage_di" bpmnElement="Flow_RouteRequest_BuildDirectMessage">
         <di:waypoint x="1178.0" y="135.0" />
         <di:waypoint x="1178.0" y="250.0" />
         <di:waypoint x="1278.0" y="250.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1178" y="423" width="75" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareList_di" bpmnElement="Flow_RouteRequest_PrepareList">
         <di:waypoint x="1178.0" y="135.0" />
         <di:waypoint x="1178.0" y="390.0" />
         <di:waypoint x="1278.0" y="390.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1208" y="488" width="14" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareNewTask_di" bpmnElement="Flow_RouteRequest_PrepareNewTask">
         <di:waypoint x="1178.0" y="135.0" />
         <di:waypoint x="1178.0" y="530.0" />
         <di:waypoint x="1278.0" y="530.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1241" y="615" width="44" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareLookup_di" bpmnElement="Flow_RouteRequest_PrepareLookup">
         <di:waypoint x="1178.0" y="135.0" />
         <di:waypoint x="1178.0" y="670.0" />
         <di:waypoint x="1278.0" y="670.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1185" y="838" width="60" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildValidationError_ValidationErrorReady_di" bpmnElement="Flow_BuildValidationError_ValidationErrorReady">
         <di:waypoint x="1378.0" y="110.0" />
@@ -1622,7 +1565,7 @@
         <di:waypoint x="1653.0" y="390.0" />
         <di:waypoint x="1728.0" y="390.0" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1700" y="355" width="26" height="14" />
+          <dc:Bounds x="1700.0" y="355.0" width="26" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AnyTasks_ListJoin_di" bpmnElement="Flow_AnyTasks_ListJoin">
@@ -1630,9 +1573,6 @@
         <di:waypoint x="1628.0" y="460.0" />
         <di:waypoint x="1928.0" y="460.0" />
         <di:waypoint x="1928.0" y="415.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1788" y="300" width="25" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadTasks_ListJoin_di" bpmnElement="Flow_ReadTasks_ListJoin">
         <di:waypoint x="1828.0" y="390.0" />
@@ -1653,9 +1593,6 @@
       <bpmndi:BPMNEdge id="Flow_HasInlinePush_StoreInlineConfig_di" bpmnElement="Flow_HasInlinePush_StoreInlineConfig">
         <di:waypoint x="1503.0" y="530.0" />
         <di:waypoint x="1578.0" y="530.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1506" y="708" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_HasInlinePush_InlinePushDone_di" bpmnElement="Flow_HasInlinePush_InlinePushDone">
         <di:waypoint x="1478.0" y="555.0" />
@@ -1663,7 +1600,7 @@
         <di:waypoint x="1928.0" y="600.0" />
         <di:waypoint x="1928.0" y="555.0" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1719" y="615" width="13" height="14" />
+          <dc:Bounds x="1719.0" y="615.0" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_StoreInlineConfig_AwaitInlineConfig_di" bpmnElement="Flow_StoreInlineConfig_AwaitInlineConfig">
@@ -1701,18 +1638,12 @@
       <bpmndi:BPMNEdge id="Flow_TaskKnown_ReadTask_di" bpmnElement="Flow_TaskKnown_ReadTask">
         <di:waypoint x="1653.0" y="670.0" />
         <di:waypoint x="1728.0" y="670.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1704" y="1005" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskKnown_NotFoundJoin_di" bpmnElement="Flow_TaskKnown_NotFoundJoin">
         <di:waypoint x="1628.0" y="695.0" />
         <di:waypoint x="1628.0" y="740.0" />
         <di:waypoint x="2078.0" y="740.0" />
         <di:waypoint x="2078.0" y="695.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1659" y="943" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadTask_RouteMethod_di" bpmnElement="Flow_ReadTask_RouteMethod">
         <di:waypoint x="1828.0" y="670.0" />
@@ -1721,17 +1652,11 @@
       <bpmndi:BPMNEdge id="Flow_RouteMethod_NotFoundJoin_di" bpmnElement="Flow_RouteMethod_NotFoundJoin">
         <di:waypoint x="1953.0" y="670.0" />
         <di:waypoint x="2053.0" y="670.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1929" y="943" width="73" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_BuildTaskView_di" bpmnElement="Flow_RouteMethod_BuildTaskView">
         <di:waypoint x="1928.0" y="695.0" />
         <di:waypoint x="1928.0" y="810.0" />
         <di:waypoint x="2028.0" y="810.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1992" y="1005" width="41" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_Cancelable_di" bpmnElement="Flow_RouteMethod_Cancelable">
         <di:waypoint x="1953.0" y="670.0" />
@@ -1740,25 +1665,16 @@
         <di:waypoint x="2303.0" y="740.0" />
         <di:waypoint x="2303.0" y="810.0" />
         <di:waypoint x="2353.0" y="810.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1937" y="1098" width="57" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_CheckFollowUp_di" bpmnElement="Flow_RouteMethod_CheckFollowUp">
         <di:waypoint x="1928.0" y="695.0" />
         <di:waypoint x="1928.0" y="1090.0" />
         <di:waypoint x="2178.0" y="1090.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1930" y="1293" width="71" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_ReadConfigs_di" bpmnElement="Flow_RouteMethod_ReadConfigs">
         <di:waypoint x="1928.0" y="695.0" />
         <di:waypoint x="1928.0" y="1230.0" />
         <di:waypoint x="2178.0" y="1230.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1937" y="1423" width="57" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_NotFoundJoin_BuildNotFound_di" bpmnElement="Flow_NotFoundJoin_BuildNotFound">
         <di:waypoint x="2103.0" y="670.0" />
@@ -1775,17 +1691,11 @@
       <bpmndi:BPMNEdge id="Flow_Cancelable_MarkCanceled_di" bpmnElement="Flow_Cancelable_MarkCanceled">
         <di:waypoint x="2403.0" y="810.0" />
         <di:waypoint x="2478.0" y="810.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2154" y="1135" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Cancelable_NotCancelableJoin_di" bpmnElement="Flow_Cancelable_NotCancelableJoin">
         <di:waypoint x="2378.0" y="835.0" />
         <di:waypoint x="2378.0" y="950.0" />
         <di:waypoint x="2803.0" y="950.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2109" y="1293" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkCanceled_StoreCanceled_di" bpmnElement="Flow_MarkCanceled_StoreCanceled">
         <di:waypoint x="2578.0" y="810.0" />
@@ -1821,18 +1731,12 @@
       <bpmndi:BPMNEdge id="Flow_AnyCancelPush_StartCancelPush_di" bpmnElement="Flow_AnyCancelPush_StartCancelPush">
         <di:waypoint x="3453.0" y="810.0" />
         <di:waypoint x="3528.0" y="810.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3156" y="1228" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AnyCancelPush_CancelPushHandled_di" bpmnElement="Flow_AnyCancelPush_CancelPushHandled">
         <di:waypoint x="3428.0" y="835.0" />
         <di:waypoint x="3428.0" y="880.0" />
         <di:waypoint x="3728.0" y="880.0" />
         <di:waypoint x="3728.0" y="835.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3294" y="1135" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_StartCancelPush_CancelPushHandled_di" bpmnElement="Flow_StartCancelPush_CancelPushHandled">
         <di:waypoint x="3628.0" y="810.0" />
@@ -1866,18 +1770,12 @@
       <bpmndi:BPMNEdge id="Flow_FollowUpAccepted_CorrelateFollowUp_di" bpmnElement="Flow_FollowUpAccepted_CorrelateFollowUp">
         <di:waypoint x="2403.0" y="1090.0" />
         <di:waypoint x="2478.0" y="1090.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2304" y="1525" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUpAccepted_FollowUpErrorJoin_di" bpmnElement="Flow_FollowUpAccepted_FollowUpErrorJoin">
         <di:waypoint x="2378.0" y="1115.0" />
         <di:waypoint x="2378.0" y="1160.0" />
         <di:waypoint x="3278.0" y="1160.0" />
         <di:waypoint x="3278.0" y="1115.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2259" y="1618" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CorrelateFollowUp_TaskWaiting_di" bpmnElement="Flow_CorrelateFollowUp_TaskWaiting">
         <di:waypoint x="2578.0" y="1090.0" />
@@ -1886,18 +1784,12 @@
       <bpmndi:BPMNEdge id="Flow_TaskWaiting_AwaitFollowUp_di" bpmnElement="Flow_TaskWaiting_AwaitFollowUp">
         <di:waypoint x="2703.0" y="1090.0" />
         <di:waypoint x="2778.0" y="1090.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2604" y="1525" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskWaiting_FollowUpErrorJoin_di" bpmnElement="Flow_TaskWaiting_FollowUpErrorJoin">
         <di:waypoint x="2678.0" y="1115.0" />
         <di:waypoint x="2678.0" y="1160.0" />
         <di:waypoint x="3278.0" y="1160.0" />
         <di:waypoint x="3278.0" y="1115.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2559" y="1618" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitFollowUp_BuildFollowUpResponse_di" bpmnElement="Flow_AwaitFollowUp_BuildFollowUpResponse">
         <di:waypoint x="2878.0" y="1090.0" />
@@ -1926,34 +1818,22 @@
       <bpmndi:BPMNEdge id="Flow_WriteConfig_ReplaceConfig_di" bpmnElement="Flow_WriteConfig_ReplaceConfig">
         <di:waypoint x="2553.0" y="1230.0" />
         <di:waypoint x="2628.0" y="1230.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2444" y="1785" width="37" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WriteConfig_CreateConfig_di" bpmnElement="Flow_WriteConfig_CreateConfig">
         <di:waypoint x="2528.0" y="1255.0" />
         <di:waypoint x="2528.0" y="1370.0" />
         <di:waypoint x="2628.0" y="1370.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2400" y="1878" width="31" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WriteConfig_DeleteConfig_di" bpmnElement="Flow_WriteConfig_DeleteConfig">
         <di:waypoint x="2528.0" y="1255.0" />
         <di:waypoint x="2528.0" y="1510.0" />
         <di:waypoint x="2628.0" y="1510.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2400" y="1943" width="30" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WriteConfig_ConfigVisible_di" bpmnElement="Flow_WriteConfig_ConfigVisible">
         <di:waypoint x="2528.0" y="1255.0" />
         <di:waypoint x="2528.0" y="1300.0" />
         <di:waypoint x="3128.0" y="1300.0" />
         <di:waypoint x="3128.0" y="1255.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2688" y="1730" width="25" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CreateConfig_ConfigWritten_di" bpmnElement="Flow_CreateConfig_ConfigWritten">
         <di:waypoint x="2728.0" y="1370.0" />
@@ -1997,9 +1877,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TurnFinished_di" bpmnElement="TurnFinished">
         <dc:Bounds x="260.0" y="1722.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="268.0" y="1898.0" width="64" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyOutcome_di" bpmnElement="ApplyOutcome">
         <dc:Bounds x="378.0" y="1700.0" width="100" height="80" />
@@ -2010,7 +1887,7 @@
       <bpmndi:BPMNShape id="AnyPushConfigs_di" bpmnElement="AnyPushConfigs" isMarkerVisible="true">
         <dc:Bounds x="703.0" y="1715.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="715.0" y="1905.0" width="70" height="14" />
+          <dc:Bounds x="682.5" y="1693.0" width="91" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartPushDelivery_di" bpmnElement="StartPushDelivery">
@@ -2021,9 +1898,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskUpdated_di" bpmnElement="TaskUpdated">
         <dc:Bounds x="1160.0" y="1722.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1167.0" y="1898.0" width="66" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_TurnFinished_ApplyOutcome_di" bpmnElement="Flow_TurnFinished_ApplyOutcome">
         <di:waypoint x="296.0" y="1740.0" />
@@ -2082,7 +1956,7 @@
       <bpmndi:BPMNShape id="IsVisible_di" bpmnElement="IsVisible" isMarkerVisible="true">
         <dc:Bounds x="853.0" y="1945.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="881.0" y="2005.0" width="39" height="14" />
+          <dc:Bounds x="858.5" y="1923.0" width="39" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Visible_di" bpmnElement="Visible">
@@ -2094,20 +1968,14 @@
       <bpmndi:BPMNShape id="TriesLeft_di" bpmnElement="TriesLeft" isMarkerVisible="true">
         <dc:Bounds x="1153.0" y="1945.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1026.0" y="2135.0" width="48" height="14" />
+          <dc:Bounds x="1143.0" y="1923.0" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitAMoment_di" bpmnElement="WaitAMoment">
         <dc:Bounds x="1310.0" y="1952.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1163.0" y="2128.0" width="74" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GaveUp_di" bpmnElement="GaveUp">
         <dc:Bounds x="1310.0" y="2092.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1179.0" y="2258.0" width="42" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_AwaitRequested_LookAgain_di" bpmnElement="Flow_AwaitRequested_LookAgain">
         <di:waypoint x="296.0" y="1970.0" />
@@ -2143,24 +2011,15 @@
         <di:waypoint x="878.0" y="2040.0" />
         <di:waypoint x="1178.0" y="2040.0" />
         <di:waypoint x="1178.0" y="1995.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="909.0" y="2048.0" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TriesLeft_WaitAMoment_di" bpmnElement="Flow_TriesLeft_WaitAMoment">
         <di:waypoint x="1203.0" y="1970.0" />
         <di:waypoint x="1310.0" y="1970.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1120.0" y="2085.0" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TriesLeft_GaveUp_di" bpmnElement="Flow_TriesLeft_GaveUp">
         <di:waypoint x="1178.0" y="1995.0" />
         <di:waypoint x="1178.0" y="2110.0" />
         <di:waypoint x="1310.0" y="2110.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1059.0" y="2178.0" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Pool_a2a-correlate_di" bpmnElement="Pool_a2a-correlate" isHorizontal="true">
         <dc:Bounds x="160.0" y="2218.0" width="1236.0" height="420.0" />
@@ -2177,7 +2036,7 @@
       <bpmndi:BPMNShape id="TryJoin_di" bpmnElement="TryJoin" isMarkerVisible="true">
         <dc:Bounds x="553.0" y="2263.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="450.0" y="2323.0" width="70" height="14" />
+          <dc:Bounds x="543.0" y="2241.0" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateMessage_di" bpmnElement="CorrelateMessage">
@@ -2188,9 +2047,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Correlated_di" bpmnElement="Correlated">
         <dc:Bounds x="1010.0" y="2270.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="872.0" y="2316.0" width="52" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CountAttempt_di" bpmnElement="CountAttempt">
         <dc:Bounds x="828.0" y="2388.0" width="100" height="80" />
@@ -2198,29 +2054,20 @@
       <bpmndi:BPMNShape id="AttemptsLeft_di" bpmnElement="AttemptsLeft" isMarkerVisible="true">
         <dc:Bounds x="1003.0" y="2403.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="711.0" y="2399.0" width="68" height="14" />
+          <dc:Bounds x="979.0" y="2381.0" width="98" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitBeforeRetry_di" bpmnElement="WaitBeforeRetry">
         <dc:Bounds x="1160.0" y="2410.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="798.0" y="2466.0" width="81" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotCorrelated_di" bpmnElement="NotCorrelated">
         <dc:Bounds x="1310.0" y="2550.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="863.0" y="2586.0" width="70" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkNotCorrelated_di" bpmnElement="MarkNotCorrelated">
         <dc:Bounds x="1128.0" y="2528.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NoSubscription_di" bpmnElement="NoSubscription">
         <dc:Bounds x="710.0" y="2310.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="572.0" y="2356.0" width="76" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_CorrelateRequested_ResetAttempts_di" bpmnElement="Flow_CorrelateRequested_ResetAttempts">
         <di:waypoint x="296.0" y="2288.0" />
@@ -2260,17 +2107,11 @@
       <bpmndi:BPMNEdge id="Flow_AttemptsLeft_WaitBeforeRetry_di" bpmnElement="Flow_AttemptsLeft_WaitBeforeRetry">
         <di:waypoint x="1053.0" y="2428.0" />
         <di:waypoint x="1160.0" y="2428.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="786.0" y="2423.0" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AttemptsLeft_MarkNotCorrelated_di" bpmnElement="Flow_AttemptsLeft_MarkNotCorrelated">
         <di:waypoint x="1028.0" y="2453.0" />
         <di:waypoint x="1028.0" y="2568.0" />
         <di:waypoint x="1128.0" y="2568.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="754.0" y="2511.0" width="13" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkNotCorrelated_NotCorrelated_di" bpmnElement="Flow_MarkNotCorrelated_NotCorrelated">
         <di:waypoint x="1228.0" y="2568.0" />
@@ -2281,45 +2122,27 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotificationRequested_di" bpmnElement="NotificationRequested">
         <dc:Bounds x="260.0" y="2750.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="235.0" y="2896.0" width="67" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DeliveriesAttempted_di" bpmnElement="DeliveriesAttempted">
         <dc:Bounds x="1010.0" y="2750.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="954.0" y="2896.0" width="49" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DeliverEach_di" bpmnElement="DeliverEach" isExpanded="true">
         <dc:Bounds x="378.0" y="2728.0" width="550" height="360" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DeliveryStarted_di" bpmnElement="DeliveryStarted">
         <dc:Bounds x="485.0" y="2820.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="370.0" y="2896.0" width="77" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DeliverNotification_di" bpmnElement="DeliverNotification">
         <dc:Bounds x="603.0" y="2798.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotificationDelivered_di" bpmnElement="NotificationDelivered">
         <dc:Bounds x="785.0" y="2820.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="621.0" y="2896.0" width="55" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DeliveryGivenUp_di" bpmnElement="DeliveryGivenUp">
         <dc:Bounds x="785.0" y="2960.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="606.0" y="2976.0" width="85" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DeliveryFailed_di" bpmnElement="DeliveryFailed">
         <dc:Bounds x="635.0" y="2860.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="485.0" y="2936.0" width="70" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_DeliveryStarted_DeliverNotification_di" bpmnElement="Flow_DeliveryStarted_DeliverNotification">
         <di:waypoint x="521.0" y="2838.0" />

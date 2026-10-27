@@ -51,7 +51,7 @@
       <bpmndi:BPMNShape id="Replied_di" bpmnElement="Replied">
         <dc:Bounds x="207.0" y="52.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="180" y="88" width="90" height="20" />
+          <dc:Bounds x="180.0" y="88.0" width="90" height="20" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="F1_di" bpmnElement="F1">

@@ -18,6 +18,9 @@ RESOURCE_PATHS = (
     "blueprint/demo/README.md",
 )
 B = "http://www.omg.org/spec/BPMN/20100524/MODEL"
+D = "http://www.omg.org/spec/BPMN/20100524/DI"
+DI = "http://www.omg.org/spec/DD/20100524/DI"
+DC = "http://www.omg.org/spec/DD/20100524/DC"
 Z = "http://camunda.org/schema/zeebe/1.0"
 
 
@@ -86,6 +89,97 @@ class ResourceClosureTest(unittest.TestCase):
         tool_ids = {node.get("id") for node in tools}
         self.assertTrue({"DiscoverAgentCard", "SendA2AMessage", "GetA2ATask", "AskClientForInput"}
                         .issubset(tool_ids))
+
+    def test_agent_card_event_definition_follows_extensions_and_flow_references(self):
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        start = protocol.find(
+            f".//{{{B}}}process[@id='a2a-rpc']/{{{B}}}startEvent[@id='CardRequested']")
+        tags = [child.tag for child in start]
+        self.assertLess(tags.index(f"{{{B}}}extensionElements"), tags.index(f"{{{B}}}outgoing"))
+        self.assertLess(tags.index(f"{{{B}}}outgoing"), tags.index(f"{{{B}}}messageEventDefinition"))
+
+    def test_shipping_agent_loops_avoid_host_and_gateway_label(self):
+        server = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
+        server_plane = server.find(f".//{{{D}}}BPMNPlane")
+        route = next(edge for edge in server_plane
+                     if edge.get("bpmnElement") == "Flow_FollowUp_NextTurn")
+        points = [(float(point.get("x")), float(point.get("y")))
+                  for point in route.findall(f"{{{DI}}}waypoint")]
+        self.assertEqual(len(points), 4)
+        host = next(shape for shape in server_plane if shape.get("bpmnElement") == "AgentTools")
+        host_bounds = host.find(f"{{{DC}}}Bounds")
+        self.assertLess(points[1][1], float(host_bounds.get("y")))
+
+        client = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
+        client_plane = client.find(f".//{{{D}}}BPMNPlane")
+        gateway = next(shape for shape in client_plane if shape.get("bpmnElement") == "ClientHasTools")
+        label_bounds = gateway.find(
+            f"{{{D}}}BPMNLabel/{{{DC}}}Bounds")
+        gateway_bounds = gateway.find(f"{{{DC}}}Bounds")
+        client_agent = next(shape for shape in client_plane
+                            if shape.get("bpmnElement") == "ClientAgent")
+        client_agent_bounds = client_agent.find(f"{{{DC}}}Bounds")
+        self.assertLess(float(label_bounds.get("y")) + float(label_bounds.get("height")),
+                        float(gateway_bounds.get("y")))
+        self.assertGreaterEqual(
+            float(label_bounds.get("x")),
+            float(client_agent_bounds.get("x")) + float(client_agent_bounds.get("width")),
+        )
+        final_response = next(edge for edge in client_plane
+                              if edge.get("bpmnElement") ==
+                              "Flow_ClientHasTools_PrepareClientResult")
+        final_response_bounds = final_response.find(
+            f"{{{D}}}BPMNLabel/{{{DC}}}Bounds")
+        final_response_x = float(final_response.find(f"{{{DI}}}waypoint").get("x"))
+        self.assertLess(float(final_response_bounds.get("x"))
+                        + float(final_response_bounds.get("width")), final_response_x)
+
+    def test_protocol_drops_orphaned_auto_layout_labels(self):
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        plane = protocol.find(f".//{{{D}}}BPMNPlane")
+        for element_id in ("RpcReceived", "NewTaskReady", "NoSubscription"):
+            shape = next(shape for shape in plane if shape.get("bpmnElement") == element_id)
+            self.assertIsNone(shape.find(f"{{{D}}}BPMNLabel"))
+        for element_id in ("IsPushMethod", "RouteRequest"):
+            shape = next(shape for shape in plane if shape.get("bpmnElement") == element_id)
+            bounds = shape.find(f"{{{DC}}}Bounds")
+            label = shape.find(f"{{{D}}}BPMNLabel/{{{DC}}}Bounds")
+            self.assertIsNotNone(label)
+            self.assertLess(float(label.get("y")) + float(label.get("height")),
+                            float(bounds.get("y")))
+
+    def test_list_scan_retry_and_failure_routes_avoid_nodes(self):
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        plane = protocol.find(f".//{{{D}}}BPMNPlane")
+        route_points = {}
+        for edge_id in ("Flow_ListScanDecision_WaitListVariables",
+                        "Flow_ListScanDecision_FailListScan"):
+            edge = next(edge for edge in plane if edge.get("bpmnElement") == edge_id)
+            route_points[edge_id] = [
+                (float(point.get("x")), float(point.get("y")))
+                for point in edge.findall(f"{{{DI}}}waypoint")
+            ]
+        page_join = next(shape for shape in plane if shape.get("bpmnElement") == "ListProcessPageJoin")
+        page_bounds = page_join.find(f"{{{DC}}}Bounds")
+        wait = next(shape for shape in plane if shape.get("bpmnElement") == "WaitListVariables")
+        wait_bounds = wait.find(f"{{{DC}}}Bounds")
+        fail = next(shape for shape in plane if shape.get("bpmnElement") == "FailListScan")
+        fail_bounds = fail.find(f"{{{DC}}}Bounds")
+
+        wait_points = route_points["Flow_ListScanDecision_WaitListVariables"]
+        fail_points = route_points["Flow_ListScanDecision_FailListScan"]
+        self.assertLess(wait_points[2][0], float(page_bounds.get("x")))
+        self.assertLess(wait_points[2][0], float(wait_bounds.get("x")))
+        self.assertGreater(fail_points[2][0],
+                           float(fail_bounds.get("x")) + float(fail_bounds.get("width")))
+        self.assertEqual(wait_points[-1], (
+            float(wait_bounds.get("x")) + float(wait_bounds.get("width")) / 2,
+            float(wait_bounds.get("y")) + float(wait_bounds.get("height")),
+        ))
+        self.assertEqual(fail_points[-1], (
+            float(fail_bounds.get("x")) + float(fail_bounds.get("width")) / 2,
+            float(fail_bounds.get("y")),
+        ))
 
     def test_obsolete_shipping_copies_are_absent(self):
         obsolete = (

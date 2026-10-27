@@ -181,6 +181,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired" isMarkerVisible="true">
         <dc:Bounds x="1550.0" y="45.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1522.5" y="23.0" width="105" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUp_di" bpmnElement="FollowUp">
         <dc:Bounds x="1707.0" y="52.0" width="36" height="36" />

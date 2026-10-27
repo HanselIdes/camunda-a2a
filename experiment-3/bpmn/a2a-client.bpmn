@@ -252,9 +252,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_Start_di" bpmnElement="Client_Start">
         <dc:Bounds x="220.0" y="188.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="190" y="421" width="86" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_FetchAgentCard_di" bpmnElement="Client_FetchAgentCard">
         <dc:Bounds x="338.0" y="166.0" width="100" height="80" />
@@ -279,9 +276,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tool_RemoteAgentReplied_di" bpmnElement="Tool_RemoteAgentReplied">
         <dc:Bounds x="895.0" y="678.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="787" y="422" width="90" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_T1_di" bpmnElement="Flow_T1">
         <di:waypoint x="813.0" y="696.0" />
@@ -292,14 +286,11 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_End_di" bpmnElement="Client_End">
         <dc:Bounds x="1420.0" y="188.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1446" y="421" width="48" height="27" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_UserSatisfied_di" bpmnElement="Client_UserSatisfied" isMarkerVisible="true">
         <dc:Bounds x="1263.0" y="181.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1324" y="347" width="73" height="14" />
+          <dc:Bounds x="1235.5" y="159.0" width="105" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Note_FetchAgentCard_di" bpmnElement="Note_FetchAgentCard">
@@ -327,9 +318,6 @@
         <di:waypoint x="1288.0" y="276.0" />
         <di:waypoint x="538.0" y="276.0" />
         <di:waypoint x="538.0" y="231.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="880" y="652" width="83" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C3_di" bpmnElement="Flow_C3">
         <di:waypoint x="563.0" y="206.0" />
@@ -346,9 +334,6 @@
       <bpmndi:BPMNEdge id="Flow_C6_di" bpmnElement="Flow_C6">
         <di:waypoint x="1313.0" y="206.0" />
         <di:waypoint x="1420.0" y="206.0" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1410" y="378" width="18" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Assoc_FetchAgentCard_di" bpmnElement="Assoc_FetchAgentCard">
         <di:waypoint x="352" y="356" />

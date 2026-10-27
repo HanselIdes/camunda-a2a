@@ -372,10 +372,6 @@ def add_card_endpoint(root, agent_path):
         f"{{{Z}}}modelerTemplate": "dev.hansel.a2a.core.card.v1",
         f"{{{Z}}}modelerTemplateVersion": "1",
     })
-    ET.SubElement(start, f"{{{B}}}messageEventDefinition", {
-        "id": "CardRequested_message",
-        "messageRef": message.get("id"),
-    })
     extension = ET.SubElement(start, f"{{{B}}}extensionElements")
     properties = ET.SubElement(extension, f"{{{Z}}}properties")
     for name, value in {
@@ -393,6 +389,10 @@ def add_card_endpoint(root, agent_path):
     })
     ET.SubElement(start, f"{{{B}}}outgoing").text = flow_id
     ET.SubElement(end, f"{{{B}}}incoming").text = flow_id
+    ET.SubElement(start, f"{{{B}}}messageEventDefinition", {
+        "id": "CardRequested_message",
+        "messageRef": message.get("id"),
+    })
 
 
 def build(authentication, agent_path=None):

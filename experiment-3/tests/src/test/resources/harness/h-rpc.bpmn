@@ -37,9 +37,6 @@
     <bpmndi:BPMNPlane id="P" bpmnElement="h-rpc">
       <bpmndi:BPMNShape id="Rpc_di" bpmnElement="Rpc">
         <dc:Bounds x="57.0" y="52.0" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="123" y="136" width="90" height="20" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Echo_di" bpmnElement="Echo">
         <dc:Bounds x="175.0" y="30.0" width="100" height="80" />
