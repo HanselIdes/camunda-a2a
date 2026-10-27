@@ -2,14 +2,14 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_Collaboration_a2a_protocol" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
   <bpmn:collaboration id="Collaboration_a2a_protocol">
     <bpmn:documentation>The A2A 1.0 JSON-RPC binding, deployed unchanged next to an agent diagram. The endpoint starts the process named by the secret A2A_AGENT_PROCESS for each new task and answers every other method from engine state. Not meant to be edited.</bpmn:documentation>
-    <bpmn:participant id="Pool_a2a-rpc" name="A2A JSON-RPC endpoint" processRef="a2a-rpc" />
+    <bpmn:participant id="Pool_a2a-rpc" name="01 A2A Server - Protocol and Discovery" processRef="a2a-rpc" />
     <bpmn:participant id="Pool_a2a-task-update" name="Update A2A task (called by the agent)" processRef="a2a-task-update" />
     <bpmn:participant id="Pool_a2a-await" name="Wait until engine state is visible" processRef="a2a-await" />
     <bpmn:participant id="Pool_a2a-correlate" name="Hand a follow-up to a task" processRef="a2a-correlate" />
     <bpmn:participant id="Pool_a2a-list-collect" name="Collect all indexed task pages" processRef="a2a-list-collect" />
   </bpmn:collaboration>
   <bpmn:error id="NotFound" name="NotFound" errorCode="NOT_FOUND" />
-  <bpmn:process id="a2a-rpc" name="A2A JSON-RPC handler" isExecutable="true">
+  <bpmn:process id="a2a-rpc" name="01 A2A Server - Protocol and Discovery" isExecutable="true">
     <bpmn:startEvent id="RpcReceived" name="A2A request received" zeebe:modelerTemplate="dev.hansel.a2a.core.rpc.v1" zeebe:modelerTemplateVersion="1">
       <bpmn:extensionElements>
         <zeebe:properties>
@@ -107,7 +107,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
+          <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -116,11 +116,8 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, variables: {task: lookup.task, req: {message: ctx.m, blocking: ctx.blocking, hl: ctx.hl}}, tags: [&quot;a2a&quot;, &quot;task-&quot; + lookup.taskId, lookup.ctxTag]}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
-          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
-          <zeebe:input source="body" target="authentication.clientAuthentication" />
+          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
+          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="12" />
@@ -168,7 +165,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
+          <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances/search&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -177,11 +174,8 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, tags: [&quot;task-&quot; + lookup.taskId]}, page: {limit: 1}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
-          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
-          <zeebe:input source="body" target="authentication.clientAuthentication" />
+          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
+          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="12" />
@@ -522,6 +516,23 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_ListCollected_BuildListFailure" sourceRef="ListCollected" targetRef="BuildListFailure" name="incomplete" />
     <bpmn:sequenceFlow id="Flow_BuildListFailure_ListFailureReady" sourceRef="BuildListFailure" targetRef="ListFailureReady" />
+    <bpmn:startEvent id="CardRequested" name="Agent Card requested" zeebe:modelerTemplate="dev.hansel.a2a.core.card.v1" zeebe:modelerTemplateVersion="1">
+      <bpmn:extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
+          <zeebe:property name="inbound.context" value="a2a-card" />
+          <zeebe:property name="inbound.auth.type" value="NONE" />
+          <zeebe:property name="inbound.method" value="get" />
+          <zeebe:property name="inbound.responseExpression" value="={statusCode: 200, headers: {&quot;Content-Type&quot;: &quot;application/json&quot;}, body: {name: &quot;Synthetic card-dispute reviewer&quot;, version: &quot;0.1.0&quot;, description: &quot;Non-production community demonstration. Reconciles synthetic charges for human review; &quot; + &quot;performs no financial actions.&quot;, provider: {organization: &quot;HanselIdes&quot;, url: &quot;https://github.com/HanselIdes/camunda-a2a&quot;}, supportedInterfaces: [{url: &quot;{{secrets.A2A_RPC_URL}}&quot;, protocolBinding: &quot;JSONRPC&quot;, protocolVersion: &quot;1.0&quot;}], capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false}, defaultInputModes: [&quot;text/plain&quot;], defaultOutputModes: [&quot;text/plain&quot;, &quot;application/json&quot;], securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: &quot;header&quot;, name: &quot;X-A2A-Api-Key&quot;}}}, securityRequirements: [{schemes: {a2aApiKey: {}}}], skills: [{id: &quot;review_duplicate_charge&quot;, name: &quot;Reconcile synthetic charges&quot;, description: &quot;Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.&quot;, tags: [&quot;synthetic&quot;, &quot;card-dispute&quot;, &quot;reconciliation&quot;], examples: [&quot;Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.&quot;]}]}}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_CardRequested_CardServed</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="CardRequested_message" messageRef="AgentCardRequestMessage" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="CardServed" name="Card served">
+      <bpmn:incoming>Flow_CardRequested_CardServed</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_CardRequested_CardServed" sourceRef="CardRequested" targetRef="CardServed" />
   </bpmn:process>
   <bpmn:process id="a2a-task-update" name="A2A task update" isExecutable="true">
     <bpmn:startEvent id="TurnFinished" name="Turn finished">
@@ -553,7 +564,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
+          <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + probe.path" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -562,11 +573,8 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="=probe.body" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
-          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
-          <zeebe:input source="body" target="authentication.clientAuthentication" />
+          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
+          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="12" />
@@ -643,7 +651,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
         <zeebe:ioMapping>
-          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
+          <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/messages/correlation&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -652,11 +660,8 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={name: messageName, correlationKey: taskId, variables: payload}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
-          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
-          <zeebe:input source="body" target="authentication.clientAuthentication" />
+          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
+          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="12" />
@@ -745,7 +750,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
+          <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances/search&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -754,11 +759,8 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, tags: if listReq.ctxTag != null then [&quot;a2a&quot;, listReq.ctxTag] else [&quot;a2a&quot;]}, sort: [{field: &quot;startDate&quot;, order: &quot;DESC&quot;}, {field: &quot;processInstanceKey&quot;, order: &quot;DESC&quot;}], page: {limit: 100, after: listScan.cursor}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
-          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
-          <zeebe:input source="body" target="authentication.clientAuthentication" />
+          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
+          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="12" />
@@ -785,7 +787,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
+          <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/variables/search?truncateValues=false&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -794,11 +796,8 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {name: &quot;task&quot;, processInstanceKey: {&quot;$in&quot;: taskKeys}, scopeKey: {&quot;$in&quot;: taskKeys}}, page: {limit: 100}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
-          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
-          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
-          <zeebe:input source="body" target="authentication.clientAuthentication" />
+          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
+          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="12" />
@@ -886,933 +885,836 @@
     <bpmn:sequenceFlow id="Flow_FailListScan_ListResultJoin" sourceRef="FailListScan" targetRef="ListResultJoin" />
     <bpmn:sequenceFlow id="Flow_ListResultJoin_ListScanReady" sourceRef="ListResultJoin" targetRef="ListScanReady" />
   </bpmn:process>
+  <bpmn:message id="AgentCardRequestMessage" name="Agent Card request" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_a2a_protocol">
       <bpmndi:BPMNShape id="Pool_a2a-rpc_di" bpmnElement="Pool_a2a-rpc" isHorizontal="true">
-        <dc:Bounds x="160" y="40" width="3978.0" height="2128" />
+        <dc:Bounds x="160" y="40" width="3636.0" height="1010.0" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RpcReceived_di" bpmnElement="RpcReceived">
-        <dc:Bounds x="282" y="622" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="270" y="658" width="61" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="260.0" y="92.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IsPushMethod_di" bpmnElement="IsPushMethod" isMarkerVisible="true">
-        <dc:Bounds x="425" y="615" width="50" height="50" />
+        <dc:Bounds x="403.0" y="85.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="413" y="665" width="75" height="14" />
+          <dc:Bounds x="379.0" y="63.0" width="98" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadPushSetting_di" bpmnElement="ReadPushSetting">
-        <dc:Bounds x="550" y="470" width="100" height="80" />
+        <dc:Bounds x="528.0" y="70.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PushSettingKnown_di" bpmnElement="PushSettingKnown" isMarkerVisible="true">
-        <dc:Bounds x="725" y="615" width="50" height="50" />
+        <dc:Bounds x="703.0" y="85.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ParseRequest_di" bpmnElement="ParseRequest">
-        <dc:Bounds x="850" y="600" width="100" height="80" />
+        <dc:Bounds x="828.0" y="70.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ValidateRequest_di" bpmnElement="ValidateRequest">
-        <dc:Bounds x="1000" y="600" width="100" height="80" />
+        <dc:Bounds x="978.0" y="70.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RouteRequest_di" bpmnElement="RouteRequest" isMarkerVisible="true">
-        <dc:Bounds x="1175" y="615" width="50" height="50" />
+        <dc:Bounds x="1153.0" y="85.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1165" y="665" width="70" height="14" />
+          <dc:Bounds x="1132.5" y="63.0" width="91" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildValidationError_di" bpmnElement="BuildValidationError">
-        <dc:Bounds x="1300" y="80" width="100" height="80" />
+        <dc:Bounds x="1278.0" y="70.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ValidationErrorReady_di" bpmnElement="ValidationErrorReady">
-        <dc:Bounds x="1482" y="102" width="36" height="36" />
+        <dc:Bounds x="1460.0" y="92.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1464" y="138" width="73" height="27" />
+          <dc:Bounds x="1464.0" y="138.0" width="73" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareList_di" bpmnElement="PrepareList">
-        <dc:Bounds x="1300" y="340" width="100" height="80" />
+        <dc:Bounds x="1278.0" y="210.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTaskList_di" bpmnElement="BuildTaskList">
-        <dc:Bounds x="2050" y="340" width="100" height="80" />
+        <dc:Bounds x="1728.0" y="210.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskListReady_di" bpmnElement="TaskListReady">
-        <dc:Bounds x="2232" y="362" width="36" height="36" />
+        <dc:Bounds x="1910.0" y="232.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2215" y="398" width="70" height="14" />
+          <dc:Bounds x="1915.0" y="258.0" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareNewTask_di" bpmnElement="PrepareNewTask">
-        <dc:Bounds x="1300" y="600" width="100" height="80" />
+        <dc:Bounds x="1278.0" y="350.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CreateTask_di" bpmnElement="CreateTask">
-        <dc:Bounds x="2050" y="600" width="100" height="80" />
+        <dc:Bounds x="1428.0" y="350.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitNewTask_di" bpmnElement="AwaitNewTask">
-        <dc:Bounds x="2200" y="600" width="100" height="80" />
+        <dc:Bounds x="1578.0" y="350.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildNewTaskResponse_di" bpmnElement="BuildNewTaskResponse">
-        <dc:Bounds x="2350" y="600" width="100" height="80" />
+        <dc:Bounds x="1728.0" y="350.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NewTaskReady_di" bpmnElement="NewTaskReady">
-        <dc:Bounds x="2532" y="622" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2515" y="658" width="71" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1910.0" y="372.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareLookup_di" bpmnElement="PrepareLookup">
-        <dc:Bounds x="1300" y="990" width="100" height="80" />
+        <dc:Bounds x="1278.0" y="490.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FindTask_di" bpmnElement="FindTask">
-        <dc:Bounds x="1450" y="990" width="100" height="80" />
+        <dc:Bounds x="1578.0" y="490.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskKnown_di" bpmnElement="TaskKnown" isMarkerVisible="true">
-        <dc:Bounds x="1625" y="1005" width="50" height="50" />
+        <dc:Bounds x="1753.0" y="505.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1618" y="1055" width="64" height="14" />
+          <dc:Bounds x="1739.5" y="483.0" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadTask_di" bpmnElement="ReadTask">
-        <dc:Bounds x="1750" y="990" width="100" height="80" />
+        <dc:Bounds x="1878.0" y="490.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="RouteMethod_di" bpmnElement="RouteMethod" isMarkerVisible="true">
-        <dc:Bounds x="1925" y="1005" width="50" height="50" />
+        <dc:Bounds x="2053.0" y="505.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1932" y="1055" width="37" height="14" />
+          <dc:Bounds x="2053.0" y="483.0" width="50" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotFoundJoin_di" bpmnElement="NotFoundJoin" isMarkerVisible="true">
-        <dc:Bounds x="2075" y="875" width="50" height="50" />
+        <dc:Bounds x="2653.0" y="505.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildNotFound_di" bpmnElement="BuildNotFound">
-        <dc:Bounds x="2200" y="860" width="100" height="80" />
+        <dc:Bounds x="2778.0" y="490.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotFoundReady_di" bpmnElement="NotFoundReady">
-        <dc:Bounds x="2382" y="882" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2362" y="918" width="76" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="2960.0" y="512.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildTaskView_di" bpmnElement="BuildTaskView">
-        <dc:Bounds x="2050" y="990" width="100" height="80" />
+        <dc:Bounds x="2178.0" y="630.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskViewReady_di" bpmnElement="TaskViewReady">
-        <dc:Bounds x="2232" y="1012" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2215" y="1048" width="71" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="2360.0" y="652.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Cancelable_di" bpmnElement="Cancelable" isMarkerVisible="true">
-        <dc:Bounds x="2075" y="1135" width="50" height="50" />
+        <dc:Bounds x="2503.0" y="645.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2069" y="1185" width="62" height="14" />
+          <dc:Bounds x="2489.5" y="623.0" width="77" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitCanceled_di" bpmnElement="AwaitCanceled">
-        <dc:Bounds x="2800" y="1120" width="100" height="80" />
+        <dc:Bounds x="2778.0" y="630.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildCanceledView_di" bpmnElement="BuildCanceledView">
-        <dc:Bounds x="3550" y="1120" width="100" height="80" />
+        <dc:Bounds x="3078.0" y="630.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CanceledReady_di" bpmnElement="CanceledReady">
-        <dc:Bounds x="3732" y="1142" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="3709" y="1178" width="83" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="3260.0" y="652.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotCancelableJoin_di" bpmnElement="NotCancelableJoin" isMarkerVisible="true">
-        <dc:Bounds x="2525" y="1395" width="50" height="50" />
+        <dc:Bounds x="3403.0" y="645.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildNotCancelable_di" bpmnElement="BuildNotCancelable">
-        <dc:Bounds x="2650" y="1380" width="100" height="80" />
+        <dc:Bounds x="3528.0" y="630.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotCancelableReady_di" bpmnElement="NotCancelableReady">
-        <dc:Bounds x="2832" y="1402" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2812" y="1438" width="76" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="3710.0" y="652.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CheckFollowUp_di" bpmnElement="CheckFollowUp">
-        <dc:Bounds x="2050" y="1510" width="100" height="80" />
+        <dc:Bounds x="2328.0" y="910.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpAccepted_di" bpmnElement="FollowUpAccepted" isMarkerVisible="true">
-        <dc:Bounds x="2225" y="1525" width="50" height="50" />
+        <dc:Bounds x="2503.0" y="925.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2224" y="1575" width="52" height="14" />
+          <dc:Bounds x="2496.5" y="903.0" width="63" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateFollowUp_di" bpmnElement="CorrelateFollowUp">
-        <dc:Bounds x="2350" y="1510" width="100" height="80" />
+        <dc:Bounds x="2628.0" y="910.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskWaiting_di" bpmnElement="TaskWaiting" isMarkerVisible="true">
-        <dc:Bounds x="2525" y="1525" width="50" height="50" />
+        <dc:Bounds x="2803.0" y="925.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="2506" y="1575" width="89" height="14" />
+          <dc:Bounds x="2768.5" y="903.0" width="119" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitFollowUp_di" bpmnElement="AwaitFollowUp">
-        <dc:Bounds x="2650" y="1510" width="100" height="80" />
+        <dc:Bounds x="2928.0" y="910.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildFollowUpResponse_di" bpmnElement="BuildFollowUpResponse">
-        <dc:Bounds x="2800" y="1510" width="100" height="80" />
+        <dc:Bounds x="3078.0" y="910.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpReady_di" bpmnElement="FollowUpReady">
-        <dc:Bounds x="2982" y="1532" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2965" y="1568" width="71" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="3260.0" y="932.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildFollowUpError_di" bpmnElement="BuildFollowUpError">
-        <dc:Bounds x="2800" y="1640" width="100" height="80" />
+        <dc:Bounds x="3528.0" y="910.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpErrorJoin_di" bpmnElement="FollowUpErrorJoin" isMarkerVisible="true">
-        <dc:Bounds x="2675" y="1655" width="50" height="50" />
+        <dc:Bounds x="3403.0" y="925.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUpErrorReady_di" bpmnElement="FollowUpErrorReady">
-        <dc:Bounds x="2982" y="1662" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2964" y="1698" width="73" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="3710.0" y="932.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_RpcReceived_IsPushMethod_di" bpmnElement="Flow_RpcReceived_IsPushMethod">
-        <di:waypoint x="318" y="640" />
-        <di:waypoint x="425" y="640" />
+        <di:waypoint x="296.0" y="110.0" />
+        <di:waypoint x="403.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPushMethod_ReadPushSetting_di" bpmnElement="Flow_IsPushMethod_ReadPushSetting">
-        <di:waypoint x="450" y="615" />
-        <di:waypoint x="450" y="510" />
-        <di:waypoint x="550" y="510" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="453" y="553" width="24" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="453.0" y="110.0" />
+        <di:waypoint x="528.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsPushMethod_PushSettingKnown_di" bpmnElement="Flow_IsPushMethod_PushSettingKnown">
-        <di:waypoint x="475" y="640" />
-        <di:waypoint x="725" y="640" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="587" y="615" width="26" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="428.0" y="135.0" />
+        <di:waypoint x="428.0" y="180.0" />
+        <di:waypoint x="728.0" y="180.0" />
+        <di:waypoint x="728.0" y="135.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadPushSetting_PushSettingKnown_di" bpmnElement="Flow_ReadPushSetting_PushSettingKnown">
-        <di:waypoint x="650" y="510" />
-        <di:waypoint x="687" y="510" />
-        <di:waypoint x="687" y="640" />
-        <di:waypoint x="725" y="640" />
+        <di:waypoint x="628.0" y="110.0" />
+        <di:waypoint x="703.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PushSettingKnown_ParseRequest_di" bpmnElement="Flow_PushSettingKnown_ParseRequest">
-        <di:waypoint x="775" y="640" />
-        <di:waypoint x="850" y="640" />
+        <di:waypoint x="753.0" y="110.0" />
+        <di:waypoint x="828.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ParseRequest_ValidateRequest_di" bpmnElement="Flow_ParseRequest_ValidateRequest">
-        <di:waypoint x="950" y="640" />
-        <di:waypoint x="1000" y="640" />
+        <di:waypoint x="928.0" y="110.0" />
+        <di:waypoint x="978.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ValidateRequest_RouteRequest_di" bpmnElement="Flow_ValidateRequest_RouteRequest">
-        <di:waypoint x="1100" y="640" />
-        <di:waypoint x="1175" y="640" />
+        <di:waypoint x="1078.0" y="110.0" />
+        <di:waypoint x="1153.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_BuildValidationError_di" bpmnElement="Flow_RouteRequest_BuildValidationError">
-        <di:waypoint x="1200" y="615" />
-        <di:waypoint x="1200" y="120" />
-        <di:waypoint x="1300" y="120" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1199" y="358" width="32" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1203.0" y="110.0" />
+        <di:waypoint x="1278.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareList_di" bpmnElement="Flow_RouteRequest_PrepareList">
-        <di:waypoint x="1200" y="615" />
-        <di:waypoint x="1200" y="380" />
-        <di:waypoint x="1300" y="380" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1208" y="488" width="14" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1178.0" y="135.0" />
+        <di:waypoint x="1178.0" y="250.0" />
+        <di:waypoint x="1278.0" y="250.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareNewTask_di" bpmnElement="Flow_RouteRequest_PrepareNewTask">
-        <di:waypoint x="1225" y="640" />
-        <di:waypoint x="1300" y="640" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1241" y="615" width="44" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1178.0" y="135.0" />
+        <di:waypoint x="1178.0" y="390.0" />
+        <di:waypoint x="1278.0" y="390.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteRequest_PrepareLookup_di" bpmnElement="Flow_RouteRequest_PrepareLookup">
-        <di:waypoint x="1200" y="665" />
-        <di:waypoint x="1200" y="1030" />
-        <di:waypoint x="1300" y="1030" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1185" y="838" width="60" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1178.0" y="135.0" />
+        <di:waypoint x="1178.0" y="530.0" />
+        <di:waypoint x="1278.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildValidationError_ValidationErrorReady_di" bpmnElement="Flow_BuildValidationError_ValidationErrorReady">
-        <di:waypoint x="1400" y="120" />
-        <di:waypoint x="1482" y="120" />
+        <di:waypoint x="1378.0" y="110.0" />
+        <di:waypoint x="1460.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildTaskList_TaskListReady_di" bpmnElement="Flow_BuildTaskList_TaskListReady">
-        <di:waypoint x="2150" y="380" />
-        <di:waypoint x="2232" y="380" />
+        <di:waypoint x="1828.0" y="250.0" />
+        <di:waypoint x="1910.0" y="250.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CreateTask_AwaitNewTask_di" bpmnElement="Flow_CreateTask_AwaitNewTask">
-        <di:waypoint x="2150" y="640" />
-        <di:waypoint x="2200" y="640" />
+        <di:waypoint x="1528.0" y="390.0" />
+        <di:waypoint x="1578.0" y="390.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitNewTask_BuildNewTaskResponse_di" bpmnElement="Flow_AwaitNewTask_BuildNewTaskResponse">
-        <di:waypoint x="2300" y="640" />
-        <di:waypoint x="2350" y="640" />
+        <di:waypoint x="1678.0" y="390.0" />
+        <di:waypoint x="1728.0" y="390.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildNewTaskResponse_NewTaskReady_di" bpmnElement="Flow_BuildNewTaskResponse_NewTaskReady">
-        <di:waypoint x="2450" y="640" />
-        <di:waypoint x="2532" y="640" />
+        <di:waypoint x="1828.0" y="390.0" />
+        <di:waypoint x="1910.0" y="390.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FindTask_TaskKnown_di" bpmnElement="Flow_FindTask_TaskKnown">
-        <di:waypoint x="1550" y="1030" />
-        <di:waypoint x="1625" y="1030" />
+        <di:waypoint x="1678.0" y="530.0" />
+        <di:waypoint x="1753.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskKnown_ReadTask_di" bpmnElement="Flow_TaskKnown_ReadTask">
-        <di:waypoint x="1675" y="1030" />
-        <di:waypoint x="1750" y="1030" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1704" y="1005" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1803.0" y="530.0" />
+        <di:waypoint x="1878.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadTask_RouteMethod_di" bpmnElement="Flow_ReadTask_RouteMethod">
-        <di:waypoint x="1850" y="1030" />
-        <di:waypoint x="1925" y="1030" />
+        <di:waypoint x="1978.0" y="530.0" />
+        <di:waypoint x="2053.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_NotFoundJoin_di" bpmnElement="Flow_RouteMethod_NotFoundJoin">
-        <di:waypoint x="1950" y="1005" />
-        <di:waypoint x="1950" y="900" />
-        <di:waypoint x="2075" y="900" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1929" y="943" width="73" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2078.0" y="555.0" />
+        <di:waypoint x="2078.0" y="600.0" />
+        <di:waypoint x="2678.0" y="600.0" />
+        <di:waypoint x="2678.0" y="555.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_BuildTaskView_di" bpmnElement="Flow_RouteMethod_BuildTaskView">
-        <di:waypoint x="1975" y="1030" />
-        <di:waypoint x="2050" y="1030" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1992" y="1005" width="41" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2078.0" y="555.0" />
+        <di:waypoint x="2078.0" y="670.0" />
+        <di:waypoint x="2178.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_Cancelable_di" bpmnElement="Flow_RouteMethod_Cancelable">
-        <di:waypoint x="1950" y="1055" />
-        <di:waypoint x="1950" y="1160" />
-        <di:waypoint x="2075" y="1160" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1937" y="1098" width="57" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2103.0" y="530.0" />
+        <di:waypoint x="2153.0" y="530.0" />
+        <di:waypoint x="2153.0" y="600.0" />
+        <di:waypoint x="2453.0" y="600.0" />
+        <di:waypoint x="2453.0" y="670.0" />
+        <di:waypoint x="2503.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RouteMethod_CheckFollowUp_di" bpmnElement="Flow_RouteMethod_CheckFollowUp">
-        <di:waypoint x="1950" y="1055" />
-        <di:waypoint x="1950" y="1550" />
-        <di:waypoint x="2050" y="1550" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1930" y="1293" width="71" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2078.0" y="555.0" />
+        <di:waypoint x="2078.0" y="950.0" />
+        <di:waypoint x="2328.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_NotFoundJoin_BuildNotFound_di" bpmnElement="Flow_NotFoundJoin_BuildNotFound">
-        <di:waypoint x="2125" y="900" />
-        <di:waypoint x="2200" y="900" />
+        <di:waypoint x="2703.0" y="530.0" />
+        <di:waypoint x="2778.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildNotFound_NotFoundReady_di" bpmnElement="Flow_BuildNotFound_NotFoundReady">
-        <di:waypoint x="2300" y="900" />
-        <di:waypoint x="2382" y="900" />
+        <di:waypoint x="2878.0" y="530.0" />
+        <di:waypoint x="2960.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildTaskView_TaskViewReady_di" bpmnElement="Flow_BuildTaskView_TaskViewReady">
-        <di:waypoint x="2150" y="1030" />
-        <di:waypoint x="2232" y="1030" />
+        <di:waypoint x="2278.0" y="670.0" />
+        <di:waypoint x="2360.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_Cancelable_NotCancelableJoin_di" bpmnElement="Flow_Cancelable_NotCancelableJoin">
-        <di:waypoint x="2100" y="1185" />
-        <di:waypoint x="2100" y="1420" />
-        <di:waypoint x="2525" y="1420" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2109" y="1293" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2528.0" y="695.0" />
+        <di:waypoint x="2528.0" y="740.0" />
+        <di:waypoint x="3428.0" y="740.0" />
+        <di:waypoint x="3428.0" y="695.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildCanceledView_CanceledReady_di" bpmnElement="Flow_BuildCanceledView_CanceledReady">
-        <di:waypoint x="3650" y="1160" />
-        <di:waypoint x="3732" y="1160" />
+        <di:waypoint x="3178.0" y="670.0" />
+        <di:waypoint x="3260.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_NotCancelableJoin_BuildNotCancelable_di" bpmnElement="Flow_NotCancelableJoin_BuildNotCancelable">
-        <di:waypoint x="2575" y="1420" />
-        <di:waypoint x="2650" y="1420" />
+        <di:waypoint x="3453.0" y="670.0" />
+        <di:waypoint x="3528.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildNotCancelable_NotCancelableReady_di" bpmnElement="Flow_BuildNotCancelable_NotCancelableReady">
-        <di:waypoint x="2750" y="1420" />
-        <di:waypoint x="2832" y="1420" />
+        <di:waypoint x="3628.0" y="670.0" />
+        <di:waypoint x="3710.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CheckFollowUp_FollowUpAccepted_di" bpmnElement="Flow_CheckFollowUp_FollowUpAccepted">
-        <di:waypoint x="2150" y="1550" />
-        <di:waypoint x="2225" y="1550" />
+        <di:waypoint x="2428.0" y="950.0" />
+        <di:waypoint x="2503.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUpAccepted_CorrelateFollowUp_di" bpmnElement="Flow_FollowUpAccepted_CorrelateFollowUp">
-        <di:waypoint x="2275" y="1550" />
-        <di:waypoint x="2350" y="1550" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2304" y="1525" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2553.0" y="950.0" />
+        <di:waypoint x="2628.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUpAccepted_FollowUpErrorJoin_di" bpmnElement="Flow_FollowUpAccepted_FollowUpErrorJoin">
-        <di:waypoint x="2250" y="1575" />
-        <di:waypoint x="2250" y="1680" />
-        <di:waypoint x="2675" y="1680" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2259" y="1618" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2528.0" y="975.0" />
+        <di:waypoint x="2528.0" y="1020.0" />
+        <di:waypoint x="3428.0" y="1020.0" />
+        <di:waypoint x="3428.0" y="975.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CorrelateFollowUp_TaskWaiting_di" bpmnElement="Flow_CorrelateFollowUp_TaskWaiting">
-        <di:waypoint x="2450" y="1550" />
-        <di:waypoint x="2525" y="1550" />
+        <di:waypoint x="2728.0" y="950.0" />
+        <di:waypoint x="2803.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskWaiting_AwaitFollowUp_di" bpmnElement="Flow_TaskWaiting_AwaitFollowUp">
-        <di:waypoint x="2575" y="1550" />
-        <di:waypoint x="2650" y="1550" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2604" y="1525" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2853.0" y="950.0" />
+        <di:waypoint x="2928.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskWaiting_FollowUpErrorJoin_di" bpmnElement="Flow_TaskWaiting_FollowUpErrorJoin">
-        <di:waypoint x="2550" y="1575" />
-        <di:waypoint x="2550" y="1680" />
-        <di:waypoint x="2675" y="1680" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="2559" y="1618" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="2828.0" y="975.0" />
+        <di:waypoint x="2828.0" y="1020.0" />
+        <di:waypoint x="3428.0" y="1020.0" />
+        <di:waypoint x="3428.0" y="975.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitFollowUp_BuildFollowUpResponse_di" bpmnElement="Flow_AwaitFollowUp_BuildFollowUpResponse">
-        <di:waypoint x="2750" y="1550" />
-        <di:waypoint x="2800" y="1550" />
+        <di:waypoint x="3028.0" y="950.0" />
+        <di:waypoint x="3078.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildFollowUpResponse_FollowUpReady_di" bpmnElement="Flow_BuildFollowUpResponse_FollowUpReady">
-        <di:waypoint x="2900" y="1550" />
-        <di:waypoint x="2982" y="1550" />
+        <di:waypoint x="3178.0" y="950.0" />
+        <di:waypoint x="3260.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUpErrorJoin_BuildFollowUpError_di" bpmnElement="Flow_FollowUpErrorJoin_BuildFollowUpError">
-        <di:waypoint x="2725" y="1680" />
-        <di:waypoint x="2800" y="1680" />
+        <di:waypoint x="3453.0" y="950.0" />
+        <di:waypoint x="3528.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildFollowUpError_FollowUpErrorReady_di" bpmnElement="Flow_BuildFollowUpError_FollowUpErrorReady">
-        <di:waypoint x="2900" y="1680" />
-        <di:waypoint x="2982" y="1680" />
+        <di:waypoint x="3628.0" y="950.0" />
+        <di:waypoint x="3710.0" y="950.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Pool_a2a-task-update_di" bpmnElement="Pool_a2a-task-update" isHorizontal="true">
-        <dc:Bounds x="160" y="2208" width="1138" height="290" />
+        <dc:Bounds x="160.0" y="1110.0" width="486.0" height="140.0" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TurnFinished_di" bpmnElement="TurnFinished">
-        <dc:Bounds x="282" y="2400" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="268" y="2436" width="64" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="260.0" y="1162.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyOutcome_di" bpmnElement="ApplyOutcome">
-        <dc:Bounds x="400" y="2378" width="100" height="80" />
+        <dc:Bounds x="378.0" y="1140.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskUpdated_di" bpmnElement="TaskUpdated">
-        <dc:Bounds x="1182" y="2400" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1167" y="2436" width="66" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="560.0" y="1162.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_TurnFinished_ApplyOutcome_di" bpmnElement="Flow_TurnFinished_ApplyOutcome">
-        <di:waypoint x="318" y="2418" />
-        <di:waypoint x="400" y="2418" />
+        <di:waypoint x="296.0" y="1180.0" />
+        <di:waypoint x="378.0" y="1180.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Pool_a2a-await_di" bpmnElement="Pool_a2a-await" isHorizontal="true">
-        <dc:Bounds x="160" y="2538" width="1138" height="398" />
+        <dc:Bounds x="160.0" y="1310.0" width="1236.0" height="258.0" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AwaitRequested_di" bpmnElement="AwaitRequested">
-        <dc:Bounds x="282" y="2600" width="36" height="36" />
+        <dc:Bounds x="260.0" y="1362.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="263" y="2636" width="74" height="14" />
+          <dc:Bounds x="263.0" y="1408.0" width="74" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="LookAgain_di" bpmnElement="LookAgain" isMarkerVisible="true">
-        <dc:Bounds x="425" y="2593" width="50" height="50" />
+        <dc:Bounds x="403.0" y="1355.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadState_di" bpmnElement="ReadState">
-        <dc:Bounds x="550" y="2578" width="100" height="80" />
+        <dc:Bounds x="528.0" y="1340.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CheckState_di" bpmnElement="CheckState">
-        <dc:Bounds x="700" y="2578" width="100" height="80" />
+        <dc:Bounds x="678.0" y="1340.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="IsVisible_di" bpmnElement="IsVisible" isMarkerVisible="true">
-        <dc:Bounds x="875" y="2593" width="50" height="50" />
+        <dc:Bounds x="853.0" y="1355.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="881" y="2643" width="39" height="14" />
+          <dc:Bounds x="858.5" y="1333.0" width="39" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Visible_di" bpmnElement="Visible">
-        <dc:Bounds x="1032" y="2600" width="36" height="36" />
+        <dc:Bounds x="1010.0" y="1362.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1034" y="2636" width="33" height="14" />
+          <dc:Bounds x="1034.0" y="1408.0" width="33" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TriesLeft_di" bpmnElement="TriesLeft" isMarkerVisible="true">
-        <dc:Bounds x="1025" y="2723" width="50" height="50" />
+        <dc:Bounds x="1153.0" y="1355.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1026" y="2773" width="48" height="14" />
+          <dc:Bounds x="1143.0" y="1333.0" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitAMoment_di" bpmnElement="WaitAMoment">
-        <dc:Bounds x="1182" y="2730" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1163" y="2766" width="74" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1310.0" y="1362.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GaveUp_di" bpmnElement="GaveUp">
-        <dc:Bounds x="1182" y="2860" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1179" y="2896" width="42" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1310.0" y="1502.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_AwaitRequested_LookAgain_di" bpmnElement="Flow_AwaitRequested_LookAgain">
-        <di:waypoint x="318" y="2618" />
-        <di:waypoint x="425" y="2618" />
+        <di:waypoint x="296.0" y="1380.0" />
+        <di:waypoint x="403.0" y="1380.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WaitAMoment_LookAgain_di" bpmnElement="Flow_WaitAMoment_LookAgain">
-        <di:waypoint x="1200" y="2766" />
-        <di:waypoint x="1200" y="2826" />
-        <di:waypoint x="450" y="2826" />
-        <di:waypoint x="450" y="2643" />
+        <di:waypoint x="1328.0" y="1398.0" />
+        <di:waypoint x="1328.0" y="1450.0" />
+        <di:waypoint x="428.0" y="1450.0" />
+        <di:waypoint x="428.0" y="1405.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_LookAgain_ReadState_di" bpmnElement="Flow_LookAgain_ReadState">
-        <di:waypoint x="475" y="2618" />
-        <di:waypoint x="550" y="2618" />
+        <di:waypoint x="453.0" y="1380.0" />
+        <di:waypoint x="528.0" y="1380.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadState_CheckState_di" bpmnElement="Flow_ReadState_CheckState">
-        <di:waypoint x="650" y="2618" />
-        <di:waypoint x="700" y="2618" />
+        <di:waypoint x="628.0" y="1380.0" />
+        <di:waypoint x="678.0" y="1380.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CheckState_IsVisible_di" bpmnElement="Flow_CheckState_IsVisible">
-        <di:waypoint x="800" y="2618" />
-        <di:waypoint x="875" y="2618" />
+        <di:waypoint x="778.0" y="1380.0" />
+        <di:waypoint x="853.0" y="1380.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsVisible_Visible_di" bpmnElement="Flow_IsVisible_Visible">
-        <di:waypoint x="925" y="2618" />
-        <di:waypoint x="1032" y="2618" />
+        <di:waypoint x="903.0" y="1380.0" />
+        <di:waypoint x="1010.0" y="1380.0" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="970" y="2593" width="18" height="14" />
+          <dc:Bounds x="970.0" y="1365.0" width="18" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_IsVisible_TriesLeft_di" bpmnElement="Flow_IsVisible_TriesLeft">
-        <di:waypoint x="900" y="2643" />
-        <di:waypoint x="900" y="2748" />
-        <di:waypoint x="1025" y="2748" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="909" y="2686" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="878.0" y="1405.0" />
+        <di:waypoint x="878.0" y="1450.0" />
+        <di:waypoint x="1178.0" y="1450.0" />
+        <di:waypoint x="1178.0" y="1405.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TriesLeft_WaitAMoment_di" bpmnElement="Flow_TriesLeft_WaitAMoment">
-        <di:waypoint x="1075" y="2748" />
-        <di:waypoint x="1182" y="2748" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1120" y="2723" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1203.0" y="1380.0" />
+        <di:waypoint x="1310.0" y="1380.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TriesLeft_GaveUp_di" bpmnElement="Flow_TriesLeft_GaveUp">
-        <di:waypoint x="1050" y="2773" />
-        <di:waypoint x="1050" y="2878" />
-        <di:waypoint x="1182" y="2878" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="1059" y="2816" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1178.0" y="1405.0" />
+        <di:waypoint x="1178.0" y="1520.0" />
+        <di:waypoint x="1310.0" y="1520.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Pool_a2a-correlate_di" bpmnElement="Pool_a2a-correlate" isHorizontal="true">
-        <dc:Bounds x="160" y="2976" width="836" height="430" />
+        <dc:Bounds x="160.0" y="1628.0" width="1236.0" height="420.0" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateRequested_di" bpmnElement="CorrelateRequested">
-        <dc:Bounds x="250" y="3038" width="36" height="36" />
+        <dc:Bounds x="260.0" y="1680.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="241" y="3074" width="54" height="27" />
+          <dc:Bounds x="241.0" y="1726.0" width="54" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ResetAttempts_di" bpmnElement="ResetAttempts">
-        <dc:Bounds x="330" y="3016" width="100" height="80" />
+        <dc:Bounds x="378.0" y="1658.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TryJoin_di" bpmnElement="TryJoin" isMarkerVisible="true">
-        <dc:Bounds x="460" y="3031" width="50" height="50" />
+        <dc:Bounds x="553.0" y="1673.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="450" y="3081" width="70" height="14" />
+          <dc:Bounds x="543.0" y="1651.0" width="70" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CorrelateMessage_di" bpmnElement="CorrelateMessage">
-        <dc:Bounds x="560" y="3016" width="100" height="80" />
+        <dc:Bounds x="678.0" y="1658.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkCorrelated_di" bpmnElement="MarkCorrelated">
-        <dc:Bounds x="720" y="3016" width="100" height="80" />
+        <dc:Bounds x="828.0" y="1658.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Correlated_di" bpmnElement="Correlated">
-        <dc:Bounds x="880" y="3038" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="872" y="3074" width="52" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1010.0" y="1680.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CountAttempt_di" bpmnElement="CountAttempt">
-        <dc:Bounds x="560" y="3166" width="100" height="80" />
+        <dc:Bounds x="828.0" y="1798.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AttemptsLeft_di" bpmnElement="AttemptsLeft" isMarkerVisible="true">
-        <dc:Bounds x="720" y="3181" width="50" height="50" />
+        <dc:Bounds x="1003.0" y="1813.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="711" y="3157" width="68" height="14" />
+          <dc:Bounds x="979.0" y="1791.0" width="98" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitBeforeRetry_di" bpmnElement="WaitBeforeRetry">
-        <dc:Bounds x="820" y="3188" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="798" y="3224" width="81" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1160.0" y="1820.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NotCorrelated_di" bpmnElement="NotCorrelated">
-        <dc:Bounds x="880" y="3308" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="863" y="3344" width="70" height="14" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="1310.0" y="1960.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MarkNotCorrelated_di" bpmnElement="MarkNotCorrelated">
-        <dc:Bounds x="760" y="3286" width="100" height="80" />
+        <dc:Bounds x="1128.0" y="1938.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="NoSubscription_di" bpmnElement="NoSubscription">
-        <dc:Bounds x="592" y="3078" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="572" y="3114" width="76" height="27" />
-        </bpmndi:BPMNLabel>
+        <dc:Bounds x="710.0" y="1720.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_CorrelateRequested_ResetAttempts_di" bpmnElement="Flow_CorrelateRequested_ResetAttempts">
-        <di:waypoint x="286" y="3056" />
-        <di:waypoint x="330" y="3056" />
+        <di:waypoint x="296.0" y="1698.0" />
+        <di:waypoint x="378.0" y="1698.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ResetAttempts_TryJoin_di" bpmnElement="Flow_ResetAttempts_TryJoin">
-        <di:waypoint x="430" y="3056" />
-        <di:waypoint x="460" y="3056" />
+        <di:waypoint x="478.0" y="1698.0" />
+        <di:waypoint x="553.0" y="1698.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WaitBeforeRetry_TryJoin_di" bpmnElement="Flow_WaitBeforeRetry_TryJoin">
-        <di:waypoint x="838" y="3188" />
-        <di:waypoint x="838" y="3000" />
-        <di:waypoint x="485" y="3000" />
-        <di:waypoint x="485" y="3031" />
+        <di:waypoint x="1178.0" y="1856.0" />
+        <di:waypoint x="1178.0" y="1908.0" />
+        <di:waypoint x="578.0" y="1908.0" />
+        <di:waypoint x="578.0" y="1723.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TryJoin_CorrelateMessage_di" bpmnElement="Flow_TryJoin_CorrelateMessage">
-        <di:waypoint x="510" y="3056" />
-        <di:waypoint x="560" y="3056" />
+        <di:waypoint x="603.0" y="1698.0" />
+        <di:waypoint x="678.0" y="1698.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CorrelateMessage_MarkCorrelated_di" bpmnElement="Flow_CorrelateMessage_MarkCorrelated">
-        <di:waypoint x="660" y="3056" />
-        <di:waypoint x="720" y="3056" />
+        <di:waypoint x="778.0" y="1698.0" />
+        <di:waypoint x="828.0" y="1698.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkCorrelated_Correlated_di" bpmnElement="Flow_MarkCorrelated_Correlated">
-        <di:waypoint x="820" y="3056" />
-        <di:waypoint x="880" y="3056" />
+        <di:waypoint x="928.0" y="1698.0" />
+        <di:waypoint x="1010.0" y="1698.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_NoSubscription_CountAttempt_di" bpmnElement="Flow_NoSubscription_CountAttempt">
-        <di:waypoint x="610" y="3114" />
-        <di:waypoint x="610" y="3166" />
+        <di:waypoint x="728.0" y="1756.0" />
+        <di:waypoint x="728.0" y="1838.0" />
+        <di:waypoint x="828.0" y="1838.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CountAttempt_AttemptsLeft_di" bpmnElement="Flow_CountAttempt_AttemptsLeft">
-        <di:waypoint x="660" y="3206" />
-        <di:waypoint x="720" y="3206" />
+        <di:waypoint x="928.0" y="1838.0" />
+        <di:waypoint x="1003.0" y="1838.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AttemptsLeft_WaitBeforeRetry_di" bpmnElement="Flow_AttemptsLeft_WaitBeforeRetry">
-        <di:waypoint x="770" y="3206" />
-        <di:waypoint x="820" y="3206" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="786" y="3181" width="18" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1053.0" y="1838.0" />
+        <di:waypoint x="1160.0" y="1838.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AttemptsLeft_MarkNotCorrelated_di" bpmnElement="Flow_AttemptsLeft_MarkNotCorrelated">
-        <di:waypoint x="745" y="3231" />
-        <di:waypoint x="745" y="3326" />
-        <di:waypoint x="760" y="3326" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="754" y="3269" width="13" height="14" />
-        </bpmndi:BPMNLabel>
+        <di:waypoint x="1028.0" y="1863.0" />
+        <di:waypoint x="1028.0" y="1978.0" />
+        <di:waypoint x="1128.0" y="1978.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_MarkNotCorrelated_NotCorrelated_di" bpmnElement="Flow_MarkNotCorrelated_NotCorrelated">
-        <di:waypoint x="860" y="3326" />
-        <di:waypoint x="880" y="3326" />
+        <di:waypoint x="1228.0" y="1978.0" />
+        <di:waypoint x="1310.0" y="1978.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ApplyOutcome_TaskUpdated_di" bpmnElement="Flow_ApplyOutcome_TaskUpdated">
-        <di:waypoint x="500.0" y="2418.0" />
-        <di:waypoint x="841.0" y="2418.0" />
-        <di:waypoint x="841.0" y="2418.0" />
-        <di:waypoint x="1182.0" y="2418.0" />
+        <di:waypoint x="478.0" y="1180.0" />
+        <di:waypoint x="560.0" y="1180.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PrepareNewTask_CreateTask_di" bpmnElement="Flow_PrepareNewTask_CreateTask">
-        <di:waypoint x="1400.0" y="640.0" />
-        <di:waypoint x="1725.0" y="640.0" />
-        <di:waypoint x="1725.0" y="640.0" />
-        <di:waypoint x="2050.0" y="640.0" />
+        <di:waypoint x="1378.0" y="390.0" />
+        <di:waypoint x="1428.0" y="390.0" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="LookupTimeLeft_di" bpmnElement="LookupTimeLeft">
-        <dc:Bounds x="3918.0" y="1115.0" width="50" height="50" />
+      <bpmndi:BPMNShape id="LookupTimeLeft_di" bpmnElement="LookupTimeLeft" isMarkerVisible="true">
+        <dc:Bounds x="2353.0" y="505.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2318.5" y="483.0" width="119" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitForIndex_di" bpmnElement="WaitForIndex">
-        <dc:Bounds x="4068.0" y="1122.0" width="36" height="36" />
+        <dc:Bounds x="2510.0" y="512.0" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="LookupJoin_di" bpmnElement="LookupJoin">
-        <dc:Bounds x="1407.0" y="1012.0" width="36" height="36" />
+      <bpmndi:BPMNShape id="LookupJoin_di" bpmnElement="LookupJoin" isMarkerVisible="true">
+        <dc:Bounds x="1453.0" y="505.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_PrepareLookup_LookupJoin_di" bpmnElement="Flow_PrepareLookup_LookupJoin">
-        <di:waypoint x="1400.0" y="1030.0" />
-        <di:waypoint x="1403.5" y="1030.0" />
-        <di:waypoint x="1403.5" y="1030.0" />
-        <di:waypoint x="1407.0" y="1030.0" />
+        <di:waypoint x="1378.0" y="530.0" />
+        <di:waypoint x="1453.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_LookupJoin_FindTask_di" bpmnElement="Flow_LookupJoin_FindTask">
-        <di:waypoint x="1443.0" y="1030.0" />
-        <di:waypoint x="1446.5" y="1030.0" />
-        <di:waypoint x="1446.5" y="1030.0" />
-        <di:waypoint x="1450.0" y="1030.0" />
+        <di:waypoint x="1503.0" y="530.0" />
+        <di:waypoint x="1578.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_TaskKnown_LookupTimeLeft_di" bpmnElement="Flow_TaskKnown_LookupTimeLeft">
-        <di:waypoint x="1675.0" y="1030.0" />
-        <di:waypoint x="2796.5" y="1030.0" />
-        <di:waypoint x="2796.5" y="1140.0" />
-        <di:waypoint x="3918.0" y="1140.0" />
+        <di:waypoint x="1778.0" y="555.0" />
+        <di:waypoint x="1778.0" y="600.0" />
+        <di:waypoint x="2378.0" y="600.0" />
+        <di:waypoint x="2378.0" y="555.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_LookupTimeLeft_WaitForIndex_di" bpmnElement="Flow_LookupTimeLeft_WaitForIndex">
-        <di:waypoint x="3968.0" y="1140.0" />
-        <di:waypoint x="4018.0" y="1140.0" />
-        <di:waypoint x="4018.0" y="1140.0" />
-        <di:waypoint x="4068.0" y="1140.0" />
+        <di:waypoint x="2403.0" y="530.0" />
+        <di:waypoint x="2510.0" y="530.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_LookupTimeLeft_NotFoundJoin_di" bpmnElement="Flow_LookupTimeLeft_NotFoundJoin">
-        <di:waypoint x="3968.0" y="1140.0" />
-        <di:waypoint x="3021.5" y="1140.0" />
-        <di:waypoint x="3021.5" y="900.0" />
-        <di:waypoint x="2075.0" y="900.0" />
+        <di:waypoint x="2378.0" y="555.0" />
+        <di:waypoint x="2378.0" y="600.0" />
+        <di:waypoint x="2678.0" y="600.0" />
+        <di:waypoint x="2678.0" y="555.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WaitForIndex_LookupJoin_di" bpmnElement="Flow_WaitForIndex_LookupJoin">
-        <di:waypoint x="4104.0" y="1140.0" />
-        <di:waypoint x="2755.5" y="1140.0" />
-        <di:waypoint x="2755.5" y="1030.0" />
-        <di:waypoint x="1407.0" y="1030.0" />
+        <di:waypoint x="2528.0" y="548.0" />
+        <di:waypoint x="2528.0" y="600.0" />
+        <di:waypoint x="1478.0" y="600.0" />
+        <di:waypoint x="1478.0" y="555.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="RequestCancellation_di" bpmnElement="RequestCancellation">
-        <dc:Bounds x="2200" y="1120" width="100" height="80" />
+        <dc:Bounds x="2628.0" y="630.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="CancellationOutcome_di" bpmnElement="CancellationOutcome">
-        <dc:Bounds x="3100" y="1135" width="50" height="50" />
+      <bpmndi:BPMNShape id="CancellationOutcome_di" bpmnElement="CancellationOutcome" isMarkerVisible="true">
+        <dc:Bounds x="2953.0" y="645.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2890.5" y="623.0" width="175" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CancellationTimeout_di" bpmnElement="CancellationTimeout">
-        <dc:Bounds x="3100" y="1240" width="100" height="80" />
+        <dc:Bounds x="3228.0" y="770.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CancellationErrorReady_di" bpmnElement="CancellationErrorReady">
-        <dc:Bounds x="3282" y="1262" width="36" height="36" />
+        <dc:Bounds x="3410.0" y="792.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_Cancelable_RequestCancellation_di" bpmnElement="Flow_Cancelable_RequestCancellation">
-        <di:waypoint x="2125.0" y="1160.0" />
-        <di:waypoint x="2162.5" y="1160.0" />
-        <di:waypoint x="2162.5" y="1160.0" />
-        <di:waypoint x="2200.0" y="1160.0" />
+        <di:waypoint x="2553.0" y="670.0" />
+        <di:waypoint x="2628.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_RequestCancellation_AwaitCanceled_di" bpmnElement="Flow_RequestCancellation_AwaitCanceled">
-        <di:waypoint x="2300.0" y="1160.0" />
-        <di:waypoint x="2550.0" y="1160.0" />
-        <di:waypoint x="2550.0" y="1160.0" />
-        <di:waypoint x="2800.0" y="1160.0" />
+        <di:waypoint x="2728.0" y="670.0" />
+        <di:waypoint x="2778.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AwaitCanceled_CancellationOutcome_di" bpmnElement="Flow_AwaitCanceled_CancellationOutcome">
-        <di:waypoint x="2900.0" y="1160.0" />
-        <di:waypoint x="3000.0" y="1160.0" />
-        <di:waypoint x="3000.0" y="1160.0" />
-        <di:waypoint x="3100.0" y="1160.0" />
+        <di:waypoint x="2878.0" y="670.0" />
+        <di:waypoint x="2953.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CancellationOutcome_BuildCanceledView_di" bpmnElement="Flow_CancellationOutcome_BuildCanceledView">
-        <di:waypoint x="3150.0" y="1160.0" />
-        <di:waypoint x="3350.0" y="1160.0" />
-        <di:waypoint x="3350.0" y="1160.0" />
-        <di:waypoint x="3550.0" y="1160.0" />
+        <di:waypoint x="3003.0" y="670.0" />
+        <di:waypoint x="3078.0" y="670.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CancellationOutcome_NotCancelableJoin_di" bpmnElement="Flow_CancellationOutcome_NotCancelableJoin">
-        <di:waypoint x="3150.0" y="1160.0" />
-        <di:waypoint x="2837.5" y="1160.0" />
-        <di:waypoint x="2837.5" y="1420.0" />
-        <di:waypoint x="2525.0" y="1420.0" />
+        <di:waypoint x="2978.0" y="695.0" />
+        <di:waypoint x="2978.0" y="740.0" />
+        <di:waypoint x="3428.0" y="740.0" />
+        <di:waypoint x="3428.0" y="695.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CancellationOutcome_CancellationTimeout_di" bpmnElement="Flow_CancellationOutcome_CancellationTimeout">
-        <di:waypoint x="3150.0" y="1160.0" />
-        <di:waypoint x="3125.0" y="1160.0" />
-        <di:waypoint x="3125.0" y="1280.0" />
-        <di:waypoint x="3100.0" y="1280.0" />
+        <di:waypoint x="2978.0" y="695.0" />
+        <di:waypoint x="2978.0" y="810.0" />
+        <di:waypoint x="3228.0" y="810.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CancellationTimeout_CancellationErrorReady_di" bpmnElement="Flow_CancellationTimeout_CancellationErrorReady">
-        <di:waypoint x="3200.0" y="1280.0" />
-        <di:waypoint x="3241.0" y="1280.0" />
-        <di:waypoint x="3241.0" y="1280.0" />
-        <di:waypoint x="3282.0" y="1280.0" />
+        <di:waypoint x="3328.0" y="810.0" />
+        <di:waypoint x="3410.0" y="810.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="CollectTaskList_di" bpmnElement="CollectTaskList">
-        <dc:Bounds x="1450" y="340" width="100" height="80" />
+        <dc:Bounds x="1428.0" y="210.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ListCollected_di" bpmnElement="ListCollected">
-        <dc:Bounds x="1625" y="355" width="50" height="50" />
+      <bpmndi:BPMNShape id="ListCollected_di" bpmnElement="ListCollected" isMarkerVisible="true">
+        <dc:Bounds x="1603.0" y="225.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1540.5" y="203.0" width="175" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BuildListFailure_di" bpmnElement="BuildListFailure">
-        <dc:Bounds x="1750" y="340" width="100" height="80" />
+        <dc:Bounds x="2328.0" y="350.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ListFailureReady_di" bpmnElement="ListFailureReady">
-        <dc:Bounds x="1925" y="355" width="36" height="36" />
+        <dc:Bounds x="2510.0" y="372.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_PrepareList_CollectTaskList_di" bpmnElement="Flow_PrepareList_CollectTaskList">
-        <di:waypoint x="1400.0" y="380.0" />
-        <di:waypoint x="1425.0" y="380.0" />
-        <di:waypoint x="1425.0" y="380.0" />
-        <di:waypoint x="1450.0" y="380.0" />
+        <di:waypoint x="1378.0" y="250.0" />
+        <di:waypoint x="1428.0" y="250.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CollectTaskList_ListCollected_di" bpmnElement="Flow_CollectTaskList_ListCollected">
-        <di:waypoint x="1550.0" y="380.0" />
-        <di:waypoint x="1587.5" y="380.0" />
-        <di:waypoint x="1587.5" y="380.0" />
-        <di:waypoint x="1625.0" y="380.0" />
+        <di:waypoint x="1528.0" y="250.0" />
+        <di:waypoint x="1603.0" y="250.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListCollected_BuildTaskList_di" bpmnElement="Flow_ListCollected_BuildTaskList">
-        <di:waypoint x="1675.0" y="380.0" />
-        <di:waypoint x="1862.5" y="380.0" />
-        <di:waypoint x="1862.5" y="380.0" />
-        <di:waypoint x="2050.0" y="380.0" />
+        <di:waypoint x="1653.0" y="250.0" />
+        <di:waypoint x="1728.0" y="250.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListCollected_BuildListFailure_di" bpmnElement="Flow_ListCollected_BuildListFailure">
-        <di:waypoint x="1675.0" y="380.0" />
-        <di:waypoint x="1712.5" y="380.0" />
-        <di:waypoint x="1712.5" y="380.0" />
-        <di:waypoint x="1750.0" y="380.0" />
+        <di:waypoint x="1653.0" y="250.0" />
+        <di:waypoint x="1703.0" y="250.0" />
+        <di:waypoint x="1703.0" y="320.0" />
+        <di:waypoint x="2303.0" y="320.0" />
+        <di:waypoint x="2303.0" y="390.0" />
+        <di:waypoint x="2328.0" y="390.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_BuildListFailure_ListFailureReady_di" bpmnElement="Flow_BuildListFailure_ListFailureReady">
-        <di:waypoint x="1850.0" y="380.0" />
-        <di:waypoint x="1887.5" y="380.0" />
-        <di:waypoint x="1887.5" y="373.0" />
-        <di:waypoint x="1925.0" y="373.0" />
+        <di:waypoint x="2428.0" y="390.0" />
+        <di:waypoint x="2510.0" y="390.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Pool_a2a-list-collect_di" bpmnElement="Pool_a2a-list-collect" isHorizontal="true">
-        <dc:Bounds x="60" y="3586.0" width="3978.0" height="470.0" />
+        <dc:Bounds x="60.0" y="2108.0" width="1986.0" height="420.0" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ListScanRequested_di" bpmnElement="ListScanRequested">
-        <dc:Bounds x="150" y="3768" width="36" height="36" />
+        <dc:Bounds x="160.0" y="2160.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="StartListScan_di" bpmnElement="StartListScan">
-        <dc:Bounds x="230" y="3746" width="100" height="80" />
+        <dc:Bounds x="278.0" y="2138.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ListProcessPageJoin_di" bpmnElement="ListProcessPageJoin">
-        <dc:Bounds x="350" y="3761" width="50" height="50" />
+      <bpmndi:BPMNShape id="ListProcessPageJoin_di" bpmnElement="ListProcessPageJoin" isMarkerVisible="true">
+        <dc:Bounds x="453.0" y="2153.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SearchTasks_di" bpmnElement="SearchTasks">
-        <dc:Bounds x="430" y="3746" width="100" height="80" />
+        <dc:Bounds x="578.0" y="2138.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="AnyTasks_di" bpmnElement="AnyTasks">
-        <dc:Bounds x="580" y="3761" width="50" height="50" />
+      <bpmndi:BPMNShape id="AnyTasks_di" bpmnElement="AnyTasks" isMarkerVisible="true">
+        <dc:Bounds x="753.0" y="2153.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="743.0" y="2131.0" width="70" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ListVariablesJoin_di" bpmnElement="ListVariablesJoin">
-        <dc:Bounds x="660" y="3761" width="50" height="50" />
+      <bpmndi:BPMNShape id="ListVariablesJoin_di" bpmnElement="ListVariablesJoin" isMarkerVisible="true">
+        <dc:Bounds x="903.0" y="2153.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReadTasks_di" bpmnElement="ReadTasks">
-        <dc:Bounds x="740" y="3746" width="100" height="80" />
+        <dc:Bounds x="1028.0" y="2138.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ListBatchJoin_di" bpmnElement="ListBatchJoin">
-        <dc:Bounds x="880" y="3761" width="50" height="50" />
+      <bpmndi:BPMNShape id="ListBatchJoin_di" bpmnElement="ListBatchJoin" isMarkerVisible="true">
+        <dc:Bounds x="1203.0" y="2153.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="CollectListBatch_di" bpmnElement="CollectListBatch">
-        <dc:Bounds x="960" y="3746" width="100" height="80" />
+        <dc:Bounds x="1328.0" y="2138.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ListScanDecision_di" bpmnElement="ListScanDecision">
-        <dc:Bounds x="1100" y="3761" width="50" height="50" />
+      <bpmndi:BPMNShape id="ListScanDecision_di" bpmnElement="ListScanDecision" isMarkerVisible="true">
+        <dc:Bounds x="1503.0" y="2153.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1482.5" y="2131.0" width="91" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FinishListScan_di" bpmnElement="FinishListScan">
-        <dc:Bounds x="1240" y="3746" width="100" height="80" />
+        <dc:Bounds x="1628.0" y="2138.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ListResultJoin_di" bpmnElement="ListResultJoin">
-        <dc:Bounds x="1400" y="3761" width="50" height="50" />
+      <bpmndi:BPMNShape id="ListResultJoin_di" bpmnElement="ListResultJoin" isMarkerVisible="true">
+        <dc:Bounds x="1803.0" y="2153.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ListScanReady_di" bpmnElement="ListScanReady">
-        <dc:Bounds x="1480" y="3768" width="36" height="36" />
+        <dc:Bounds x="1960.0" y="2160.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="WaitListVariables_di" bpmnElement="WaitListVariables">
-        <dc:Bounds x="1107" y="3908" width="36" height="36" />
+        <dc:Bounds x="460.0" y="2300.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FailListScan_di" bpmnElement="FailListScan">
-        <dc:Bounds x="1240" y="3896" width="100" height="80" />
+        <dc:Bounds x="428.0" y="2418.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_ListScanRequested_StartListScan_di" bpmnElement="Flow_ListScanRequested_StartListScan">
-        <di:waypoint x="186" y="3786" />
-        <di:waypoint x="230" y="3786" />
+        <di:waypoint x="196.0" y="2178.0" />
+        <di:waypoint x="278.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_StartListScan_ListProcessPageJoin_di" bpmnElement="Flow_StartListScan_ListProcessPageJoin">
-        <di:waypoint x="330" y="3786" />
-        <di:waypoint x="350" y="3786" />
+        <di:waypoint x="378.0" y="2178.0" />
+        <di:waypoint x="453.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListProcessPageJoin_SearchTasks_di" bpmnElement="Flow_ListProcessPageJoin_SearchTasks">
-        <di:waypoint x="400" y="3786" />
-        <di:waypoint x="430" y="3786" />
+        <di:waypoint x="503.0" y="2178.0" />
+        <di:waypoint x="578.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_SearchTasks_AnyTasks_di" bpmnElement="Flow_SearchTasks_AnyTasks">
-        <di:waypoint x="530" y="3786" />
-        <di:waypoint x="580" y="3786" />
+        <di:waypoint x="678.0" y="2178.0" />
+        <di:waypoint x="753.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AnyTasks_ListVariablesJoin_di" bpmnElement="Flow_AnyTasks_ListVariablesJoin">
-        <di:waypoint x="630" y="3786" />
-        <di:waypoint x="660" y="3786" />
+        <di:waypoint x="803.0" y="2178.0" />
+        <di:waypoint x="903.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListVariablesJoin_ReadTasks_di" bpmnElement="Flow_ListVariablesJoin_ReadTasks">
-        <di:waypoint x="710" y="3786" />
-        <di:waypoint x="740" y="3786" />
+        <di:waypoint x="953.0" y="2178.0" />
+        <di:waypoint x="1028.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_AnyTasks_ListBatchJoin_di" bpmnElement="Flow_AnyTasks_ListBatchJoin">
-        <di:waypoint x="605" y="3761" />
-        <di:waypoint x="605" y="3701" />
-        <di:waypoint x="905" y="3701" />
-        <di:waypoint x="905" y="3761" />
+        <di:waypoint x="778.0" y="2203.0" />
+        <di:waypoint x="778.0" y="2248.0" />
+        <di:waypoint x="1228.0" y="2248.0" />
+        <di:waypoint x="1228.0" y="2203.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReadTasks_ListBatchJoin_di" bpmnElement="Flow_ReadTasks_ListBatchJoin">
-        <di:waypoint x="840" y="3786" />
-        <di:waypoint x="880" y="3786" />
+        <di:waypoint x="1128.0" y="2178.0" />
+        <di:waypoint x="1203.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListBatchJoin_CollectListBatch_di" bpmnElement="Flow_ListBatchJoin_CollectListBatch">
-        <di:waypoint x="930" y="3786" />
-        <di:waypoint x="960" y="3786" />
+        <di:waypoint x="1253.0" y="2178.0" />
+        <di:waypoint x="1328.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_CollectListBatch_ListScanDecision_di" bpmnElement="Flow_CollectListBatch_ListScanDecision">
-        <di:waypoint x="1060" y="3786" />
-        <di:waypoint x="1100" y="3786" />
+        <di:waypoint x="1428.0" y="2178.0" />
+        <di:waypoint x="1503.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListScanDecision_FinishListScan_di" bpmnElement="Flow_ListScanDecision_FinishListScan">
-        <di:waypoint x="1150" y="3786" />
-        <di:waypoint x="1240" y="3786" />
+        <di:waypoint x="1553.0" y="2178.0" />
+        <di:waypoint x="1628.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListScanDecision_ListProcessPageJoin_di" bpmnElement="Flow_ListScanDecision_ListProcessPageJoin">
-        <di:waypoint x="1125" y="3761" />
-        <di:waypoint x="1125" y="3661" />
-        <di:waypoint x="375" y="3661" />
-        <di:waypoint x="375" y="3761" />
+        <di:waypoint x="1528.0" y="2203.0" />
+        <di:waypoint x="1528.0" y="2248.0" />
+        <di:waypoint x="478.0" y="2248.0" />
+        <di:waypoint x="478.0" y="2203.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListScanDecision_WaitListVariables_di" bpmnElement="Flow_ListScanDecision_WaitListVariables">
-        <di:waypoint x="1150" y="3786" />
-        <di:waypoint x="1128" y="3786" />
-        <di:waypoint x="1128" y="3926" />
-        <di:waypoint x="1107" y="3926" />
+        <di:waypoint x="1528.0" y="2203.0" />
+        <di:waypoint x="1528.0" y="2360.0" />
+        <di:waypoint x="433.0" y="2360.0" />
+        <di:waypoint x="433.0" y="2336.0" />
+        <di:waypoint x="478.0" y="2336.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="935.5" y="2340.0" width="90" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_WaitListVariables_ListVariablesJoin_di" bpmnElement="Flow_WaitListVariables_ListVariablesJoin">
-        <di:waypoint x="1125" y="3944" />
-        <di:waypoint x="1125" y="4004" />
-        <di:waypoint x="685" y="4004" />
-        <di:waypoint x="685" y="3811" />
+        <di:waypoint x="496.0" y="2318.0" />
+        <di:waypoint x="928.0" y="2318.0" />
+        <di:waypoint x="928.0" y="2203.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListScanDecision_FailListScan_di" bpmnElement="Flow_ListScanDecision_FailListScan">
-        <di:waypoint x="1150" y="3786" />
-        <di:waypoint x="1195" y="3786" />
-        <di:waypoint x="1195" y="3936" />
-        <di:waypoint x="1240" y="3936" />
+        <di:waypoint x="1553.0" y="2178.0" />
+        <di:waypoint x="1553.0" y="2390.0" />
+        <di:waypoint x="600.0" y="2390.0" />
+        <di:waypoint x="600.0" y="2418.0" />
+        <di:waypoint x="478.0" y="2418.0" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1036.5" y="2370.0" width="80" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FinishListScan_ListResultJoin_di" bpmnElement="Flow_FinishListScan_ListResultJoin">
-        <di:waypoint x="1340" y="3786" />
-        <di:waypoint x="1400" y="3786" />
+        <di:waypoint x="1728.0" y="2178.0" />
+        <di:waypoint x="1803.0" y="2178.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FailListScan_ListResultJoin_di" bpmnElement="Flow_FailListScan_ListResultJoin">
-        <di:waypoint x="1340" y="3936" />
-        <di:waypoint x="1370" y="3936" />
-        <di:waypoint x="1370" y="3786" />
-        <di:waypoint x="1400" y="3786" />
+        <di:waypoint x="528.0" y="2458.0" />
+        <di:waypoint x="1828.0" y="2458.0" />
+        <di:waypoint x="1828.0" y="2203.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ListResultJoin_ListScanReady_di" bpmnElement="Flow_ListResultJoin_ListScanReady">
-        <di:waypoint x="1450" y="3786" />
-        <di:waypoint x="1480" y="3786" />
+        <di:waypoint x="1853.0" y="2178.0" />
+        <di:waypoint x="1960.0" y="2178.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="CardRequested_di" bpmnElement="CardRequested">
+        <dc:Bounds x="260.0" y="232.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CardServed_di" bpmnElement="CardServed">
+        <dc:Bounds x="410.0" y="232.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_CardRequested_CardServed_di" bpmnElement="Flow_CardRequested_CardServed">
+        <di:waypoint x="296.0" y="250.0" />
+        <di:waypoint x="410.0" y="250.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from failure_gaps import B, Z, correlation_fault, observe_fault
 
-SOURCE = Path(__file__).resolve().parents[2] / "blueprint/profiles/basic/a2a-protocol.bpmn"
+SOURCE = Path(__file__).resolve().parents[2] / "blueprint/profiles/basic/01-a2a-server.bpmn"
 
 
 class FailureGapTest(unittest.TestCase):

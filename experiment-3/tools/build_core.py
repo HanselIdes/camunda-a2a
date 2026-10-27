@@ -11,6 +11,8 @@ import xml.etree.ElementTree as ET
 
 from bpmn_gen import feel
 from bpmn_gen.lib import Proc
+from layout_bpmn import layout_xml
+from gen_card import skills_feel, skills_from_bpmn
 
 ROOT = Path(__file__).resolve().parents[1]
 B = "http://www.omg.org/spec/BPMN/20100524/MODEL"
@@ -343,9 +345,80 @@ def pagination(root):
     plane.extend(helper.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane"))
 
 
-def build(authentication):
+def card_response_expression(agent_path):
+    skills = skills_feel(skills_from_bpmn(agent_path))
+    return feel.one("""={statusCode: 200, headers: {"Content-Type": "application/json"},
+      body: {name: "Synthetic card-dispute reviewer", version: "0.1.0",
+        description: "Non-production community demonstration. Reconciles synthetic charges for human review; "
+                     + "performs no financial actions.",
+        provider: {organization: "HanselIdes", url: "https://github.com/HanselIdes/camunda-a2a"},
+        supportedInterfaces: [{url: "{{secrets.A2A_RPC_URL}}", protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
+        capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
+        defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain", "application/json"],
+        securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-A2A-Api-Key"}}},
+        securityRequirements: [{schemes: {a2aApiKey: {}}}],
+        skills: %s}}""" % skills)
+
+
+def add_card_endpoint(root, agent_path):
+    process = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
+    message = ET.Element(f"{{{B}}}message", {
+        "id": "AgentCardRequestMessage",
+        "name": "Agent Card request",
+    })
+    diagram = root.find(f"{{{D}}}BPMNDiagram")
+    if diagram is None:
+        raise ValueError("Protocol definitions must contain a BPMN diagram")
+    root.insert(list(root).index(diagram), message)
+    start = ET.SubElement(process, f"{{{B}}}startEvent", {
+        "id": "CardRequested",
+        "name": "Agent Card requested",
+        f"{{{Z}}}modelerTemplate": "dev.hansel.a2a.core.card.v1",
+        f"{{{Z}}}modelerTemplateVersion": "1",
+    })
+    extension = ET.SubElement(start, f"{{{B}}}extensionElements")
+    properties = ET.SubElement(extension, f"{{{Z}}}properties")
+    for name, value in {
+        "inbound.type": "io.camunda:webhook:1",
+        "inbound.context": "a2a-card",
+        "inbound.auth.type": "NONE",
+        "inbound.method": "get",
+        "inbound.responseExpression": card_response_expression(agent_path),
+    }.items():
+        ET.SubElement(properties, f"{{{Z}}}property", {"name": name, "value": value})
+    end = ET.SubElement(process, f"{{{B}}}endEvent", {"id": "CardServed", "name": "Card served"})
+    flow_id = "Flow_CardRequested_CardServed"
+    ET.SubElement(process, f"{{{B}}}sequenceFlow", {
+        "id": flow_id, "sourceRef": "CardRequested", "targetRef": "CardServed"
+    })
+    ET.SubElement(start, f"{{{B}}}outgoing").text = flow_id
+    ET.SubElement(end, f"{{{B}}}incoming").text = flow_id
+    ET.SubElement(start, f"{{{B}}}messageEventDefinition", {
+        "id": "CardRequested_message",
+        "messageRef": message.get("id"),
+    })
+
+
+def order_definitions(root):
+    children = list(root)
+    diagram_tag = f"{{{D}}}BPMNDiagram"
+    relationship_tag = f"{{{B}}}relationship"
+    diagrams = [element for element in children if element.tag == diagram_tag]
+    relationships = [element for element in children if element.tag == relationship_tag]
+    ordered = [element for element in children
+               if element.tag not in (diagram_tag, relationship_tag)]
+    for element in children:
+        root.remove(element)
+    root.extend(ordered + diagrams + relationships)
+
+
+def build(authentication, agent_path=None):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
+    if agent_path is None:
+        agent_path = ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn"
+        if not agent_path.exists():
+            agent_path = ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn"
     for node in root.iter():
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
         if node.get(f"{{{Z}}}modelerTemplate") == "io.camunda.connectors.HttpJson.v2":
@@ -435,8 +508,15 @@ def build(authentication):
     rpc = next(e for e in root.iter() if e.get("id") == "RpcReceived")
     rpc.set(f"{{{Z}}}modelerTemplate", "dev.hansel.a2a.core.rpc.v1")
     rpc.set(f"{{{Z}}}modelerTemplateVersion", "1")
+    server = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
+    server.set("name", "01 A2A Server - Protocol and Discovery")
+    for participant in root.iter(f"{{{B}}}participant"):
+        if participant.get("processRef") == "a2a-rpc":
+            participant.set("name", "01 A2A Server - Protocol and Discovery")
+    add_card_endpoint(root, agent_path)
+    order_definitions(root)
     ET.indent(root, space="  ")
-    return ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n"
+    return layout_xml(ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n")
 
 
 if __name__ == "__main__":
@@ -450,7 +530,7 @@ if __name__ == "__main__":
             parser.error("--check cannot be combined with --authentication or --output")
         stale = []
         for authentication in ("basic", "oauth"):
-            path = ROOT / "blueprint/profiles" / authentication / "a2a-protocol.bpmn"
+            path = ROOT / "blueprint/profiles" / authentication / "01-a2a-server.bpmn"
             if not path.exists() or path.read_bytes() != build(authentication):
                 stale.append(authentication)
         if stale:

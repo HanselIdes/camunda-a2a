@@ -8,22 +8,25 @@ import xml.etree.ElementTree as ET
 from build_core import B, Z, ROOT
 
 PATHS = (
-    "blueprint/profiles/basic/a2a-protocol.bpmn",
-    "dmn/a2a-validate.dmn",
-    "blueprint/demo/a2a-card.bpmn",
-    "blueprint/demo/a2a-card-dispute.bpmn",
-    "blueprint/demo/a2a-client.bpmn",
-    "blueprint/demo/a2a-client-ask.form",
-    "blueprint/demo/a2a-client-answer.form",
-    "blueprint/demo/a2a-client-result.form",
-    "blueprint/templates/a2a-core-rpc.json",
-    "blueprint/templates/a2a-core-card.json",
-    "blueprint/templates/http-json.json",
+    "blueprint/profiles/basic/01-a2a-server.bpmn",
+    "blueprint/demo/02-server-agent-card-dispute.bpmn",
+    "blueprint/demo/03-client-agent.bpmn",
+    "blueprint/demo/04-client-agent-ask.form",
+    "blueprint/demo/05-client-agent-confirm.form",
+    "blueprint/demo/06-client-agent-result.form",
+    "blueprint/demo/07-server-request-validation.dmn",
+    "blueprint/templates/08-server-a2a-rpc-endpoint.json",
+    "blueprint/templates/09-server-agent-card-endpoint.json",
+    "blueprint/templates/10-server-http-json-v12.json",
+    "blueprint/demo/README.md",
 )
 AI_URL = ("https://raw.githubusercontent.com/camunda/connectors/"
           "844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
           "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json")
-EXTERNAL_TEMPLATES = {("io.camunda.connectors.agenticai.aiagent.jobworker.v1", "5")}
+EXTERNAL_TEMPLATES = {
+    ("io.camunda.connectors.agenticai.aiagent.jobworker.v1", "5"),
+    ("io.camunda.connectors.agenticai.aiagent.v1", "8"),
+}
 
 
 def check(resources=None):
@@ -43,6 +46,8 @@ def check(resources=None):
         elif path.endswith(".dmn"):
             root = ET.fromstring(content)
             decisions.update(e.get("id") for e in root.iter() if e.tag.endswith("}decision"))
+        elif path.endswith(".md"):
+            continue
         else:
             data = json.loads(content)
             if path.endswith(".form"):

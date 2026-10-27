@@ -96,83 +96,86 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-tck-fixture">
       <bpmndi:BPMNShape id="TaskReceived_di" bpmnElement="TaskReceived">
-        <dc:Bounds x="150" y="262" width="36" height="36" />
+        <dc:Bounds x="57.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="NextTurn_di" bpmnElement="NextTurn">
-        <dc:Bounds x="230" y="255" width="50" height="50" />
+      <bpmndi:BPMNShape id="NextTurn_di" bpmnElement="NextTurn" isMarkerVisible="true">
+        <dc:Bounds x="650.0" y="45.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClassifyMessage_di" bpmnElement="ClassifyMessage">
-        <dc:Bounds x="330" y="240" width="100" height="80" />
+        <dc:Bounds x="775.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ApplyScenario_di" bpmnElement="ApplyScenario">
-        <dc:Bounds x="480" y="240" width="100" height="80" />
+        <dc:Bounds x="925.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="UpdateTask_di" bpmnElement="UpdateTask">
-        <dc:Bounds x="630" y="240" width="100" height="80" />
+        <dc:Bounds x="1075.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired">
-        <dc:Bounds x="780" y="255" width="50" height="50" />
+      <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired" isMarkerVisible="true">
+        <dc:Bounds x="1250.0" y="45.0" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1222.5" y="23.0" width="105" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="FollowUp_di" bpmnElement="FollowUp">
-        <dc:Bounds x="890" y="262" width="36" height="36" />
+        <dc:Bounds x="1407.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="TaskDone_di" bpmnElement="TaskDone">
-        <dc:Bounds x="890" y="372" width="36" height="36" />
+        <dc:Bounds x="1407.0" y="192.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_TaskReceived_NextTurn_di" bpmnElement="Flow_TaskReceived_NextTurn">
-        <di:waypoint x="186" y="280" />
-        <di:waypoint x="230" y="280" />
+        <di:waypoint x="93.0" y="70.0" />
+        <di:waypoint x="650.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_NextTurn_ClassifyMessage_di" bpmnElement="Flow_NextTurn_ClassifyMessage">
-        <di:waypoint x="280" y="280" />
-        <di:waypoint x="330" y="280" />
+        <di:waypoint x="700.0" y="70.0" />
+        <di:waypoint x="775.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ClassifyMessage_ApplyScenario_di" bpmnElement="Flow_ClassifyMessage_ApplyScenario">
-        <di:waypoint x="430" y="280" />
-        <di:waypoint x="480" y="280" />
+        <di:waypoint x="875.0" y="70.0" />
+        <di:waypoint x="925.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ApplyScenario_UpdateTask_di" bpmnElement="Flow_ApplyScenario_UpdateTask">
-        <di:waypoint x="580" y="280" />
-        <di:waypoint x="630" y="280" />
+        <di:waypoint x="1025.0" y="70.0" />
+        <di:waypoint x="1075.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_UpdateTask_InputRequired_di" bpmnElement="Flow_UpdateTask_InputRequired">
-        <di:waypoint x="730" y="280" />
-        <di:waypoint x="780" y="280" />
+        <di:waypoint x="1175.0" y="70.0" />
+        <di:waypoint x="1250.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_FollowUp_di" bpmnElement="Flow_InputRequired_FollowUp">
-        <di:waypoint x="830" y="280" />
-        <di:waypoint x="890" y="280" />
+        <di:waypoint x="1300.0" y="70.0" />
+        <di:waypoint x="1407.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_InputRequired_TaskDone_di" bpmnElement="Flow_InputRequired_TaskDone">
-        <di:waypoint x="805" y="305" />
-        <di:waypoint x="805" y="390" />
-        <di:waypoint x="890" y="390" />
+        <di:waypoint x="1275.0" y="95.0" />
+        <di:waypoint x="1275.0" y="210.0" />
+        <di:waypoint x="1407.0" y="210.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_FollowUp_NextTurn_di" bpmnElement="Flow_FollowUp_NextTurn">
-        <di:waypoint x="908" y="262" />
-        <di:waypoint x="908" y="135" />
-        <di:waypoint x="255" y="135" />
-        <di:waypoint x="255" y="255" />
+        <di:waypoint x="1425.0" y="88.0" />
+        <di:waypoint x="1425.0" y="140.0" />
+        <di:waypoint x="675.0" y="140.0" />
+        <di:waypoint x="675.0" y="95.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
-        <dc:Bounds x="150" y="488.0" width="420" height="160" />
+        <dc:Bounds x="25.0" y="170.0" width="550" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
-        <dc:Bounds x="180" y="550.0" width="36" height="36" />
+        <dc:Bounds x="132.0" y="262.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
-        <dc:Bounds x="270" y="528.0" width="100" height="80" />
+        <dc:Bounds x="250.0" y="240.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
-        <dc:Bounds x="450" y="550.0" width="36" height="36" />
+        <dc:Bounds x="432.0" y="262.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
-        <di:waypoint x="216" y="568.0" />
-        <di:waypoint x="270" y="568.0" />
+        <di:waypoint x="168.0" y="280.0" />
+        <di:waypoint x="250.0" y="280.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
-        <di:waypoint x="370" y="568.0" />
-        <di:waypoint x="450" y="568.0" />
+        <di:waypoint x="350.0" y="280.0" />
+        <di:waypoint x="432.0" y="280.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

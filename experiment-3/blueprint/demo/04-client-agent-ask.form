@@ -2,7 +2,7 @@
   "components": [
     {
       "type": "text",
-      "text": "### Review a synthetic card dispute\n\nA BPMN client calls the remote AI agent through authenticated A2A 1.0. No real financial actions.",
+      "text": "### Ask the A2A server agent\n\nThe client AI agent discovers the server's Agent Card and chooses when to send, poll, or request missing input. The example uses synthetic dispute data only.",
       "id": "Field_a2a_client_ask_0",
       "layout": {
         "row": "Row_0",
@@ -12,11 +12,11 @@
     {
       "type": "textarea",
       "key": "question",
-      "label": "Question",
+      "label": "What should the server agent review?",
       "validate": {
         "required": true
       },
-      "defaultValue": "Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.",
+      "defaultValue": "Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Review this synthetic example only.",
       "id": "Field_a2a_client_ask_1",
       "layout": {
         "row": "Row_1",

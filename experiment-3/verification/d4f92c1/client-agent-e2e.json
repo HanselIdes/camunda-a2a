@@ -1,0 +1,50 @@
+{
+  "targetCommit": "d4f92c1f97e2e22fdf08b781cab881b0be65725f",
+  "targetWorktreeDirty": false,
+  "verdict": "PASS",
+  "engineImage": "camunda/camunda:8.9.26",
+  "connectorsImage": "camunda/connectors-bundle:8.9.17",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
+  "checks": [
+    "authenticated 8.9 deployment of the seven BPMN/DMN/form resources",
+    "integrated direct HTTPS Agent Card and authenticated endpoint rejection",
+    "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, followed up, polled the same task and reviewed the exact server-agent artifact"
+  ],
+  "assertedBehavior": {
+    "clientRequestedExplicitConfirmation": true,
+    "initialUserMessageContainsStructuredClaim": false,
+    "confirmedFollowUpStructuredClaimParts": 1,
+    "followUpReusedInitialTaskAndContext": true,
+    "pollObservedSameTaskCompleted": true
+  },
+  "serverTaskState": "TASK_STATE_COMPLETED",
+  "artifact": {
+    "merchant": "Northwind Electronics",
+    "currency": "USD",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "expectedAmount": 49.95,
+    "paidAmount": 99.9,
+    "overchargeAmount": 49.95,
+    "matchingAmounts": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "syntheticOnly": true
+  },
+  "clientProcessState": "COMPLETED",
+  "clientToolCalls": [
+    "DiscoverAgentCard",
+    "SendA2AMessage",
+    "GetA2ATask",
+    "AskClientForInput",
+    "SendA2AMessage",
+    "GetA2ATask"
+  ],
+  "providerValidation": "Local Ollama override completed the actual task-v8 client and task-v5 server calls.",
+  "sourceAfter": {
+    "targetCommit": "d4f92c1f97e2e22fdf08b781cab881b0be65725f",
+    "targetWorktreeDirty": false
+  }
+}

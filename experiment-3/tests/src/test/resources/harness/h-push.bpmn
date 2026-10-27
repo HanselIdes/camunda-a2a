@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_h-push" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_h-push" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:error id="PushFailed" name="PushFailed" errorCode="PUSH_FAILED" />
   <bpmn:process id="h-push" isExecutable="true">
     <bpmn:startEvent id="Start" name="Started">
@@ -13,19 +13,19 @@
           <zeebe:input source="noAuth" target="authType" />
           <zeebe:input source="noAuth" target="authentication.type" />
           <zeebe:input source="pushTaskUpdate" target="operationId" />
-          <zeebe:input source="=&#34;&#34;" target="operationPath" />
+          <zeebe:input source="=&quot;&quot;" target="operationPath" />
           <zeebe:input source="={}" target="queryParameters" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=config" target="config" />
           <zeebe:input source="=payload" target="payload" />
           <zeebe:input source="=payload" target="body" />
           <zeebe:input source="= baseUrl + operationPath" target="url" />
-          <zeebe:input source="=context(get entries({ &#34;Content-Type&#34;: &#34;application/a2a+json&#34;, &#34;Authorization&#34;: if config.authentication != null then config.authentication.scheme + &#34; &#34; + config.authentication.credentials else null, &#34;X-A2A-Notification-Token&#34;: config.token})[item.value != null])" target="headers" />
+          <zeebe:input source="=context(get entries({ &quot;Content-Type&quot;: &quot;application/a2a+json&quot;, &quot;Authorization&quot;: if config.authentication != null then config.authentication.scheme + &quot; &quot; + config.authentication.credentials else null, &quot;X-A2A-Notification-Token&quot;: config.token})[item.value != null])" target="headers" />
           <zeebe:input source="=true" target="ignoreNullValues" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="resultExpression" value="={a2aPushStatus: response.status}" />
-          <zeebe:header key="errorExpression" value="=if error != null then bpmnError(&#34;PUSH_FAILED&#34;, string(error.message)) else null" />
+          <zeebe:header key="errorExpression" value="=if error != null then bpmnError(&quot;PUSH_FAILED&quot;, string(error.message)) else null" />
           <zeebe:header key="retryBackoff" value="PT1S" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
@@ -49,32 +49,32 @@
   <bpmndi:BPMNDiagram id="D">
     <bpmndi:BPMNPlane id="P" bpmnElement="h-push">
       <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
-        <dc:Bounds x="150" y="100" width="36" height="36" />
+        <dc:Bounds x="57.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Push_di" bpmnElement="Push">
-        <dc:Bounds x="250" y="78" width="100" height="80" />
+        <dc:Bounds x="175.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="End_di" bpmnElement="End">
-        <dc:Bounds x="420" y="100" width="36" height="36" />
+        <dc:Bounds x="357.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GaveUp_di" bpmnElement="GaveUp">
-        <dc:Bounds x="420" y="200" width="36" height="36" />
+        <dc:Bounds x="357.0" y="192.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Failed_di" bpmnElement="Failed">
-        <dc:Bounds x="282" y="140" width="36" height="36" />
+        <dc:Bounds x="207.0" y="92.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="F1_di" bpmnElement="F1">
-        <di:waypoint x="186" y="118" />
-        <di:waypoint x="250" y="118" />
+        <di:waypoint x="93.0" y="70.0" />
+        <di:waypoint x="175.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="F2_di" bpmnElement="F2">
-        <di:waypoint x="350" y="118" />
-        <di:waypoint x="420" y="118" />
+        <di:waypoint x="275.0" y="70.0" />
+        <di:waypoint x="357.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="F3_di" bpmnElement="F3">
-        <di:waypoint x="300" y="176" />
-        <di:waypoint x="300" y="218" />
-        <di:waypoint x="420" y="218" />
+        <di:waypoint x="225.0" y="128.0" />
+        <di:waypoint x="225.0" y="210.0" />
+        <di:waypoint x="357.0" y="210.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

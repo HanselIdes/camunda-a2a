@@ -7,15 +7,18 @@ import tempfile
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+import build_core
 from build_core import B, Z, ROOT, REQUEST_MAPPING
+from layout_bpmn import layout_xml
 from gen_card import feel_str, json_string_expression, skills_from_bpmn, skills_feel
 from bpmn_gen import build as original
-from bpmn_gen.client import client, form
+from bpmn_gen.agent_client import build as build_client_agent
 from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
 
 UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
 AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
+AI_TASK = "io.camunda.connectors.agenticai.aiagent.v1@8"
 HTTP = UPSTREAM + "connectors/http/rest/element-templates/versioned/http-json-connector-12.json"
 DEMO = ROOT / "blueprint/demo"
 SAMPLE = ("Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. "
@@ -78,7 +81,9 @@ def apply(path, template, element, settings):
     command = ["c8ctl", "element-template", "apply", template, element, str(path), "--in-place"]
     for name, value in settings:
         command.extend(["--set", f"{name}={value}"])
-    subprocess.run(command, check=True, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode:
+        raise RuntimeError(f"Failed to apply {template} to {element}: {result.stderr.strip()}")
 
 
 def serialize(root):
@@ -86,12 +91,12 @@ def serialize(root):
     for node in root.iter():
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     ET.indent(root, space="  ")
-    return ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n"
+    return layout_xml(ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n")
 
 
 def agent(path):
     p = original.agent_proc()
-    p.pid, p.name = "a2a-card-dispute", "Synthetic card-dispute A2A agent"
+    p.pid, p.name = "a2a-card-dispute", "02 Server Agent - Synthetic Card Dispute"
     for node_id in ("convert_temperature", "list_tech_devices"):
         p.nodes.pop(node_id)
         p.order.remove(node_id)
@@ -154,38 +159,6 @@ def agent(path):
     return serialize(add_hook(ET.parse(path).getroot()))
 
 
-def card(path, agent_path):
-    p = original.card_proc()
-    path.write_text(p.xml())
-    skills = skills_feel(skills_from_bpmn(agent_path))
-    response = original.one("""={statusCode: 200, headers: {"Content-Type": "application/json"},
-      body: {name: "Synthetic card-dispute reviewer", version: "0.1.0",
-        description: "Non-production community demonstration. Reconciles synthetic charges for human review; "
-                     + "performs no financial actions.",
-        provider: {organization: "HanselIdes", url: "https://github.com/HanselIdes/camunda-a2a"},
-        supportedInterfaces: [{url: "{{secrets.A2A_RPC_URL}}", protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
-        capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
-        defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain", "application/json"],
-        securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-A2A-Api-Key"}}},
-        securityRequirements: [{schemes: {a2aApiKey: {}}}],
-        skills: %s}}""" % skills)
-    root = ET.parse(path).getroot()
-    start = next(e for e in root.iter() if e.get("id") == "CardRequested")
-    start.set(f"{{{Z}}}modelerTemplate", "dev.hansel.a2a.core.card.v1")
-    start.set(f"{{{Z}}}modelerTemplateVersion", "1")
-    extension = ET.SubElement(start, f"{{{B}}}extensionElements")
-    start.remove(extension)
-    start.insert(0, extension)
-    properties = ET.SubElement(extension, f"{{{Z}}}properties")
-    for name, value in {
-        "inbound.type": "io.camunda:webhook:1", "inbound.context": "a2a-card",
-        "inbound.auth.type": "NONE", "inbound.method": "get",
-        "inbound.responseExpression": response,
-    }.items():
-        ET.SubElement(properties, f"{{{Z}}}property", {"name": name, "value": value})
-    return serialize(root)
-
-
 def assets():
     output = {}
     # Keep the authored business diagrams/layout; regenerate only their required cancellation hook.
@@ -193,18 +166,27 @@ def assets():
         output[path] = serialize(add_hook(ET.parse(path).getroot()))
     with tempfile.TemporaryDirectory(prefix="a2a-blueprint-") as directory:
         directory = Path(directory)
-        agent_path = directory / "a2a-card-dispute.bpmn"
-        output[DEMO / agent_path.name] = agent(agent_path)
-        controlled_agent = ET.fromstring(output[DEMO / agent_path.name])
+        agent_path = directory / "02-server-agent-card-dispute.bpmn"
+        agent_content = agent(agent_path)
+        output[DEMO / agent_path.name] = agent_content
+        controlled_agent = ET.fromstring(agent_content)
         controlled_agent.find(f"{{{B}}}process").set("id", "a2a-controlled-agent")
         controlled_agent.find(
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNDiagram/"
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane").set("bpmnElement", "a2a-controlled-agent")
         output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent)
-        agent_path.write_bytes(output[DEMO / agent_path.name])
-        output[DEMO / "a2a-card.bpmn"] = card(directory / "a2a-card.bpmn", agent_path)
+        for authentication in ("basic", "oauth"):
+            output[ROOT / "blueprint/profiles" / authentication / "01-a2a-server.bpmn"] = (
+                build_core.build(authentication, agent_path))
+        decision = ET.parse(ROOT / "dmn/a2a-validate.dmn").getroot()
+        decision.set("name", "07 Server - Validate A2A Request")
+        for element in decision.iter():
+            if element.tag.endswith("}decision") and element.get("id") == "a2a-validate":
+                element.set("name", "07 Server - Validate A2A Request")
+        output[DEMO / "07-server-request-validation.dmn"] = (
+            ET.tostring(decision, encoding="UTF-8", xml_declaration=True) + b"\n")
         templates = ROOT / "blueprint/templates"
-        for template, filename in ((HTTP, "http-json.json"),):
+        for template, filename in ((HTTP, "10-server-http-json-v12.json"),):
             fetched = subprocess.run(["c8ctl", "element-template", "get", template, "--no-icon"],
                                      check=True, capture_output=True, text=True)
             data = json.loads(fetched.stdout)
@@ -213,6 +195,8 @@ def assets():
         for kind in ("rpc", "card"):
             data = json.loads((ROOT / f"element-templates/a2a-1.0-server-{kind}.json").read_text())
             data.pop("icon", None)
+            data["name"] = ("Server - A2A RPC Endpoint" if kind == "rpc"
+                            else "Server - Agent Card Endpoint")
             data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=1)
             data["engines"]["camunda"] = "^8.9"
             data["description"] = ("Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. "
@@ -231,80 +215,25 @@ def assets():
                     data["properties"].append({"type": "Hidden", "id": name, "value": value,
                                                "binding": {"type": "zeebe:property", "name": name}})
             else:
-                root = ET.fromstring(output[DEMO / "a2a-card.bpmn"])
+                root = ET.fromstring(output[ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn"])
                 response = next(p.get("value") for p in root.iter(f"{{{Z}}}property")
                                 if p.get("name") == "inbound.responseExpression")
                 field = next(p for p in data["properties"] if p.get("id") == "inbound.responseExpression")
                 field["value"] = response
                 field["description"] = ("Describe the selected BPMN process truthfully. Keep the complete "
                                         "A2A_RPC_URL secret, API-key security scheme and disabled capabilities.")
-            output[templates / f"a2a-core-{kind}.json"] = (json.dumps(data, indent=2) + "\n").encode()
-        writes, applications = {}, []
-        client(str(directory), lambda path, text: writes.__setitem__(path, text),
-               lambda path, template, element, settings: applications.append((path, element, settings)), original.one)
-        for path, text in writes.items():
-            target = directory / Path(path).name
-            if path.endswith(".form"):
-                data = json.loads(text)
-                if data["id"] == "a2a-client-ask":
-                    data["components"][0]["text"] = "### Review a synthetic card dispute\n\n" + \
-                        "A BPMN client calls the remote AI agent through authenticated A2A 1.0. No real financial actions."
-                    data["components"][1]["defaultValue"] = SAMPLE
-                elif data["id"] == "a2a-client-answer":
-                    components = [
-                        {"type": "text", "text": '="### Confirm synthetic claim\\n\\n" + reply.text'},
-                        {"type": "textarea", "key": "followUp", "label": "Additional context (optional)"},
-                    ]
-                    for key, label, kind in CONFIRMATION_FIELDS:
-                        field = {"type": kind, "key": key, "label": label, "validate": {"required": True}}
-                        if kind == "number":
-                            field["validate"]["min"] = 0
-                            field["decimalDigits"] = 2
-                        components.append(field)
-                    data = json.loads(form("a2a-client-answer", components))
-                output[DEMO / target.name] = (json.dumps(data, indent=2) + "\n").encode()
-            else:
-                target.write_text(text)
-        for path, element, settings in applications:
-            settings = [(name, "{{secrets.A2A_RPC_URL}}" if name == "url" and element != "DiscoverAgent" else value)
-                        for name, value in settings]
-            if element != "DiscoverAgent":
-                settings = [(name, value[:-1] + ', "X-A2A-Api-Key": "{{secrets.A2A_API_KEY}}"}'
-                             if name == "headers" else value) for name, value in settings]
-            apply(directory / Path(path).name, HTTP, element, settings)
-        client_path = directory / "a2a-client.bpmn"
-        client_root = ET.parse(client_path).getroot()
-        for script in client_root.iter(f"{{{Z}}}script"):
-            if script.get("resultVariable") == "outgoing":
-                script.set("expression", original.one("""=context merge([
-                  {messageId: uuid(), role: "ROLE_USER", parts: concatenate(
-                    [{text: if followUp instance of string then followUp else question}],
-                    if reply != null and reply.taskId != null then
-                      [{data: {syntheticClaim: {merchant: claimMerchant, currency: claimCurrency,
-                        chargeAmounts: [claimFirstAmount, claimSecondAmount],
-                        expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}}]
-                    else [])},
-                  if reply != null and reply.taskId != null then
-                    {taskId: reply.taskId, contextId: reply.contextId} else {}])"""))
-            elif script.get("resultVariable") == "reply":
-                script.set("expression", script.get("expression").replace(
-                    "toolNames:", 'reconciliation: if t != null and t.artifacts instance of list then '
-                    '(for a in t.artifacts[item.name = "reconciliation"] return a.parts[1].data)[1] else null, toolNames:'))
-            elif script.get("resultVariable") == "resultText":
-                script.set("expression", script.get("expression") + original.one(
-                    """ + (if reply.reconciliation != null then
-                       "\\n\\n**Synthetic reconciliation**\\n\\nMerchant: " + reply.reconciliation.merchant
-                       + "\\n\\nPaid: " + string(reply.reconciliation.paidAmount) + " " + reply.reconciliation.currency
-                       + "\\n\\nExpected: " + string(reply.reconciliation.expectedAmount) + " " + reply.reconciliation.currency
-                       + "\\n\\nOvercharge: " + string(reply.reconciliation.overchargeAmount) + " " + reply.reconciliation.currency
-                       + "\\n\\nNext step: " + reply.reconciliation.recommendation else "")"""))
-        answer = next(e for e in client_root.iter() if e.get("id") == "AnswerAgent")
-        extensions = answer.find(f"{{{B}}}extensionElements")
-        mapping = ET.SubElement(extensions, f"{{{Z}}}ioMapping")
-        for key in ["followUp"] + [f[0] for f in CONFIRMATION_FIELDS]:
-            ET.SubElement(mapping, f"{{{Z}}}input", source="=null", target=key)
-            ET.SubElement(mapping, f"{{{Z}}}output", source="=" + key, target=key)
-        output[DEMO / client_path.name] = serialize(client_root)
+            filename = ("08-server-a2a-rpc-endpoint.json" if kind == "rpc"
+                        else "09-server-agent-card-endpoint.json")
+            output[templates / filename] = (json.dumps(data, indent=2) + "\n").encode()
+        client_xml, client_forms, client_http, client_ai_settings = build_client_agent()
+        client_path = directory / "03-client-agent.bpmn"
+        client_path.write_text(client_xml)
+        apply(client_path, AI_TASK, "ClientAgent", client_ai_settings)
+        for element, settings in client_http.items():
+            apply(client_path, HTTP, element, settings)
+        for filename, text in client_forms.items():
+            output[DEMO / filename] = text.encode()
+        output[DEMO / "03-client-agent.bpmn"] = serialize(ET.parse(client_path).getroot())
         literal = Proc("a2a-literal-prompt", "Literal prompt regression fixture")
         literal.start("LiteralStart", "Input received", 150, 62)
         literal.script("LiteralEncode", "Encode input", 230, 40, json_string_expression("=text"), "encoded")

@@ -1,0 +1,18 @@
+{
+  "name": "camunda-a2a-bpmn-layout",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "layout": "python3 layout_bpmn.py",
+    "layout:check": "python3 layout_bpmn.py --check",
+    "render": "node render_bpmn.mjs"
+  },
+  "devDependencies": {
+    "@bpmn-io/form-json-schema": "^1.18.0",
+    "ajv": "^8.20.0",
+    "ajv-errors": "^3.0.0",
+    "bpmn-auto-layout": "1.3.0",
+    "bpmn-js": "18.31.1",
+    "playwright": "1.64.1"
+  }
+}

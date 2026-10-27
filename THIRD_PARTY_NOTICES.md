@@ -42,8 +42,15 @@ Edition terms. The root repository license does not replace those terms or estab
 redistribution authority for that module. Existing authorized non-production runtime
 access is not a blanket redistribution permission.
 
-Candidate demo diagrams use these stock templates for connector configuration, with
-embedded template icons omitted.
+The client also references AI Agent Task template
+`io.camunda.connectors.agenticai.aiagent.v1@8`. Its exact metadata was available through
+the configured `c8ctl` element-template catalog during validation, but its JSON is not
+copied into this repository. Adopters must resolve that exact version from their
+authorized Camunda template catalog; this repository grants no redistribution or
+additional licensing rights for it.
+
+The bundled HTTP JSON template omits its embedded icon. AI Agent templates remain
+external dependencies and are not part of the repository's import bundle.
 The archived experiments and their old icons/templates are not release resources.
 
 These notices do not establish Camunda licensing authority for this independent
