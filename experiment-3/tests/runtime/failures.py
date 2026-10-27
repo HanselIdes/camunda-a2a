@@ -66,9 +66,15 @@ def run(root, reports, rpc, request, deploy, env):
         return response
 
     def send(text):
-        response = call("SendMessage", {"message": {
-            "messageId": str(uuid.uuid4()), "role": "ROLE_USER", "parts": [{"text": text}]},
-            "configuration": {"returnImmediately": True}})
+        identifier = str(uuid.uuid4())
+        status, body = request("/v2/process-instances", {
+            "processDefinitionId": "a2a-rpc", "variables": {
+                "hdr": {"content-type": "application/json", "a2a-version": "1.0"},
+                "rpc": {"jsonrpc": "2.0", "id": identifier, "method": "SendMessage", "params": {
+                    "message": {"messageId": identifier, "role": "ROLE_USER", "parts": [{"text": text}]},
+                    "configuration": {"returnImmediately": True}}}}})
+        assert status == 200, ("model-fault handler start", status)
+        response = read_root_variable(request, json.loads(body)["processInstanceKey"], "rpcResponse", seconds=45)
         assert "result" in response, response
         task = response["result"]["task"]
         return wait("business terminal state", lambda: call("GetTask", {"id": task["id"]})["result"],
