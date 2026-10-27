@@ -6,22 +6,36 @@ import xml.etree.ElementTree as ET
 from observations import read_root_variable
 
 Z = "http://camunda.org/schema/zeebe/1.0"
+B = "http://www.omg.org/spec/BPMN/20100524/MODEL"
 
 
-def run(root, reports, request, task_id, card):
+def run(root, reports, request, deploy, task_id, card):
     model = ET.parse(root / "blueprint/demo/a2a-client.bpmn")
     fetch = next(item for item in model.getroot().iter() if item.get("id") == "DiscoverAgent")
     expression = next(item.get("value") for item in fetch.iter(f"{{{Z}}}header")
                       if item.get("key") == "resultExpression")
+    ET.register_namespace("bpmn", B)
+    definitions = ET.Element(f"{{{B}}}definitions", targetNamespace="urn:nonshipping-client-version-proof")
+    process = ET.SubElement(definitions, f"{{{B}}}process", id="a2a-client-version-proof", isExecutable="true")
+    ET.SubElement(process, f"{{{B}}}startEvent", id="Start")
+    script = ET.SubElement(process, f"{{{B}}}scriptTask", id="EvaluatePackagedMapping")
+    extensions = ET.SubElement(script, f"{{{B}}}extensionElements")
+    ET.SubElement(extensions, f"{{{Z}}}script", expression=expression, resultVariable="versionResult")
+    ET.SubElement(process, f"{{{B}}}endEvent", id="End")
+    for source, target in (("Start", "EvaluatePackagedMapping"), ("EvaluatePackagedMapping", "End")):
+        ET.SubElement(process, f"{{{B}}}sequenceFlow", id=source + target, sourceRef=source, targetRef=target)
+    fixture = reports / "nonshipping-client-version-proof.bpmn"
+    ET.ElementTree(definitions).write(fixture, encoding="utf-8", xml_declaration=True)
+    deploy([fixture])
     cases = []
     baseline = None
     for version in ("1.0", "1.0.2", "1.0.999"):
         candidate = json.loads(json.dumps(card))
         candidate["supportedInterfaces"][0]["protocolVersion"] = version
-        status, body = request("/v2/expression/evaluation", {
-            "expression": expression, "variables": {"response": {"body": candidate}}})
-        assert status == 200, ("packaged client expression evaluation", status)
-        result = json.loads(body)["result"]
+        status, body = request("/v2/process-instances", {
+            "processDefinitionId": "a2a-client-version-proof", "variables": {"response": {"body": candidate}}})
+        assert status == 200, ("packaged client mapping proof start", status)
+        result = read_root_variable(request, json.loads(body)["processInstanceKey"], "versionResult")
         if baseline is None:
             baseline = result
         assert result == baseline and result["agentUrl"] == card["supportedInterfaces"][0]["url"], result

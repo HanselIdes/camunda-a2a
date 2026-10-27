@@ -389,7 +389,7 @@ try:
             time.sleep(0.25)
         print("BPMN client -> direct HTTPS A2A protocol -> real agent -> exact result -> user review: PASS", flush=True)
         from client_versions import run as run_client_versions
-        run_client_versions(ROOT, REPORTS, request, client_task["id"], card)
+        run_client_versions(ROOT, REPORTS, request, deploy, client_task["id"], card)
         record_model_inputs()
     elif not conformance:
         assert task["status"]["message"]["parts"][0]["text"] == "8.8 authenticated echo", task
