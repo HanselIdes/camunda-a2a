@@ -11,6 +11,15 @@ TCK_SHA = "263b9cfaf16a554bdfb166a7ba5b67716e946349"
 PATCHED_SOURCE_SHA256 = "8fd33aea1814e32723545d3725af254505bf990363c355679f9f779de7aed74a"
 
 
+def source_snapshot(root):
+    return {
+        "targetCommit": subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip(),
+        "targetWorktreeDirty": bool(subprocess.check_output(
+            ["git", "-C", str(root), "status", "--porcelain"], text=True).strip()),
+    }
+
+
 def route_request(request, port, key):
     if (request.url.scheme != "https" or request.url.port != port
             or request.url.host not in ("127.0.0.1", "host.docker.internal")):
@@ -68,10 +77,7 @@ def run(root, reports, env, engine_url, connectors_url, certificate):
     (output / "provenance.json").write_text(json.dumps({
         "tckCommit": head, "patchedSourceSha256": PATCHED_SOURCE_SHA256,
         "pytestExit": result.returncode, "gateExit": judge.returncode,
-        "targetCommit": subprocess.check_output(
-            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip(),
-        "targetWorktreeDirty": bool(subprocess.check_output(
-            ["git", "-C", str(root), "status", "--porcelain"], text=True).strip()),
+        **source_snapshot(root),
         "engineImage": env.get("PROOF_ENGINE_IMAGE", "camunda/camunda:8.8.21"),
         "connectorsImage": env.get("PROOF_CONNECTORS_IMAGE", "camunda/connectors-bundle:8.9.0"),
         "exporterProfile": env["PROOF_EXPORTER_PROFILE"],

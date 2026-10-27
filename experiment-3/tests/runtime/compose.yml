@@ -53,6 +53,7 @@ services:
       SERVER_SSL_KEY_STORE: file:/certificates/server.p12
       SERVER_SSL_KEY_STORE_TYPE: PKCS12
       SERVER_SSL_KEY_STORE_PASSWORD: ${PROOF_TLS_PASSWORD:?required}
+      HEALTHCHECK_URL: https://127.0.0.1:8080/actuator/health/readiness
       JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certificates/trust.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=${PROOF_TLS_PASSWORD:?required}
       SECRET_ENGINE_URL: http://camunda:8080
       SECRET_ENGINE_USERNAME: proof

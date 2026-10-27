@@ -33,8 +33,10 @@ async def main():
                 or request.url.host not in ("127.0.0.1", "host.docker.internal")):
             raise ValueError("SDK attempted to leave the configured trust boundary")
         if request.url.path == "/inbound/a2a":
+            assert request.headers.get("A2A-Version") == "1.0", "SDK omitted or changed the protocol version"
             request.headers["X-A2A-Api-Key"] = key
-            sent.append(request.method)
+            sent.append({"method": json.loads(request.content)["method"],
+                         "protocolVersion": request.headers["A2A-Version"]})
 
     async with httpx.AsyncClient(verify=context, trust_env=False, timeout=60,
                                 event_hooks={"request": [authenticate]}) as http:
@@ -81,7 +83,7 @@ async def main():
               "checks": ["explicit discovery", "SDK transport negotiation", "nonblocking send", "polling",
                          "input-required", "numeric-leading follow-up", "four-message history",
                          "exact reconciliation artifact", "terminal retrieval", "context-filtered list"],
-              "authenticatedRequests": len(sent), "verdict": "PASS"}
+              "authenticatedRequests": len(sent), "requestVersions": sent, "verdict": "PASS"}
     assert result["version"] == "1.2.3", "Independent SDK version differs from pinned manifest"
     Path(os.environ["PROOF_SDK_REPORT"]).write_text(json.dumps(result, indent=2) + "\n")
     print("Independent a2a-sdk 1.2.3 discovery/send/follow-up/get/list and exact real-model result: PASS", flush=True)

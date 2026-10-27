@@ -167,6 +167,13 @@ def build(authentication):
     connect(root, "a2a-rpc", "PrepareNewTask", "CreateTask")
     lookup_retry(root)
     response_mode(root)
+    parse = next(e for e in root.iter() if e.get("id") == "ParseRequest").find(
+        f"{{{B}}}extensionElements/{{{Z}}}script")
+    old_version = ('versionOk: if ver instance of string then '
+                   '(ver = "" or ver = "1" or starts with(ver, "1.")) else true')
+    assert old_version in parse.get("expression"), "Version validation source changed"
+    parse.set("expression", parse.get("expression").replace(
+        old_version, 'versionOk: if ver instance of string then matches(ver, "^1[.]0([.][0-9]+)?$") else false'))
 
     setting = next(e for e in root.iter() if e.get("id") == "ReadPushSetting")
     setting.tag = f"{{{B}}}scriptTask"

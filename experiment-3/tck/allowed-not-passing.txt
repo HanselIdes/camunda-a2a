@@ -54,7 +54,6 @@ REQ BIND-EQUIV-004 other-binding needs more than one binding
 
 # --- client obligations -------------------------------------------------------------------------
 REQ VER-CLIENT-001 client-side the requirement is about what a client sends
-REQ VER-CLIENT-002 client-side the requirement is about what a client sends
 
 # --- not exercised by the TCK on jsonrpc ----------------------------------------------------------
 REQ CARD-SIGN-001 not-exercised the card is unsigned and the TCK has no signature test
@@ -71,6 +70,7 @@ REQ AUTH-SCOPE-001 not-exercised the TCK has no test for authorization scope
 REQ AUTH-SCOPE-002 not-exercised the TCK has no test for authorization scope
 REQ AUTH-SCOPE-003 not-exercised the TCK has no test for authorization scope
 REQ VER-SERVER-001 not-exercised the TCK has no test for version-specific semantics
+REQ VER-CLIENT-002 not-exercised the requirement covers client and server patch negotiation; native evidence is separate
 
 # --- skipped tests ------------------------------------------------------------------------------------
 SKIP grpc other-binding gRPC is not offered

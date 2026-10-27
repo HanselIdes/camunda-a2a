@@ -14,11 +14,14 @@ from pathlib import Path
 
 from isolation import IsolatedCompose
 from observations import read_root_variable
-from conformance import run as run_conformance
+from conformance import run as run_conformance, source_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
+source_before = source_snapshot(ROOT)
+if source_before["targetWorktreeDirty"]:
+    raise RuntimeError("Runtime acceptance requires a clean source checkout; do not commit credentials to achieve this")
 REPORTS = Path(os.environ.get("PROOF_REPORT_DIR", str(ROOT / "reports/runtime")))
-REPORTS.mkdir(parents=True, exist_ok=True)
+REPORTS.mkdir(parents=True, exist_ok=False)
 COMPOSE = os.path.join(os.path.dirname(__file__), "compose.yml")
 env = dict(os.environ, PROOF_ENGINE_PASSWORD=secrets.token_urlsafe(32),
            PROOF_A2A_API_KEY=secrets.token_urlsafe(32), PROOF_TLS_PASSWORD=secrets.token_urlsafe(32))
@@ -29,9 +32,29 @@ if env["PROOF_AGENT_PROCESS"] not in allowed_agents:
     raise ValueError("PROOF_AGENT_PROCESS must match the selected demo or conformance mode")
 if env.get("PROOF_SDK_PYTHON") and env["PROOF_AGENT_PROCESS"] != "a2a-card-dispute":
     raise ValueError("PROOF_SDK_PYTHON checks the real card-dispute demo, not echo or the conformance fixture")
+if env.get("PROOF_LOAD_AGENT"):
+    if (env["PROOF_LOAD_AGENT"] not in ("alpha", "beta") or env["PROOF_AGENT_PROCESS"] != "a2a-echo"
+            or conformance or env.get("PROOF_SDK_PYTHON")):
+        raise ValueError("Workload mode requires alpha/beta, echo and no SDK/TCK mode")
+    if not (Path(env["PROOF_CONTROL_DIR"]) / env["PROOF_LOAD_AGENT"]).is_dir():
+        raise ValueError("Workload mode requires an existing coordinator control directory")
 exporter_profile = env.setdefault("PROOF_EXPORTER_PROFILE", "low-latency")
 if exporter_profile not in ("low-latency", "default"):
     raise ValueError("PROOF_EXPORTER_PROFILE must be low-latency or default")
+
+
+def record_provenance(verdict, **details):
+    (REPORTS / "runtime-provenance.json").write_text(json.dumps({
+        **source_before, "sourceBefore": source_before, "verdict": verdict,
+        "engineImage": env.get("PROOF_ENGINE_IMAGE", "camunda/camunda:8.8.21"),
+        "connectorsImage": env.get("PROOF_CONNECTORS_IMAGE", "camunda/connectors-bundle:8.9.0"),
+        "exporterProfile": exporter_profile,
+        "exporterBulkDelaySeconds": 1 if exporter_profile == "low-latency" else 5,
+        "clientExecutionThreads": 4, "activeVersionPolling": False, **details,
+    }, indent=2) + "\n")
+
+
+record_provenance("RUNNING")
 stack = IsolatedCompose(COMPOSE, env)
 cmd = stack.command
 if exporter_profile == "low-latency":
@@ -114,14 +137,16 @@ def deploy(files):
         raise RuntimeError(f"deployment {error.code}: {error.read().decode()}") from error
 
 
-def rpc(body, key=True):
-    headers = {"Content-Type": "application/json", "A2A-Version": "1.0"}
+def rpc(body, key=True, timeout=60, version="1.0"):
+    headers = {"Content-Type": "application/json"}
+    if version is not None:
+        headers["A2A-Version"] = version
     if key:
         headers["X-A2A-Api-Key"] = env["PROOF_A2A_API_KEY"] if key is True else key
     req = urllib.request.Request(connectors_url + "/inbound/a2a",
                                  data=json.dumps(body).encode(), headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=60, context=tls_context) as response:
+        with urllib.request.urlopen(req, timeout=timeout, context=tls_context) as response:
             raw = response.read().decode()
             return response.status, json.loads(raw) if raw else None
     except urllib.error.HTTPError as error:
@@ -208,6 +233,10 @@ try:
     for name, path, body, auth in checks:
         status, text = request(path, body, auth)
         print(json.dumps({"check": name, "status": status, "response": text[:2000]}), flush=True)
+        if name == "unauthenticated topology":
+            assert status == 401, "Engine API accepted unauthenticated access"
+        elif name == "authenticated topology":
+            assert status == 200, "Authenticated engine API access failed"
     agent_file = ROOT / ("tck/fixture/a2a-tck-fixture.bpmn" if conformance else
                          "blueprint/demo/a2a-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
     files = [ROOT / "blueprint/profiles/basic/a2a-protocol.bpmn", agent_file, ROOT / "dmn/a2a-validate.dmn"]
@@ -356,6 +385,37 @@ try:
                            "params": {"id": task["id"]}})
     assert status == 200 and fetched["result"]["id"] == task["id"], (status, fetched)
     print("completed task polling preserves expected task: PASS", flush=True)
+    auth_checks = []
+    methods = ("SendMessage", "GetTask", "ListTasks", "CancelTask", "SendStreamingMessage", "SubscribeToTask",
+               "GetExtendedAgentCard", "CreateTaskPushNotificationConfig", "GetTaskPushNotificationConfig",
+               "ListTaskPushNotificationConfigs", "DeleteTaskPushNotificationConfig")
+    for method in methods:
+        for key in (False, "invalid"):
+            status, response = rpc({"jsonrpc": "2.0", "id": "unauthorized-operation", "method": method,
+                                    "params": message["params"] if method == "SendMessage" else {"id": task["id"]}}, key)
+            assert status == 401 and task["id"] not in str(response), (method, status, response)
+            auth_checks.append({"method": method, "key": "missing" if key is False else "invalid", "status": status})
+    for identifier in (task["id"], "unknown-auth-resource"):
+        for key in (False, "invalid"):
+            status, response = rpc({"jsonrpc": "2.0", "id": "unauthorized-resource", "method": "GetTask",
+                                    "params": {"id": identifier}}, key)
+            assert status == 401 and identifier not in str(response), (status, response)
+    version_checks = []
+    for version in ("1.0", "1.0.2", "1.0.999"):
+        status, response = rpc({"jsonrpc": "2.0", "id": "patch-equivalence", "method": "GetTask",
+                                "params": {"id": task["id"]}}, version=version)
+        assert status == 200 and response["result"] == fetched["result"], (version, status, response)
+        version_checks.append({"version": version, "sameTask": True})
+    for version in ("1.1", "1.9", "2.0", "0.3", "1", "1.x", "1.0.x", "", None):
+        status, response = rpc({"jsonrpc": "2.0", "id": "unsupported-version", "method": "ListTasks",
+                                "params": {}}, version=version)
+        assert status == 200 and response["error"]["code"] == -32009, (version, status, response)
+        version_checks.append({"version": version, "errorCode": -32009})
+    (REPORTS / "native-checks.json").write_text(json.dumps({
+        "authentication": auth_checks, "unauthorizedResourceExistenceHidden": True,
+        "versionNegotiation": version_checks, "verdict": "PASS",
+    }, indent=2) + "\n")
+    print("All operation key checks, unauthorized resource non-disclosure and version semantics: PASS", flush=True)
     if conformance:
         run_conformance(ROOT, REPORTS, env, engine_url, connectors_url, tls_path / "server.crt")
     elif env.get("PROOF_SDK_PYTHON"):
@@ -363,8 +423,24 @@ try:
                        PROOF_SDK_CA=str(tls_path / "server.crt"), PROOF_SDK_REPORT=str(REPORTS / "sdk.json"))
         subprocess.run([env["PROOF_SDK_PYTHON"], "-I",
                         str(Path(__file__).with_name("independent_client.py"))], env=sdk_env, check=True)
+    if env.get("PROOF_LOAD_AGENT"):
+        from reliability import run_agent
+        run_agent(env, REPORTS, rpc, stack, deploy, ROOT)
     assert_no_persisted_credentials()
-except Exception:
+    source_after = source_snapshot(ROOT)
+    if source_after != source_before:
+        raise RuntimeError("Source changed during runtime verification; discard this acceptance run")
+    images = {}
+    for service in ("camunda", "connectors", "elasticsearch"):
+        container = subprocess.check_output(cmd + ["ps", "-q", service], env=env, text=True).strip()
+        image = subprocess.check_output(["docker", "inspect", "--format", "{{.Image}}", container],
+                                        text=True).strip()
+        digests = json.loads(subprocess.check_output(
+            ["docker", "image", "inspect", "--format", "{{json .RepoDigests}}", image], text=True))
+        images[service] = {"imageId": image, "repositoryDigests": digests}
+    record_provenance("PASS", sourceAfter=source_after, images=images)
+except Exception as failure:
+    record_provenance("FAIL", failureType=type(failure).__name__)
     if stack.started:
         logs = subprocess.run(cmd + ["logs", "--tail", "100", "camunda", "connectors"], env=env,
                               capture_output=True, text=True)

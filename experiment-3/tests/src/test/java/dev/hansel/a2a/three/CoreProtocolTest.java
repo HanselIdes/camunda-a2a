@@ -51,6 +51,27 @@ class CoreProtocolTest {
   }
 
   @Test
+  void onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics() {
+    final var completed = task(h.send("version-contract", "Versioned result"));
+    for (final String version : List.of("1.0", "1.0.2", "1.0.999")) {
+      final var headers = Harness.headers();
+      headers.put("a2a-version", version);
+      assertThat(h.rpc(headers, Harness.request("GetTask", "{\"id\":\"" + completed.get("id") + "\"}"))
+          .get("result")).as("version %s", version).isEqualTo(completed);
+    }
+    for (final String version : List.of("1.1", "1.9", "2.0", "0.3", "1", "1.x", "1.0.x", "")) {
+      final var headers = Harness.headers();
+      headers.put("a2a-version", version);
+      assertThat(ValidationTest.error(h.rpc(headers, Harness.request("ListTasks", "{}"))).get("code"))
+          .as("unsupported version %s", version).isEqualTo(-32009);
+    }
+    final var headers = Harness.headers();
+    headers.remove("a2a-version");
+    assertThat(ValidationTest.error(h.rpc(headers, Harness.request("ListTasks", "{}"))).get("code"))
+        .as("missing version defaults to unsupported 0.3").isEqualTo(-32009);
+  }
+
+  @Test
   void businessOutcomeCanSelectMessageWithoutUsingRequestIds() throws Exception {
     for (final String desiredState : List.of("TASK_STATE_COMPLETED", "TASK_STATE_FAILED", "TASK_STATE_INPUT_REQUIRED")) {
       try (var input = getClass().getClassLoader().getResourceAsStream("bpmn/a2a-echo.bpmn")) {

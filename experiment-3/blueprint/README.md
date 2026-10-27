@@ -110,6 +110,12 @@ and `SERVER_SSL_KEY_STORE_PASSWORD`. Use a certificate valid for the advertised 
 issuer; do not disable certificate verification. The local verifier creates a disposable certificate and truststore,
 not a production certificate.
 
+The stock Connectors 8.10.0 image healthcheck defaults to an HTTP readiness URL even when direct TLS is enabled.
+For that image, set `HEALTHCHECK_URL` to the runtime's HTTPS readiness endpoint with a certificate-valid hostname
+and configure the healthcheck JVM's truststore. The isolated verifier uses
+`https://127.0.0.1:8080/actuator/health/readiness`, whose IP is in its generated certificate.
+This setting alone does not establish 8.10 runtime compatibility.
+
 If a private issuer is used, configure the JVM truststore for outbound client calls as well. Keep private keys,
 keystore passwords and API keys out of BPMN, repository files, screenshots and reports.
 
@@ -256,6 +262,11 @@ The API key establishes one shared trust boundary, not per-user task authorizati
 operations on this agent's tasks. Engine permissions and secret distribution must match that boundary.
 Task search uses the selected agent process; existing-task lookups have a three-second indexing/variable window.
 Push, streaming and A2A 0.3 interoperability are not advertised.
+Task requests must select the advertised `A2A-Version: 1.0`. Numeric patches such as `1.0.2` use the same
+semantics; other Major.Minor versions are rejected with `VERSION_NOT_SUPPORTED`.
+Missing or empty version headers default to unsupported 0.3 and receive that error rather than silently selecting 1.0.
+The supplied client uses 1.0. Shipped examples do not request additional client credentials during a task;
+business-input clarification is not an in-task authorization flow.
 
 Terminal-state races, bulk concurrency across two agents, duplicate-request behavior, pagination/retention,
 restart recovery, expired/insufficient credentials, the full version matrix,
@@ -289,6 +300,11 @@ Docker, Python 3, OpenSSL, a JDK/keytool and the already-running local Ollama mo
 `PROOF_AGENT_PROCESS=a2a-echo` selects the deterministic contract check without model inference.
 Model-input diagnostics contain synthetic prompts only and are stored under ignored `experiment-3/reports/runtime`.
 `PROOF_REPORT_DIR` can select another report directory.
+Each native acceptance run requires a clean committed checkout and a new report directory; existing evidence
+directories are never overwritten. `runtime-provenance.json` records the source snapshot, declared runtime
+settings and verdict, plus actual image IDs/digests on success. A changed checkout invalidates the run.
+`native-checks.json` records the missing/invalid-key matrix across all operations, known/unknown resource
+non-disclosure and version/patch checks; SDK reports also record request versions.
 The verifier applies `tests/runtime/exporter-low-latency.yml` to the base Compose file explicitly.
 `PROOF_EXPORTER_PROFILE=default` omits that override and captures the stock five-second configuration instead.
 Both modes save the actual logged exporter configuration; object identity fields are not connection evidence.
@@ -309,6 +325,14 @@ connection adaptations (CA trust, scoped API key, card path, runner-appended sla
 recorded separately in `tck/provenance.json`. `tck/gate.json` lists every MUST requirement and every skipped
 test with requirement IDs and exclusion reasons; totals do not mean every A2A requirement passed.
 This contributor adapter is not proof of standard well-known-path ingress or SaaS conformance.
+
+`PROOF_REPORT_DIR=/path/to/new-load-report python3 experiment-3/tests/runtime/reliability.py` checks two separate
+authenticated engine/Connectors deployments, not two runtimes with different global secrets sharing one engine.
+It requires no model inference. The driver compares 100 globally sequential and 20 concurrent exact echo results,
+then checks foreign-task lookups, paginated listing, duplicate submissions and restart preservation.
+During concurrency it deploys a nonshipping 15-second timed echo variant and requires all 20 tasks to be accepted
+as working before the earliest possible completion; overlapping HTTP requests alone do not satisfy the check.
+The driver removes only its owned runtimes. This is a contributor check, not an already-passed acceptance claim.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.

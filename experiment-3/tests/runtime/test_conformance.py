@@ -1,7 +1,8 @@
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
-from conformance import route_request
+from conformance import route_request, source_snapshot
 
 
 class URL(SimpleNamespace):
@@ -38,6 +39,12 @@ class TargetRoutingTest(unittest.TestCase):
         route_request(request, 40000, "private-key")
         self.assertEqual(request.url.path, "/inbound/a2a")
         self.assertEqual(request.headers["X-A2A-Api-Key"], "private-key")
+
+    def test_source_snapshot_records_commit_and_rejectable_dirty_state(self):
+        for status, dirty in (("", False), (" M tracked.py\n", True), ("?? untracked.py\n", True)):
+            with patch("conformance.subprocess.check_output", side_effect=["abc123\n", status]):
+                self.assertEqual(source_snapshot("/repository"),
+                                 {"targetCommit": "abc123", "targetWorktreeDirty": dirty})
 
 
 if __name__ == "__main__":
