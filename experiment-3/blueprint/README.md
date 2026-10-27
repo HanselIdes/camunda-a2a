@@ -69,8 +69,17 @@ four concurrent-follow-up pairs, cancellation while input-required, missing-hook
 Late business user-task completion returned 404. Separately, all 18 core process tests passed on clean f09fe52
 source, including rejected late completion of an activated AI-worker job, 24 randomized orderings and bounded
 index-visibility failure. These process tests use the configured 8.10.2 engine and Harness HTTP adapter;
-they are not the native 8.8 runtime proof. Final-source full-suite, TCK, SDK/real-model and two-agent repeats
-remain pending; no earlier result is silently carried to a changed protocol.
+they are not the native 8.8 runtime proof.
+
+The [a45de8c checkpoint](../verification/a45de8c/summary.json) checks cancellation reconciliation and complete
+task listing. On clean source, **28 focused process tests passed**: a committed correlation followed by
+not-found/retry returns the observed canceled task; a lost response causes an operator-visible incident rather
+than a fabricated protocol outcome; unavailable state returns a bounded error. These are engine-backed Harness
+injections, not native network-fault proof. On **8.8.21 / Connectors 8.9.0**, all 44 native terminal cases passed
+again, together with 22 API-key checks, 12 version checks and **125 exact unique echo results** listed across
+four pages (37/37/37/14). Both runs recorded a clean, unchanged source commit.
+Final-source full-suite, TCK, SDK/real-model, failure-injection/recovery and two-agent repeats remain pending;
+no earlier result is silently carried to a changed protocol.
 
 ## Prepare the cluster
 
@@ -337,8 +346,8 @@ Repeating a new-task submission with the same `messageId` creates independent ta
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
 The source-specific checkpoints above distinguish demonstrated cancellation, load/restart, duplicate and matrix
-checks from final-candidate acceptance. Native proof of pagination beyond 100 tasks, expired/insufficient credentials and other
-error injection/recovery, final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
+checks from final-candidate acceptance. Credential/permission and other error injection/recovery,
+final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
 open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful

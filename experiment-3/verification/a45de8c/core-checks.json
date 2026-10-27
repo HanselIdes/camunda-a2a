@@ -1,0 +1,70 @@
+{
+  "sourceBefore": {
+    "targetCommit": "a45de8c15e9bb7fb83313e5f9ceaae1ffd83bd30",
+    "targetWorktreeDirty": false
+  },
+  "sourceAfter": {
+    "targetCommit": "a45de8c15e9bb7fb83313e5f9ceaae1ffd83bd30",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "PASS",
+  "exitCode": 0,
+  "scope": "Focused Core protocol/listing regressions; not the full suite or stock Connectors proof.",
+  "processTestVersion": "8.10.4",
+  "suites": [
+    {
+      "name": "CoreProtocolTest",
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "cancellationInterruptsBusinessWorkAndCommitsOnlyOneTerminalOutcome",
+        "disabledPushIsRejectedBeforeCreatingBusinessWork",
+        "randomizedCancellationCompletionOrderingNeverContradictsStoredTerminalState",
+        "lostCorrelationResponseFailsVisiblyWithoutInventingAProtocolOutcome",
+        "bothProfilesAndTemplatePersistOnlyAllowlistedNonsecretHeaders",
+        "cancellationResponseCannotContradictConcurrentBusinessCompletion",
+        "businessOutcomeCanSelectMessageWithoutUsingRequestIds",
+        "onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics",
+        "missingRequiredCancellationHookFailsWithoutClaimingCancellation",
+        "messageResponseModeCannotDiscardBusinessArtifacts",
+        "lateActivatedBusinessJobCannotWriteAfterCancellationInterruptsTheAgent",
+        "messageIdsCannotSelectConformanceSpecificBusinessBehavior",
+        "completesAndReadsExactResultsWithoutPost88EngineApis",
+        "notFoundAfterCommittedCorrelationReturnsThePersistedCanceledOutcome",
+        "cancellationDuringInputRequiredInterruptsTheFollowUpSubscription",
+        "anotherAgentsTaskCannotBeReadOrChanged",
+        "invisibleCancellationOutcomeIsAnExplicitBoundedFailure(boolean)[1]",
+        "invisibleCancellationOutcomeIsAnExplicitBoundedFailure(boolean)[2]",
+        "taskLookupWaitsForDelayedProcessIndexVisibility",
+        "literalPromptEncodingPreservesNumericJsonExpressionAndControlCharacterText",
+        "unknownTaskLookupHasABoundedExpiry"
+      ]
+    },
+    {
+      "name": "CoreListingTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "emptyListsAndCollidingContextTagsRetainExactContextFiltering",
+        "missingRepeatedAndOverlappingEngineCursorsCannotReturnTruncatedSuccess",
+        "listsAll125ExactTasksAcrossEngineAndA2APagesWithStableTimestampTies",
+        "waitsForTheEntireRootVariableBatchInsteadOfOmittingUnindexedTasks",
+        "incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList(String)[1]",
+        "incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList(String)[2]",
+        "incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList(String)[3]"
+      ]
+    }
+  ],
+  "logSha256": "822e133f72d203eec7130758e9849d3205a5a1cf8a1b0e19ea3e5cc7fe0ae9be",
+  "configuredEngineVersion": "8.10.2",
+  "randomizedOrdering": {
+    "seed": 20261027,
+    "iterations": 24,
+    "canceled": 13,
+    "completed": 11
+  }
+}
