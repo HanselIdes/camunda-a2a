@@ -30,6 +30,7 @@ def controlled_model(source, target, process_id, hook=True):
         for element in list(plane):
             if element.get("bpmnElement") in identifiers:
                 plane.remove(element)
+    ET.register_namespace("bpmn", B)
     model.write(target, encoding="utf-8", xml_declaration=True)
 
 

@@ -17,6 +17,8 @@ class ControlledModelTest(unittest.TestCase):
             root = ET.parse(target).getroot()
             self.assertEqual(root.find(f"{{{B}}}process").get("id"), "a2a-echo")
             self.assertEqual(root.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane").get("bpmnElement"), "a2a-echo")
+            namespaces = {prefix: uri for _, (prefix, uri) in ET.iterparse(target, events=["start-ns"])}
+            self.assertEqual(namespaces["bpmn"], B)
             self.assertEqual(SOURCE.read_bytes(), original)
             self.assertEqual(len([element for element in root.iter()
                                   if element.get("id") == "A2ACancellation"]), 1)
