@@ -1,0 +1,39 @@
+{
+  "tckCommit": "263b9cfaf16a554bdfb166a7ba5b67716e946349",
+  "patchedSourceSha256": "8fd33aea1814e32723545d3725af254505bf990363c355679f9f779de7aed74a",
+  "pytestExit": 0,
+  "gateExit": 0,
+  "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+  "targetWorktreeDirty": false,
+  "engineImage": "camunda/camunda:8.8.21",
+  "connectorsImage": "camunda/connectors-bundle:8.9.0",
+  "exporterProfile": "low-latency",
+  "exporterBulkDelaySeconds": 1,
+  "clientExecutionThreads": 4,
+  "activeVersionPolling": false,
+  "target": "direct stock-Connectors HTTPS; explicit discovery URL; API-key trust boundary",
+  "connectionAdaptations": [
+    {
+      "kind": "TLS",
+      "change": "Trust the isolated runtime's CA; certificate verification stays enabled."
+    },
+    {
+      "kind": "API key",
+      "change": "Inject X-A2A-Api-Key only on the configured HTTPS RPC boundary."
+    },
+    {
+      "kind": "card",
+      "change": "Map well-known discovery to explicit /inbound/a2a-card; no ingress claim."
+    },
+    {
+      "kind": "path",
+      "change": "Remove only the runner-appended slash from the exact advertised RPC path."
+    },
+    {
+      "kind": "host",
+      "change": "Resolve host.docker.internal to loopback only for the isolated runtime port."
+    }
+  ],
+  "assertionChanges": [],
+  "timeoutChanges": []
+}

@@ -1,8 +1,8 @@
 # A2A community blueprint candidate
 
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
-[license and licensing limitations](../../README.md#license-and-support). Marketplace import, conformance,
-the compatibility matrix, reliability checks and fresh-adopter timing remain separate release gates.
+[license and licensing limitations](../../README.md#license-and-support). Fresh-adopter timing, observed
+Modeler/Marketplace import and external licensing/eligibility approval remain separate release gates.
 SaaS runtime support is unverified.
 
 The demonstration is a BPMN client calling an A2A 1.0 JSON-RPC endpoint, which starts a server-side AI agent.
@@ -32,6 +32,43 @@ The execution-thread setting matters when client and server use the same Connect
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
 The four-thread configuration passed the supplied client flow. It is not a capacity guarantee.
 
+## Frozen-source engineering results
+
+The [d4e6273 record](../verification/d4e6273/summary.json) completes the engineering series on clean,
+unchanged source `d4e6273c862b387ee7b2a49b992cd4db5f56a922`. This does **not** close the external release gates.
+The [full Maven suite](../verification/d4e6273/full-suite-checks.json) passed **190 tests across 19 suites**,
+with zero failures, errors, skipped tests or reruns. The POM configures `excludedGroups=ollama`, but no test at
+this source carries that tag: no tests were excluded. Native real-model checks run separately.
+
+All three [pinned TCK MUST-gate repeats](../verification/d4e6273/tck-1-gate.json) passed: each executed
+68 tests, skipped 167, passed 56 MUSTs and excluded 58 with explicit reasons. The raw assertions and
+five-second Extensions/30-second RPC read timeouts were unchanged. Across 195 normal RPC calls,
+min/median/max was **0.098/1.627/4.184 seconds**; the three Extensions calls took
+**1.245/1.582/2.393 seconds**. These measurements are not latency guarantees or full A2A conformance.
+
+The [native checks](../verification/d4e6273/native-native-checks.json) passed the all-operation key/version
+matrix, known/unknown-resource checks and no-unauthorized-business-start assertion. All
+[44 terminal cases](../verification/d4e6273/native-terminal-checks.json),
+[125 context-filtered exact listing results](../verification/d4e6273/native-listing-checks.json) and
+[nine failure/recovery cases](../verification/d4e6273/native-failure-checks.json) passed.
+The [official SDK 1.2.3](../verification/d4e6273/sdk-real-model-sdk.json), real-agent clarification and
+reconciliation, supplied BPMN client and [client version checks](../verification/d4e6273/sdk-real-model-bpmn-client-versions.json)
+also passed.
+
+The [two-agent run](../verification/d4e6273/reliability-summary.json) passed 100 sequential and 20 concurrent
+exact outcomes with 120 unique IDs. All 20 were accepted within **2.606 seconds** of a 15-second business timer.
+Both agents concealed foreign get/cancel/follow-up requests as not found and listed exactly 60 owned tasks.
+Connectors/engine restarts preserved the existing task and allowed new work. Duplicate submissions still create
+independent tasks, with no side-effect deduplication.
+
+The [16 individual supplemental dispositions](../verification/d4e6273/requirement-dispositions.json) and
+[combined 114-MUST audit](../verification/d4e6273/combined-mandatory-audit.json) distinguish **56 TCK-verified**
+requirements, **eight supplementally verified applicable** requirements, and **50 inactive or other-binding**
+requirements. Inactive signing and delegated-authorization conditions are not tested passes. This establishes
+the recorded declared Basic JSON-RPC profile only, not production eligibility, other profiles or publication.
+
+## Earlier source-specific checkpoints
+
 The [96357f5 verification record](../verification/96357f5/summary.json) contains three clean-source runs of
 the pinned TCK **MUST gate**: each passed 56 MUST requirements and excluded 58 with documented reasons
 (25 undeclared capabilities, 17 other bindings, 14 not exercised by the TCK and two client-side requirements).
@@ -49,8 +86,8 @@ The card is unsigned. One shared key supplies no per-caller task scoping.
 The [individual dispositions](../verification/96357f5/requirement-dispositions.json) distinguish inactive signing
 and in-task credential-acquisition features from applicable server and shipped-client obligations.
 The 96357f5 dispositions describe that historical source. Major.Minor matching is implemented at 0bc60d4;
-its native evidence is separate from the older reports. Applicable open gates still prevent final acceptance:
-the scoped TCK result alone cannot close them. The historical gate's client-side
+its native evidence is separate from the older reports. Those historical scoped TCK results alone could not
+close the applicable gates; the frozen-source audit above supplies the current dispositions. The historical gate's client-side
 label for `VER-CLIENT-002` does not remove its server-side obligation.
 
 Across the three runs, raw Extensions-call latency was **1.630 / 1.764 / 2.221 seconds**
@@ -78,26 +115,25 @@ than a fabricated protocol outcome; unavailable state returns a bounded error. T
 injections, not native network-fault proof. On **8.8.21 / Connectors 8.9.0**, all 44 native terminal cases passed
 again, together with 22 API-key checks, 12 version checks and **125 exact unique echo results** listed across
 four pages (37/37/37/14). Both runs recorded a clean, unchanged source commit.
-Final-source full-suite, TCK, SDK/real-model, failure-injection/recovery and two-agent repeats remain pending;
-no earlier result is silently carried to a changed protocol.
+Those focused checks did not themselves complete the final-source series; no earlier result is silently
+carried to a changed protocol.
 
 The [e4dd045 failure/recovery checkpoint](../verification/e4dd045/summary.json) exercises the **unmodified
 shipped webhook profile** with a wrong deployment `ENGINE_PASSWORD` and an actual user lacking business-start
 permission. Each caller reached its explicit five-second deadline. The three shipped attempts and 30-second
 backoff produced a `CreateTask` incident after approximately 68 and 69 seconds, respectively, with no fabricated
-RPC response. Correcting the secret or granting the missing authorization, then retrying the original job,
-returned the exact original result and allowed fresh external work. The isolated authorization fixture also
-grants an admin read role; it does not establish a least-privilege configuration.
+RPC response. Correcting the secret or applying the tested combined authorization configuration, then retrying
+the original job, returned the exact original result and allowed fresh external work. The authorization fixture
+adds membership in the **built-in `admin` role**, not a read-only role, plus an explicit business-start grant.
+Recovery does not isolate either grant's causal contribution or establish a minimal permission set.
 Separate derived-input cases cover invalid and password-rotated Basic credentials, insufficient permission,
 an unreachable connector endpoint, model-provider errors and exact real-model recovery.
 The [bc0a693 client checkpoint](../verification/bc0a693/summary.json) records official SDK patch negotiation,
 the packaged discovery expression evaluated by the engine across `1.0`, `1.0.2` and `1.0.999`, and native
 received `A2A-Version: 1.0` headers. The exact packaged polling connector runs in an isolated stock-BPMN
 fixture because fast work may not enter the full client's polling branch. These are supplemental,
-source-specific checks, not completion of the final-source series.
-The [current 16 individual dispositions](../verification/e4dd045/requirement-dispositions.json) map these
-supplemental results and name each remaining final-source gate. Inactive signing and in-task authorization
-requirements do not count as executed passes; shipped-client obligations are not dismissed as server-only N/A.
+source-specific checks. The [checkpoint's 16 dispositions](../verification/e4dd045/requirement-dispositions.json)
+name the gates that were still open there; use the frozen-source audit above for their later closure.
 
 ## Prepare the cluster
 
@@ -375,9 +411,9 @@ business-input clarification is not an in-task authorization flow.
 Repeating a new-task submission with the same `messageId` creates independent tasks. There is no message-ID
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
-The source-specific checkpoints above distinguish demonstrated cancellation, load/restart, duplicate, error-recovery
-and matrix checks from final-candidate acceptance. Final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
-open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
+The source-specific checkpoints above distinguish engineering results from final release acceptance.
+Modeler/form usability, actual Marketplace import, timed fresh adoption and external legal/eligibility gates
+remain open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
 business outcomes.
@@ -391,17 +427,21 @@ prove that a command did not execute. Duplicate submissions create independent t
 
 For engine HTTP 401, correct `ENGINE_USERNAME`/`ENGINE_PASSWORD` in the runtime's secret provider.
 The environment-secret check recreates only its owned Connectors container to load the corrected secret.
-For HTTP 403, grant the actual engine user the required resource authorization. Starting business work needs
+For HTTP 403, inspect the actual engine user's resource authorizations. Starting business work needs
 `CREATE_PROCESS_INSTANCE` on its `PROCESS_DEFINITION`; lookup, variable access and correlation require their
 own authorizations. A visible role assignment alone did not authorize the broker command in the recorded
-repair attempt. The passing check adds an explicit user authorization for the selected business process.
-Its additional admin read role is a disposable-test convenience, not least-privilege advice.
+repair attempt. The passing check uses **built-in `admin` membership plus an explicit user authorization** for
+the selected business process. Its success cannot attribute recovery to the single explicit permission.
+A minimal permission set for `ENGINE_USERNAME` is **untested and undocumented**; the broad built-in role is
+a disposable-test convenience, not least-privilege advice.
 
 After correcting the deployment, restore the failed job's retries and resolve its incident if it remains active.
 The recorded 8.8 flow uses `PATCH /v2/jobs/{jobKey}` with `{"changeset":{"retries":1}}`, then
 `POST /v2/incidents/{incidentKey}/resolution`. A retry can already resolve the incident; confirm its final state.
 Poll the original task or inspect the original handler's recorded response before starting new work.
 Both deployment-level checks observe the original request's exact completed result and a fresh external request.
+Only the caller's explicit five-second timeout was observed during each fault. The eventual webhook-side HTTP
+response after that deadline is **unobserved**; no server-generated timeout status is established by this check.
 
 The additional connector-input fixtures use one attempt and one-second timeouts, start handlers through the
 engine API, and repair local connector variables. They prove job-level diagnostics and repair, not webhook

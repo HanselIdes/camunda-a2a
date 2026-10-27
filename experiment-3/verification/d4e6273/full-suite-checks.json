@@ -1,0 +1,156 @@
+{
+  "sourceBefore": {
+    "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+    "targetWorktreeDirty": false
+  },
+  "sourceAfter": {
+    "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "PASS",
+  "configuredEngineVersion": "8.10.2",
+  "processTestVersion": "8.10.4",
+  "excludedGroups": [
+    "ollama"
+  ],
+  "rerunFailingTestsCount": 0,
+  "tests": 190,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "dev.hansel.a2a.three.AgentTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.CardTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.ClientProcessTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.ClientServerE2ETest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.ConnectorProcessesTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.CoreListingTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.CoreProtocolTest",
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.CoverageGapsTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.DeterministicProcessTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.DmnTest",
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.EdgeCaseTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.ListTasksTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.PushIntegrationTest",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.PushTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.TaskTest",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.TemplateShapeTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.ValidationTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "dev.hansel.a2a.three.WebhookIntegrationTest",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ]
+}

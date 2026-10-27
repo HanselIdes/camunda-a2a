@@ -1,0 +1,952 @@
+[
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "agentFailureFailsTheTask",
+    "seconds": 2.405
+  },
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "agentCanAskForInputAndContinueAfterTheFollowUp",
+    "seconds": 3.661
+  },
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "temperatureToolConvertsBetweenTheThreeUnits",
+    "seconds": 3.172
+  },
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "techStuffToolReturnsTheCatalogToTheAgent",
+    "seconds": 2.804
+  },
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "agentAnswersAfterUsingTheTemperatureTool",
+    "seconds": 2.111
+  },
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "sendMessageReturnsWorkingStateWhenTheAgentIsSlow",
+    "seconds": 22.364
+  },
+  {
+    "class": "dev.hansel.a2a.three.AgentTest",
+    "test": "taskAnswersGetTaskAndCancelWhileTheAgentIsWorking",
+    "seconds": 1.617
+  },
+  {
+    "class": "dev.hansel.a2a.three.CardTest",
+    "test": "cardProcessEndsRightAway",
+    "seconds": 1.76
+  },
+  {
+    "class": "dev.hansel.a2a.three.CardTest",
+    "test": "committedCardMatchesTheCardGeneratedFromTheAgentTools",
+    "seconds": 1.473
+  },
+  {
+    "class": "dev.hansel.a2a.three.ClientProcessTest",
+    "test": "conversationUsesEveryToolAsksTheRemoteAgentAndLoopsUntilTheUserIsSatisfied",
+    "seconds": 4.669
+  },
+  {
+    "class": "dev.hansel.a2a.three.ClientProcessTest",
+    "test": "theClientReadsTheCardOnceAndPutsItIntoTheAgentsPrompt",
+    "seconds": 1.155
+  },
+  {
+    "class": "dev.hansel.a2a.three.ClientServerE2ETest",
+    "test": "ambiguousTaskIsClarifiedOverA2AAndCompletedWhileTheClientKeepsRunning",
+    "seconds": 8.094
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "givesUpAfterTheConfiguredNumberOfTries",
+    "seconds": 1.893
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "awaitChecksRevisionSettledStateAndMessageId",
+    "seconds": 0.879
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "aRealCorrelationOnTheEngineIs404WithoutSubscription",
+    "seconds": 1.422
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "awaitReadsAgainUntilTheWriteIsVisible",
+    "seconds": 2.611
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "correlatesOnTheFirstTry",
+    "seconds": 1.538
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "retriesWhileThereIsNoSubscriptionAndThenSucceeds",
+    "seconds": 3.516
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "awaitGivesUpAtTheDeadline",
+    "seconds": 2.658
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "awaitSeesThatAConfigIsGone",
+    "seconds": 0.494
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "awaitReportsAConfigThatStaysAfterItsTries",
+    "seconds": 3.154
+  },
+  {
+    "class": "dev.hansel.a2a.three.ConnectorProcessesTest",
+    "test": "awaitWaitsForAConfigToAppear",
+    "seconds": 2.6
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "emptyListsAndCollidingContextTagsRetainExactContextFiltering",
+    "seconds": 3.039
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "missingRepeatedAndOverlappingEngineCursorsCannotReturnTruncatedSuccess",
+    "seconds": 3.141
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "listsAll125ExactTasksAcrossEngineAndA2APagesWithStableTimestampTies",
+    "seconds": 20.659
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "waitsForTheEntireRootVariableBatchInsteadOfOmittingUnindexedTasks",
+    "seconds": 3.268
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList(String)[1]",
+    "seconds": 12.277
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList(String)[2]",
+    "seconds": 10.982
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreListingTest",
+    "test": "incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList(String)[3]",
+    "seconds": 12.092
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "cancellationInterruptsBusinessWorkAndCommitsOnlyOneTerminalOutcome",
+    "seconds": 4.322
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "disabledPushIsRejectedBeforeCreatingBusinessWork",
+    "seconds": 1.545
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "randomizedCancellationCompletionOrderingNeverContradictsStoredTerminalState",
+    "seconds": 56.927
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "lostCorrelationResponseFailsVisiblyWithoutInventingAProtocolOutcome",
+    "seconds": 1.285
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "bothProfilesAndTemplatePersistOnlyAllowlistedNonsecretHeaders",
+    "seconds": 1.425
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "cancellationResponseCannotContradictConcurrentBusinessCompletion",
+    "seconds": 3.059
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "businessOutcomeCanSelectMessageWithoutUsingRequestIds",
+    "seconds": 1.43
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics",
+    "seconds": 2.602
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "missingRequiredCancellationHookFailsWithoutClaimingCancellation",
+    "seconds": 9.606
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "messageResponseModeCannotDiscardBusinessArtifacts",
+    "seconds": 2.182
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "lateActivatedBusinessJobCannotWriteAfterCancellationInterruptsTheAgent",
+    "seconds": 2.42
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "messageIdsCannotSelectConformanceSpecificBusinessBehavior",
+    "seconds": 1.692
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "completesAndReadsExactResultsWithoutPost88EngineApis",
+    "seconds": 1.931
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "notFoundAfterCommittedCorrelationReturnsThePersistedCanceledOutcome",
+    "seconds": 4.841
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "cancellationDuringInputRequiredInterruptsTheFollowUpSubscription",
+    "seconds": 2.666
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "anotherAgentsTaskCannotBeReadOrChanged",
+    "seconds": 11.53
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "invisibleCancellationOutcomeIsAnExplicitBoundedFailure(boolean)[1]",
+    "seconds": 7.504
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "invisibleCancellationOutcomeIsAnExplicitBoundedFailure(boolean)[2]",
+    "seconds": 8.164
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "taskLookupWaitsForDelayedProcessIndexVisibility",
+    "seconds": 2.945
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "literalPromptEncodingPreservesNumericJsonExpressionAndControlCharacterText",
+    "seconds": 1.419
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoreProtocolTest",
+    "test": "unknownTaskLookupHasABoundedExpiry",
+    "seconds": 4.67
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "cancelingSucceedsWhenTheProcessEndsBetweenStoringAndCanceling",
+    "seconds": 3.609
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "aMessageThatAsksForADirectReplyGetsAMessageAndNoTask",
+    "seconds": 0.491
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "deletingAConfigThatIsAlreadyGoneStillSucceeds",
+    "seconds": 4.363
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "cancelingATaskWhoseProcessEndedMeanwhileIsRefused",
+    "seconds": 1.695
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "aConfigCreatedTwiceWithTheSameIdIsReplaced",
+    "seconds": 3.021
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "aTaskWhoseVariableIsNotVisibleYetIsNotFound",
+    "seconds": 1.767
+  },
+  {
+    "class": "dev.hansel.a2a.three.CoverageGapsTest",
+    "test": "aFollowUpToATaskThatIsWorkingNotWaitingIsRejected",
+    "seconds": 2.684
+  },
+  {
+    "class": "dev.hansel.a2a.three.DeterministicProcessTest",
+    "test": "independentRequestsKeepTheirOwnTextAndTaskIds",
+    "seconds": 3.835
+  },
+  {
+    "class": "dev.hansel.a2a.three.DeterministicProcessTest",
+    "test": "anotherProcessCompletesThroughTheTaskContractWithoutAModel",
+    "seconds": 1.913
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[1]",
+    "seconds": 0.957
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[2]",
+    "seconds": 0.411
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[3]",
+    "seconds": 1.407
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[4]",
+    "seconds": 0.386
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[5]",
+    "seconds": 1.404
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[6]",
+    "seconds": 0.363
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[7]",
+    "seconds": 1.395
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[8]",
+    "seconds": 1.39
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[9]",
+    "seconds": 1.39
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[10]",
+    "seconds": 0.367
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[11]",
+    "seconds": 1.378
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[12]",
+    "seconds": 0.353
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[13]",
+    "seconds": 1.367
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[14]",
+    "seconds": 0.345
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[15]",
+    "seconds": 1.372
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[16]",
+    "seconds": 1.369
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[17]",
+    "seconds": 0.345
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[18]",
+    "seconds": 1.367
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[19]",
+    "seconds": 0.341
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[20]",
+    "seconds": 0.346
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[21]",
+    "seconds": 1.367
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[22]",
+    "seconds": 0.339
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[23]",
+    "seconds": 1.366
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "validatesRequests(Map, String, Integer, String)[24]",
+    "seconds": 1.367
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[1]",
+    "seconds": 1.363
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[2]",
+    "seconds": 1.358
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[3]",
+    "seconds": 1.367
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[4]",
+    "seconds": 0.348
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[5]",
+    "seconds": 1.365
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[6]",
+    "seconds": 0.335
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[7]",
+    "seconds": 1.358
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[8]",
+    "seconds": 0.352
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[9]",
+    "seconds": 0.339
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "classifiesMessageIds(String, String, String, String, boolean)[10]",
+    "seconds": 1.353
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "earlierRulesWinWhenSeveralThingsAreWrong(Map, int)[1]",
+    "seconds": 1.359
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "earlierRulesWinWhenSeveralThingsAreWrong(Map, int)[2]",
+    "seconds": 0.341
+  },
+  {
+    "class": "dev.hansel.a2a.three.DmnTest",
+    "test": "earlierRulesWinWhenSeveralThingsAreWrong(Map, int)[3]",
+    "seconds": 1.362
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "pagingAndHistoryParametersAcceptSnakeCaseAndCamelCase",
+    "seconds": 5.402
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "concurrentRequestsDoNotInterfere",
+    "seconds": 5.269
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "unknownParamsAndExtensionHeadersAreTolerated",
+    "seconds": 2.77
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "aTaskThatReachedInputRequiredCanBeCanceledEvenAfterFollowUps",
+    "seconds": 4.296
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "aRepeatedMessageIdCreatesANewTaskEachTime",
+    "seconds": 3.26
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "tasksShareAContextWhenTheClientReusesIt",
+    "seconds": 4.539
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "requestIdIsEchoedWhateverItsType",
+    "seconds": 2.556
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "unicodeAndLargeMessagesAreStoredAndReturnedUnchanged",
+    "seconds": 5.242
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "batchRequestsAndNonObjectBodiesAreInvalidRequests",
+    "seconds": 2.51
+  },
+  {
+    "class": "dev.hansel.a2a.three.EdgeCaseTest",
+    "test": "concurrentFollowUpsToOneTaskAreSerializedOnTheSubscription",
+    "seconds": 5.577
+  },
+  {
+    "class": "dev.hansel.a2a.three.ListTasksTest",
+    "test": "listsTheTasksOfAContextNewestFirstWithoutArtifacts",
+    "seconds": 6.537
+  },
+  {
+    "class": "dev.hansel.a2a.three.ListTasksTest",
+    "test": "historyLengthLimitsTheHistoryOfEachTask",
+    "seconds": 3.685
+  },
+  {
+    "class": "dev.hansel.a2a.three.ListTasksTest",
+    "test": "filtersByStatusAndTimestamp",
+    "seconds": 4.703
+  },
+  {
+    "class": "dev.hansel.a2a.three.ListTasksTest",
+    "test": "finishedTasksStayListedAfterTheirProcessEnded",
+    "seconds": 3.28
+  },
+  {
+    "class": "dev.hansel.a2a.three.ListTasksTest",
+    "test": "unknownContextAndOddContextIdsAreHandled",
+    "seconds": 3.033
+  },
+  {
+    "class": "dev.hansel.a2a.three.ListTasksTest",
+    "test": "pagesWithCursorTokens",
+    "seconds": 12.934
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushIntegrationTest",
+    "test": "configurationOperationsWorkThroughTheRealConnectors",
+    "seconds": 5.787
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushIntegrationTest",
+    "test": "cardDeclaresPushAndDeliveryReachesTheHostWithTheConfiguredAuthentication",
+    "seconds": 4.411
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "cancelIsDeliveredToo",
+    "seconds": 3.947
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "tasksWithoutConfigsStartNoDeliveryProcess",
+    "seconds": 2.278
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "configurationOperationsWorkOnCompletedAndWaitingTasks",
+    "seconds": 11.413
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "invalidAndUnknownTargetsAreErrors",
+    "seconds": 3.478
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "operationsAreRefusedWhenTheSecretDisablesPush",
+    "seconds": 1.546
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "failedDeliveriesNeverFailTheTaskOrRaiseIncidents",
+    "seconds": 2.698
+  },
+  {
+    "class": "dev.hansel.a2a.three.PushTest",
+    "test": "configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange",
+    "seconds": 3.388
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "inputRequiredThenFollowUpCompletes",
+    "seconds": 3.59
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "otherTckMessageIdsEchoAndComplete",
+    "seconds": 2.628
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "taskIdsAreUnique",
+    "seconds": 2.473
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "terminalTaskAnswersGetAndRejectsCancelAndSend",
+    "seconds": 3.399
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "unknownTaskIsNotFoundForGetCancelAndFollowUp",
+    "seconds": 1.822
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "contextIdIsGeneratedEchoedAndChecked",
+    "seconds": 5.39
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "cancelInputRequiredTaskAndCancelAgainFails",
+    "seconds": 3.538
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "completeTaskReturnsCompletedTaskWithStatusMessage",
+    "seconds": 2.108
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "followUpsCanKeepTheTaskInputRequired",
+    "seconds": 5.02
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "returnImmediatelyAnswersBeforeTheWorkAndTheTaskCompletesAnyway",
+    "seconds": 0.981
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "artifactsAreAttachedByMessageIdPrefix",
+    "seconds": 5.727
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "noIncidentsAfterMalformedInput",
+    "seconds": 0.487
+  },
+  {
+    "class": "dev.hansel.a2a.three.TaskTest",
+    "test": "historyLengthLimitsHistoryOnGetTask",
+    "seconds": 6.44
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "noDescriptionUsesAngleBracketsThatModelerWouldHide(Path)[1]",
+    "seconds": 0.003
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "noDescriptionUsesAngleBracketsThatModelerWouldHide(Path)[2]",
+    "seconds": 0.002
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "noDescriptionUsesAngleBracketsThatModelerWouldHide(Path)[3]",
+    "seconds": 0.001
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "noDescriptionUsesAngleBracketsThatModelerWouldHide(Path)[4]",
+    "seconds": 0.001
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "noDescriptionUsesAngleBracketsThatModelerWouldHide(Path)[5]",
+    "seconds": 0.001
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "everyTemplateShowsAResultVariableAndAResultExpression(Path)[1]",
+    "seconds": 0.002
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "everyTemplateShowsAResultVariableAndAResultExpression(Path)[2]",
+    "seconds": 0.001
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "everyTemplateShowsAResultVariableAndAResultExpression(Path)[3]",
+    "seconds": 0.0
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "everyTemplateShowsAResultVariableAndAResultExpression(Path)[4]",
+    "seconds": 0.0
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplateShapeTest",
+    "test": "everyTemplateShowsAResultVariableAndAResultExpression(Path)[5]",
+    "seconds": 0.0
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookIgnoresAWrongOrMissingToken",
+    "seconds": 4.388
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "aDeliveryThatFailsEndsAtTheErrorBoundaryInsteadOfRaisingAnIncident",
+    "seconds": 0.445
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientMapsAJsonRpcErrorIntoTheResult",
+    "seconds": 0.196
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientRaisesAnIncidentWhenTheServerFails",
+    "seconds": 0.336
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "pushReachesTheClientWebhookTemplateAsTheA2aMediaType",
+    "seconds": 0.67
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "rpcEndpointWaitsForTheRunAndReturnsRpcResponseAsTheBody",
+    "seconds": 0.075
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookKeepsWaitingWhileTheTaskRuns(String)[1]",
+    "seconds": 0.427
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookKeepsWaitingWhileTheTaskRuns(String)[2]",
+    "seconds": 0.424
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "everyCardRequestStartsOneRunOfTheCardProcess",
+    "seconds": 0.209
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientFetchesTheAgentCardFromTheDefaultLocation",
+    "seconds": 0.179
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "pushPostsTheStreamResponseWithTokenAndAuthorization",
+    "seconds": 0.286
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "agentCardIsServedOnGetWithTheConfiguredEndpointAndCapabilities",
+    "seconds": 0.061
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "pushWithoutTokenAndAuthenticationSendsNeitherHeader",
+    "seconds": 0.286
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientUsesTheJsonRpcUrlFromTheAgentCardWhenSet",
+    "seconds": 0.162
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookAcceptsAStatusUpdatePayload",
+    "seconds": 0.42
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientContinuesATaskWithTaskIdAndContextIdAndWithoutPush",
+    "seconds": 0.171
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientFetchesTheAgentCardFromACustomLocationWithTheAgentQuery",
+    "seconds": 0.169
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientSendsANewTaskWithAPushNotificationConfig",
+    "seconds": 0.177
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "rpcEndpointAcceptsTheA2aMediaType",
+    "seconds": 0.071
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookWakesUpOnFinalAndInterruptedStates(String)[1]",
+    "seconds": 0.42
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookWakesUpOnFinalAndInterruptedStates(String)[2]",
+    "seconds": 0.403
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookWakesUpOnFinalAndInterruptedStates(String)[3]",
+    "seconds": 0.41
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookWakesUpOnFinalAndInterruptedStates(String)[4]",
+    "seconds": 0.426
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookWakesUpOnFinalAndInterruptedStates(String)[5]",
+    "seconds": 0.413
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookWakesUpOnFinalAndInterruptedStates(String)[6]",
+    "seconds": 0.423
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "clientWebhookCorrelatesOnTheTaskIdOfAMessageReply",
+    "seconds": 0.421
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "rpcEndpointOnlyTakesPost",
+    "seconds": 0.02
+  },
+  {
+    "class": "dev.hansel.a2a.three.TemplatesIntegrationTest",
+    "test": "aPushThatArrivesBeforeTheClientWaitsIsKeptForTheMessageTtl",
+    "seconds": 0.178
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "invalidParams",
+    "seconds": 1.932
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "wrongContentTypeIsRejected",
+    "seconds": 1.525
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "capabilityErrors",
+    "seconds": 2.125
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "patchVersionAndMissingVersionAreAccepted",
+    "seconds": 0.417
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "idIsEchoedAndListTasksReturnsEmptyPage",
+    "seconds": 1.6
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "unsupportedVersionIsRejected",
+    "seconds": 1.422
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "directMessageResponse",
+    "seconds": 1.415
+  },
+  {
+    "class": "dev.hansel.a2a.three.ValidationTest",
+    "test": "unknownMethodAndInvalidRequest",
+    "seconds": 1.436
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "twelveConcurrentRequestsAllAnswerThroughTheRealConnectors",
+    "seconds": 6.233
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "noIncidentsAfterTheRequests",
+    "seconds": 4.388
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "validationErrorsAndCapabilityErrorsComeBackAsJsonRpcErrors",
+    "seconds": 1.718
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "sendMessageGetTaskAndCancelRoundTripThroughTheRealConnectors",
+    "seconds": 4.495
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "invalidJsonBodyIsAnEmptyServerErrorFromTheWebhookConnector",
+    "seconds": 2.517
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "unknownTaskIsNotFoundBecauseNoInstanceCarriesItsTag",
+    "seconds": 3.573
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "agentCardIsServedWithThePublicUrlAndTheToolSkills",
+    "seconds": 2.489
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "aGetOnTheRpcWebhookIsMethodNotAllowed",
+    "seconds": 3.529
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "followUpImmediatelyAfterInputRequiredDoesNotRace",
+    "seconds": 6.11
+  },
+  {
+    "class": "dev.hansel.a2a.three.WebhookIntegrationTest",
+    "test": "listTasksReadsTasksThroughTheEngineSearch",
+    "seconds": 4.251
+  }
+]

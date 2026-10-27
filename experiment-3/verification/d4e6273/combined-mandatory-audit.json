@@ -1,0 +1,472 @@
+{
+  "sourceCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+  "verdict": "PASS_FOR_DECLARED_PROFILE",
+  "tckVerified": 56,
+  "supplementalVerified": 8,
+  "inactiveOrOtherBinding": 50,
+  "requirements": [
+    {
+      "id": "CARD-DISC-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CARD-STRUCT-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CARD-PROTO-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CARD-PROTO-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "BIND-FIELD-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-ART-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-MSG-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-TASK-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-TASK-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-MSG-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-PART-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-STATUS-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-SERIAL-004",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-SERIAL-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-SERIAL-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "DM-SERIAL-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-ERR-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-ERR-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-CAP-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-CAP-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-CAP-004",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CORE-CAP-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CARD-EXT-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CARD-EXT-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "VER-SERVER-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "VER-SERVER-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-ERR-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-ERR-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-SSE-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-ERR-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "HTTP_JSON-ERR-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "HTTP_JSON-ERR-002",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-ERR-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "STREAM-ORDER-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "STREAM-ORDER-003",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "STREAM-ORDER-004",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-CREATE-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-CREATE-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-GET-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-GET-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-LIST-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-DEL-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-DEL-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-DELIVER-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-DELIVER-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "PUSH-DELIVER-003",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CORE-SEND-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-SEND-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-STREAM-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CORE-STREAM-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CORE-STREAM-003",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CORE-GET-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-LIST-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-LIST-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-LIST-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-LIST-004",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-LIST-005",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-CANCEL-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-EXECUTION-MODE-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-EXECUTION-MODE-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-MULTI-001a",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-MULTI-002a",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-MULTI-003",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-MULTI-004",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "STREAM-SUB-004",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "STREAM-ORDER-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CORE-HIST-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-GET-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-CANCEL-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-CANCEL-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-SEND-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-MULTI-005",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "CORE-MULTI-006",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "STREAM-SUB-002",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "STREAM-SUB-003",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "JSONRPC-FMT-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-FMT-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-SVC-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "JSONRPC-SVC-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "HTTP_JSON-SVC-002",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "HTTP_JSON-URL-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "HTTP_JSON-URL-002",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "HTTP_JSON-QP-001",
+      "disposition": "verified-tck"
+    },
+    {
+      "id": "HTTP_JSON-SSE-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-SVC-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-SVC-002",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-META-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-ERR-003",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-ERR-002",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "STREAM-SUB-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "HTTP_JSON-STATUS-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "JSONRPC-SSE-001",
+      "disposition": "not-applicable-capability-not-declared"
+    },
+    {
+      "id": "CARD-SIGN-001",
+      "disposition": "inactive-conditional-signing"
+    },
+    {
+      "id": "CARD-SIGN-002",
+      "disposition": "inactive-conditional-signing"
+    },
+    {
+      "id": "CARD-SIGN-003",
+      "disposition": "inactive-conditional-signing"
+    },
+    {
+      "id": "CARD-SIGN-004",
+      "disposition": "inactive-conditional-signing"
+    },
+    {
+      "id": "AUTH-TLS-001",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "AUTH-SERVER-002",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "AUTH-INTASK-001",
+      "disposition": "inactive-conditional-credential-acquisition"
+    },
+    {
+      "id": "AUTH-INTASK-002",
+      "disposition": "inactive-conditional-credential-acquisition"
+    },
+    {
+      "id": "AUTH-INTASK-003",
+      "disposition": "inactive-conditional-credential-acquisition"
+    },
+    {
+      "id": "AUTH-INTASK-004",
+      "disposition": "inactive-conditional-credential-acquisition"
+    },
+    {
+      "id": "AUTH-SCOPE-001",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "AUTH-SCOPE-002",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "AUTH-SCOPE-003",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "VER-CLIENT-001",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "VER-SERVER-001",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "VER-CLIENT-002",
+      "disposition": "verified-supplemental-not-a-tck-pass"
+    },
+    {
+      "id": "BIND-EQUIV-001",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "BIND-EQUIV-002",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "BIND-EQUIV-003",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "BIND-EQUIV-004",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "GRPC-SVC-003",
+      "disposition": "not-applicable-other-binding"
+    },
+    {
+      "id": "HTTP_JSON-SVC-001",
+      "disposition": "not-applicable-other-binding"
+    }
+  ],
+  "evidence": [
+    "tck-1-gate.json",
+    "tck-2-gate.json",
+    "tck-3-gate.json",
+    "requirement-dispositions.json"
+  ],
+  "scope": "Conditional applicability for the declared Basic JSON-RPC profile. This is not a full A2A conformance, signing, delegated-authorization, production eligibility or publication claim."
+}

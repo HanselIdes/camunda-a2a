@@ -1,0 +1,105 @@
+{
+  "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+  "verdict": "PASS",
+  "stages": [
+    {
+      "name": "full-suite",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 729.944,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "f822cd54d68d47a743bbeb9afd867770f226ea355cf31dfcd4818c8a4822c4db"
+    },
+    {
+      "name": "native",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 709.47,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "8db36ad78f28155eb28a2a2168dc267d60d279f619006f5b221fe7bd1dc9131f"
+    },
+    {
+      "name": "tck-1",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 164.155,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "9e9e57ba6899cecba682b12407d816f51d7ed9a1b91b5bc0b0eb5d12201a03a9"
+    },
+    {
+      "name": "tck-2",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 153.326,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "a6beced330541daf98ced4cd6fedf03156911abba4789c10e8e8068b6cb2332d"
+    },
+    {
+      "name": "tck-3",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 154.68,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "2229f6c6c670cb5ee6eef5c76c2746f7f04a96373d3275751833c9fda770ec25"
+    },
+    {
+      "name": "sdk-real-model",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 115.446,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "c321ee55d79f5de4429543d2bb3213e082f9bc8dc78e1b7c6aa27950fdd39695"
+    },
+    {
+      "name": "reliability",
+      "sourceBefore": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "exitCode": 0,
+      "seconds": 366.18,
+      "sourceAfter": {
+        "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+        "targetWorktreeDirty": false
+      },
+      "logSha256": "42b25d9514456e11e581cf6af4a3df037be57f6419811ab59662520e342365ff"
+    }
+  ],
+  "scope": "The POM sets excludedGroups=ollama, but this source has no tests with that tag, so no tests are excluded. Native real-model checks run as a separate stage."
+}
