@@ -3,6 +3,7 @@ import base64
 import http.client
 import json
 import secrets
+import socket
 import subprocess
 import time
 import urllib.error
@@ -185,7 +186,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
             response = rpc({"jsonrpc": "2.0", "id": identifier, "method": "SendMessage", "params": {
                 "message": {"messageId": identifier, "role": "ROLE_USER", "parts": [{"text": text}]}}},
                 timeout=5)
-        except TimeoutError:
+        except (TimeoutError, socket.timeout):
             client_observation = "five-second-client-timeout"
         else:
             raise AssertionError(f"Expected client timeout rather than a fabricated response: {response[0]}")
