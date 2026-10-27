@@ -1,0 +1,138 @@
+{
+  "scope": "Individual dispositions for the 16 MUST requirements outside the pinned TCK's exercised coverage. Supplemental evidence is source-specific, not final-source acceptance.",
+  "overallStatus": "OPEN_PENDING_FINAL_SOURCE_SERIES",
+  "registrySource": "https://github.com/a2aproject/a2a-tck/tree/263b9cfaf16a554bdfb166a7ba5b67716e946349/tck/requirements",
+  "evidence": {
+    "native": "native-checks.json",
+    "nativeProvenance": "runtime-provenance.json",
+    "clientHeaders": "../bc0a693/bpmn-client-versions.json",
+    "sdk": "../bc0a693/sdk.json",
+    "clientProvenance": "../bc0a693/runtime-provenance.json",
+    "engineCore": "../a45de8c/core-checks.json",
+    "twoAgent": "../0bc60d4/reliability-summary.json"
+  },
+  "requirements": [
+    {
+      "id": "CARD-SIGN-001",
+      "disposition": "inactive-conditional-signing",
+      "reason": "The shipped card is unsigned. No JCS canonicalization or signing operation is claimed.",
+      "source": "../../blueprint/demo/a2a-card.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "CARD-SIGN-002",
+      "disposition": "inactive-conditional-signing",
+      "reason": "No signed payload is produced, so signature exclusion from that payload is not exercised.",
+      "source": "../../blueprint/demo/a2a-card.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "CARD-SIGN-003",
+      "disposition": "inactive-conditional-signing",
+      "reason": "No JWS protected header is produced. This is not a tested alg/kid implementation.",
+      "source": "../../blueprint/demo/a2a-card.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "CARD-SIGN-004",
+      "disposition": "inactive-conditional-signing",
+      "reason": "The supplied client consumes an unsigned card and has no signing-key verification or trust claim.",
+      "source": "../../blueprint/demo/a2a-client.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-TLS-001",
+      "disposition": "applicable-supplemental-native-proof",
+      "reason": "Native discovery/RPC and official SDK use verified HTTPS with an isolated trusted certificate. This proves the non-production transport configuration, not production eligibility or public-CA deployment.",
+      "evidence": ["nativeProvenance", "clientProvenance", "sdk"],
+      "finalSourceGate": "Repeat native certificate-verified calls on the frozen source.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-SERVER-002",
+      "disposition": "applicable-supplemental-native-proof",
+      "reason": "Native matrix rejects missing/invalid keys for all 11 methods, confirms no new business instance, and checks known/unknown resources for get, cancel and follow-up. Valid-key operations execute.",
+      "evidence": ["native"],
+      "finalSourceGate": "Repeat the full native key matrix and successful authenticated operations.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-INTASK-001",
+      "disposition": "inactive-conditional-credential-acquisition",
+      "reason": "No shipped example requests client authorization during a task. Deployment secrets are configured out of band before execution; clarification is business input.",
+      "source": "../../blueprint/demo/a2a-card-dispute.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-INTASK-002",
+      "disposition": "inactive-conditional-credential-acquisition",
+      "reason": "No in-task authorization flow is implemented or advertised. INPUT_REQUIRED is not AUTH_REQUIRED evidence.",
+      "source": "../../blueprint/demo/a2a-card-dispute.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-INTASK-003",
+      "disposition": "inactive-conditional-credential-acquisition",
+      "reason": "No authorization-request status message is produced. Ordinary failure or clarification messages do not establish this conditional behavior.",
+      "source": "../../blueprint/demo/a2a-card-dispute.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-INTASK-004",
+      "disposition": "inactive-conditional-credential-acquisition",
+      "reason": "No in-task credentials are requested or accepted. Static secret configuration is not delegated credential acquisition.",
+      "source": "../../blueprint/demo/a2a-card-dispute.bpmn",
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-SCOPE-001",
+      "disposition": "applicable-supplemental-native-proof",
+      "reason": "One shared-key principal is authorized for the selected agent's tasks. The common API-key gate covers every operation; this is not per-user isolation and is not N/A.",
+      "evidence": ["native"],
+      "finalSourceGate": "Repeat all-method rejection and no-business-work checks.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-SCOPE-002",
+      "disposition": "applicable-final-boundary-repeat-open",
+      "reason": "Current Core evidence exercises selected-process isolation. Historical two-agent evidence proves load/list separation only for 0bc60d4; it does not close the new source's boundary gate.",
+      "evidence": ["engineCore", "twoAgent"],
+      "finalSourceGate": "Repeat two-agent exact results, complete context lists and foreign get/cancel/follow-up checks.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-SCOPE-003",
+      "disposition": "applicable-final-boundary-repeat-open",
+      "reason": "Native known/unknown resources return the same unauthorized status without identifiers. Foreign-agent concealment needs the final-source two-agent mutation matrix, not a shared-key N/A.",
+      "evidence": ["native", "engineCore", "twoAgent"],
+      "finalSourceGate": "Known/unknown key-negative matrix plus foreign get/cancel/follow-up returning -32001.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "VER-SERVER-001",
+      "disposition": "applicable-supplemental-native-and-engine-proof",
+      "reason": "Packaged parser accepts only 1.0 or numeric patches. Native checks compare the exact same task for patches and reject unsupported Major.Minor versions, missing and empty headers.",
+      "evidence": ["native", "engineCore"],
+      "finalSourceGate": "Repeat native version matrix and CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "VER-CLIENT-001",
+      "disposition": "applicable-shipped-client-obligation",
+      "reason": "Native protocol roots record A2A-Version 1.0 from supplied SendMessage and exact packaged polling connector. SDK hook records every RPC header. Discovery GET is not a protocol-operation request.",
+      "evidence": ["clientHeaders", "sdk"],
+      "finalSourceGate": "Repeat supplied-client received headers and every official SDK request version.",
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "VER-CLIENT-002",
+      "disposition": "applicable-both-client-and-server-obligation",
+      "reason": "Despite its ID, registry text applies to both sides. Native server patch-equivalence, engine-evaluated packaged card mapping, and SDK factory negotiation with patch-varied cards each have explicit supplemental proof.",
+      "evidence": ["native", "clientHeaders", "sdk", "engineCore"],
+      "finalSourceGate": "Repeat server equivalence and both client checks for 1.0, 1.0.2 and 1.0.999.",
+      "blocksFinalAcceptance": true
+    }
+  ],
+  "applicabilityChanges": "Adding signing or in-task authorization activates those currently inactive requirements. No conditional row counts as an executed TCK pass.",
+  "acceptanceConclusion": "All 16 are individually classified. Applicable rows remain final-source gates until the frozen-source series passes; scoped TCK success alone cannot close them."
+}

@@ -1,0 +1,29 @@
+{
+  "sourceCommit": "e4dd045f870209408e8459e7a5206b60adfd9ec3",
+  "acceptanceStatus": "PARTIAL",
+  "cleanSourceBeforeAndAfter": true,
+  "engineVersion": "8.8.21",
+  "connectorsVersion": "8.9.0",
+  "elasticsearchVersion": "8.17.0",
+  "cases": 9,
+  "deploymentLevel": {
+    "profile": "Unmodified shipped Basic protocol with actual environment-secret or user-authorization faults",
+    "clientObservation": "Explicit five-second caller timeout, not a server-generated protocol error",
+    "passwordSecretIncidentSeconds": 67.775,
+    "missingPermissionIncidentSeconds": 69.456,
+    "shippedRetries": 3,
+    "shippedRetryBackoffSeconds": 30,
+    "originalExactResultAfterRepair": true,
+    "freshExternalWorkAfterRepair": true,
+    "permissionRepair": "Isolated user's admin read role plus explicit USER CREATE_PROCESS_INSTANCE on PROCESS_DEFINITION/a2a-echo; not least-privilege guidance"
+  },
+  "derivedInputScope": "Shortened one-attempt/one-second fixtures and engine-started handlers; no webhook-response claim for those cases. Unreachable connector endpoint leaves engine running.",
+  "modelScope": "Actual stock AI connector with derived endpoint/model faults, explicit failed tasks and exact real-model result after configuration repair",
+  "oauthExpiry": "UNVERIFIED; Basic has no token expiry. Password-rotation invalidation is recorded separately.",
+  "failuresPreserved": "Earlier committed fixture-development and role-only repair failures are not acceptance evidence. The source history and private immutable run reports retain them.",
+  "remaining": [
+    "Final-source full suite, three TCK repeats, SDK/real-model/client, native terminal/listing/failure checks and two-agent workload/restarts.",
+    "Final individual mandatory-requirement dispositions, observed Modeler/Marketplace import and timed adoption.",
+    "External publication and licensing gates."
+  ]
+}

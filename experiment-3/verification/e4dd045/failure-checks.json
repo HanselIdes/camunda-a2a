@@ -1,0 +1,88 @@
+{
+  "verdict": "PASS",
+  "records": [
+    {
+      "case": "invalid-credentials",
+      "incidentElement": "CreateTask",
+      "errorType": "JOB_NO_RETRIES",
+      "expectedHttpError": "401",
+      "noFabricatedResponse": true,
+      "operatorRepair": "Local connector inputs, job retry, incident resolution",
+      "recoveredExactTask": true
+    },
+    {
+      "case": "insufficient-permissions",
+      "incidentElement": "CreateTask",
+      "errorType": "JOB_NO_RETRIES",
+      "expectedHttpError": "403",
+      "noFabricatedResponse": true,
+      "operatorRepair": "Local connector inputs, job retry, incident resolution",
+      "recoveredExactTask": true
+    },
+    {
+      "case": "revoked-credentials",
+      "incidentElement": "CreateTask",
+      "errorType": "JOB_NO_RETRIES",
+      "expectedHttpError": "401",
+      "noFabricatedResponse": true,
+      "operatorRepair": "Local connector inputs, job retry, incident resolution",
+      "recoveredExactTask": true
+    },
+    {
+      "case": "unreachable-engine-endpoint",
+      "incidentElement": "CreateTask",
+      "errorType": "JOB_NO_RETRIES",
+      "expectedHttpError": null,
+      "noFabricatedResponse": true,
+      "operatorRepair": "Local connector inputs, job retry, incident resolution",
+      "recoveredExactTask": true
+    },
+    {
+      "case": "deployment-engine-password-secret",
+      "connectorInputsUnmodified": true,
+      "expectedHttpError": "401",
+      "shippedRetries": 3,
+      "shippedRetryBackoffSeconds": 30,
+      "clientObservation": "five-second-client-timeout",
+      "incidentSeconds": 67.775,
+      "noFabricatedResponse": true,
+      "recoveredExactTask": true,
+      "operatorRepair": "Correct ENGINE_PASSWORD, recreate owned Connectors, retry and resolve",
+      "freshWorkAfterRepair": true
+    },
+    {
+      "case": "deployment-user-missing-permission",
+      "connectorInputsUnmodified": true,
+      "expectedHttpError": "403",
+      "shippedRetries": 3,
+      "shippedRetryBackoffSeconds": 30,
+      "clientObservation": "five-second-client-timeout",
+      "incidentSeconds": 69.456,
+      "noFabricatedResponse": true,
+      "recoveredExactTask": true,
+      "operatorRepair": "Grant isolated test user admin read access plus explicit CREATE_PROCESS_INSTANCE on a2a-echo, then retry and resolve; not a least-privilege recipe",
+      "freshWorkAfterRepair": true
+    },
+    {
+      "case": "unavailable-model-endpoint",
+      "state": "TASK_STATE_FAILED",
+      "noArtifacts": true,
+      "notOrdinaryUncertainty": true
+    },
+    {
+      "case": "unknown-model",
+      "state": "TASK_STATE_FAILED",
+      "noArtifacts": true,
+      "notOrdinaryUncertainty": true
+    },
+    {
+      "case": "model-configuration-repair",
+      "exactReconciliation": true
+    }
+  ],
+  "credentialScope": "Basic authentication has no token expiry. Invalid and unprivileged credentials and password-rotated credentials are injected; expiring OAuth tokens are not covered.",
+  "fixtures": "Derived nonshipping diagrams and stock engine APIs, plus a shipped-protocol deployment-secret fault; no custom server/worker.",
+  "inputFaultScope": "Derived CreateTask inputs, retries=1 and 1s timeouts. Handler started via engine API; no webhook response claimed for these cases. Local job-input repair only.",
+  "endpointFaultScope": "Only the connector endpoint is unreachable; the engine remains running. This is not engine-outage or restart evidence.",
+  "modelFaultScope": "Derived provider inputs; handlers started via engine API and tasks polled over A2A."
+}

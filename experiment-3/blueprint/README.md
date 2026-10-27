@@ -81,6 +81,24 @@ four pages (37/37/37/14). Both runs recorded a clean, unchanged source commit.
 Final-source full-suite, TCK, SDK/real-model, failure-injection/recovery and two-agent repeats remain pending;
 no earlier result is silently carried to a changed protocol.
 
+The [e4dd045 failure/recovery checkpoint](../verification/e4dd045/summary.json) exercises the **unmodified
+shipped webhook profile** with a wrong deployment `ENGINE_PASSWORD` and an actual user lacking business-start
+permission. Each caller reached its explicit five-second deadline. The three shipped attempts and 30-second
+backoff produced a `CreateTask` incident after approximately 68 and 69 seconds, respectively, with no fabricated
+RPC response. Correcting the secret or granting the missing authorization, then retrying the original job,
+returned the exact original result and allowed fresh external work. The isolated authorization fixture also
+grants an admin read role; it does not establish a least-privilege configuration.
+Separate derived-input cases cover invalid and password-rotated Basic credentials, insufficient permission,
+an unreachable connector endpoint, model-provider errors and exact real-model recovery.
+The [bc0a693 client checkpoint](../verification/bc0a693/summary.json) records official SDK patch negotiation,
+the packaged discovery expression evaluated by the engine across `1.0`, `1.0.2` and `1.0.999`, and native
+received `A2A-Version: 1.0` headers. The exact packaged polling connector runs in an isolated stock-BPMN
+fixture because fast work may not enter the full client's polling branch. These are supplemental,
+source-specific checks, not completion of the final-source series.
+The [current 16 individual dispositions](../verification/e4dd045/requirement-dispositions.json) map these
+supplemental results and name each remaining final-source gate. Inactive signing and in-task authorization
+requirements do not count as executed passes; shipped-client obligations are not dismissed as server-only N/A.
+
 ## Prepare the cluster
 
 Start timing an adoption attempt only after the cluster, Modeler, runtime, model and credentials are ready.
@@ -357,13 +375,42 @@ business-input clarification is not an in-task authorization flow.
 Repeating a new-task submission with the same `messageId` creates independent tasks. There is no message-ID
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
-The source-specific checkpoints above distinguish demonstrated cancellation, load/restart, duplicate and matrix
-checks from final-candidate acceptance. Credential/permission and other error injection/recovery,
-final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
+The source-specific checkpoints above distinguish demonstrated cancellation, load/restart, duplicate, error-recovery
+and matrix checks from final-candidate acceptance. Final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
 open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
 business outcomes.
+
+### Recover authentication, permission and provider failures
+
+If a protocol REST connector exhausts retries, inspect its incident and the affected task before resubmitting
+an A2A request. For `CreateTask`, the shipped setting is three attempts with a 30-second retry backoff and
+20-second connection/read timeouts. The client can time out before an incident appears. A timeout does not
+prove that a command did not execute. Duplicate submissions create independent tasks, not deduplicated retries.
+
+For engine HTTP 401, correct `ENGINE_USERNAME`/`ENGINE_PASSWORD` in the runtime's secret provider.
+The environment-secret check recreates only its owned Connectors container to load the corrected secret.
+For HTTP 403, grant the actual engine user the required resource authorization. Starting business work needs
+`CREATE_PROCESS_INSTANCE` on its `PROCESS_DEFINITION`; lookup, variable access and correlation require their
+own authorizations. A visible role assignment alone did not authorize the broker command in the recorded
+repair attempt. The passing check adds an explicit user authorization for the selected business process.
+Its additional admin read role is a disposable-test convenience, not least-privilege advice.
+
+After correcting the deployment, restore the failed job's retries and resolve its incident if it remains active.
+The recorded 8.8 flow uses `PATCH /v2/jobs/{jobKey}` with `{"changeset":{"retries":1}}`, then
+`POST /v2/incidents/{incidentKey}/resolution`. A retry can already resolve the incident; confirm its final state.
+Poll the original task or inspect the original handler's recorded response before starting new work.
+Both deployment-level checks observe the original request's exact completed result and a fresh external request.
+
+The additional connector-input fixtures use one attempt and one-second timeouts, start handlers through the
+engine API, and repair local connector variables. They prove job-level diagnostics and repair, not webhook
+responses or deployment-secret replacement. Their unreachable URL leaves the engine running: it is not an
+engine-outage or restart check. The provider fixtures also start handlers through the engine API and poll over
+A2A; provider errors produce `TASK_STATE_FAILED`, explicit failure text and no reconciliation artifact.
+Correcting the model configuration permits a new task to complete with exact arithmetic evidence.
+Basic credentials have no token-expiry mechanism; the password-rotation check is not OAuth-expiry evidence.
+The OAuth profile remains nonshipping and unverified.
 
 The original experiments, fixture diagrams, conformance patches and old generated templates/icons are nonshipping
 verification or historical material. They are not part of the Modeler import set above.
@@ -404,6 +451,9 @@ For official Python SDK interoperability, create a separate Python 3.10+ environ
 `experiment-3/tests/runtime/requirements-sdk.txt`, then set `PROOF_SDK_PYTHON` to that environment's Python
 executable when running the verifier. This uses `a2a-sdk==1.2.3`, not the conformance suite's transport client,
 and checks discovery, polling, same-task clarification, exact real-tool evidence and context-filtered listing.
+It also negotiates patch-varied copies of the discovered card against the same live endpoint. The report
+records every SDK request version. `bpmn-client-versions.json` separately records engine-evaluated packaged
+card mapping and native received headers from the supplied send and polling connectors.
 
 For the unchanged pinned conformance suite, prepare a separate checkout at
 `263b9cfaf16a554bdfb166a7ba5b67716e946349`, apply `experiment-3/tck/patches/tck-pr-stack.patch` from this
@@ -437,6 +487,13 @@ submits 125 exact echo tasks with eight callers, then compares every field acros
 tasks. It also checks unique IDs, deterministic ordering, status/timestamp filters and total size.
 `listing-checks.json` records the result. Combine `PROOF_LISTING_CHECKS=1` with the operational flag above to
 exercise both against one owned runtime; neither flag is used by adopters.
+
+`PROOF_AGENT_PROCESS=a2a-echo PROOF_FAILURE_CHECKS=1 python3 experiment-3/tests/runtime/verify.py`
+checks the deployment-secret and actual-user permission runbooks above, derived connector-input faults,
+password revocation, provider failure and real-model recovery. It temporarily recreates only its own Connectors
+container, creates and removes an isolated engine user, and writes `failure-checks.json`.
+Unlike the other echo checks, this flag requires the documented local model.
+It can be combined with the operational and listing flags. Derived diagrams are nonshipping test artifacts.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.
