@@ -1,7 +1,7 @@
 # A2A community blueprint candidate
 
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
-[license and licensing limitations](../../README.md#license-and-support). Fresh-adopter timing, observed
+[license and licensing limitations](../../README.md#license-and-support). Observed
 Modeler/Marketplace import and external licensing/eligibility approval remain separate release gates.
 SaaS runtime support is unverified.
 
@@ -66,6 +66,16 @@ The [16 individual supplemental dispositions](../verification/d4e6273/requiremen
 requirements, **eight supplementally verified applicable** requirements, and **50 inactive or other-binding**
 requirements. Inactive signing and delegated-authorization conditions are not tested passes. This establishes
 the recorded declared Basic JSON-RPC profile only, not production eligibility, other profiles or publication.
+
+## Timed adoption
+
+An independent adopter reported [139 seconds at source 597b152](../verification/597b152/adoption.md),
+starting with a ready cluster, model and credentials. The run reached an exact external real-model result,
+then adapted a different deterministic process with follow-up input and the required cancellation hook.
+It required no protocol edits, generator, custom worker or custom HTTP server.
+The report records all supplied settings and deviations. It is a single-machine observation transcribed from
+session output, without separate raw logs or image digests; it is not a reproducible runtime archive.
+Deployment used the engine REST API, not Modeler. It does not close import, template or form-usability gates.
 
 ## Earlier source-specific checkpoints
 
@@ -213,6 +223,11 @@ Use your deployment's normal secret provider instead where appropriate.
 | `CAMUNDA_PROVIDED_LLM_API_KEY`       | Provider credential; the tested local Ollama setup uses its documented dummy key   |
 | `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` | `qwen3-coder-30b-64k:latest` for the verified local configuration                  |
 
+Both `A2A_RPC_URL` and `A2A_AGENT_CARD_URL` must resolve and have a valid certificate from the Connectors
+runtime running the supplied BPMN client and from external clients. A hostname that works only from a
+container or only from the adopter's machine is not sufficient. Include the advertised hostname in the
+certificate's Subject Alternative Names and configure trust on both clients.
+
 The `CAMUNDA_PROVIDED_LLM_*` names are configuration names, not a claim that this check used Camunda's SaaS model.
 For Docker Desktop, a host-local Ollama service can be reached through `host.docker.internal`; do not assume
 that hostname works on a remote cluster. Model inference needs sufficient local resources.
@@ -316,6 +331,8 @@ in the supplied agent. Do not start another task or discard its conversation whe
 [../bpmn/a2a-echo.bpmn](../bpmn/a2a-echo.bpmn) is the separately tested deterministic contract reference, not the
 public demonstration. When selecting a different process, update the discovery card's name, description and skills
 to describe that process. Selecting `A2A_AGENT_PROCESS` does not automatically rewrite the card.
+When supplying this or any other connector secret through environment variables, restart or recreate
+Connectors after changing the value so the runtime loads it.
 To try echo, download/import that linked BPMN separately, deploy it alongside the unchanged Basic protocol and
 validation DMN, and set connector secret `A2A_AGENT_PROCESS=a2a-echo`. Echo uses only the shared `a2a-task-update`
 process from the protocol: it needs no model, form or classification DMN. It is not in the default import manifest.
@@ -412,7 +429,7 @@ Repeating a new-task submission with the same `messageId` creates independent ta
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
 The source-specific checkpoints above distinguish engineering results from final release acceptance.
-Modeler/form usability, actual Marketplace import, timed fresh adoption and external legal/eligibility gates
+Modeler/form usability, actual Marketplace import and external legal/eligibility gates
 remain open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
