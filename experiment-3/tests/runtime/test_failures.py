@@ -18,6 +18,7 @@ class FailureFixtureTest(unittest.TestCase):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "fault.bpmn"
                 fault_model(SOURCE, output, mode)
+                self.assertIn(f'xmlns:bpmn="{B}"', output.read_text())
                 tree = ET.parse(output)
                 task = next(item for item in tree.getroot().iter() if item.get("id") == "CreateTask")
                 inputs = {item.get("target"): item.get("source") for item in task.iter(f"{{{Z}}}input")}

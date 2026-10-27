@@ -11,6 +11,7 @@ Z = "http://camunda.org/schema/zeebe/1.0"
 
 
 def fault_model(source, target, mode):
+    ET.register_namespace("bpmn", B)
     model = ET.parse(source)
     task = next(element for element in model.getroot().iter() if element.get("id") == "CreateTask")
     task.find(f"{{{B}}}extensionElements/{{{Z}}}taskDefinition").set("retries", "1")
