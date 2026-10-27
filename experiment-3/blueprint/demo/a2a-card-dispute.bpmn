@@ -118,7 +118,7 @@
     </bpmn:endEvent>
     <bpmn:scriptTask id="EncodePrompt" name="Join client input">
       <bpmn:extensionElements>
-        <zeebe:script expression="=if count(req.message.parts[item.text instance of string]) = 0 then &quot;Review the explicit client confirmation.&quot; else string join(for part in req.message.parts return if part.text != null then part.text else &quot;&quot;, &quot; &quot;)" resultVariable="promptText" />
+        <zeebe:script expression="=if count(req.message.parts[item.text instance of string]) = 0 then &quot;Review the explicit client confirmation.&quot; else string join(req.message.parts[item.text instance of string].text, &quot; &quot;)" resultVariable="promptText" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_NextTurn_EncodePrompt</bpmn:incoming>
       <bpmn:outgoing>Flow_EncodePrompt_ValidateConfirmation</bpmn:outgoing>

@@ -10,7 +10,6 @@ import xml.etree.ElementTree as ET
 from build_core import B, Z, ROOT, REQUEST_MAPPING
 from gen_card import feel_str, json_string_expression, skills_from_bpmn, skills_feel
 from bpmn_gen import build as original
-from bpmn_gen.agent import USER_PROMPT
 from bpmn_gen.client import client, form
 from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
@@ -101,7 +100,8 @@ def agent(path):
             node.x += 200
     p.nodes["AgentTools"].name = "Review synthetic card dispute"
     prompt = ('=if count(req.message.parts[item.text instance of string]) = 0 then '
-              '"Review the explicit client confirmation." else ' + USER_PROMPT[1:])
+              '"Review the explicit client confirmation." else '
+              'string join(req.message.parts[item.text instance of string].text, " ")')
     p.script("EncodePrompt", "Join client input", 340, 238, prompt, "promptText")
     p.script("ValidateConfirmation", "Validate client confirmation", 340, 340, CONFIRMATION, "confirmation")
     p.remove_flow("NextTurn", "AgentTools")
