@@ -1,0 +1,46 @@
+# Basic-profile failure evidence
+
+The declared profile uses authenticated Self-Managed engine access, direct HTTPS JSON-RPC,
+one shared API key, stock Connectors, and disabled push. These are functional checks, not
+adoption, editor usability, production readiness or publication evidence.
+
+New native source: `07b33876396bfcb8c0dfa58336dd1bd2cfd0b640`.
+The [source manifest](summary.json) confirms unchanged packaged assets relative to
+`d4e6273c862b387ee7b2a49b992cd4db5f56a922`. Only nonshipping harness code and documentation
+changed. Earlier evidence retains its original source attribution.
+
+| Failure subcase                                       | Disposition                                           | Evidence and limits                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actual engine outage during an external call          | Verified natively at 07b3387                          | [Observations](failure-gap-checks.json): owned engine container stopped; GetTask returned HTTP 503 with UNAVAILABLE in 0.012 seconds. [Connectors diagnostics](engine-outage-connectors.log) show refusal/unavailability. After restoration, the original task was identical, fresh work returned exact text and active incidents were zero. This does not inject a crash during business mutation or promise every outage returns 503. |
+| Follow-up correlation transport refusal               | Verified natively at 07b3387                          | SendMessage caller hit its five-second deadline. CorrelateMessage in the called `a2a-correlate` process produced JOB_NO_RETRIES. No RPC response was persisted and the business task was unchanged. URL repair and retry recovered the original request, exact follow-up history, completion text/artifact and GetTask agreement.                                                                                                       |
+| Cancellation correlation transport refusal            | Verified natively at 07b3387                          | CancelTask caller hit its five-second deadline, with the same operator-visible incident and unchanged business state before repair. Repair recovered the original request with persisted CANCELED, no artifacts, GetTask agreement and no active incident.                                                                                                                                                                              |
+| Real deployment secret rejection and correction       | Retained native verification at d4e6273               | [Earlier native records](../d4e6273/native-failure-checks.json): actual ENGINE_PASSWORD, unmodified shipped connector inputs, caller deadline, 401 incident after shipped retries, exact original result and fresh work after correction/recreation/retry. Not rerun.                                                                                                                                                                   |
+| Actual user's missing permission and repair           | Retained native verification at d4e6273               | Earlier native records: 403 incident, no fabricated response, exact repair. Repair combined built-in admin membership with an explicit authorization; neither grant's causal contribution or a minimal permission set is established. Not rerun.                                                                                                                                                                                        |
+| Revoked Basic credentials                             | Retained derived-input native verification at d4e6273 | Earlier native records: rotated password rejected with 401, incident and job-input repair. One attempt/one-second derived inputs differ from the shipped profile. This is not expiring-token evidence. Not rerun.                                                                                                                                                                                                                       |
+| Model endpoint/name failures and correction           | Retained native verification at d4e6273               | Earlier native records: actual stock AI connector with derived provider inputs, FAILED with generic error and no artifacts, then exact model reconciliation after correction. Engine-started handlers, not an observed webhook timeout. Not rerun.                                                                                                                                                                                      |
+| Successful correlation with a lost response           | Existing deterministic Core evidence only             | [a45de8c focused records](../a45de8c/summary.json) cover reconciliation after committed correlation, NOT_FOUND retry and ambiguous errors. New native refusal cases fail before delivery; they do not prove native response loss after commit.                                                                                                                                                                                          |
+| Push callback errors/retries/unreachable destinations | Not applicable                                        | Push is disabled and unadvertised in the declared profile. No callback delivery is invoked. Rejected unsupported capability requests are not callback-delivery passes.                                                                                                                                                                                                                                                                  |
+| OAuth token expiry                                    | Not applicable                                        | The declared profile uses Basic authentication without token expiry. OAuth is nonshipping/unverified. Revoked passwords do not count as OAuth-expiry passes.                                                                                                                                                                                                                                                                            |
+| Standard-path ingress failure                         | Not applicable                                        | Optional ingress is outside the direct-URL profile. These checks do not prove optional ingress behavior.                                                                                                                                                                                                                                                                                                                                |
+
+## Commands and outcomes
+
+`python3 -m unittest discover -s experiment-3/tests/runtime -p 'test_*.py'` passed 30 tests.
+`python3 experiment-3/tools/build_core.py --check` confirmed unchanged generated profiles.
+The [native command and provenance](summary.json) identify engine 8.8.21, stock Connectors 8.9.0,
+Elasticsearch 8.17.0, image digests, clean source before/after, and all three passing cases.
+The complete native command output is retained as [attempt-2.log](attempt-2.log).
+No broad Maven or conformance rerun was needed: shipped runtime behavior and assets did not change.
+Existing full-suite/conformance evidence remains source-specific, not newly executed here.
+
+The [first attempt](failed-attempt-runtime-provenance.json) is FAIL/non-acceptance.
+Its harness searched the RPC parent for an incident owned by the called correlation process.
+The product had created that incident; this was an observation error, not absent operator visibility.
+Its [raw log](attempt-1.log) and [partial observations](failed-attempt-failure-gap-checks.json) are preserved.
+
+The refused-transport fixture changes only the derived correlation URL to a closed local port.
+It preserves the shipped single attempt and 20-second connection/read timeouts.
+Both transport callers used an explicit five-second deadline; their eventual webhook HTTP responses are unobserved.
+All business fixtures are nonshipping and contain only synthetic data.
+Only the verifier-owned engine was stopped; no shared deployment, credentials or exporter was changed.
+Both isolated projects were removed after use; the unrelated secondary stack was untouched.

@@ -1,0 +1,129 @@
+{
+  "verdict": "FAIL",
+  "records": [
+    {
+      "case": "true-engine-outage",
+      "clientObservation": {
+        "client": "explicit-error",
+        "httpStatus": 503,
+        "response": "{\"status\":\"UNAVAILABLE\",\"message\":\"io exception\"}",
+        "seconds": 0.012
+      },
+      "operatorVisible": "engine-outage-connectors.log",
+      "originalTaskUnchanged": true,
+      "freshExactWork": true,
+      "activeIncidentsAfterRepair": 0,
+      "scope": "External GetTask while engine container stopped; new handler cannot start. No engine incident is asserted while the engine is unavailable. Eventual webhook response after client deadline is unobserved."
+    }
+  ],
+  "observations": [
+    {
+      "case": "engine-outage",
+      "engineRunning": false,
+      "engineStatus": "exited"
+    },
+    {
+      "case": "engine-outage",
+      "client": "explicit-error",
+      "httpStatus": 503,
+      "response": "{\"status\":\"UNAVAILABLE\",\"message\":\"io exception\"}",
+      "seconds": 0.012
+    },
+    {
+      "case": "engine-recovery",
+      "originalTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "fe391e0a-0975-4b54-ad9a-784289b6cabd",
+            "taskId": "01a17d1f-40be-7612-aa5e-6718b3bc61ac",
+            "contextId": "01a17d1f-40be-7ba2-bfb6-31025868a368",
+            "parts": [
+              {
+                "text": "Exact task preserved through real engine outage"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d1f-410e-7d8a-b3ba-862849699fad",
+            "taskId": "01a17d1f-40be-7612-aa5e-6718b3bc61ac",
+            "contextId": "01a17d1f-40be-7ba2-bfb6-31025868a368",
+            "parts": [
+              {
+                "text": "Exact task preserved through real engine outage"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d1f-40be-7612-aa5e-6718b3bc61ac",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d1f-410e-7d8a-b3ba-862849699fad",
+            "taskId": "01a17d1f-40be-7612-aa5e-6718b3bc61ac",
+            "contextId": "01a17d1f-40be-7ba2-bfb6-31025868a368",
+            "parts": [
+              {
+                "text": "Exact task preserved through real engine outage"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:29:22Z"
+        },
+        "contextId": "01a17d1f-40be-7ba2-bfb6-31025868a368"
+      },
+      "freshTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "ccf21788-f075-4b1b-9ca0-44e453db5cac",
+            "taskId": "01a17d1f-99e8-78a8-8876-2bde031826bc",
+            "contextId": "01a17d1f-99e6-7c9a-814a-0caf0a91c52a",
+            "parts": [
+              {
+                "text": "Exact fresh work after engine outage"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d1f-9a4c-7ac6-9f9c-31f04a4ad3b6",
+            "taskId": "01a17d1f-99e8-78a8-8876-2bde031826bc",
+            "contextId": "01a17d1f-99e6-7c9a-814a-0caf0a91c52a",
+            "parts": [
+              {
+                "text": "Exact fresh work after engine outage"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d1f-99e8-78a8-8876-2bde031826bc",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d1f-9a4c-7ac6-9f9c-31f04a4ad3b6",
+            "taskId": "01a17d1f-99e8-78a8-8876-2bde031826bc",
+            "contextId": "01a17d1f-99e6-7c9a-814a-0caf0a91c52a",
+            "parts": [
+              {
+                "text": "Exact fresh work after engine outage"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:29:45Z"
+        },
+        "contextId": "01a17d1f-99e6-7c9a-814a-0caf0a91c52a"
+      }
+    }
+  ],
+  "scope": "Native stock Basic profile. True outage stops only the owned engine. Correlation fault changes only a derived nonshipping connector URL; retries/timeouts unchanged.",
+  "exclusions": {
+    "pushCallbacks": "Not applicable: push is disabled and unadvertised; no callback is invoked.",
+    "oauthExpiry": "Not applicable: declared profile uses Basic authentication without token expiry.",
+    "standardPathIngress": "Not applicable: optional ingress is outside the direct-URL profile.",
+    "responseLossAfterCommit": "Native response-loss-after-commit is not injected here. Existing Core tests cover deterministic reconciliation; refusal before delivery is a distinct transport case."
+  }
+}

@@ -1,0 +1,495 @@
+{
+  "verdict": "PASS",
+  "records": [
+    {
+      "case": "true-engine-outage",
+      "clientObservation": {
+        "client": "explicit-error",
+        "httpStatus": 503,
+        "response": "{\"status\":\"UNAVAILABLE\",\"message\":\"io exception\"}",
+        "seconds": 0.012
+      },
+      "operatorVisible": "engine-outage-connectors.log",
+      "originalTaskUnchanged": true,
+      "freshExactWork": true,
+      "activeIncidentsAfterRepair": 0,
+      "scope": "External GetTask while engine container stopped; new handler cannot start. No engine incident is asserted while the engine is unavailable. Eventual webhook response after client deadline is unobserved."
+    },
+    {
+      "case": "SendMessage-correlation-transport",
+      "connectorRetries": 1,
+      "connectorTimeoutSeconds": 20,
+      "clientObservation": {
+        "client": "five-second-client-timeout",
+        "seconds": 5.007
+      },
+      "incident": "CorrelateMessage / JOB_NO_RETRIES",
+      "noFabricatedResponse": true,
+      "businessUnchangedBeforeRepair": true,
+      "originalRpcRecovered": true,
+      "exactTerminalAgreement": true,
+      "activeIncidentsAfterRepair": 0
+    },
+    {
+      "case": "CancelTask-correlation-transport",
+      "connectorRetries": 1,
+      "connectorTimeoutSeconds": 20,
+      "clientObservation": {
+        "client": "five-second-client-timeout",
+        "seconds": 5.005
+      },
+      "incident": "CorrelateMessage / JOB_NO_RETRIES",
+      "noFabricatedResponse": true,
+      "businessUnchangedBeforeRepair": true,
+      "originalRpcRecovered": true,
+      "exactTerminalAgreement": true,
+      "activeIncidentsAfterRepair": 0
+    }
+  ],
+  "observations": [
+    {
+      "case": "engine-outage",
+      "engineRunning": false,
+      "engineStatus": "exited"
+    },
+    {
+      "case": "engine-outage",
+      "client": "explicit-error",
+      "httpStatus": 503,
+      "response": "{\"status\":\"UNAVAILABLE\",\"message\":\"io exception\"}",
+      "seconds": 0.012
+    },
+    {
+      "case": "engine-recovery",
+      "originalTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "1d300a7a-6f79-4517-81c1-e9efcfa41573",
+            "taskId": "01a17d22-6f06-781c-837d-6d6dcba6193b",
+            "contextId": "01a17d22-6f06-78e0-8236-e9bd2839f1b1",
+            "parts": [
+              {
+                "text": "Exact task preserved through real engine outage"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-6f5a-76f3-bca4-9c0ad378c62f",
+            "taskId": "01a17d22-6f06-781c-837d-6d6dcba6193b",
+            "contextId": "01a17d22-6f06-78e0-8236-e9bd2839f1b1",
+            "parts": [
+              {
+                "text": "Exact task preserved through real engine outage"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d22-6f06-781c-837d-6d6dcba6193b",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-6f5a-76f3-bca4-9c0ad378c62f",
+            "taskId": "01a17d22-6f06-781c-837d-6d6dcba6193b",
+            "contextId": "01a17d22-6f06-78e0-8236-e9bd2839f1b1",
+            "parts": [
+              {
+                "text": "Exact task preserved through real engine outage"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:32:51Z"
+        },
+        "contextId": "01a17d22-6f06-78e0-8236-e9bd2839f1b1"
+      },
+      "freshTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "c2a4bde8-effb-40b6-897e-576b69da5057",
+            "taskId": "01a17d22-d057-7086-b79a-d39f173a941f",
+            "contextId": "01a17d22-d056-7da4-bc0d-861cf6c15ead",
+            "parts": [
+              {
+                "text": "Exact fresh work after engine outage"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-d0bd-75fb-b6de-62d5d8e8a5a7",
+            "taskId": "01a17d22-d057-7086-b79a-d39f173a941f",
+            "contextId": "01a17d22-d056-7da4-bc0d-861cf6c15ead",
+            "parts": [
+              {
+                "text": "Exact fresh work after engine outage"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d22-d057-7086-b79a-d39f173a941f",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-d0bd-75fb-b6de-62d5d8e8a5a7",
+            "taskId": "01a17d22-d057-7086-b79a-d39f173a941f",
+            "contextId": "01a17d22-d056-7da4-bc0d-861cf6c15ead",
+            "parts": [
+              {
+                "text": "Exact fresh work after engine outage"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:33:16Z"
+        },
+        "contextId": "01a17d22-d056-7da4-bc0d-861cf6c15ead"
+      }
+    },
+    {
+      "case": "SendMessage-client",
+      "client": "five-second-client-timeout",
+      "seconds": 5.007
+    },
+    {
+      "case": "SendMessage-refused",
+      "client": {
+        "client": "five-second-client-timeout",
+        "seconds": 5.007
+      },
+      "incident": {
+        "processDefinitionId": "a2a-correlate",
+        "errorType": "JOB_NO_RETRIES",
+        "errorMessage": "An error occurred while executing the request, or the connection was aborted | Error variables: {error={message=An error occurred while executing the request, or the connection was aborted, type=io.camunda.connector.api.error.ConnectorException, code=408}}",
+        "elementId": "CorrelateMessage",
+        "creationTime": "2026-10-27T11:33:23.132Z",
+        "state": "ACTIVE",
+        "tenantId": "<default>",
+        "incidentKey": "2251799813687183",
+        "processDefinitionKey": "2251799813687059",
+        "processInstanceKey": "2251799813687157",
+        "elementInstanceKey": "2251799813687170",
+        "jobKey": "2251799813687180"
+      },
+      "unchangedTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "17691593-002f-4949-8981-94b6fb5f31be",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-dd6b-753c-a2d3-5522f5078455",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-dd6b-753c-a2d3-5522f5078455",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:33:19Z"
+        },
+        "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3"
+      }
+    },
+    {
+      "case": "SendMessage-repaired",
+      "rpcResponse": {
+        "jsonrpc": "2.0",
+        "id": "transport-55e1a070-f669-4bb0-940b-4429fe5c8d54",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "17691593-002f-4949-8981-94b6fb5f31be",
+                "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+                "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17d22-dd6b-753c-a2d3-5522f5078455",
+                "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+                "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "transport-55e1a070-f669-4bb0-940b-4429fe5c8d54",
+                "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+                "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+                "parts": [
+                  {
+                    "text": "Exact transport-repaired input"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "status": {
+              "state": "TASK_STATE_WORKING",
+              "timestamp": "2026-10-27T11:33:28Z"
+            },
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3"
+          }
+        }
+      },
+      "terminal": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "17691593-002f-4949-8981-94b6fb5f31be",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d22-dd6b-753c-a2d3-5522f5078455",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "transport-55e1a070-f669-4bb0-940b-4429fe5c8d54",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "Exact transport-repaired input"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d23-0b77-7aa6-81b4-894c65a142d3",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d23-0b77-7aa6-81b4-894c65a142d3",
+            "taskId": "01a17d22-dd18-7290-84b0-98c10b2a50b4",
+            "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:33:31Z"
+        },
+        "contextId": "01a17d22-dd18-707c-88da-48aa4afd34a3"
+      }
+    },
+    {
+      "case": "CancelTask-client",
+      "client": "five-second-client-timeout",
+      "seconds": 5.005
+    },
+    {
+      "case": "CancelTask-refused",
+      "client": {
+        "client": "five-second-client-timeout",
+        "seconds": 5.005
+      },
+      "incident": {
+        "processDefinitionId": "a2a-correlate",
+        "errorType": "JOB_NO_RETRIES",
+        "errorMessage": "An error occurred while executing the request, or the connection was aborted | Error variables: {error={message=An error occurred while executing the request, or the connection was aborted, type=io.camunda.connector.api.error.ConnectorException, code=408}}",
+        "elementId": "CorrelateMessage",
+        "creationTime": "2026-10-27T11:33:37.650Z",
+        "state": "ACTIVE",
+        "tenantId": "<default>",
+        "incidentKey": "2251799813688198",
+        "processDefinitionKey": "2251799813688078",
+        "processInstanceKey": "2251799813688172",
+        "elementInstanceKey": "2251799813688185",
+        "jobKey": "2251799813688195"
+      },
+      "unchangedTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "84d55ea8-032e-4ac9-be1f-3c578d932f49",
+            "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+            "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d23-16fa-7153-a3c8-33c5e174fd80",
+            "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+            "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d23-16fa-7153-a3c8-33c5e174fd80",
+            "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+            "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T11:33:34Z"
+        },
+        "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114"
+      }
+    },
+    {
+      "case": "CancelTask-repaired",
+      "rpcResponse": {
+        "jsonrpc": "2.0",
+        "id": "transport-cb946e65-1545-4e86-8b06-a70377db028f",
+        "result": {
+          "history": [
+            {
+              "role": "ROLE_USER",
+              "messageId": "84d55ea8-032e-4ac9-be1f-3c578d932f49",
+              "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+              "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+              "parts": [
+                {
+                  "text": "input-required"
+                }
+              ]
+            },
+            {
+              "role": "ROLE_AGENT",
+              "messageId": "01a17d23-16fa-7153-a3c8-33c5e174fd80",
+              "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+              "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+              "parts": [
+                {
+                  "text": "Controlled clarification"
+                }
+              ]
+            }
+          ],
+          "id": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+          "status": {
+            "state": "TASK_STATE_CANCELED",
+            "timestamp": "2026-10-27T11:33:44Z"
+          },
+          "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114"
+        }
+      },
+      "terminal": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "84d55ea8-032e-4ac9-be1f-3c578d932f49",
+            "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+            "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17d23-16fa-7153-a3c8-33c5e174fd80",
+            "taskId": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+            "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17d23-16a7-75e8-9f58-5db9206e01ec",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T11:33:44Z"
+        },
+        "contextId": "01a17d23-16a7-77a3-a3a8-6122feb6c114"
+      }
+    }
+  ],
+  "scope": "Native stock Basic profile. True outage stops only the owned engine. Correlation fault changes only a derived nonshipping connector URL; retries/timeouts unchanged.",
+  "exclusions": {
+    "pushCallbacks": "Not applicable: push is disabled and unadvertised; no callback is invoked.",
+    "oauthExpiry": "Not applicable: declared profile uses Basic authentication without token expiry.",
+    "standardPathIngress": "Not applicable: optional ingress is outside the direct-URL profile.",
+    "responseLossAfterCommit": "Native response-loss-after-commit is not injected here. Existing Core tests cover deterministic reconciliation; refusal before delivery is a distinct transport case."
+  }
+}

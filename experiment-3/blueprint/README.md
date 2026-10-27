@@ -79,6 +79,17 @@ The report records all supplied settings and deviations. It is a single-machine 
 session output, without separate raw logs or image digests; it is not a reproducible runtime archive.
 Deployment used the engine REST API, not Modeler. It does not close import, template or form-usability gates.
 
+## Supplemental native failure checks
+
+The [07b3387 failure evidence map](../verification/07b3387/failure-evidence-map.md) covers a true outage of
+the verifier-owned engine during an external GetTask call and refused follow-up/cancellation correlation
+transport. The outage returned HTTP 503 with UNAVAILABLE; after restoration, the stored task was unchanged
+and fresh work completed exactly. Refused correlation created operator-visible incidents without a fabricated
+RPC response or business-state change. Repair recovered the original requests and exact terminal outcomes.
+These are functional checks on engine 8.8.21 / stock Connectors 8.9.0, not adoption or editor evidence.
+Packaged assets remain byte-identical to d4e6273. The first, failed harness observation is preserved separately.
+Native response loss after a committed correlation was not injected; existing Core evidence retains that scope.
+
 ## Earlier source-specific checkpoints
 
 The [96357f5 verification record](../verification/96357f5/summary.json) contains three clean-source runs of
@@ -438,6 +449,13 @@ side effects or a retention guarantee. Engine/connector incidents are operator-v
 business outcomes.
 
 ### Recover authentication, permission and provider failures
+
+If the engine is unavailable, inspect Connectors activity/worker diagnostics and restore engine connectivity
+before retrying a business submission. The isolated outage check observed HTTP 503/UNAVAILABLE while the engine
+was stopped; this is not a guarantee of the HTTP response for every outage. After recovery, poll GetTask for an
+existing task before starting replacement work. Correlation transport incidents may leave an INPUT_REQUIRED
+task unchanged: restore the failed route/configuration, retry the original job and inspect the persisted task
+outcome. Do not equate a client timeout with business failure or resubmit side effects without checking state.
 
 If a protocol REST connector exhausts retries, inspect its incident and the affected task before resubmitting
 an A2A request. For `CreateTask`, the shipped setting is three attempts with a 30-second retry backoff and
