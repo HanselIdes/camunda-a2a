@@ -39,7 +39,8 @@ if env.get("PROOF_LOAD_AGENT"):
         raise ValueError("Workload mode requires alpha/beta, echo and no SDK/TCK mode")
     if not (Path(env["PROOF_CONTROL_DIR"]) / env["PROOF_LOAD_AGENT"]).is_dir():
         raise ValueError("Workload mode requires an existing coordinator control directory")
-if any(env.get(name) for name in ("PROOF_OPERATIONAL_CHECKS", "PROOF_LISTING_CHECKS", "PROOF_FAILURE_CHECKS")) and (env["PROOF_AGENT_PROCESS"] != "a2a-echo"
+if any(env.get(name) for name in ("PROOF_OPERATIONAL_CHECKS", "PROOF_LISTING_CHECKS", "PROOF_FAILURE_CHECKS",
+                                "PROOF_FAILURE_GAP_CHECKS")) and (env["PROOF_AGENT_PROCESS"] != "a2a-echo"
         or conformance or env.get("PROOF_LOAD_AGENT")):
     raise ValueError("Operational/listing checks require isolated echo mode, without workload/TCK mode")
 exporter_profile = env.setdefault("PROOF_EXPORTER_PROFILE", "low-latency")
@@ -58,6 +59,7 @@ def record_provenance(verdict, **details):
         "operationalChecks": bool(env.get("PROOF_OPERATIONAL_CHECKS")),
         "listingChecks": bool(env.get("PROOF_LISTING_CHECKS")),
         "failureChecks": bool(env.get("PROOF_FAILURE_CHECKS")),
+        "failureGapChecks": bool(env.get("PROOF_FAILURE_GAP_CHECKS")),
         **details,
     }, indent=2) + "\n")
 
@@ -464,6 +466,9 @@ try:
     if env.get("PROOF_FAILURE_CHECKS"):
         from failures import run as run_failures
         run_failures(ROOT, REPORTS, rpc, request, deploy, env, stack)
+    if env.get("PROOF_FAILURE_GAP_CHECKS"):
+        from failure_gaps import run as run_failure_gaps
+        run_failure_gaps(ROOT, REPORTS, rpc, request, deploy, env, stack, redact)
     assert_no_persisted_credentials()
     source_after = source_snapshot(ROOT)
     if source_after != source_before:

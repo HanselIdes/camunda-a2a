@@ -554,6 +554,15 @@ container, creates and removes an isolated engine user, and writes `failure-chec
 Unlike the other echo checks, this flag requires the documented local model.
 It can be combined with the operational and listing flags. Derived diagrams are nonshipping test artifacts.
 
+`PROOF_AGENT_PROCESS=a2a-echo PROOF_FAILURE_GAP_CHECKS=1 python3 experiment-3/tests/runtime/verify.py`
+checks a true outage of only the verifier's owned engine during an external GetTask call, plus refused
+follow-up and cancellation correlation transport on derived nonshipping protocol copies. Correlation copies
+change only the URL, retaining the shipped single attempt and 20-second connector timeouts. The check observes
+bounded client errors/timeouts, operator diagnostics/incidents, unchanged business state before repair and exact
+results after recovery. `failure-gap-checks.json` and `engine-outage-connectors.log` record observations.
+It does not inject native response loss after commit, OAuth expiry, optional ingress or push callbacks.
+No other deployment is stopped or reconfigured. These checks are not passes until the exact-source run completes.
+
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.
 `python3 experiment-3/tools/check_resources.py` checks the selected import set for template-version, form, decision
