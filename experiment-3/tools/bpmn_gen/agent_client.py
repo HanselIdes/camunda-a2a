@@ -25,8 +25,9 @@ SYSTEM_PROMPT = (
     "Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. "
     "When the server returns a task, use GetA2ATask to poll it. If the server requests input, "
     "call AskClientForInput with the server's exact question, then send the user's answer and "
-    "confirmed syntheticClaim as a follow-up to the same task and context. SendA2AMessage takes "
-    "confirmation data only from the AskClientForInput form result; never send model-inferred values. "
+    "confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from "
+    "the prior send result, and takes confirmation data only from the AskClientForInput form result. "
+    "Never send model-inferred values or invent task identifiers. "
     "Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. "
     "Report failures and nonterminal states accurately. This example performs no real financial action."
 )
@@ -49,6 +50,26 @@ flatten(
     else []
   else []
 )
+"""
+
+PREVIOUS_A2A_TASK_PARAMS = """
+(for records in [flatten(
+  for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
+  return message.results[item.name = "SendA2AMessage"]
+)] return if count(records) > 0 then
+  (for content in [records[count(records)].content] return
+    for response in [if content instance of context and content.toolCallResult instance of context
+                     then content.toolCallResult else content] return
+      for result in [if response instance of context then response.result else null] return
+        if result instance of context then
+          if result.task instance of context then
+            {taskId: result.task.id, contextId: result.task.contextId}
+          else if result.id instance of string and result.contextId instance of string then
+            {taskId: result.id, contextId: result.contextId}
+          else {}
+        else {}
+  )[1][1][1]
+else {})[1]
 """
 
 
@@ -88,9 +109,9 @@ def build():
         "serviceTask", "SendA2AMessage", "Send A2A message",
         830, 125, parent="ClientTools",
         doc=("Send a new A2A 1.0 message or a follow-up to the same task. Use the user's request "
-             "as text. A structured syntheticClaim is added only from the AskClientForInput form "
-             "result; it cannot be supplied as an AI tool argument. Returns the JSON-RPC response "
-             "and any created task."),
+             "as text. Follow-ups use task and context IDs from the prior send result. A structured "
+             "syntheticClaim is added only from the AskClientForInput form result; neither can be "
+             "supplied as an AI tool argument. Returns the JSON-RPC response and task."),
     )
     p.node(
         "serviceTask", "GetA2ATask", "Poll A2A task",
@@ -197,14 +218,10 @@ def build():
                     CONFIRMED_CLIENT_DATA_PARTS
                   )
                 }, configuration: {returnImmediately: true}},
-                if fromAi(value: toolCall.taskId, description: "Existing A2A task ID for a follow-up",
-                          options: {required: false}) instance of string
-                then {taskId: toolCall.taskId} else {},
-                if fromAi(value: toolCall.contextId, description: "Existing A2A context ID for a follow-up",
-                          options: {required: false}) instance of string
-                then {contextId: toolCall.contextId} else {}
+                PREVIOUS_A2A_TASK_PARAMS
               ])
-            }""".replace("CONFIRMED_CLIENT_DATA_PARTS", CONFIRMED_CLIENT_DATA_PARTS))),
+            }""".replace("CONFIRMED_CLIENT_DATA_PARTS", CONFIRMED_CLIENT_DATA_PARTS)
+                 .replace("PREVIOUS_A2A_TASK_PARAMS", PREVIOUS_A2A_TASK_PARAMS))),
             ("readTimeoutInSeconds", "60"),
             ("retries", "1"),
             ("resultExpression", "={toolCallResult: response.body}"),

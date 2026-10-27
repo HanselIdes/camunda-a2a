@@ -311,6 +311,7 @@ try:
             sent_tasks.append(task_from_rpc(response_body))
     assert sent_tasks, "Client agent did not send an A2A message that created or updated a task"
     assert len({task["id"] for task in sent_tasks}) == 1, sent_tasks
+    assert len({task["contextId"] for task in sent_tasks}) == 1, sent_tasks
     final_tasks = []
     for result in results:
         if result.get("name") != "GetA2ATask":

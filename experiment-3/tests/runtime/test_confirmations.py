@@ -34,8 +34,13 @@ class ConfirmationContractTest(unittest.TestCase):
         task = next(e for e in root.iter() if e.get("id") == "SendA2AMessage")
         body = next(e for e in task.iter(Z + "input") if e.get("target") == "body")
         self.assertNotIn("toolCall.claim", body.get("source"))
+        self.assertNotIn("toolCall.taskId", body.get("source"))
+        self.assertNotIn("toolCall.contextId", body.get("source"))
         self.assertIn("clientAgent.context.conversation.messages", body.get("source"))
         self.assertIn('message.results[item.name = "AskClientForInput"]', body.get("source"))
+        self.assertIn('message.results[item.name = "SendA2AMessage"]', body.get("source"))
+        self.assertIn("result.task.id", body.get("source"))
+        self.assertIn("result.task.contextId", body.get("source"))
         self.assertIn("syntheticClaim", body.get("source"))
 
     def test_form_has_explicit_empty_confirmation_inputs(self):

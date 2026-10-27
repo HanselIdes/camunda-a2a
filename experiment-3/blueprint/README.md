@@ -342,8 +342,8 @@ Free text is context, not confirmation. If the server responds `INPUT_REQUIRED`,
 `Northwind Electronics`, currency `USD`, first/second charge amounts `49.95`, expected order amount `49.95`,
 and check the synthetic-only confirmation. In the bundled client process, the outbound mapping derives the
 `data.syntheticClaim` part only from that form result; the model cannot supply claim fields as tool arguments.
-The agent can then send the confirmed part on the same task and context. This is a prototype interaction:
-the model decides whether and when to call each tool.
+Follow-up messages reuse the task and context IDs returned by the initial send; the model cannot supply those
+identifiers either. This is a prototype interaction: the model decides whether and when to call each tool.
 
 External clients may submit this structured confirmation on the initial request for one-shot completion,
 or on a follow-up with the original `taskId` and `contextId`:
