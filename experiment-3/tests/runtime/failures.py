@@ -226,7 +226,17 @@ def run(root, reports, rpc, request, deploy, env, stack):
                 wait("test user's granted process access effective",
                      lambda: stale_credential_status(f"/v2/process-instances/{instance}", body=None),
                      lambda status: status == 200, seconds=120)
-                repair = "Grant admin role to isolated test user, then retry and resolve; not a least-privilege recipe"
+                status, _ = request("/v2/authorizations", {
+                    "ownerId": user, "ownerType": "USER", "resourceType": "PROCESS_DEFINITION",
+                    "resourceId": "a2a-echo", "permissionTypes": ["CREATE_PROCESS_INSTANCE"]})
+                assert status == 201, ("grant explicit business-start permission", status)
+                wait("explicit business-start grant indexed",
+                     lambda: search("/v2/authorizations/search", {
+                         "ownerId": user, "ownerType": "USER", "resourceType": "PROCESS_DEFINITION",
+                         "resourceIds": ["a2a-echo"]}),
+                     lambda values: any("CREATE_PROCESS_INSTANCE" in item["permissionTypes"] for item in values))
+                repair = "Grant isolated test user admin read access plus explicit CREATE_PROCESS_INSTANCE on " \
+                         "a2a-echo, then retry and resolve; not a least-privilege recipe"
             status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
             assert status == 204, ("retry after deployment repair", status)
             status, _ = request(f'/v2/incidents/{incident["incidentKey"]}/resolution', {}, method="POST")
