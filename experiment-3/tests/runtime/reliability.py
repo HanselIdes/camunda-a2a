@@ -157,8 +157,12 @@ def run_agent(env, reports, rpc, stack, deploy, root):
             deploy([root / "bpmn/a2a-echo.bpmn"])
         elif operation == "check":
             for foreign_id in data["foreignTaskIds"]:
-                response = call("GetTask", {"id": foreign_id})
-                assert response["error"]["code"] == -32001, response
+                for method in ("GetTask", "CancelTask", "SendMessage"):
+                    params = {"id": foreign_id} if method != "SendMessage" else {"message": {
+                        "messageId": "foreign-follow-up", "taskId": foreign_id, "contextId": "foreign-context",
+                        "role": "ROLE_USER", "parts": [{"text": "must not execute"}]}}
+                    response = call(method, params)
+                    assert response["error"]["code"] == -32001, (method, response)
             listed, cursor, seen_cursors = [], "", set()
             for _ in range(10):
                 response = call("ListTasks", {"contextId": context, "pageSize": 17, "pageToken": cursor})
@@ -177,7 +181,8 @@ def run_agent(env, reports, rpc, stack, deploy, root):
             sample = completed[0]
             response = call("GetTask", {"id": sample["task"]["id"], "historyLength": 1})
             assert len(response["result"]["history"]) == 1, response
-            result = {"foreignTasksNotFound": True, "exactPaginatedTasks": 60, "historyLimit": 1}
+            result = {"foreignTasksNotFound": True, "foreignOperations": ["GetTask", "CancelTask", "SendMessage"],
+                      "exactPaginatedTasks": 60, "historyLimit": 1}
         elif operation == "duplicate":
             first = send("duplicate-" + agent, "same-message-id-" + agent)
             second = send("duplicate-" + agent, "same-message-id-" + agent)

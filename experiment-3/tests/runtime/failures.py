@@ -1,5 +1,6 @@
 """Nonshipping stock-connector failure injection and operator recovery."""
 import json
+import secrets
 import time
 import uuid
 import xml.etree.ElementTree as ET
@@ -23,9 +24,9 @@ def fault_model(source, target, mode):
             element.set("source", '="http://127.0.0.1:1/v2/process-instances"')
         elif mode == "invalid-credentials" and field == "authentication.password":
             element.set("source", "deliberately-invalid-noncredential")
-        elif mode == "insufficient-permissions" and field == "authentication.username":
+        elif mode in ("insufficient-permissions", "revoked-credentials") and field == "authentication.username":
             element.set("source", "a2a-restricted-proof")
-        elif mode == "insufficient-permissions" and field == "authentication.password":
+        elif mode in ("insufficient-permissions", "revoked-credentials") and field == "authentication.password":
             element.set("source", "{{secrets.PROOF_RESTRICTED_PASSWORD}}")
     model.write(target, encoding="utf-8", xml_declaration=True)
 
@@ -40,7 +41,7 @@ def run(root, reports, rpc, request, deploy, env):
         (reports / "failure-checks.json").write_text(json.dumps({
             "verdict": verdict, "records": records,
             "credentialScope": "Basic authentication has no token expiry. Invalid and unprivileged credentials "
-                               "are injected; expiring OAuth tokens are not covered.",
+                               "and password-rotated credentials are injected; expiring OAuth tokens are not covered.",
             "fixtures": "Derived nonshipping diagrams and stock engine APIs; no custom server/worker.",
         }, indent=2) + "\n")
 
@@ -89,7 +90,10 @@ def run(root, reports, rpc, request, deploy, env):
         assert status == 201, ("restricted user creation", status)
         created_user = True
         for mode, expected_error in (("invalid-credentials", "401"), ("insufficient-permissions", "403"),
-                                     ("unavailable-engine", None)):
+                                     ("revoked-credentials", "401"), ("unavailable-engine", None)):
+            if mode == "revoked-credentials":
+                status, _ = request(f"/v2/users/{user}", {"password": secrets.token_urlsafe(32)}, method="PUT")
+                assert status == 200, ("revoke old password", status)
             fault = reports / f"nonshipping-{mode}.bpmn"
             fault_model(protocol, fault, mode)
             deploy([fault])

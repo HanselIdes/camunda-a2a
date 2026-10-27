@@ -388,6 +388,8 @@ try:
                 raise TimeoutError("BPMN client did not complete after result review")
             time.sleep(0.25)
         print("BPMN client -> direct HTTPS A2A protocol -> real agent -> exact result -> user review: PASS", flush=True)
+        from client_versions import run as run_client_versions
+        run_client_versions(ROOT, REPORTS, request, client_task["id"], card)
         record_model_inputs()
     elif not conformance:
         assert task["status"]["message"]["parts"][0]["text"] == "8.8 authenticated echo", task
@@ -396,6 +398,14 @@ try:
     assert status == 200 and fetched["result"]["id"] == task["id"], (status, fetched)
     print("completed task polling preserves expected task: PASS", flush=True)
     auth_checks = []
+    def business_count():
+        status, response = request("/v2/process-instances/search", {
+            "filter": {"processDefinitionId": env["PROOF_AGENT_PROCESS"]}, "page": {"limit": 1}})
+        assert status == 200, ("business count for authentication proof", status)
+        page = json.loads(response)["page"]
+        assert not page["hasMoreTotalItems"], "Authentication proof requires an exact business-instance count"
+        return page["totalItems"]
+    business_before_unauthorized = business_count()
     methods = ("SendMessage", "GetTask", "ListTasks", "CancelTask", "SendStreamingMessage", "SubscribeToTask",
                "GetExtendedAgentCard", "CreateTaskPushNotificationConfig", "GetTaskPushNotificationConfig",
                "ListTaskPushNotificationConfigs", "DeleteTaskPushNotificationConfig")
@@ -407,9 +417,14 @@ try:
             auth_checks.append({"method": method, "key": "missing" if key is False else "invalid", "status": status})
     for identifier in (task["id"], "unknown-auth-resource"):
         for key in (False, "invalid"):
-            status, response = rpc({"jsonrpc": "2.0", "id": "unauthorized-resource", "method": "GetTask",
-                                    "params": {"id": identifier}}, key)
-            assert status == 401 and identifier not in str(response), (status, response)
+            for method in ("GetTask", "CancelTask", "SendMessage"):
+                params = {"id": identifier} if method != "SendMessage" else {
+                    "message": {"taskId": identifier, "contextId": task["contextId"], "role": "ROLE_USER",
+                                "messageId": "unauthorized-follow-up", "parts": [{"text": "must not execute"}]}}
+                status, response = rpc({"jsonrpc": "2.0", "id": "unauthorized-resource", "method": method,
+                                        "params": params}, key)
+                assert status == 401 and identifier not in str(response), (method, status, response)
+    assert business_count() == business_before_unauthorized, "Rejected requests started business work"
     version_checks = []
     for version in ("1.0", "1.0.2", "1.0.999"):
         status, response = rpc({"jsonrpc": "2.0", "id": "patch-equivalence", "method": "GetTask",
@@ -423,6 +438,8 @@ try:
         version_checks.append({"version": version, "errorCode": -32009})
     (REPORTS / "native-checks.json").write_text(json.dumps({
         "authentication": auth_checks, "unauthorizedResourceExistenceHidden": True,
+        "unauthorizedBusinessStartCountUnchanged": True,
+        "knownUnknownResourceChecks": 12,
         "versionNegotiation": version_checks, "verdict": "PASS",
     }, indent=2) + "\n")
     print("All operation key checks, unauthorized resource non-disclosure and version semantics: PASS", flush=True)
