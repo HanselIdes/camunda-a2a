@@ -41,7 +41,7 @@ def observe_fault(invoke):
 
 def run(root, reports, rpc, request, deploy, env, stack, redact):
     records, observations = [], []
-    protocol = root / "blueprint/profiles/basic/a2a-protocol.bpmn"
+    protocol = root / "blueprint/profiles/basic/01-a2a-server.bpmn"
 
     def save(verdict):
         (reports / "failure-gap-checks.json").write_text(redact(json.dumps({

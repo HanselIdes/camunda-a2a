@@ -18,7 +18,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertEqual(len(EXPECTED), 9)
 
     def test_confirmation_tool_does_not_accept_model_financial_fields(self):
-        root = ET.parse(ROOT / "blueprint/demo/a2a-card-dispute.bpmn").getroot()
+        root = ET.parse(ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn").getroot()
         tool = next(e for e in root.iter() if e.get("id") == "review_duplicate_charge")
         self.assertNotIn("fromAi(", ET.tostring(tool).decode())
         self.assertEqual([(e.get("source"), e.get("target")) for e in tool.iter(Z + "input")],
@@ -30,7 +30,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("history", validation.get("expression"))
 
     def test_form_has_explicit_empty_confirmation_inputs(self):
-        form = json.loads((ROOT / "blueprint/demo/a2a-client-answer.form").read_text())
+        form = json.loads((ROOT / "blueprint/demo/05-client-agent-confirm.form").read_text())
         fields = {c.get("key"): c for c in form["components"] if c.get("key")}
         self.assertEqual(set(fields), set(FORM_VALUES) | {"followUp"})
         for key in FORM_VALUES:
@@ -38,7 +38,7 @@ class ConfirmationContractTest(unittest.TestCase):
             self.assertNotIn("defaultValue", fields[key])
             if fields[key]["type"] == "number":
                 self.assertEqual(fields[key]["validate"]["min"], 0)
-        root = ET.parse(ROOT / "blueprint/demo/a2a-client.bpmn").getroot()
+        root = ET.parse(ROOT / "blueprint/demo/03-client-agent.bpmn").getroot()
         task = next(e for e in root.iter() if e.get("id") == "AnswerAgent")
         inputs = {e.get("target"): e.get("source") for e in task.iter(Z + "input")}
         self.assertEqual(inputs, {key: "=null" for key in fields})

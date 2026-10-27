@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1brddg4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_1brddg4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:collaboration id="Collaboration_0t0nskd">
     <bpmn:documentation>A client agent that delegates work to a remote A2A 1.0 agent. It reads the remote agent's card, sends it tasks with the A2A 1.0 Client element template and receives the answers as push notifications through the A2A 1.0 Client Webhook. The server is a separate diagram, a2a-server.bpmn.</bpmn:documentation>
     <bpmn:participant id="Participant_Client" name="A2A client agent" processRef="a2a-client" />
@@ -22,12 +22,12 @@
           <zeebe:input source="noAuth" target="authentication.type" />
           <zeebe:input source="fetchAgentCard" target="operationId" />
           <zeebe:input source="{{secrets.A2A_AGENT_CARD_PATH}}" target="agentCardLocation" />
-          <zeebe:input source="=&#34;/&#34;+agentCardLocation" target="operationPath" />
-          <zeebe:input source="={&#34;A2A-Version&#34;: &#34;1.0&#34;}" target="headers" />
+          <zeebe:input source="=&quot;/&quot;+agentCardLocation" target="operationPath" />
+          <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;}" target="headers" />
           <zeebe:input source="={}" target="queryParameters" />
           <zeebe:input source="GET" target="method" />
           <zeebe:input source="=true" target="ignoreNullValues" />
-          <zeebe:input source="=if operationId = &#34;sendMessage&#34; and rpcUrl != null then rpcUrl else baseUrl + operationPath" target="url" />
+          <zeebe:input source="=if operationId = &quot;sendMessage&quot; and rpcUrl != null then rpcUrl else baseUrl + operationPath" target="url" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="resultExpression" value="={remoteAgentCard: {result: response.body}}" />
@@ -56,7 +56,7 @@
           <zeebe:input source="PT180S" target="provider.openai.timeouts.timeout" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openai.model.model" />
           <zeebe:input source="modelDefault" target="provider.openai.api.completions.effort" />
-          <zeebe:input source="=&#34;You are a helpful assistant. Answer each request from these sources, in this order:&#10;&#10;1. Your own tools. Use every tool that fits the request, as often as needed. Never invent a tool. Never guess contact details: look people up with the user tools.&#10;2. The remote agent, through Tool_AskRemoteAgent. Use it when none of your tools fits the request, or when your tools fail or find nothing.&#10;3. Your own knowledge. Use it only when neither your tools nor the remote agent can answer, and say that the answer is a best-effort guess.&#10;&#10;If the remote agent asks a question that the conversation does not answer, ask the user.&#10;&#10;The remote agent: &#34; + string({name: remoteAgentCard.result.name, description: remoteAgentCard.result.description, skills: remoteAgentCard.result.skills})" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&quot;You are a helpful assistant. Answer each request from these sources, in this order:&#10;&#10;1. Your own tools. Use every tool that fits the request, as often as needed. Never invent a tool. Never guess contact details: look people up with the user tools.&#10;2. The remote agent, through Tool_AskRemoteAgent. Use it when none of your tools fits the request, or when your tools fail or find nothing.&#10;3. Your own knowledge. Use it only when neither your tools nor the remote agent can answer, and say that the answer is a best-effort guess.&#10;&#10;If the remote agent asks a question that the conversation does not answer, ask the user.&#10;&#10;The remote agent: &quot; + string({name: remoteAgentCard.result.name, description: remoteAgentCard.result.description, skills: remoteAgentCard.result.skills})" target="data.systemPrompt.prompt" />
           <zeebe:input source="=if (is defined(followUpInput)) then followUpInput else inputText" target="data.userPrompt.prompt" />
           <zeebe:input source="=agent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
@@ -110,7 +110,7 @@
           <zeebe:ioMapping>
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="GET" target="method" />
-            <zeebe:input source="=&#34;https://jsonplaceholder.typicode.com/users/&#34; + string(fromAi(toolCall.id, &#34;The user ID&#34;, &#34;number&#34;))" target="url" />
+            <zeebe:input source="=&quot;https://jsonplaceholder.typicode.com/users/&quot; + string(fromAi(toolCall.id, &quot;The user ID&quot;, &quot;number&quot;))" target="url" />
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="JSON" target="documentReturnFormat.choice" />
             <zeebe:input source="20" target="connectionTimeoutInSeconds" />
@@ -119,7 +119,7 @@
           <zeebe:taskHeaders>
             <zeebe:header key="elementTemplateVersion" value="18" />
             <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-            <zeebe:header key="resultExpression" value="={&#10;  toolCallResult: if (is defined(response.body.id)) then response.body else &#34;User not found&#34;&#10;}" />
+            <zeebe:header key="resultExpression" value="={&#10;  toolCallResult: if (is defined(response.body.id)) then response.body else &quot;User not found&quot;&#10;}" />
             <zeebe:header key="retryBackoff" value="PT30S" />
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
@@ -130,11 +130,11 @@
           <zeebe:userTask />
           <zeebe:formDefinition formId="ai-agent-chat-human-send-email-request" />
           <zeebe:ioMapping>
-            <zeebe:input source="=fromAi(toolCall.instructions, &#34;Instructions for the human to follow when sending the email, including background of the email.&#34;)" target="instructions" />
-            <zeebe:input source="=fromAi(toolCall.recipient_name, &#34;The recipient&#39;s full name.&#34;)" target="recipient_name" />
-            <zeebe:input source="=fromAi(toolCall.recipient_email, &#34;The the recipient&#39;s email address.&#34;)" target="recipient_email" />
-            <zeebe:input source="=fromAi(toolCall.email_subject, &#34;The subject of the email.&#34;)" target="email_subject" />
-            <zeebe:input source="=fromAi(toolCall.email_body, &#34;The body of the email.&#34;)" target="email_body" />
+            <zeebe:input source="=fromAi(toolCall.instructions, &quot;Instructions for the human to follow when sending the email, including background of the email.&quot;)" target="instructions" />
+            <zeebe:input source="=fromAi(toolCall.recipient_name, &quot;The recipient's full name.&quot;)" target="recipient_name" />
+            <zeebe:input source="=fromAi(toolCall.recipient_email, &quot;The the recipient's email address.&quot;)" target="recipient_email" />
+            <zeebe:input source="=fromAi(toolCall.email_subject, &quot;The subject of the email.&quot;)" target="email_subject" />
+            <zeebe:input source="=fromAi(toolCall.email_body, &quot;The body of the email.&quot;)" target="email_body" />
             <zeebe:output source="={&#10;  operatorFeedback: operatorFeedback,&#10;  emailOk: emailOk&#10;}" target="toolCallResult" />
           </zeebe:ioMapping>
         </bpmn:extensionElements>
@@ -149,19 +149,19 @@
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="sendMessage" target="operationId" />
             <zeebe:input source="a2a" target="rpcPath" />
-            <zeebe:input source="=&#34;/&#34;+rpcPath" target="operationPath" />
-            <zeebe:input source="={&#34;A2A-Version&#34;: &#34;1.0&#34;, &#34;Content-Type&#34;: &#34;application/json&#34;}" target="headers" />
+            <zeebe:input source="=&quot;/&quot;+rpcPath" target="operationPath" />
+            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;}" target="headers" />
             <zeebe:input source="={}" target="queryParameters" />
             <zeebe:input source="POST" target="method" />
-            <zeebe:input source="=fromAi(toolCall.text, &#34;The message for the remote agent. When it asked for more input, this is the answer.&#34;)" target="text" />
-            <zeebe:input source="=fromAi(value: toolCall.taskId, description: &#34;The task ID of a remote task in TASK_STATE_INPUT_REQUIRED that this message answers. Leave it out for a new request.&#34;, type: &#34;string&#34;, options: {required: false})" target="taskId" />
-            <zeebe:input source="=fromAi(value: toolCall.contextId, description: &#34;The context ID of that remote task. Leave it out for a new request.&#34;, type: &#34;string&#34;, options: {required: false})" target="contextId" />
+            <zeebe:input source="=fromAi(toolCall.text, &quot;The message for the remote agent. When it asked for more input, this is the answer.&quot;)" target="text" />
+            <zeebe:input source="=fromAi(value: toolCall.taskId, description: &quot;The task ID of a remote task in TASK_STATE_INPUT_REQUIRED that this message answers. Leave it out for a new request.&quot;, type: &quot;string&quot;, options: {required: false})" target="taskId" />
+            <zeebe:input source="=fromAi(value: toolCall.contextId, description: &quot;The context ID of that remote task. Leave it out for a new request.&quot;, type: &quot;string&quot;, options: {required: false})" target="contextId" />
             <zeebe:input source="{{secrets.A2A_CONNECTORS_URL}}/inbound/a2a-client-agent-reply" target="webhookUrl" />
             <zeebe:input source="{{secrets.A2A_PUSH_TOKEN}}" target="pushToken" />
-            <zeebe:input source="={jsonrpc: &#34;2.0&#34;, id: string(uuid()), method: &#34;SendMessage&#34;, params: { message: {messageId: string(uuid()), role: &#34;ROLE_USER&#34;, parts: [{text: text}], taskId: taskId, contextId: contextId}, configuration: { returnImmediately: webhookUrl != null, taskPushNotificationConfig: if webhookUrl != null then {url: webhookUrl, token: pushToken} else null}}}" target="body" />
-            <zeebe:input source="=(remoteAgentCard.result.supportedInterfaces[item.protocolBinding = &#34;JSONRPC&#34;])[1].url" target="rpcUrl" />
+            <zeebe:input source="={jsonrpc: &quot;2.0&quot;, id: string(uuid()), method: &quot;SendMessage&quot;, params: { message: {messageId: string(uuid()), role: &quot;ROLE_USER&quot;, parts: [{text: text}], taskId: taskId, contextId: contextId}, configuration: { returnImmediately: webhookUrl != null, taskPushNotificationConfig: if webhookUrl != null then {url: webhookUrl, token: pushToken} else null}}}" target="body" />
+            <zeebe:input source="=(remoteAgentCard.result.supportedInterfaces[item.protocolBinding = &quot;JSONRPC&quot;])[1].url" target="rpcUrl" />
             <zeebe:input source="=true" target="ignoreNullValues" />
-            <zeebe:input source="=if operationId = &#34;sendMessage&#34; and rpcUrl != null then rpcUrl else baseUrl + operationPath" target="url" />
+            <zeebe:input source="=if operationId = &quot;sendMessage&quot; and rpcUrl != null then rpcUrl else baseUrl + operationPath" target="url" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
             <zeebe:header key="resultExpression" value="={agentResponse: { result: if response.body.result.task != null then response.body.result.task else if response.body.result.message != null then response.body.result.message else if response.body.result = null and response.body.error = null then response.body else null, error: response.body.error}}" />
@@ -187,7 +187,7 @@
             <zeebe:property name="inbound.auth.apiKeyLocator" value="=request.headers.`x-a2a-notification-token`" />
             <zeebe:property name="correlationKeyExpression" value="=(if request.body.task != null then request.body.task.id else request.body.statusUpdate.taskId)" />
             <zeebe:property name="messageTtl" value="PT1M" />
-            <zeebe:property name="activationCondition" value="=list contains([&#34;TASK_STATE_COMPLETED&#34;, &#34;TASK_STATE_FAILED&#34;, &#34;TASK_STATE_CANCELED&#34;, &#34;TASK_STATE_REJECTED&#34;, &#34;TASK_STATE_INPUT_REQUIRED&#34;, &#34;TASK_STATE_AUTH_REQUIRED&#34;], (if request.body.task != null then request.body.task.status.state else request.body.statusUpdate.status.state))" />
+            <zeebe:property name="activationCondition" value="=list contains([&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_REJECTED&quot;, &quot;TASK_STATE_INPUT_REQUIRED&quot;, &quot;TASK_STATE_AUTH_REQUIRED&quot;], (if request.body.task != null then request.body.task.status.state else request.body.statusUpdate.status.state))" />
             <zeebe:property name="resultVariable" value="" />
             <zeebe:property name="resultExpression" value="={toolCallResult: if request.body.task != null then request.body.task else request.body}" />
           </zeebe:properties>
@@ -248,56 +248,56 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0t0nskd">
       <bpmndi:BPMNShape id="Participant_Client_di" bpmnElement="Participant_Client" isHorizontal="true">
-        <dc:Bounds x="120" y="136" width="1428" height="544" />
+        <dc:Bounds x="120" y="136" width="1386.0" height="700.0" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_Start_di" bpmnElement="Client_Start">
-        <dc:Bounds x="214" y="378" width="36" height="36" />
+        <dc:Bounds x="220.0" y="188.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="190" y="421" width="86" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_FetchAgentCard_di" bpmnElement="Client_FetchAgentCard">
-        <dc:Bounds x="302" y="356" width="100" height="80" />
+        <dc:Bounds x="338.0" y="166.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_JoinGateway_di" bpmnElement="Client_JoinGateway" isMarkerVisible="true">
-        <dc:Bounds x="457" y="371" width="50" height="50" />
+        <dc:Bounds x="513.0" y="181.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_AI_Agent_di" bpmnElement="Client_AI_Agent" isExpanded="true">
-        <dc:Bounds x="562" y="196" width="478" height="310" />
+        <dc:Bounds x="638.0" y="166.0" width="400" height="640" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tool_ListUsers_di" bpmnElement="Tool_ListUsers">
-        <dc:Bounds x="612" y="236" width="100" height="80" />
+        <dc:Bounds x="713.0" y="236.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tool_LoadUserByID_di" bpmnElement="Tool_LoadUserByID">
-        <dc:Bounds x="762" y="236" width="100" height="80" />
+        <dc:Bounds x="713.0" y="376.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tool_AskHumanToSendEmail_di" bpmnElement="Tool_AskHumanToSendEmail">
-        <dc:Bounds x="912" y="236" width="100" height="80" />
+        <dc:Bounds x="713.0" y="516.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Tool_AskRemoteAgent_di" bpmnElement="Tool_AskRemoteAgent">
-        <dc:Bounds x="612" y="356" width="100" height="80" />
+        <dc:Bounds x="713.0" y="656.0" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0mcxc1z_di" bpmnElement="Tool_RemoteAgentReplied">
-        <dc:Bounds x="774" y="378" width="36" height="36" />
+      <bpmndi:BPMNShape id="Tool_RemoteAgentReplied_di" bpmnElement="Tool_RemoteAgentReplied">
+        <dc:Bounds x="895.0" y="678.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="787" y="422" width="90" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_T1_di" bpmnElement="Flow_T1">
-        <di:waypoint x="712" y="396" />
-        <di:waypoint x="774" y="396" />
+        <di:waypoint x="813.0" y="696.0" />
+        <di:waypoint x="895.0" y="696.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="Client_UserFeedback_di" bpmnElement="Client_UserFeedback">
-        <dc:Bounds x="1180" y="356" width="100" height="80" />
+        <dc:Bounds x="1088.0" y="166.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_End_di" bpmnElement="Client_End">
-        <dc:Bounds x="1452" y="378" width="36" height="36" />
+        <dc:Bounds x="1420.0" y="188.0" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1446" y="421" width="48" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Client_UserSatisfied_di" bpmnElement="Client_UserSatisfied" isMarkerVisible="true">
-        <dc:Bounds x="1335" y="371" width="50" height="50" />
+        <dc:Bounds x="1263.0" y="181.0" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1324" y="347" width="73" height="14" />
         </bpmndi:BPMNLabel>
@@ -315,37 +315,37 @@
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_C1_di" bpmnElement="Flow_C1">
-        <di:waypoint x="250" y="396" />
-        <di:waypoint x="302" y="396" />
+        <di:waypoint x="256.0" y="206.0" />
+        <di:waypoint x="338.0" y="206.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C2_di" bpmnElement="Flow_C2">
-        <di:waypoint x="402" y="396" />
-        <di:waypoint x="457" y="396" />
+        <di:waypoint x="438.0" y="206.0" />
+        <di:waypoint x="513.0" y="206.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C7_di" bpmnElement="Flow_C7">
-        <di:waypoint x="1360" y="421" />
-        <di:waypoint x="1360" y="646" />
-        <di:waypoint x="482" y="646" />
-        <di:waypoint x="482" y="421" />
+        <di:waypoint x="1288.0" y="231.0" />
+        <di:waypoint x="1288.0" y="276.0" />
+        <di:waypoint x="538.0" y="276.0" />
+        <di:waypoint x="538.0" y="231.0" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="880" y="652" width="83" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C3_di" bpmnElement="Flow_C3">
-        <di:waypoint x="507" y="396" />
-        <di:waypoint x="562" y="396" />
+        <di:waypoint x="563.0" y="206.0" />
+        <di:waypoint x="638.0" y="206.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C4_di" bpmnElement="Flow_C4">
-        <di:waypoint x="1040" y="396" />
-        <di:waypoint x="1180" y="396" />
+        <di:waypoint x="1038.0" y="206.0" />
+        <di:waypoint x="1088.0" y="206.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C5_di" bpmnElement="Flow_C5">
-        <di:waypoint x="1280" y="396" />
-        <di:waypoint x="1335" y="396" />
+        <di:waypoint x="1188.0" y="206.0" />
+        <di:waypoint x="1263.0" y="206.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_C6_di" bpmnElement="Flow_C6">
-        <di:waypoint x="1385" y="396" />
-        <di:waypoint x="1452" y="396" />
+        <di:waypoint x="1313.0" y="206.0" />
+        <di:waypoint x="1420.0" y="206.0" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="1410" y="378" width="18" height="14" />
         </bpmndi:BPMNLabel>

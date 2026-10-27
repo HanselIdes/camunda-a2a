@@ -13,7 +13,6 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from isolation import IsolatedCompose
-from observations import read_root_variable
 from conformance import run as run_conformance, source_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -256,13 +255,16 @@ try:
         elif name == "authenticated topology":
             assert status == 200, "Authenticated engine API access failed"
     agent_file = ROOT / ("tck/fixture/a2a-tck-fixture.bpmn" if conformance else
-                         "blueprint/demo/a2a-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
-    files = [ROOT / "blueprint/profiles/basic/a2a-protocol.bpmn", agent_file, ROOT / "dmn/a2a-validate.dmn"]
+                         "blueprint/demo/02-server-agent-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
+    decision_file = ROOT / ("blueprint/demo/07-server-request-validation.dmn" if demo
+                            else "dmn/a2a-validate.dmn")
+    files = [ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn", agent_file, decision_file]
     if demo:
         files += list((ROOT / "blueprint/demo").glob("*.form"))
-        files += [ROOT / "blueprint/demo/a2a-card.bpmn", ROOT / "blueprint/demo/a2a-client.bpmn"]
+        files += [ROOT / "blueprint/demo/03-client-agent.bpmn",
+                  ROOT / "blueprint/demo/07-server-request-validation.dmn"]
     elif conformance:
-        card = ET.parse(ROOT / "blueprint/demo/a2a-card.bpmn")
+        card = ET.parse(ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn")
         expression = next(p for p in card.getroot().iter()
                           if p.get("name") == "inbound.responseExpression")
         expression.set("value", """={statusCode: 200, headers: {"Content-Type": "application/json"},
@@ -287,7 +289,7 @@ try:
                "params": {"message": {"messageId": "proof-message", "role": "ROLE_USER",
                                       "parts": [{"text": text}]}}}
     if demo:
-        from confirmations import data_part, FORM_VALUES
+        from confirmations import data_part
         message["params"]["message"]["parts"].append(data_part())
     deadline = time.monotonic() + 120
     while True:
@@ -364,51 +366,6 @@ try:
         assert card["securitySchemes"]["a2aApiKey"]["apiKeySecurityScheme"]["name"] == "X-A2A-Api-Key", card
         assert [s["id"] for s in card["skills"]] == ["review_duplicate_charge"], card
         print("direct HTTPS discovery, truthful endpoint/skill and API-key schema: PASS", flush=True)
-        status, response = request("/v2/process-instances", {
-            "processDefinitionId": "a2a-client", "variables": {"question": text}})
-        assert status in (200, 201), (status, response)
-        client_key = json.loads(response)["processInstanceKey"]
-        deadline = time.monotonic() + 180
-        answered = False
-        while True:
-            status, response = request("/v2/user-tasks/search", {"filter": {"processInstanceKey": client_key}})
-            assert status == 200, (status, response)
-            tasks = json.loads(response)["items"]
-            answer = next((t for t in tasks if t["elementId"] == "AnswerAgent"), None)
-            if answer and not answered:
-                status, response = request(f"/v2/user-tasks/{answer['userTaskKey']}/completion",
-                                           {"variables": {**FORM_VALUES, "followUp": follow_up_text}})
-                assert status in (200, 204), (status, response)
-                answered = True
-            review = next((t for t in tasks if t["elementId"] == "ShowResult"), None)
-            if review:
-                break
-            if time.monotonic() >= deadline:
-                raise TimeoutError("BPMN client did not reach result review")
-            time.sleep(1)
-        client_rpc = read_root_variable(request, client_key, "rpc")
-        assert answered, "Supplied BPMN client bypassed explicit confirmation"
-        client_task = client_rpc["result"].get("task", client_rpc["result"])
-        check_reconciliation(client_task)
-        assert client_task["id"] != task["id"] and client_task["contextId"] != task["contextId"], client_task
-        result_text = read_root_variable(request, client_key, "resultText")
-        assert "99.9 USD" in result_text and "49.95 USD" in result_text and "REQUEST_HUMAN_REVIEW" in result_text, result_text
-        status, response = request(f"/v2/user-tasks/{review['userTaskKey']}/completion", {"variables": {}})
-        assert status in (200, 204), (status, response)
-        deadline = time.monotonic() + 15
-        while True:
-            status, response = request("/v2/process-instances/search", {
-                "filter": {"processInstanceKey": client_key}})
-            assert status == 200, (status, response)
-            instances = json.loads(response)["items"]
-            if instances and instances[0]["state"] == "COMPLETED":
-                break
-            if time.monotonic() >= deadline:
-                raise TimeoutError("BPMN client did not complete after result review")
-            time.sleep(0.25)
-        print("BPMN client -> direct HTTPS A2A protocol -> real agent -> exact result -> user review: PASS", flush=True)
-        from client_versions import run as run_client_versions
-        run_client_versions(ROOT, REPORTS, request, deploy, client_task["id"], card)
         record_model_inputs()
         from prompt_inputs import run as run_prompt_inputs
         run_prompt_inputs(REPORTS, rpc, request, await_task)

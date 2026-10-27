@@ -2,7 +2,7 @@
   "components": [
     {
       "type": "text",
-      "text": "=\"### Confirm synthetic claim\\n\\n\" + reply.text",
+      "text": "=\"### The server needs more information\\n\\n\" + question",
       "id": "Field_a2a_client_answer_0",
       "layout": {
         "row": "Row_0",
@@ -12,7 +12,10 @@
     {
       "type": "textarea",
       "key": "followUp",
-      "label": "Additional context (optional)",
+      "label": "Your answer or additional context",
+      "validate": {
+        "required": true
+      },
       "id": "Field_a2a_client_answer_1",
       "layout": {
         "row": "Row_1",

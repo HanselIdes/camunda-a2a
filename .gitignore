@@ -4,5 +4,6 @@ reports/
 .env.smoke
 *.log
 .venv/
+node_modules/
 .idea/
 __pycache__/

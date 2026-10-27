@@ -96,77 +96,75 @@
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-controlled-business">
       <bpmndi:BPMNShape id="ControlledStart_di" bpmnElement="ControlledStart">
-        <dc:Bounds x="150" y="62" width="36" height="36" />
+        <dc:Bounds x="57.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ControlledRoute_di" bpmnElement="ControlledRoute">
-        <dc:Bounds x="230" y="55" width="50" height="50" />
+      <bpmndi:BPMNShape id="ControlledRoute_di" bpmnElement="ControlledRoute" isMarkerVisible="true">
+        <dc:Bounds x="650.0" y="45.0" width="50" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ControlledWork_di" bpmnElement="ControlledWork">
-        <dc:Bounds x="340" y="40" width="100" height="80" />
+        <dc:Bounds x="1075.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ControlledUpdate_di" bpmnElement="ControlledUpdate">
-        <dc:Bounds x="520" y="40" width="100" height="80" />
+        <dc:Bounds x="1225.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ControlledAsk_di" bpmnElement="ControlledAsk">
-        <dc:Bounds x="340" y="240" width="100" height="80" />
+        <dc:Bounds x="775.0" y="30.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ControlledFollowUp_di" bpmnElement="ControlledFollowUp">
-        <dc:Bounds x="520" y="262" width="36" height="36" />
+        <dc:Bounds x="957.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ControlledEnd_di" bpmnElement="ControlledEnd">
-        <dc:Bounds x="700" y="62" width="36" height="36" />
+        <dc:Bounds x="1407.0" y="52.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_ControlledStart_ControlledRoute_di" bpmnElement="Flow_ControlledStart_ControlledRoute">
-        <di:waypoint x="186" y="80" />
-        <di:waypoint x="230" y="80" />
+        <di:waypoint x="93.0" y="70.0" />
+        <di:waypoint x="650.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ControlledRoute_ControlledAsk_di" bpmnElement="Flow_ControlledRoute_ControlledAsk">
-        <di:waypoint x="280" y="80" />
-        <di:waypoint x="310" y="80" />
-        <di:waypoint x="310" y="280" />
-        <di:waypoint x="340" y="280" />
+        <di:waypoint x="700.0" y="70.0" />
+        <di:waypoint x="775.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ControlledRoute_ControlledWork_di" bpmnElement="Flow_ControlledRoute_ControlledWork">
-        <di:waypoint x="280" y="80" />
-        <di:waypoint x="340" y="80" />
+        <di:waypoint x="675.0" y="95.0" />
+        <di:waypoint x="675.0" y="140.0" />
+        <di:waypoint x="1125.0" y="140.0" />
+        <di:waypoint x="1125.0" y="110.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ControlledAsk_ControlledFollowUp_di" bpmnElement="Flow_ControlledAsk_ControlledFollowUp">
-        <di:waypoint x="440" y="280" />
-        <di:waypoint x="520" y="280" />
+        <di:waypoint x="875.0" y="70.0" />
+        <di:waypoint x="957.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ControlledFollowUp_ControlledWork_di" bpmnElement="Flow_ControlledFollowUp_ControlledWork">
-        <di:waypoint x="538" y="262" />
-        <di:waypoint x="538" y="-135" />
-        <di:waypoint x="390" y="-135" />
-        <di:waypoint x="390" y="40" />
+        <di:waypoint x="993.0" y="70.0" />
+        <di:waypoint x="1075.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ControlledWork_ControlledUpdate_di" bpmnElement="Flow_ControlledWork_ControlledUpdate">
-        <di:waypoint x="440" y="80" />
-        <di:waypoint x="520" y="80" />
+        <di:waypoint x="1175.0" y="70.0" />
+        <di:waypoint x="1225.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ControlledUpdate_ControlledEnd_di" bpmnElement="Flow_ControlledUpdate_ControlledEnd">
-        <di:waypoint x="620" y="80" />
-        <di:waypoint x="700" y="80" />
+        <di:waypoint x="1325.0" y="70.0" />
+        <di:waypoint x="1407.0" y="70.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
-        <dc:Bounds x="150" y="400.0" width="420" height="160" />
+        <dc:Bounds x="25.0" y="170.0" width="550" height="220" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
-        <dc:Bounds x="180" y="462.0" width="36" height="36" />
+        <dc:Bounds x="132.0" y="262.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
-        <dc:Bounds x="270" y="440.0" width="100" height="80" />
+        <dc:Bounds x="250.0" y="240.0" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
-        <dc:Bounds x="450" y="462.0" width="36" height="36" />
+        <dc:Bounds x="432.0" y="262.0" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
-        <di:waypoint x="216" y="480.0" />
-        <di:waypoint x="270" y="480.0" />
+        <di:waypoint x="168.0" y="280.0" />
+        <di:waypoint x="250.0" y="280.0" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
-        <di:waypoint x="370" y="480.0" />
-        <di:waypoint x="450" y="480.0" />
+        <di:waypoint x="350.0" y="280.0" />
+        <di:waypoint x="432.0" y="280.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

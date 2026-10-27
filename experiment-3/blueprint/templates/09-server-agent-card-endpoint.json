@@ -1,7 +1,7 @@
 {
   "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
-  "name": "A2A 1.0 Server: JSON-RPC endpoint",
-  "id": "dev.hansel.a2a.core.rpc.v1",
+  "name": "Server - Agent Card Endpoint",
+  "id": "dev.hansel.a2a.core.card.v1",
   "description": "Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. Requires stock Connectors and Camunda engine 8.9 or later; only combinations documented in the setup guide are verified.",
   "documentationRef": "https://a2a-protocol.org/latest/specification/",
   "version": 1,
@@ -22,6 +22,10 @@
     {
       "id": "endpoint",
       "label": "Webhook"
+    },
+    {
+      "id": "card",
+      "label": "Agent Card"
     },
     {
       "id": "output",
@@ -48,7 +52,7 @@
     },
     {
       "id": "inbound.auth.type",
-      "value": "APIKEY",
+      "value": "NONE",
       "binding": {
         "name": "inbound.auth.type",
         "type": "zeebe:property"
@@ -57,7 +61,7 @@
     },
     {
       "id": "synchronousResponse",
-      "value": "true",
+      "value": "false",
       "binding": {
         "name": "synchronousResponse",
         "type": "zeebe:property"
@@ -93,7 +97,7 @@
     },
     {
       "id": "inbound.method",
-      "value": "post",
+      "value": "get",
       "group": "endpoint",
       "binding": {
         "name": "inbound.method",
@@ -104,8 +108,8 @@
     {
       "id": "inbound.context",
       "label": "Webhook ID",
-      "description": "Clients POST JSON-RPC requests to {connectors base}/inbound/{webhook ID}.",
-      "value": "a2a",
+      "description": "Clients read the card from {connectors base}/inbound/{webhook ID}.",
+      "value": "a2a-card",
       "constraints": {
         "notEmpty": true
       },
@@ -119,13 +123,16 @@
     },
     {
       "id": "inbound.responseExpression",
+      "label": "Agent Card",
+      "description": "Describe the selected BPMN process truthfully. Keep the complete A2A_RPC_URL secret, API-key security scheme and disabled capabilities.",
       "value": "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: correlation.variables.rpcResponse}",
-      "group": "endpoint",
+      "feel": "required",
+      "group": "card",
       "binding": {
         "name": "inbound.responseExpression",
         "type": "zeebe:property"
       },
-      "type": "Hidden"
+      "type": "Text"
     },
     {
       "id": "resultVariable",
@@ -141,8 +148,7 @@
     {
       "id": "resultExpression",
       "label": "Result expression",
-      "description": "Persist the JSON-RPC body and only content-type/a2a-version headers. Never persist authorization, API keys or arbitrary request headers.",
-      "value": "={rpc: request.body, hdr: {\"content-type\": request.headers.`content-type`, \"a2a-version\": request.headers.`a2a-version`}}",
+      "description": "Maps the card request to process variables. Empty by default: serving the card needs none.",
       "feel": "required",
       "group": "output",
       "binding": {
@@ -150,24 +156,6 @@
         "type": "zeebe:property"
       },
       "type": "Text"
-    },
-    {
-      "type": "Hidden",
-      "id": "inbound.auth.apiKey",
-      "value": "{{secrets.A2A_API_KEY}}",
-      "binding": {
-        "type": "zeebe:property",
-        "name": "inbound.auth.apiKey"
-      }
-    },
-    {
-      "type": "Hidden",
-      "id": "inbound.auth.apiKeyLocator",
-      "value": "=request.headers.`x-a2a-api-key`",
-      "binding": {
-        "type": "zeebe:property",
-        "name": "inbound.auth.apiKeyLocator"
-      }
     }
   ]
 }
