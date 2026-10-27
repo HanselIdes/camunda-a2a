@@ -51,8 +51,12 @@ if exporter_profile not in ("low-latency", "default"):
 def record_provenance(verdict, **details):
     (REPORTS / "runtime-provenance.json").write_text(json.dumps({
         **source_before, "sourceBefore": source_before, "verdict": verdict,
-        "engineImage": env.get("PROOF_ENGINE_IMAGE", "camunda/camunda:8.8.21"),
-        "connectorsImage": env.get("PROOF_CONNECTORS_IMAGE", "camunda/connectors-bundle:8.9.0"),
+        "engineImage": env.get("PROOF_ENGINE_IMAGE", "camunda/camunda:8.9.26"),
+        "connectorsImage": env.get("PROOF_CONNECTORS_IMAGE", "camunda/connectors-bundle:8.9.17"),
+        "elasticsearchImage": env.get(
+            "PROOF_ELASTICSEARCH_IMAGE", "docker.elastic.co/elasticsearch/elasticsearch:8.19.23"),
+        "modelerVersion": "N/A: no editor used",
+        "deployment": "Engine REST API /v2/deployments at the recorded engine version",
         "exporterProfile": exporter_profile,
         "exporterBulkDelaySeconds": 1 if exporter_profile == "low-latency" else 5,
         "clientExecutionThreads": 4, "activeVersionPolling": False,
@@ -395,6 +399,8 @@ try:
         from client_versions import run as run_client_versions
         run_client_versions(ROOT, REPORTS, request, deploy, client_task["id"], card)
         record_model_inputs()
+        from prompt_inputs import run as run_prompt_inputs
+        run_prompt_inputs(REPORTS, rpc, request, await_task)
     elif not conformance:
         assert task["status"]["message"]["parts"][0]["text"] == "8.8 authenticated echo", task
     status, fetched = rpc({"jsonrpc": "2.0", "id": "proof-get", "method": "GetTask",

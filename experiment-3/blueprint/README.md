@@ -3,7 +3,7 @@
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
 [license and licensing limitations](../../README.md#license-and-support). This is a functional prototype:
 informed-agent checks are allowed; no adoption-time threshold or human-usability claim applies.
-The selected import set has actual Desktop/Hub deployment and Tasklist form evidence on the declared runtime.
+Earlier selected assets have Desktop/Hub deployment and Tasklist form evidence on a separately pinned mixed-minor runtime.
 Historical version gaps remain explicit. Marketplace import and external licensing/eligibility approval
 are separate deferred release gates, not prototype acceptance.
 SaaS runtime support is unverified.
@@ -13,22 +13,29 @@ The agent asks for missing input or calls a native BPMN tool to reconcile two sy
 The client receives the arithmetic evidence and displays it in a review form. No refund, real dispute decision,
 fraud determination, financial integration, document processing or unreleased prototype feature is included.
 
-## Verified configuration
+## 8.9+ candidate configuration
+
+The minimum release line is **8.9 for both engine and stock Connectors**. Use only a recorded exact
+combination, not an arbitrary pair of 8.9+ images. Engine 8.8.44 with Connectors 8.8.24 fails the
+required synchronous webhook result, so 8.8 is not supported. The current candidate targets the
+same-minor versions below; affected runtime checks must pass on its own clean source.
 
 | Component            | Version or setting                                                                                                   |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Self-Managed engine  | Camunda 8.8.21, Basic authentication and platform authorizations enabled                                             |
-| Stock Connectors     | 8.9.0; no custom worker or custom HTTP server                                                                        |
-| Secondary storage    | Elasticsearch 8.17.0                                                                                                 |
+| Self-Managed engine  | Camunda 8.9.26, Basic authentication and platform authorizations enabled                                             |
+| Stock Connectors     | 8.9.17; no custom worker or custom HTTP server                                                                       |
+| Secondary storage    | Elasticsearch 8.19.23                                                                                                |
 | Model                | Local Ollama `qwen3-coder-30b-64k:latest`, digest `13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253` |
 | AI Agent template    | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                                    |
 | Client HTTP template | `io.camunda.connectors.HttpJson.v2`, version 12                                                                      |
 | Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
 | Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
-| Engine exporter      | Self-Managed 8.8.21 only: explicit CamundaExporter class and `bulk.delay=1`; see below                               |
+| Engine exporter      | Explicit CamundaExporter class and `bulk.delay=1`; see below                                                      |
 
-This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 proof. Other combinations and model
-providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
+The historical **8.8.21 engine with 8.9.0 Connectors** configuration is mixed-minor diagnostic evidence,
+not support for either same-minor release. Its editor and engineering results below remain source-specific;
+they are not reruns of the current candidate. Other combinations and model providers are unverified.
+The local check uses an isolated, disposable cluster and synthetic data.
 The [cross-surface evidence matrix](../verification/32f8d4e/prototype-evidence.md) records exact known
 versions, unknowns, included assets and per-outcome evidence gaps. Desktop Modeler 5.51.1 import/render,
 template configuration, form preview, save/reopen and actual eight-resource deployment have
@@ -96,7 +103,8 @@ transport. The outage returned HTTP 503 with UNAVAILABLE; after restoration, the
 and fresh work completed exactly. Refused correlation created operator-visible incidents without a fabricated
 RPC response or business-state change. Repair recovered the original requests and exact terminal outcomes.
 These are functional checks on engine 8.8.21 / stock Connectors 8.9.0, not adoption or editor evidence.
-Packaged assets remain byte-identical to d4e6273. The first, failed harness observation is preserved separately.
+Those source-pinned assets were byte-identical to d4e6273; the current 8.9 candidate has a separate prompt mapping.
+The first, failed harness observation is preserved separately.
 Native response loss after a committed correlation was not injected; existing Core evidence retains that scope.
 
 ## Earlier source-specific checkpoints
@@ -182,8 +190,8 @@ CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false
 ```
 
 Four execution threads are required for the demonstrated same-runtime client/server flow; one thread can cause starvation
-while the synchronous client waits for server HTTP jobs. On an 8.8 engine, disable active-version polling because
-the newer importer statistics API is unavailable. These settings do not disable engine authentication.
+while the synchronous client waits for server HTTP jobs. Active-version polling remains disabled in the
+declared test profile. These settings do not disable engine authentication or establish 8.8 support.
 
 On the Self-Managed engine, the low-latency/conformance profile requires these explicit deployment settings:
 
@@ -192,7 +200,7 @@ ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_CLASSNAME=io.camunda.exporter.CamundaExpo
 ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_ARGS_BULK_DELAY=1
 ```
 
-These settings were exercised on **Self-Managed 8.8.21 only**; other engine versions are unverified.
+Historical exporter diagnostics below use **Self-Managed 8.8.21**; current 8.9 checks record their own effective settings.
 The class name is necessary when explicitly configuring the exporter through these environment variables:
 omitting it caused engine startup to fail with "Expected to find a 'className' configured for the exporter."
 The [8.8.21 exporter source](https://github.com/camunda/camunda/blob/8.8.21/zeebe/exporters/camunda-exporter/src/main/java/io/camunda/exporter/config/ExporterConfiguration.java)
@@ -292,7 +300,7 @@ at its root (or use **File > New Process Application**). Open a diagram from thi
 **Open process application deployment**. Confirm that the dialog says **8 files will be deployed**.
 Deploying a standalone diagram does not automatically include the other seven resources.
 Do not include roundtrip copies, archived resources or both profiles in this group.
-Desktop 5.51.1 submitted this eight-file deployment on the declared runtime. Engine readback matches seven
+Desktop 5.51.1 submitted this eight-file deployment on the historical 8.8.21 / Connectors 8.9.0 runtime. Engine readback matches seven
 process XMLs and the validation DMN exactly; the client XML differs only by an omitted final newline.
 The Desktop deployment report itself does not prove runtime form-UI completion; the separate
 Tasklist journey is recorded in the Hub report.
@@ -409,8 +417,11 @@ available through the returned message's `taskId`. The internal response-mode fi
 The protocol never chooses this mode from a client message ID or request content. The supplied real-agent demo
 keeps the default Task response so its reconciliation artifact is not discarded.
 
-Leave the literal-input encoder and `data.userPrompt.prompt =jsonPrompt` mapping intact. They preserve numeric-leading,
-JSON-like, quoted, backslash, control-character and leading-equals text through the stock connector's string binding.
+The agent joins text parts with spaces into `promptText` and maps `data.userPrompt.prompt =promptText`.
+Do not JSON-string-encode the text: stock Connectors 8.9.17 passes that encoding literally to the model.
+The input mapping evaluates FEEL on the engine, but its resulting user text is data, not another FEEL expression.
+The runtime checks compare actual model-conversation input with numeric-leading, quoted, backslash,
+newline, control-character and leading-equals request text. Multipart text still uses the documented space join.
 System instructions and business tools are modelled in the agent, not the protocol.
 
 ### Required cancellation hook
@@ -495,7 +506,7 @@ Do not blindly retry financial work: one observed internal connection closure le
 its agent task had reached input-required. A later successful request does not recover that original client.
 
 The source-specific checkpoints above distinguish functional prototype evidence from deferred release approval.
-The selected editor/form flows have functional evidence on the declared runtime; human usability and
+The selected editor/form flows have functional evidence on that historical runtime, not the current 8.9 pair; human usability and
 fresh-adopter timing are not prototype criteria. The actual8.8.21 clarification heading displayed readable
 literal backslash-n separators, not a polished-layout pass. Unknown historical tool versions remain unknown.
 Actual Marketplace import and external legal/eligibility approval remain deferred.
@@ -568,6 +579,7 @@ credentials. It refuses to reuse existing project resources and cleans up only i
 startup failure. Docker rejects competing port claims rather than reusing another service.
 It creates a certificate and truststore with `openssl`/`keytool`, starts the pinned stack, deploys the
 committed resources, checks authentication/discovery, expected real-model results, verbatim numeric-leading continuation
+and six actual model-input character cases,
 and final BPMN client completion, verifies persisted variables exclude runtime credentials, then removes its containers.
 It does not stop or reuse unrelated clusters.
 Docker, Python 3, OpenSSL, a JDK/keytool and the already-running local Ollama model are required.

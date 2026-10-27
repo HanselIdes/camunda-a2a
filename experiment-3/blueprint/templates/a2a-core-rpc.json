@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
   "name": "A2A 1.0 Server: JSON-RPC endpoint",
   "id": "dev.hansel.a2a.core.rpc.v1",
-  "description": "Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. Requires stock Connectors 8.9 or later with Camunda engine 8.8 or later; only combinations documented in the setup guide are verified.",
+  "description": "Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. Requires stock Connectors and Camunda engine 8.9 or later; only combinations documented in the setup guide are verified.",
   "documentationRef": "https://a2a-protocol.org/latest/specification/",
   "version": 1,
   "category": {
@@ -16,7 +16,7 @@
     "value": "bpmn:StartEvent"
   },
   "engines": {
-    "camunda": "^8.8"
+    "camunda": "^8.9"
   },
   "groups": [
     {

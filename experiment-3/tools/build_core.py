@@ -345,7 +345,7 @@ def pagination(root):
 
 def build(authentication):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
-    root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.8.0")
+    root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
     for node in root.iter():
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
         if node.get(f"{{{Z}}}modelerTemplate") == "io.camunda.connectors.HttpJson.v2":

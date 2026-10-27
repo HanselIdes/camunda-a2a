@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the 8.8-engine candidate demo; never rewrite the archived experiments."""
+"""Generate the 8.9+ candidate demo; never rewrite the archived experiments."""
 import argparse
 import json
 import subprocess
@@ -39,7 +39,7 @@ def apply(path, template, element, settings):
 
 
 def serialize(root):
-    root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.8.0")
+    root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
     for node in root.iter():
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     ET.indent(root, space="  ")
@@ -56,8 +56,7 @@ def agent(path):
         if node.x >= 330:
             node.x += 200
     p.nodes["AgentTools"].name = "Review synthetic card dispute"
-    p.script("EncodePrompt", "Preserve literal input", 340, 238,
-             json_string_expression(USER_PROMPT), "jsonPrompt")
+    p.script("EncodePrompt", "Join client input", 340, 238, USER_PROMPT, "promptText")
     p.remove_flow("NextTurn", "AgentTools")
     p.flow("NextTurn", "EncodePrompt")
     p.flow("EncodePrompt", "AgentTools")
@@ -104,7 +103,7 @@ def agent(path):
         ("provider.openaiCompatible.model.model", "{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}"),
         ("provider.openaiCompatible.model.parameters.temperature", "=0"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM)),
-        ("data.userPrompt.prompt", "=jsonPrompt"), ("agentContext", "=agent.context"),
+        ("data.userPrompt.prompt", "=promptText"), ("agentContext", "=agent.context"),
         ("data.memory.storage.type", "in-process"), ("data.memory.contextWindowSize", "=20"),
         ("data.limits.maxModelCalls", "=8"), ("data.response.format.type", "text"),
         ("data.response.includeAgentContext", "true"),
@@ -174,9 +173,9 @@ def assets():
             data = json.loads((ROOT / f"element-templates/a2a-1.0-server-{kind}.json").read_text())
             data.pop("icon", None)
             data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=1)
-            data["engines"]["camunda"] = "^8.8"
+            data["engines"]["camunda"] = "^8.9"
             data["description"] = ("Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. "
-                                   "Requires stock Connectors 8.9 or later with Camunda engine 8.8 or later; "
+                                   "Requires stock Connectors and Camunda engine 8.9 or later; "
                                    "only combinations documented in the setup guide are verified.")
             if kind == "rpc":
                 next(p for p in data["properties"] if p.get("id") == "inbound.auth.type")["value"] = "APIKEY"

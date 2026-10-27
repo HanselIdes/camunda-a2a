@@ -1,6 +1,6 @@
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    image: ${PROOF_ELASTICSEARCH_IMAGE:-docker.elastic.co/elasticsearch/elasticsearch:8.19.23}
     environment:
       discovery.type: single-node
       xpack.security.enabled: "false"
@@ -11,7 +11,7 @@ services:
       timeout: 5s
       retries: 60
   camunda:
-    image: ${PROOF_ENGINE_IMAGE:-camunda/camunda:8.8.21}
+    image: ${PROOF_ENGINE_IMAGE:-camunda/camunda:8.9.26}
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -34,7 +34,7 @@ services:
       timeout: 5s
       retries: 60
   connectors:
-    image: ${PROOF_CONNECTORS_IMAGE:-camunda/connectors-bundle:8.9.0}
+    image: ${PROOF_CONNECTORS_IMAGE:-camunda/connectors-bundle:8.9.17}
     depends_on:
       camunda:
         condition: service_healthy
