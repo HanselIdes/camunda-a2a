@@ -19,7 +19,6 @@ from a2a.types.a2a_pb2 import (
     AgentCard, GetTaskRequest, ListTasksRequest, Message, Part, ROLE_USER, SendMessageRequest,
     TASK_STATE_COMPLETED, TASK_STATE_INPUT_REQUIRED, TASK_STATE_WORKING,
 )
-from confirmations import data_part
 
 
 async def main():
@@ -47,7 +46,10 @@ async def main():
         async def send(text, previous=None, confirmed=False):
             parts = [Part(text=text)]
             if confirmed:
-                parts.append(ParseDict(data_part(), Part()))
+                parts.append(ParseDict({"data": {"syntheticClaim": {
+                    "merchant": "Northwind Electronics", "currency": "USD",
+                    "chargeAmounts": [49.95, 49.95], "expectedAmount": 49.95,
+                    "syntheticOnly": True}}}, Part()))
             message = Message(role=ROLE_USER, message_id=str(uuid.uuid4()), parts=parts)
             if previous is not None:
                 message.task_id = previous.id
