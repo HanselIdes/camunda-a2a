@@ -75,10 +75,10 @@ def run(root, reports, rpc, request, deploy, env, stack):
         assert status == 200, (path, status)
         return json.loads(body)["items"]
 
-    def stale_credential_status():
+    def stale_credential_status(path="/v2/users/search", body=b'{"page":{"limit":1}}'):
         token = base64.b64encode((user + ":" + env["PROOF_RESTRICTED_PASSWORD"]).encode()).decode()
-        probe = urllib.request.Request("http://127.0.0.1:" + env["PROOF_ENGINE_PORT"] + "/v2/users/search",
-                                       data=b'{"page":{"limit":1}}',
+        probe = urllib.request.Request("http://127.0.0.1:" + env["PROOF_ENGINE_PORT"] + path,
+                                       data=body,
                                        headers={"Authorization": "Basic " + token, "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(probe, timeout=5) as response:
@@ -223,6 +223,9 @@ def run(root, reports, rpc, request, deploy, env, stack):
                 wait("test authorization grant visible",
                      lambda: search("/v2/roles/admin/users/search"),
                      lambda values: user in [item["username"] for item in values])
+                wait("test user's granted process access effective",
+                     lambda: stale_credential_status(f"/v2/process-instances/{instance}", body=None),
+                     lambda status: status == 200, seconds=120)
                 repair = "Grant admin role to isolated test user, then retry and resolve; not a least-privilege recipe"
             status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
             assert status == 204, ("retry after deployment repair", status)
@@ -288,8 +291,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
         raise
     finally:
         env.pop("PROOF_PROTOCOL_ENGINE_USERNAME", None)
-        if env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD", None) is not None:
-            restart_connectors()
+        env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD", None)
         deploy([protocol, echo])
         if created_user:
             status, _ = request(f"/v2/users/{user}", method="DELETE")
