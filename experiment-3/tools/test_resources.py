@@ -98,12 +98,20 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertLess(tags.index(f"{{{B}}}extensionElements"), tags.index(f"{{{B}}}outgoing"))
         self.assertLess(tags.index(f"{{{B}}}outgoing"), tags.index(f"{{{B}}}messageEventDefinition"))
 
-    def test_agent_card_message_precedes_bpmn_diagrams(self):
+    def test_definitions_root_elements_precede_bpmn_diagrams(self):
         protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
-        message = next(element for element in protocol
-                       if element.get("id") == "AgentCardRequestMessage")
-        diagram = protocol.find(f"{{{D}}}BPMNDiagram")
-        self.assertLess(list(protocol).index(message), list(protocol).index(diagram))
+        children = list(protocol)
+        diagrams = [index for index, element in enumerate(children)
+                    if element.tag == f"{{{D}}}BPMNDiagram"]
+        relationships = [index for index, element in enumerate(children)
+                         if element.tag == f"{{{B}}}relationship"]
+        root_elements = [index for index, element in enumerate(children)
+                         if element.tag not in (f"{{{D}}}BPMNDiagram",
+                                                f"{{{B}}}relationship")]
+        self.assertTrue(diagrams)
+        self.assertLess(max(root_elements), min(diagrams))
+        if relationships:
+            self.assertLess(max(diagrams), min(relationships))
 
     def test_shipping_agent_loops_avoid_host_and_gateway_label(self):
         server = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()

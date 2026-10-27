@@ -399,6 +399,19 @@ def add_card_endpoint(root, agent_path):
     })
 
 
+def order_definitions(root):
+    children = list(root)
+    diagram_tag = f"{{{D}}}BPMNDiagram"
+    relationship_tag = f"{{{B}}}relationship"
+    diagrams = [element for element in children if element.tag == diagram_tag]
+    relationships = [element for element in children if element.tag == relationship_tag]
+    ordered = [element for element in children
+               if element.tag not in (diagram_tag, relationship_tag)]
+    for element in children:
+        root.remove(element)
+    root.extend(ordered + diagrams + relationships)
+
+
 def build(authentication, agent_path=None):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
@@ -501,6 +514,7 @@ def build(authentication, agent_path=None):
         if participant.get("processRef") == "a2a-rpc":
             participant.set("name", "01 A2A Server - Protocol and Discovery")
     add_card_endpoint(root, agent_path)
+    order_definitions(root)
     ET.indent(root, space="  ")
     return layout_xml(ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n")
 
