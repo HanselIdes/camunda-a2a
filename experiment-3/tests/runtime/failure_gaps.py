@@ -161,12 +161,21 @@ def run(root, reports, rpc, request, deploy, env, stack, redact):
                 "configuration": {"returnImmediately": True}}
             fault = observe_fault(lambda: rpc({"jsonrpc": "2.0", "id": identifier,
                                                "method": method, "params": params}, timeout=5))
+            observations.append({"case": method + "-client", **fault})
+            save("RUNNING")
             incident = wait("correlation transport incident", lambda: search("/v2/incidents/search", {
-                "processDefinitionId": "a2a-rpc", "state": "ACTIVE"}), bool)[0]
+                "processDefinitionId": "a2a-correlate", "state": "ACTIVE"}), bool)[0]
             assert incident["elementId"] == "CorrelateMessage" and incident["errorType"] == "JOB_NO_RETRIES", incident
             assert any(term in incident["errorMessage"].lower() for term in
                        ("refused", "connect", "i/o")), incident
-            instance = incident["processInstanceKey"]
+            def matching_root():
+                variables = search("/v2/variables/search?truncateValues=false", {"name": "rpc"})
+                matches = [value for value in variables if json.loads(value["value"]).get("id") == identifier
+                           and value["scopeKey"] == value["processInstanceKey"]]
+                assert len(matches) <= 1, "Duplicate RPC root for one external call"
+                return matches
+
+            instance = wait("external RPC root indexed", matching_root, bool)[0]["processInstanceKey"]
             assert read_root_variable(request, instance, "rpc")["id"] == identifier
             assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"}), \
                 "Transport failure fabricated an RPC response"
@@ -202,7 +211,7 @@ def run(root, reports, rpc, request, deploy, env, stack, redact):
                     {"artifactId": "controlled", "parts": [{"text": "Controlled artifact"}]}], terminal
             assert call("GetTask", {"id": task["id"]})["result"] == terminal
             wait("repaired incident cleared", lambda: search("/v2/incidents/search", {
-                "processInstanceKey": instance, "state": "ACTIVE"}), lambda value: not value)
+                "processInstanceKey": incident["processInstanceKey"], "state": "ACTIVE"}), lambda value: not value)
             observations.append({"case": method + "-repaired", "rpcResponse": response, "terminal": terminal})
             records.append({"case": method + "-correlation-transport", "connectorRetries": 1,
                             "connectorTimeoutSeconds": 20, "clientObservation": fault,
