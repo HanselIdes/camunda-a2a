@@ -177,56 +177,73 @@ def run(root, reports, rpc, request, deploy, env, stack):
                             "operatorRepair": "Local connector inputs, job retry, incident resolution",
                             "recoveredExactTask": True})
         deploy([protocol])
-        env["PROOF_PROTOCOL_ENGINE_PASSWORD"] = "deliberately-invalid-noncredential"
-        restart_connectors()
-        identifier = "secret-failure-" + str(uuid.uuid4())
-        text = "Exact result after deployment secret repair"
-        started = time.monotonic()
-        try:
-            response = rpc({"jsonrpc": "2.0", "id": identifier, "method": "SendMessage", "params": {
-                "message": {"messageId": identifier, "role": "ROLE_USER", "parts": [{"text": text}]}}},
-                timeout=5)
-        except (TimeoutError, socket.timeout):
-            client_observation = "five-second-client-timeout"
-        else:
-            raise AssertionError(f"Expected client timeout rather than a fabricated response: {response[0]}")
-        incident = wait("deployment-secret failure after shipped retries",
-            lambda: search("/v2/incidents/search", {"processDefinitionId": "a2a-rpc", "state": "ACTIVE"}),
-            bool, seconds=120)[0]
-        assert incident["elementId"] == "CreateTask" and incident["errorType"] == "JOB_NO_RETRIES", incident
-        assert "401" in incident["errorMessage"]
-        instance = incident["processInstanceKey"]
-        assert read_root_variable(request, instance, "rpc")["id"] == identifier
-        assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"})
-        incident_seconds = time.monotonic() - started
+        for mode, expected_error in (("deployment-engine-password-secret", "401"),
+                                     ("deployment-user-missing-permission", "403")):
+            if expected_error == "401":
+                env["PROOF_PROTOCOL_ENGINE_PASSWORD"] = "deliberately-invalid-noncredential"
+            else:
+                status, _ = request(f"/v2/users/{user}", {"password": env["PROOF_RESTRICTED_PASSWORD"]}, method="PUT")
+                assert status == 200, ("restore test user's valid password", status)
+                wait("test user valid but unprivileged", stale_credential_status, lambda value: value == 403)
+                env["PROOF_PROTOCOL_ENGINE_USERNAME"] = user
+                env["PROOF_PROTOCOL_ENGINE_PASSWORD"] = env["PROOF_RESTRICTED_PASSWORD"]
+            restart_connectors()
+            identifier = "deployment-failure-" + str(uuid.uuid4())
+            text = "Exact result after " + mode + " repair"
+            started = time.monotonic()
+            try:
+                response = rpc({"jsonrpc": "2.0", "id": identifier, "method": "SendMessage", "params": {
+                    "message": {"messageId": identifier, "role": "ROLE_USER", "parts": [{"text": text}]}}},
+                    timeout=5)
+            except (TimeoutError, socket.timeout):
+                client_observation = "five-second-client-timeout"
+            else:
+                raise AssertionError(f"Expected client timeout rather than a fabricated response: {response[0]}")
+            incident = wait("deployment failure after shipped retries",
+                lambda: search("/v2/incidents/search", {"processDefinitionId": "a2a-rpc", "state": "ACTIVE"}),
+                bool, seconds=120)[0]
+            assert incident["elementId"] == "CreateTask" and incident["errorType"] == "JOB_NO_RETRIES", incident
+            assert expected_error in incident["errorMessage"]
+            instance = incident["processInstanceKey"]
+            assert read_root_variable(request, instance, "rpc")["id"] == identifier
+            assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"})
+            incident_seconds = time.monotonic() - started
+            if expected_error == "401":
+                env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD")
+                restart_connectors()
+                repair = "Correct ENGINE_PASSWORD, recreate owned Connectors, retry and resolve"
+            else:
+                status, _ = request(f"/v2/roles/admin/users/{user}", method="PUT")
+                assert status == 204, ("grant test user role", status)
+                wait("test authorization grant visible", stale_credential_status, lambda value: value == 200)
+                repair = "Grant admin role to isolated test user, then retry and resolve; not a least-privilege recipe"
+            status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
+            assert status == 204, ("retry after deployment repair", status)
+            status, _ = request(f'/v2/incidents/{incident["incidentKey"]}/resolution', {}, method="POST")
+            assert status in (204, 404), ("resolve repaired deployment incident", status)
+            response = read_root_variable(request, instance, "rpcResponse", seconds=45)
+            assert response["id"] == identifier and "error" not in response, response
+            recovered = response["result"]["task"]
+            assert recovered["status"]["state"] == "TASK_STATE_COMPLETED", recovered
+            assert recovered["status"]["message"]["parts"] == [{"text": text}], recovered
+            assert call("GetTask", {"id": recovered["id"]})["result"] == recovered
+            wait("deployment incident cleared", lambda: search("/v2/incidents/search", {
+                "processInstanceKey": instance, "state": "ACTIVE"}), lambda values: not values)
+            fresh_text = "Fresh external work after " + mode + " repair"
+            fresh = call("SendMessage", {"message": {"messageId": str(uuid.uuid4()), "role": "ROLE_USER",
+                                                   "parts": [{"text": fresh_text}]}})["result"]["task"]
+            fresh = wait("fresh external work after deployment repair",
+                         lambda: call("GetTask", {"id": fresh["id"]})["result"],
+                         lambda value: value["status"]["state"] == "TASK_STATE_COMPLETED")
+            assert fresh["status"]["message"]["parts"] == [{"text": fresh_text}], fresh
+            records.append({"case": mode, "connectorInputsUnmodified": True, "expectedHttpError": expected_error,
+                            "shippedRetries": 3, "shippedRetryBackoffSeconds": 30,
+                            "clientObservation": client_observation, "incidentSeconds": round(incident_seconds, 3),
+                            "noFabricatedResponse": True, "recoveredExactTask": True,
+                            "operatorRepair": repair, "freshWorkAfterRepair": True})
+        env.pop("PROOF_PROTOCOL_ENGINE_USERNAME")
         env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD")
         restart_connectors()
-        status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
-        assert status == 204, ("retry after deployment secret repair", status)
-        status, _ = request(f'/v2/incidents/{incident["incidentKey"]}/resolution', {}, method="POST")
-        assert status in (204, 404), ("resolve repaired-secret incident", status)
-        response = read_root_variable(request, instance, "rpcResponse", seconds=45)
-        assert response["id"] == identifier and "error" not in response, response
-        recovered = response["result"]["task"]
-        assert recovered["status"]["state"] == "TASK_STATE_COMPLETED", recovered
-        assert recovered["status"]["message"]["parts"] == [{"text": text}], recovered
-        assert call("GetTask", {"id": recovered["id"]})["result"] == recovered
-        wait("deployment-secret incident cleared", lambda: search("/v2/incidents/search", {
-            "processInstanceKey": instance, "state": "ACTIVE"}), lambda values: not values)
-        fresh = call("SendMessage", {"message": {"messageId": str(uuid.uuid4()), "role": "ROLE_USER",
-                                               "parts": [{"text": "Fresh external work after secret repair"}]}})
-        fresh = fresh["result"]["task"]
-        fresh = wait("fresh external work after secret repair",
-                     lambda: call("GetTask", {"id": fresh["id"]})["result"],
-                     lambda value: value["status"]["state"] == "TASK_STATE_COMPLETED")
-        assert fresh["status"]["state"] == "TASK_STATE_COMPLETED", fresh
-        assert fresh["status"]["message"]["parts"] == [{"text": "Fresh external work after secret repair"}], fresh
-        records.append({"case": "deployment-engine-password-secret", "connectorInputsUnmodified": True,
-                        "shippedRetries": 3, "shippedRetryBackoffSeconds": 30,
-                        "clientObservation": client_observation, "incidentSeconds": round(incident_seconds, 3),
-                        "noFabricatedResponse": True, "recoveredExactTask": True,
-                        "operatorRepair": "Correct ENGINE_PASSWORD, recreate owned Connectors, retry and resolve",
-                        "freshWorkAfterRepair": True})
         for mode in ("unavailable-model-endpoint", "unknown-model"):
             derived = reports / f"nonshipping-{mode}.bpmn"
             controlled_model(root / "blueprint/demo/a2a-card-dispute.bpmn", derived, "a2a-echo")
@@ -263,6 +280,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
         save("FAIL")
         raise
     finally:
+        env.pop("PROOF_PROTOCOL_ENGINE_USERNAME", None)
         if env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD", None) is not None:
             restart_connectors()
         deploy([protocol, echo])

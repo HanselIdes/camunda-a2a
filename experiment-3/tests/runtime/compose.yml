@@ -56,7 +56,7 @@ services:
       HEALTHCHECK_URL: https://127.0.0.1:8080/actuator/health/readiness
       JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certificates/trust.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=${PROOF_TLS_PASSWORD:?required}
       SECRET_ENGINE_URL: http://camunda:8080
-      SECRET_ENGINE_USERNAME: proof
+      SECRET_ENGINE_USERNAME: ${PROOF_PROTOCOL_ENGINE_USERNAME:-proof}
       SECRET_ENGINE_PASSWORD: ${PROOF_PROTOCOL_ENGINE_PASSWORD:-${PROOF_ENGINE_PASSWORD:?required}}
       SECRET_PROOF_RESTRICTED_PASSWORD: ${PROOF_RESTRICTED_PASSWORD:?required}
       SECRET_A2A_API_KEY: ${PROOF_A2A_API_KEY:?required}
