@@ -1,0 +1,35 @@
+SLF4J(W): No SLF4J providers were found.
+SLF4J(W): Defaulting to no-operation (NOP) logger implementation
+SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 15.49 s <<< FAILURE! -- in dev.hansel.a2a.three.CoreProtocolTest
+[ERROR] dev.hansel.a2a.three.CoreProtocolTest.cancellationResponseCannotContradictConcurrentBusinessCompletion -- Time elapsed: 4.201 s <<< FAILURE!
+org.opentest4j.AssertionFailedError: 
+
+expected: 
+  {"artifacts"=[{"artifactId"="01a17acb-4145-74fd-998a-7c0b63f7b578", "name"="answer", "parts"=[{"text"="Completed concurrently"}]},
+      {"artifactId"="01a17acb-4145-73c5-859f-47a1da5d5f1d", "name"="tool-trace", "parts"=[{"data"={"toolCalls"=null}}]}], "contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "history"=[{"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="cancel-completion-race", "parts"=[{"text"="x"}], "role"="ROLE_USER", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"},
+      {"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="01a17acb-4145-7145-b5fe-6ac29f296a33", "parts"=[{"text"="Completed concurrently"}], "role"="ROLE_AGENT", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"}], "id"="01a17acb-3d3f-71f0-9f63-08798e295fb5", "status"={"message"={"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="01a17acb-4145-7145-b5fe-6ac29f296a33", "parts"=[{"text"="Completed concurrently"}], "role"="ROLE_AGENT", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"}, "state"="TASK_STATE_COMPLETED", "timestamp"="2026-10-27T00:38:23Z"}}
+ but was: 
+  {"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "history"=[{"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="cancel-completion-race", "parts"=[{"text"="x"}], "role"="ROLE_USER", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"}], "id"="01a17acb-3d3f-71f0-9f63-08798e295fb5", "status"={"state"="TASK_STATE_CANCELED", "timestamp"="2026-10-27T00:38:22Z"}}
+	at dev.hansel.a2a.three.CoreProtocolTest.cancellationResponseCannotContradictConcurrentBusinessCompletion(CoreProtocolTest.java:97)
+
+[ERROR] Failures: 
+[ERROR]   CoreProtocolTest.cancellationResponseCannotContradictConcurrentBusinessCompletion:97 
+expected: 
+  {"artifacts"=[{"artifactId"="01a17acb-4145-74fd-998a-7c0b63f7b578", "name"="answer", "parts"=[{"text"="Completed concurrently"}]},
+      {"artifactId"="01a17acb-4145-73c5-859f-47a1da5d5f1d", "name"="tool-trace", "parts"=[{"data"={"toolCalls"=null}}]}], "contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "history"=[{"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="cancel-completion-race", "parts"=[{"text"="x"}], "role"="ROLE_USER", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"},
+      {"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="01a17acb-4145-7145-b5fe-6ac29f296a33", "parts"=[{"text"="Completed concurrently"}], "role"="ROLE_AGENT", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"}], "id"="01a17acb-3d3f-71f0-9f63-08798e295fb5", "status"={"message"={"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="01a17acb-4145-7145-b5fe-6ac29f296a33", "parts"=[{"text"="Completed concurrently"}], "role"="ROLE_AGENT", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"}, "state"="TASK_STATE_COMPLETED", "timestamp"="2026-10-27T00:38:23Z"}}
+ but was: 
+  {"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "history"=[{"contextId"="01a17acb-3d3d-7386-a67e-9eb2f01c10c6", "messageId"="cancel-completion-race", "parts"=[{"text"="x"}], "role"="ROLE_USER", "taskId"="01a17acb-3d3f-71f0-9f63-08798e295fb5"}], "id"="01a17acb-3d3f-71f0-9f63-08798e295fb5", "status"={"state"="TASK_STATE_CANCELED", "timestamp"="2026-10-27T00:38:22Z"}}
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project a2a-three-tests: There are test failures.
+[ERROR] 
+[ERROR] See experiment-3/tests/target/surefire-reports for the individual test results.
+[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
