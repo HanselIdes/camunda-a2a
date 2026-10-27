@@ -50,6 +50,12 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertIn('message.results[item.name = "SendA2AMessage"]', get_body)
         self.assertIn('get value(', get_body)
 
+        prepare_result = next(e for e in root.iter() if e.get("id") == "PrepareClientResult")
+        prepare_expression = next(e for e in prepare_result.iter(Z + "script")).get("expression")
+        self.assertIn("clientAgent.context.conversation.messages", prepare_expression)
+        self.assertIn('message.results[item.name = "GetA2ATask"]', prepare_expression)
+        self.assertNotIn("toolCallResults", prepare_expression)
+
     def test_form_has_explicit_empty_confirmation_inputs(self):
         form = json.loads((ROOT / "blueprint/demo/05-client-agent-confirm.form").read_text())
         fields = {c.get("key"): c for c in form["components"] if c.get("key")}

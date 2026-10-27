@@ -141,15 +141,22 @@ def build():
 
     p.script(
         "PrepareClientResult", "Prepare client result", 640, 200,
-        one("""=(for results in [if toolCallResults instance of list then toolCallResults else []] return
-          for polls in [results[item.name = "GetA2ATask"]] return
-          for state in [if count(polls) > 0 then
-            polls[count(polls)].content.result.task.status.state else null] return
+        one("""=(for polls in [flatten(
+          for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
+          return message.results[item.name = "GetA2ATask"]
+          )] return
+          for content in [if count(polls) > 0 then polls[count(polls)].content else null] return
+          for body in [if content instance of context and content.toolCallResult instance of context
+                       then content.toolCallResult else content] return
+          for response in [if body instance of context then body.result else null] return
+          for task in [if response instance of context then
+            if response.task instance of context then response.task else response else null] return
+          for state in [if task.status.state instance of string then task.status.state else null] return
           "### Client agent response\\n\\n" +
           (if clientAgent.responseText instance of string then clientAgent.responseText
            else "The client agent returned no text.") +
           "\\n\\n**Last observed server task state:** " +
-          (if state instance of string then state else "No GetTask status was observed."))[1][1][1]"""),
+          (if state instance of string then state else "No GetTask status was observed."))[1][1][1][1][1][1]"""),
         "resultText",
     )
     p.node("userTask", "ReviewClientResult", "Review client agent result", 810, 188,
