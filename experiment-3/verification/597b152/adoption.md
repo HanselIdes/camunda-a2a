@@ -1,12 +1,14 @@
 # Timed clean adoption report
 
 Candidate: `597b1524d58a41db9d7465d523073bce0fd9223e`.
-Reported outcome: **PASS in 139 seconds** against the 15-minute adoption target.
+Reported execution outcome: **PASS in 139 seconds**; this does not establish fresh-adopter acceptance.
 All business data was synthetic. Credentials, keys and allocated host ports are withheld.
 
 ## Source and evidence limits
 
-The independent adopter used a fresh, clean clone at the candidate SHA.
+The executor was a separate AI-agent shipping review session that had already reviewed this PR,
+its code and evidence at length. It used a fresh, clean clone, but was not a fresh human adopter
+or usability study. The 139 seconds does not represent a newcomer's time to success.
 Engineering source was `d4e6273c862b387ee7b2a49b992cd4db5f56a922`; the intervening
 commit changed only the blueprint guide and verification JSON.
 Instructions came from `experiment-3/blueprint/README.md` and its linked echo contract
@@ -38,31 +40,31 @@ configuration/start, deployment, external checks, adaptation of another process 
 
 Values containing credentials or environment-specific addresses are withheld.
 
-| Surface | Settings |
-| --- | --- |
-| Normal engine connection | `CAMUNDA_CLIENT_MODE=self-managed`, `CAMUNDA_CLIENT_REST_ADDRESS`, `CAMUNDA_CLIENT_GRPC_ADDRESS`, `CAMUNDA_CLIENT_AUTH_METHOD=basic`, `CAMUNDA_CLIENT_AUTH_USERNAME`, `CAMUNDA_CLIENT_AUTH_PASSWORD` |
-| Connector execution | `CAMUNDA_CLIENT_EXECUTION_THREADS=4`, `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX=SECRET_` |
-| Direct HTTPS | `SERVER_SSL_ENABLED=true`, `SERVER_SSL_KEY_STORE`, `SERVER_SSL_KEY_STORE_TYPE=PKCS12`, `SERVER_SSL_KEY_STORE_PASSWORD`; outbound truststore path/type/password through `JAVA_TOOL_OPTIONS` |
-| Readiness | `HEALTHCHECK_URL=https://127.0.0.1:8080/actuator/health/readiness` |
-| Engine REST secrets | `ENGINE_URL` without `/v2`, `ENGINE_USERNAME`, `ENGINE_PASSWORD` |
-| A2A secrets | `A2A_API_KEY`, `A2A_AGENT_PROCESS` initially `a2a-card-dispute`, then `adopt-wordcount`; `A2A_RPC_URL` and `A2A_AGENT_CARD_URL` using HTTPS `host.docker.internal` URLs and `/inbound/a2a`, `/inbound/a2a-card` |
-| Model secrets | `CAMUNDA_PROVIDED_LLM_API_ENDPOINT` using the host-local `/v1` service; `CAMUNDA_PROVIDED_LLM_API_KEY` using Ollama's dummy value; `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL=qwen3-coder-30b-64k:latest` |
-| Engine exporter, before timing | `ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_CLASSNAME=io.camunda.exporter.CamundaExporter`, `ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_ARGS_BULK_DELAY=1` |
+| Surface                        | Settings                                                                                                                                                                                                        |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Normal engine connection       | `CAMUNDA_CLIENT_MODE=self-managed`, `CAMUNDA_CLIENT_REST_ADDRESS`, `CAMUNDA_CLIENT_GRPC_ADDRESS`, `CAMUNDA_CLIENT_AUTH_METHOD=basic`, `CAMUNDA_CLIENT_AUTH_USERNAME`, `CAMUNDA_CLIENT_AUTH_PASSWORD`            |
+| Connector execution            | `CAMUNDA_CLIENT_EXECUTION_THREADS=4`, `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX=SECRET_`                                                    |
+| Direct HTTPS                   | `SERVER_SSL_ENABLED=true`, `SERVER_SSL_KEY_STORE`, `SERVER_SSL_KEY_STORE_TYPE=PKCS12`, `SERVER_SSL_KEY_STORE_PASSWORD`; outbound truststore path/type/password through `JAVA_TOOL_OPTIONS`                      |
+| Readiness                      | `HEALTHCHECK_URL=https://127.0.0.1:8080/actuator/health/readiness`                                                                                                                                              |
+| Engine REST secrets            | `ENGINE_URL` without `/v2`, `ENGINE_USERNAME`, `ENGINE_PASSWORD`                                                                                                                                                |
+| A2A secrets                    | `A2A_API_KEY`, `A2A_AGENT_PROCESS` initially `a2a-card-dispute`, then `adopt-wordcount`; `A2A_RPC_URL` and `A2A_AGENT_CARD_URL` using HTTPS `host.docker.internal` URLs and `/inbound/a2a`, `/inbound/a2a-card` |
+| Model secrets                  | `CAMUNDA_PROVIDED_LLM_API_ENDPOINT` using the host-local `/v1` service; `CAMUNDA_PROVIDED_LLM_API_KEY` using Ollama's dummy value; `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL=qwen3-coder-30b-64k:latest`              |
+| Engine exporter, before timing | `ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_CLASSNAME=io.camunda.exporter.CamundaExporter`, `ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_ARGS_BULK_DELAY=1`                                                              |
 
 No nginx/ingress, well-known route, generator, protocol edits, custom worker/server, OAuth profile,
 blueprint Compose file or smoke script was used.
 
 ## Observed timeline
 
-| Elapsed seconds | Step and outcome |
-| --- | --- |
-| 2 | Connectors 8.9.0 started and became healthy. |
-| 9 | Deployed Basic protocol, validation decision, discovery card, real agent, BPMN client and three forms together through the engine REST deployment API. |
-| 17 | Discovery returned HTTP 200 with JSON-RPC 1.0 interface and API-key scheme. Unauthenticated task request returned HTTP 401. |
-| 33 | CA-verified external SendMessage/GetTask returned COMPLETED and the exact reconciliation artifact below. |
-| 96 | Authored `adopt-wordcount`, updated only the card's business name/description/skills, deployed both, selected it with `A2A_AGENT_PROCESS` and recreated Connectors. Discovery showed the new skill; unauthenticated RPC still returned 401. |
-| 132 | Different-process follow-up, cancellation and terminal-operation checks passed as listed below. |
-| 139 | Engine search showed both word-count business instances completed and zero incidents. |
+| Elapsed seconds | Step and outcome                                                                                                                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2               | Connectors 8.9.0 started and became healthy.                                                                                                                                                                                                |
+| 9               | Deployed Basic protocol, validation decision, discovery card, real agent, BPMN client and three forms together through the engine REST deployment API.                                                                                      |
+| 17              | Discovery returned HTTP 200 with JSON-RPC 1.0 interface and API-key scheme. Unauthenticated task request returned HTTP 401.                                                                                                                 |
+| 33              | CA-verified external SendMessage/GetTask returned COMPLETED and the exact reconciliation artifact below.                                                                                                                                    |
+| 96              | Authored `adopt-wordcount`, updated only the card's business name/description/skills, deployed both, selected it with `A2A_AGENT_PROCESS` and recreated Connectors. Discovery showed the new skill; unauthenticated RPC still returned 401. |
+| 132             | Different-process follow-up, cancellation and terminal-operation checks passed as listed below.                                                                                                                                             |
+| 139             | Engine search showed both word-count business instances completed and zero incidents.                                                                                                                                                       |
 
 The real-model artifact was named `reconciliation`: merchant `Northwind Electronics`, currency `USD`,
 charge amounts `[49.95, 49.95]`, paid amount `99.9`, expected amount `49.95`, overcharge amount `49.95`,
@@ -84,12 +86,13 @@ documented task-ID correlation and follow-up mappings, a FEEL word counter, and 
 
 ## Deviations and remaining gates
 
-1. Deployment used REST, not Modeler. Actual Modeler/Marketplace import, template import and form usability remain unverified.
+1. Deployment used REST, not Modeler. The word-count process was written as raw XML without diagram interchange data and lints with `no-bpmndi` errors. Modeler authoring, actual Modeler/Marketplace import, template import and form usability remain unverified. The derived process is nonshipping.
 2. The external caller used a certificate-valid `localhost` URL while the card advertised `host.docker.internal`. This does not independently prove that an external client can resolve the advertised hostname. The guide now explicitly requires advertised URLs to work from both external clients and Connectors.
 3. Switching environment-supplied `A2A_AGENT_PROCESS` required recreating Connectors. The guide now states this at the adaptation step as well as in recovery instructions.
 4. The BPMN client form flow and real-model clarification were not repeated here; their separate engineering evidence remains scoped to d4e6273.
 5. The engine user had built-in admin membership. This is not least-privilege evidence.
 6. This was one run on one Docker Desktop/macOS machine, not a multi-adopter study.
+7. The executor was an AI-agent review session with extensive prior repository knowledge, not a fresh human adopter. Fresh-adopter timing remains unverified.
 
 Owned containers, volumes and network were removed, along with the temporary clone and certificates.
 Unrelated pre-existing containers were untouched. Import, legal/eligibility and publication approval remain

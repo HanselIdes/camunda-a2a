@@ -118,9 +118,10 @@ execution threads for the nested client/server calls. This is not a real financi
 
 The [frozen-source engineering record](verification/d4e6273/summary.json) covers terminal-state races,
 three scoped TCK MUST-gate repeats, native failures/recovery, independent clients and two-agent reliability.
-The [independent adoption report](verification/597b152/adoption.md) records 139 seconds and its evidence limits.
+The [timed AI-agent execution report](verification/597b152/adoption.md) records 139 seconds by a review
+session with prior repository knowledge, not a fresh human adopter or usability study.
 Neither establishes full A2A conformance or support for unverified version combinations. Modeler/form usability,
-actual Marketplace-to-Modeler import and external legal/eligibility approval remain outstanding.
+fresh-adopter timing, actual Marketplace-to-Modeler import and external legal/eligibility approval remain outstanding.
 Do not use the archived experimental card or client as companions to these candidate profiles.
 
 For contributors, `bpmn/a2a-protocol.bpmn` is the input to the profile builder. The builder preserves surviving diagram

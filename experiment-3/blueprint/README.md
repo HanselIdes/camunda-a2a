@@ -1,7 +1,7 @@
 # A2A community blueprint candidate
 
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
-[license and licensing limitations](../../README.md#license-and-support). Observed
+[license and licensing limitations](../../README.md#license-and-support). Fresh-adopter timing, observed
 Modeler/Marketplace import and external licensing/eligibility approval remain separate release gates.
 SaaS runtime support is unverified.
 
@@ -69,8 +69,10 @@ the recorded declared Basic JSON-RPC profile only, not production eligibility, o
 
 ## Timed adoption
 
-An independent adopter reported [139 seconds at source 597b152](../verification/597b152/adoption.md),
-starting with a ready cluster, model and credentials. The run reached an exact external real-model result,
+A separate AI-agent review session with prior knowledge of the repository reported
+[139 seconds at source 597b152](../verification/597b152/adoption.md), starting with a ready cluster, model
+and credentials. This was not a fresh human adopter or usability study and does not establish a newcomer's
+time to success. The run reached an exact external real-model result,
 then adapted a different deterministic process with follow-up input and the required cancellation hook.
 It required no protocol edits, generator, custom worker or custom HTTP server.
 The report records all supplied settings and deviations. It is a single-machine observation transcribed from
@@ -429,7 +431,7 @@ Repeating a new-task submission with the same `messageId` creates independent ta
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
 The source-specific checkpoints above distinguish engineering results from final release acceptance.
-Modeler/form usability, actual Marketplace import and external legal/eligibility gates
+Fresh-adopter timing, Modeler/form usability, actual Marketplace import and external legal/eligibility gates
 remain open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
