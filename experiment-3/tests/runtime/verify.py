@@ -107,6 +107,7 @@ def redact(text):
     sensitive = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD",
                                       "PROOF_RESTRICTED_PASSWORD")]
     sensitive.append(base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode())
+    sensitive.append(base64.b64encode(("a2a-restricted-proof:" + env["PROOF_RESTRICTED_PASSWORD"]).encode()).decode())
     for value in sensitive:
         text = text.replace(value, "[REDACTED]")
     return text
@@ -210,6 +211,7 @@ def assert_no_persisted_credentials():
         forbidden = [env[name] for name in ("PROOF_ENGINE_PASSWORD", "PROOF_A2A_API_KEY", "PROOF_TLS_PASSWORD",
                                           "PROOF_RESTRICTED_PASSWORD")]
         forbidden.append(base64.b64encode(("proof:" + env["PROOF_ENGINE_PASSWORD"]).encode()).decode())
+        forbidden.append(base64.b64encode(("a2a-restricted-proof:" + env["PROOF_RESTRICTED_PASSWORD"]).encode()).decode())
         assert not any(value in body for value in forbidden), "Credential persisted in engine variables"
         for item in variables["items"]:
             if item["name"] == "hdr":
@@ -461,7 +463,7 @@ try:
         run_listing(REPORTS, rpc)
     if env.get("PROOF_FAILURE_CHECKS"):
         from failures import run as run_failures
-        run_failures(ROOT, REPORTS, rpc, request, deploy, env)
+        run_failures(ROOT, REPORTS, rpc, request, deploy, env, stack)
     assert_no_persisted_credentials()
     source_after = source_snapshot(ROOT)
     if source_after != source_before:

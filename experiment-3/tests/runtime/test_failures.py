@@ -15,7 +15,7 @@ class FailureFixtureTest(unittest.TestCase):
                 ("invalid-credentials", "authentication.password", "deliberately-invalid-noncredential"),
                 ("insufficient-permissions", "authentication.password", "{{secrets.PROOF_RESTRICTED_PASSWORD}}"),
                 ("revoked-credentials", "authentication.password", "{{secrets.PROOF_RESTRICTED_PASSWORD}}"),
-                ("unavailable-engine", "url", '="http://127.0.0.1:1/v2/process-instances"')):
+                ("unreachable-engine-endpoint", "url", '="http://127.0.0.1:1/v2/process-instances"')):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "fault.bpmn"
                 fault_model(SOURCE, output, mode)

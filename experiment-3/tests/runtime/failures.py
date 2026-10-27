@@ -1,6 +1,7 @@
 """Nonshipping stock-connector failure injection and operator recovery."""
 import json
 import secrets
+import subprocess
 import time
 import uuid
 import xml.etree.ElementTree as ET
@@ -20,7 +21,7 @@ def fault_model(source, target, mode):
         field = element.get("target")
         if field in ("connectionTimeoutInSeconds", "readTimeoutInSeconds"):
             element.set("source", "=1")
-        elif mode == "unavailable-engine" and field == "url":
+        elif mode == "unreachable-engine-endpoint" and field == "url":
             element.set("source", '="http://127.0.0.1:1/v2/process-instances"')
         elif mode == "invalid-credentials" and field == "authentication.password":
             element.set("source", "deliberately-invalid-noncredential")
@@ -31,7 +32,7 @@ def fault_model(source, target, mode):
     model.write(target, encoding="utf-8", xml_declaration=True)
 
 
-def run(root, reports, rpc, request, deploy, env):
+def run(root, reports, rpc, request, deploy, env, stack):
     records = []
     protocol = root / "blueprint/profiles/basic/a2a-protocol.bpmn"
     echo = root / "bpmn/a2a-echo.bpmn"
@@ -42,7 +43,13 @@ def run(root, reports, rpc, request, deploy, env):
             "verdict": verdict, "records": records,
             "credentialScope": "Basic authentication has no token expiry. Invalid and unprivileged credentials "
                                "and password-rotated credentials are injected; expiring OAuth tokens are not covered.",
-            "fixtures": "Derived nonshipping diagrams and stock engine APIs; no custom server/worker.",
+            "fixtures": "Derived nonshipping diagrams and stock engine APIs, plus a shipped-protocol "
+                        "deployment-secret fault; no custom server/worker.",
+            "inputFaultScope": "Derived CreateTask inputs, retries=1 and 1s timeouts. Handler started via engine "
+                               "API; no webhook response claimed for these cases. Local job-input repair only.",
+            "endpointFaultScope": "Only the connector endpoint is unreachable; the engine remains running. "
+                                  "This is not engine-outage or restart evidence.",
+            "modelFaultScope": "Derived provider inputs; handlers started via engine API and tasks polled over A2A.",
         }, indent=2) + "\n")
 
     def wait(description, observe, predicate, seconds=45):
@@ -90,7 +97,7 @@ def run(root, reports, rpc, request, deploy, env):
         assert status == 201, ("restricted user creation", status)
         created_user = True
         for mode, expected_error in (("invalid-credentials", "401"), ("insufficient-permissions", "403"),
-                                     ("revoked-credentials", "401"), ("unavailable-engine", None)):
+                                     ("revoked-credentials", "401"), ("unreachable-engine-endpoint", None)):
             if mode == "revoked-credentials":
                 status, _ = request(f"/v2/users/{user}", {"password": secrets.token_urlsafe(32)}, method="PUT")
                 assert status == 200, ("revoke old password", status)
@@ -137,6 +144,60 @@ def run(root, reports, rpc, request, deploy, env):
                             "operatorRepair": "Local connector inputs, job retry, incident resolution",
                             "recoveredExactTask": True})
         deploy([protocol])
+        env["PROOF_PROTOCOL_ENGINE_PASSWORD"] = "deliberately-invalid-noncredential"
+        subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
+                                       "--wait-timeout", "300", "connectors"], env=env, check=True,
+                       capture_output=True)
+        identifier = "secret-failure-" + str(uuid.uuid4())
+        text = "Exact result after deployment secret repair"
+        started = time.monotonic()
+        try:
+            response = rpc({"jsonrpc": "2.0", "id": identifier, "method": "SendMessage", "params": {
+                "message": {"messageId": identifier, "role": "ROLE_USER", "parts": [{"text": text}]}}},
+                timeout=5)
+        except TimeoutError:
+            client_observation = "five-second-client-timeout"
+        else:
+            raise AssertionError(f"Expected client timeout rather than a fabricated response: {response[0]}")
+        incident = wait("deployment-secret failure after shipped retries",
+            lambda: search("/v2/incidents/search", {"processDefinitionId": "a2a-rpc", "state": "ACTIVE"}),
+            bool, seconds=120)[0]
+        assert incident["elementId"] == "CreateTask" and incident["errorType"] == "JOB_NO_RETRIES", incident
+        assert "401" in incident["errorMessage"]
+        instance = incident["processInstanceKey"]
+        assert read_root_variable(request, instance, "rpc")["id"] == identifier
+        assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"})
+        incident_seconds = time.monotonic() - started
+        env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD")
+        subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
+                                       "--wait-timeout", "300", "connectors"], env=env, check=True,
+                       capture_output=True)
+        status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
+        assert status == 204, ("retry after deployment secret repair", status)
+        status, _ = request(f'/v2/incidents/{incident["incidentKey"]}/resolution', {}, method="POST")
+        assert status in (204, 404), ("resolve repaired-secret incident", status)
+        response = read_root_variable(request, instance, "rpcResponse", seconds=45)
+        assert response["id"] == identifier and "error" not in response, response
+        recovered = response["result"]["task"]
+        assert recovered["status"]["state"] == "TASK_STATE_COMPLETED", recovered
+        assert recovered["status"]["message"]["parts"] == [{"text": text}], recovered
+        assert call("GetTask", {"id": recovered["id"]})["result"] == recovered
+        wait("deployment-secret incident cleared", lambda: search("/v2/incidents/search", {
+            "processInstanceKey": instance, "state": "ACTIVE"}), lambda values: not values)
+        fresh = call("SendMessage", {"message": {"messageId": str(uuid.uuid4()), "role": "ROLE_USER",
+                                               "parts": [{"text": "Fresh external work after secret repair"}]}})
+        fresh = fresh["result"]["task"]
+        fresh = wait("fresh external work after secret repair",
+                     lambda: call("GetTask", {"id": fresh["id"]})["result"],
+                     lambda value: value["status"]["state"] == "TASK_STATE_COMPLETED")
+        assert fresh["status"]["state"] == "TASK_STATE_COMPLETED", fresh
+        assert fresh["status"]["message"]["parts"] == [{"text": "Fresh external work after secret repair"}], fresh
+        records.append({"case": "deployment-engine-password-secret", "connectorInputsUnmodified": True,
+                        "shippedRetries": 3, "shippedRetryBackoffSeconds": 30,
+                        "clientObservation": client_observation, "incidentSeconds": round(incident_seconds, 3),
+                        "noFabricatedResponse": True, "recoveredExactTask": True,
+                        "operatorRepair": "Correct ENGINE_PASSWORD, recreate owned Connectors, retry and resolve",
+                        "freshWorkAfterRepair": True})
         for mode in ("unavailable-model-endpoint", "unknown-model"):
             derived = reports / f"nonshipping-{mode}.bpmn"
             controlled_model(root / "blueprint/demo/a2a-card-dispute.bpmn", derived, "a2a-echo")
@@ -173,6 +234,10 @@ def run(root, reports, rpc, request, deploy, env):
         save("FAIL")
         raise
     finally:
+        if env.pop("PROOF_PROTOCOL_ENGINE_PASSWORD", None) is not None:
+            subprocess.run(stack.command + ["up", "-d", "--no-deps", "--force-recreate", "--wait",
+                                           "--wait-timeout", "300", "connectors"], env=env, check=True,
+                           capture_output=True)
         deploy([protocol, echo])
         if created_user:
             status, _ = request(f"/v2/users/{user}", method="DELETE")
