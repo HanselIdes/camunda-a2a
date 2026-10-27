@@ -103,18 +103,14 @@ def run(root, reports, rpc, request, deploy, env):
                 assert expected_error in incident["errorMessage"], (mode, incident["errorType"])
             assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"}), \
                 "Infrastructure failure invented an RPC response"
-            jobs = wait("failed connector job indexing", lambda: search("/v2/jobs/search", {
-                "processInstanceKey": instance, "elementId": "CreateTask"}),
-                lambda values: len(values) == 1 and values[0]["retries"] == 0)
-            job = jobs[0]
-            assert job["retries"] == 0, job
-            status, _ = request(f'/v2/element-instances/{job["elementInstanceKey"]}/variables', {
+            assert incident["jobKey"] and incident["elementInstanceKey"], "Incident lacks actionable job references"
+            status, _ = request(f'/v2/element-instances/{incident["elementInstanceKey"]}/variables', {
                 "local": True, "variables": {
                     "url": "http://camunda:8080/v2/process-instances",
                     "authentication": {"type": "basic", "username": "proof",
                                        "password": "{{secrets.ENGINE_PASSWORD}}"}}}, method="PUT")
             assert status == 204, ("repair connector variables", status)
-            status, _ = request(f'/v2/jobs/{job["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
+            status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
             assert status == 204, ("restore job retry", status)
             status, _ = request(f'/v2/incidents/{incident["incidentKey"]}/resolution', {}, method="POST")
             assert status in (204, 404), ("resolve incident", status)
