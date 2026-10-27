@@ -185,7 +185,8 @@ def run(root, reports, rpc, request, deploy, env, stack):
             else:
                 status, _ = request(f"/v2/users/{user}", {"password": env["PROOF_RESTRICTED_PASSWORD"]}, method="PUT")
                 assert status == 200, ("restore test user's valid password", status)
-                wait("test user valid but unprivileged", stale_credential_status, lambda value: value == 403)
+                wait("test user's restored credential is valid", stale_credential_status, lambda value: value == 200)
+                assert user not in [item["username"] for item in search("/v2/roles/admin/users/search", {})]
                 env["PROOF_PROTOCOL_ENGINE_USERNAME"] = user
                 env["PROOF_PROTOCOL_ENGINE_PASSWORD"] = env["PROOF_RESTRICTED_PASSWORD"]
             restart_connectors()
@@ -216,7 +217,9 @@ def run(root, reports, rpc, request, deploy, env, stack):
             else:
                 status, _ = request(f"/v2/roles/admin/users/{user}", method="PUT")
                 assert status == 204, ("grant test user role", status)
-                wait("test authorization grant visible", stale_credential_status, lambda value: value == 200)
+                wait("test authorization grant visible",
+                     lambda: search("/v2/roles/admin/users/search", {}),
+                     lambda values: user in [item["username"] for item in values])
                 repair = "Grant admin role to isolated test user, then retry and resolve; not a least-privilege recipe"
             status, _ = request(f'/v2/jobs/{incident["jobKey"]}', {"changeset": {"retries": 1}}, method="PATCH")
             assert status == 204, ("retry after deployment repair", status)
