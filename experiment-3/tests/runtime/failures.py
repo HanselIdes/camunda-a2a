@@ -103,8 +103,9 @@ def run(root, reports, rpc, request, deploy, env):
                 assert expected_error in incident["errorMessage"], (mode, incident["errorType"])
             assert not search("/v2/variables/search", {"processInstanceKey": instance, "name": "rpcResponse"}), \
                 "Infrastructure failure invented an RPC response"
-            jobs = search("/v2/jobs/search", {"processInstanceKey": instance, "elementId": "CreateTask"})
-            assert len(jobs) == 1, len(jobs)
+            jobs = wait("failed connector job indexing", lambda: search("/v2/jobs/search", {
+                "processInstanceKey": instance, "elementId": "CreateTask"}),
+                lambda values: len(values) == 1 and values[0]["retries"] == 0)
             job = jobs[0]
             assert job["retries"] == 0, job
             status, _ = request(f'/v2/element-instances/{job["elementInstanceKey"]}/variables', {
