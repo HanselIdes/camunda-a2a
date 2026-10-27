@@ -1,0 +1,397 @@
+{
+  "testedSource": "96357f562b36774d573c1b51187a86101bd72c14",
+  "tckScope": "MUST gate passed; not full A2A conformance",
+  "eachRun": {
+    "executed": 68,
+    "skipped": 167,
+    "failures": 0,
+    "errors": 0,
+    "mustPass": 56,
+    "mustExcluded": 58,
+    "incidents": 0
+  },
+  "rawExtensionsReadTimeoutSeconds": 5,
+  "normalRpcReadTimeoutSeconds": 30,
+  "extensionsSeconds": {
+    "count": 3,
+    "min": 1.63,
+    "median": 1.764,
+    "max": 2.221
+  },
+  "normalRpcSeconds": {
+    "count": 195,
+    "min": 0.097,
+    "median": 1.657,
+    "max": 4.532
+  },
+  "runs": [
+    {
+      "run": 1,
+      "extensionsSeconds": [
+        2.221
+      ],
+      "normalRpc": {
+        "count": 65,
+        "min": 0.097,
+        "median": 1.682,
+        "max": 4.532
+      },
+      "files": {
+        "gate.json": "cc89bf2ddefa1899eae425799396d4426e0ce9774025e2a555c7cadc9f538979",
+        "provenance.json": "3a539a629002deeb32b7ae5cab09fedd0b33bd1baa8c81bde3119c9ecfd24d34",
+        "request-timings.json": "ce72fbc4bbc2ac0a15c6ade873843f9809a150935f52fa3249f329762e0766a2",
+        "compatibility.json": "d1674232492ddc9a3d59c52dcb56ad2d4d9eca2642df786bdb99c95d4a7c6cdb",
+        "junitreport.xml": "dbf979351e95a4077d88c8135a298ec1073c5db54c284cd795f6f8875b268da9",
+        "runner.log": "6688ff01c919b64e5e1e82fd3f88dd5dd77f28c1bdb8e08ea976b7f53347aa9e"
+      }
+    },
+    {
+      "run": 2,
+      "extensionsSeconds": [
+        1.764
+      ],
+      "normalRpc": {
+        "count": 65,
+        "min": 0.098,
+        "median": 1.567,
+        "max": 4.004
+      },
+      "files": {
+        "gate.json": "cc89bf2ddefa1899eae425799396d4426e0ce9774025e2a555c7cadc9f538979",
+        "provenance.json": "3a539a629002deeb32b7ae5cab09fedd0b33bd1baa8c81bde3119c9ecfd24d34",
+        "request-timings.json": "d4eff480ce5af5e903b35d1989f8a4bb88d63dd028871b4d89d8eb2ffd217e91",
+        "compatibility.json": "5c583eaeb5bf7860f7d3717b3673bbeff5492f13509e663e1a9a89abefbfec46",
+        "junitreport.xml": "42fa45b0867532e6cf841e0d08e16d56655a0fee94a71076951f00402e56eecf",
+        "runner.log": "1ee02738ca08a9bca190a678181c3b05fa654911287701818bdf9e8baf09c784"
+      }
+    },
+    {
+      "run": 3,
+      "extensionsSeconds": [
+        1.63
+      ],
+      "normalRpc": {
+        "count": 65,
+        "min": 0.099,
+        "median": 1.725,
+        "max": 3.684
+      },
+      "files": {
+        "gate.json": "cc89bf2ddefa1899eae425799396d4426e0ce9774025e2a555c7cadc9f538979",
+        "provenance.json": "3a539a629002deeb32b7ae5cab09fedd0b33bd1baa8c81bde3119c9ecfd24d34",
+        "request-timings.json": "91e30b52c84ae33ab8ee46a8bdbfa6e47ed40f7b84580dc5ec3c5905a4ac27d3",
+        "compatibility.json": "9b559894cb1ba0ef91e41b7f2fc9f3be705b12d1baaca101de942704c36758fe",
+        "junitreport.xml": "4c6b96726dde63958b0e44058d23766ce140cb46ddecfef87a0f91383069a0c7",
+        "runner.log": "1e60f82f6126e067a2dd132bcfac336723d20e5a611833c693f5fba923aa0f59"
+      }
+    }
+  ],
+  "fullSuite": {
+    "command": "mvn -q -f experiment-3/tests/pom.xml verify",
+    "exit": 0,
+    "tests": 172,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "sdk": {
+    "command": "PROOF_SDK_PYTHON=/path/to/sdk-python python3 experiment-3/tests/runtime/verify.py",
+    "exit": 0,
+    "sdk": "a2a-sdk",
+    "version": "1.2.3",
+    "transport": "JSONRPC",
+    "protocol": "1.0",
+    "tlsCertificateVerified": true,
+    "checks": [
+      "explicit discovery",
+      "SDK transport negotiation",
+      "nonblocking send",
+      "polling",
+      "input-required",
+      "numeric-leading follow-up",
+      "four-message history",
+      "exact reconciliation artifact",
+      "terminal retrieval",
+      "context-filtered list"
+    ],
+    "authenticatedRequests": 7,
+    "verdict": "PASS"
+  },
+  "tckCommand": "PROOF_TCK_DIRECTORY=/path/to/pinned-patched-tck PROOF_REPORT_DIR=/path/to/new-report-directory python3 experiment-3/tests/runtime/verify.py",
+  "versions": {
+    "engine": "8.8.21",
+    "connectors": "8.9.0",
+    "elasticsearch": "8.17.0",
+    "model": "qwen3-coder-30b-64k:latest",
+    "modelDigest": "13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253",
+    "modeler": "not verified",
+    "deployment": "isolated local Self-Managed, direct Connectors HTTPS"
+  },
+  "deploymentSettings": {
+    "exporterClass": "io.camunda.exporter.CamundaExporter",
+    "exporterBulkDelaySeconds": 1,
+    "executionThreads": 4,
+    "activeVersionPolling": false,
+    "retentionEnabled": false
+  },
+  "notTestedByTck": [
+    "CARD-SIGN-001",
+    "CARD-SIGN-002",
+    "CARD-SIGN-003",
+    "CARD-SIGN-004",
+    "AUTH-TLS-001",
+    "AUTH-SERVER-002",
+    "AUTH-INTASK-001",
+    "AUTH-INTASK-002",
+    "AUTH-INTASK-003",
+    "AUTH-INTASK-004",
+    "AUTH-SCOPE-001",
+    "AUTH-SCOPE-002",
+    "AUTH-SCOPE-003",
+    "VER-SERVER-001",
+    "VER-CLIENT-001",
+    "VER-CLIENT-002"
+  ],
+  "securityScope": {
+    "tls": "Native verifier checks certificate validation; not a TCK pass.",
+    "apiKey": "Native verifier rejects missing/invalid keys and checks persisted variables; not a TCK pass.",
+    "cardSigning": "Unsigned card; not provided.",
+    "authorization": "One shared API key; no per-caller task isolation.",
+    "operateTasklistUi": "Not verified with the tuned exporter.",
+    "enabledHistoryCleanup": "Not verified; stock retention remains disabled."
+  },
+  "sourceObservation": {
+    "before": {
+      "targetCommit": "96357f562b36774d573c1b51187a86101bd72c14",
+      "targetWorktreeDirty": false,
+      "observedAt": "2026-10-26T23:39:52.387768+00:00",
+      "scope": "Exact-SHA acceptance series in progress; source snapshot before SDK and full suite. Per-TCK provenance is recorded by each runner."
+    },
+    "after": {
+      "targetCommit": "96357f562b36774d573c1b51187a86101bd72c14",
+      "targetWorktreeDirty": false,
+      "completedAt": "2026-10-26T23:54:02.195954+00:00",
+      "seriesExit": 0
+    },
+    "note": "SDK and full suite ran sequentially after the three TCK repeats with no intervening source edits."
+  },
+  "fullSuiteReports": {
+    "dev.hansel.a2a.three.AgentTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "a7e83c00e619b31e948f1401f6126edb7ad7773be2b33db13e6b3b062fe88c54"
+    },
+    "dev.hansel.a2a.three.CardTest": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "872783349a63c53f1ea83e6fd5fafc5af95ea36f09c07426791c637fa775e5be"
+    },
+    "dev.hansel.a2a.three.ClientProcessTest": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "5d7df44e00f592933c10eec188927f0b254c02e7cce6a024f3c94d6e87bbf95a"
+    },
+    "dev.hansel.a2a.three.ClientServerE2ETest": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "924258205433009de558120bdbc82b43b1fd35bb197bfb5af37fdae4ac662709"
+    },
+    "dev.hansel.a2a.three.ConnectorProcessesTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "746538581be17507b83f12e05d2a5e05f7fd0b09b1c56e208cf45dd31281814a"
+    },
+    "dev.hansel.a2a.three.CoreProtocolTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "39f442a088ea4358ec3d2d4e3e877d25d8027030bee99acef814150df1d4f34a"
+    },
+    "dev.hansel.a2a.three.CoverageGapsTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "9de58e84cfecf6d830bb94e867dc78e5e0362f4e004911c34fe99e4d1ee50093"
+    },
+    "dev.hansel.a2a.three.DeterministicProcessTest": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "a6040b4ea240bf71d24c763aaccb639594394516ffb428969f708a6671b6a5f0"
+    },
+    "dev.hansel.a2a.three.DmnTest": {
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "0179ede9f9fe6c11d309e3e013bc827853c6aada3783b226a359cb1c8843042b"
+    },
+    "dev.hansel.a2a.three.EdgeCaseTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "5752eb2e9b5dbe0993b3e66034ca944334c47f28bf37666787533e51fc333118"
+    },
+    "dev.hansel.a2a.three.ListTasksTest": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "38b623ea5488ffde2b46f0c3244322f87c4563deff52ac7c55edb62bcac03e44"
+    },
+    "dev.hansel.a2a.three.PushIntegrationTest": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "c95823ecd29a5a0b438d4aa8dfd4e146fa5eacb31c5f746a7e7a713e62916b9e"
+    },
+    "dev.hansel.a2a.three.PushTest": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "b0210380f8694d6d0c9645631c126d6dcdb2fdd4e97896bde35e9d0b8845b365"
+    },
+    "dev.hansel.a2a.three.TaskTest": {
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "5b813d36ed5c5ff5b7cbf2d5be7b022080456bd2eb2a1d194c5b6188113fcaf3"
+    },
+    "dev.hansel.a2a.three.TemplateShapeTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "2b031611f960d7c12e0fbbf70d211ea301291dd9eac967489ce51de2722d2433"
+    },
+    "dev.hansel.a2a.three.TemplatesIntegrationTest": {
+      "tests": 28,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "fd2102bba97b8cffcbf7fa8ea447edef78e430dfc693f9c86209360beb46581e"
+    },
+    "dev.hansel.a2a.three.ValidationTest": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "6f8f75d8fddac183c5b3c2fc3a945a9c314eae87d11a4b8d1329068b34fd6b22"
+    },
+    "dev.hansel.a2a.three.WebhookIntegrationTest": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "sha256": "c059beec35a938a8791a91ef31592c0b9559814a6d69a69fc31c2cddfbd99db6"
+    }
+  },
+  "sourceFilesSha256": {
+    "experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn": "5a60c93cd34106dc9a238b4ac7aaa9e7c070d5526072c38b566da9a1ec80ca82",
+    "experiment-3/dmn/a2a-validate.dmn": "c335fb5a5c127d4f9b145bd93e2428835589efb06bf9ffc7d92e2f4861174979",
+    "experiment-3/blueprint/demo/a2a-card.bpmn": "90dfc0d151787a78db9bb04bc3d631eba85fb8582e4012baaba4fced0bc5e5cc",
+    "experiment-3/blueprint/demo/a2a-card-dispute.bpmn": "9fe7fac1a402fa863f11a5f9e4b24d0bb7cc696fbc0c1ab8007d3e14978c929b",
+    "experiment-3/blueprint/demo/a2a-client.bpmn": "02b69a0d74cf95e147b303bf9afb70f8ca7f4bce2675344a02f2bdae66ca78bf",
+    "experiment-3/blueprint/demo/a2a-client-ask.form": "bb5ca4b1bf138266958c70c5af3d106b7c8e226a156f2c31da966dcea8cfd057",
+    "experiment-3/blueprint/demo/a2a-client-answer.form": "0cf13f81302e63ce6ef7f1b2bbe50a16934db7fe9120154a3dc9e5666c380251",
+    "experiment-3/blueprint/demo/a2a-client-result.form": "5fc2c5f2918343e988a8fdad24ef1ccb48d526bc120b7ddfd98bd31cbb4c1e69",
+    "experiment-3/blueprint/templates/a2a-core-rpc.json": "1384ad621badb6f8a9b9571eaa251fbf496097ac171925f784a99a899104de34",
+    "experiment-3/blueprint/templates/a2a-core-card.json": "656532bacb4bff4409143b0a11ab66dd5552db85acfd827fba65a8694f5bd853",
+    "experiment-3/blueprint/templates/http-json.json": "af0668b3dbf8343aa3330cbc2dab748de26f19a10a429243095430b5ee22d420",
+    "experiment-3/tests/runtime/verify.py": "35a40e37704cbc0306e3ba83ea9e92111e57e3cc00a53afa496ea1bfd85f76b8",
+    "experiment-3/tests/runtime/conformance.py": "3acf5635f3e9e1967198613b8da72a51a411ead0bd8df2ba1858ddb1f45a98f0",
+    "experiment-3/tests/runtime/observations.py": "c12de14ecd260fdf8285bcd4bd5743a38871bf9ab443e21fba6272cfc6cc8911",
+    "experiment-3/tests/runtime/independent_client.py": "cbf48e3339548bd0932d48f94d4ae9f5186dedb2d11c5b5413fac39af649701c",
+    "experiment-3/tests/runtime/compose.yml": "ea21b6b9b58bfd85cdd8c384256421d3102c1294c72ca6d5b31848ef9e0f7a04",
+    "experiment-3/tests/runtime/exporter-low-latency.yml": "e4bbe61b683be9e55c537c03fc86a51a111991931cc3487ae313eadd6b1c6c33",
+    "experiment-3/tests/runtime/requirements-sdk.txt": "bc8f31ca3336078f7704df47fc4c4bfb99b3d8f6b1a808dd413f2c92b00c1cd2",
+    "experiment-3/tck/check_results.py": "ab65079ee1967f1bac9b45b82fb0b72b4178d597ebfdc5a868c60d67470b83b6",
+    "experiment-3/tck/allowed-not-passing.txt": "62baeb9c3a2b64f3760d84364ea7bdc3f493ab830855c98cf9cb16bd7a1c1e77",
+    "experiment-3/tck/patches/tck-pr-stack.patch": "d38035f71e669b7f899338ecb2eb5095d7434f8ecf168883c37f81e26e5a7101"
+  },
+  "externalAiTemplate": "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+  "runnerEnvironments": {
+    "tck": {
+      "packages": {
+        "Jinja2": "3.1.6",
+        "MarkupSafe": "3.0.3",
+        "Pygments": "2.19.2",
+        "a2a-tck": "1.0.0",
+        "anyio": "4.12.1",
+        "attrs": "25.4.0",
+        "certifi": "2026.1.4",
+        "gherkin-official": "39.0.0",
+        "googleapis-common-protos": "1.72.0",
+        "grpcio": "1.78.0",
+        "h11": "0.16.0",
+        "httpcore": "1.0.9",
+        "httpx": "0.28.1",
+        "idna": "3.11",
+        "iniconfig": "2.3.0",
+        "jsonschema": "4.26.0",
+        "jsonschema-specifications": "2025.9.1",
+        "packaging": "26.0",
+        "pluggy": "1.6.0",
+        "protobuf": "6.33.5",
+        "pytest": "9.0.2",
+        "pytest-asyncio": "1.3.0",
+        "pytest-html": "4.2.0",
+        "pytest-metadata": "3.1.1",
+        "referencing": "0.37.0",
+        "rpds-py": "0.30.0",
+        "typing_extensions": "4.15.0"
+      },
+      "python": "3.13.1"
+    },
+    "sdk": {
+      "packages": {
+        "a2a-sdk": "1.2.3",
+        "annotated-types": "0.8.0",
+        "anyio": "4.15.1",
+        "certifi": "2026.10.23",
+        "cffi": "2.1.1",
+        "charset-normalizer": "3.5.2",
+        "cryptography": "50.0.2",
+        "google-api-core": "2.43.0",
+        "google-auth": "2.62.0",
+        "googleapis-common-protos": "1.76.0",
+        "h11": "0.16.0",
+        "httpcore": "1.0.9",
+        "httpx": "0.28.1",
+        "idna": "3.20",
+        "json-rpc": "1.15.0",
+        "opentelemetry-api": "1.45.1",
+        "packaging": "26.3",
+        "proto-plus": "1.29.0",
+        "protobuf": "7.36.2",
+        "pyasn1": "0.6.4",
+        "pyasn1_modules": "0.4.2",
+        "pycparser": "3.12",
+        "pydantic": "2.14.1",
+        "pydantic_core": "2.50.1",
+        "requests": "2.34.2",
+        "typing-inspection": "0.4.4",
+        "typing_extensions": "4.16.0",
+        "urllib3": "2.8.0"
+      },
+      "python": "3.13.1"
+    }
+  }
+}

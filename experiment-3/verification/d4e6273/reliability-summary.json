@@ -1,0 +1,148 @@
+{
+  "targetCommit": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+  "targetWorktreeDirty": false,
+  "sequentialTasks": 100,
+  "concurrentTasks": 20,
+  "measuredPeakActiveTaskOperations": 20,
+  "businessTimerSeconds": 15,
+  "creationWindowSeconds": 2.605542249999985,
+  "minimumProvenBusinessOverlapSeconds": 12.394457750000015,
+  "agents": 2,
+  "isolation": "Two separate authenticated Self-Managed deployments.",
+  "boundaryChecks": {
+    "alpha": {
+      "foreignTasksNotFound": true,
+      "foreignOperations": [
+        "GetTask",
+        "CancelTask",
+        "SendMessage"
+      ],
+      "exactPaginatedTasks": 60,
+      "historyLimit": 1
+    },
+    "beta": {
+      "foreignTasksNotFound": true,
+      "foreignOperations": [
+        "GetTask",
+        "CancelTask",
+        "SendMessage"
+      ],
+      "exactPaginatedTasks": 60,
+      "historyLimit": 1
+    }
+  },
+  "duplicates": {
+    "alpha": {
+      "behavior": "Independent new tasks; message IDs do not deduplicate side effects.",
+      "taskIds": [
+        "01a17b87-1f17-765e-85c3-fc8b8167f4fc",
+        "01a17b87-23a3-74a5-84d1-3316d0860853"
+      ]
+    },
+    "beta": {
+      "behavior": "Independent new tasks; message IDs do not deduplicate side effects.",
+      "taskIds": [
+        "01a17b87-2c13-7b19-95ce-26e864af7875",
+        "01a17b87-3256-7e73-893b-64749dd6b0a6"
+      ]
+    }
+  },
+  "restarts": [
+    {
+      "service": "connectors",
+      "preservedTask": "01a17b82-e907-7e84-9356-1331e5023cd6",
+      "newTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "alpha-1793073831664579000",
+            "taskId": "01a17b87-5f5d-7786-a539-ee77028b646f",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-connectors-restart-alpha"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b87-5fc4-7fb6-98bc-513e42c220d6",
+            "taskId": "01a17b87-5f5d-7786-a539-ee77028b646f",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-connectors-restart-alpha"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b87-5f5d-7786-a539-ee77028b646f",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b87-5fc4-7fb6-98bc-513e42c220d6",
+            "taskId": "01a17b87-5f5d-7786-a539-ee77028b646f",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-connectors-restart-alpha"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:03:51Z"
+        },
+        "contextId": "load-alpha"
+      }
+    },
+    {
+      "service": "camunda",
+      "preservedTask": "01a17b82-e907-7e84-9356-1331e5023cd6",
+      "newTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "alpha-1793073844974602000",
+            "taskId": "01a17b87-9364-76af-b673-6ec37d021511",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-camunda-restart-alpha"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b87-93ec-7a8b-b27c-b5fbcb581c5b",
+            "taskId": "01a17b87-9364-76af-b673-6ec37d021511",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-camunda-restart-alpha"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b87-9364-76af-b673-6ec37d021511",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b87-93ec-7a8b-b27c-b5fbcb581c5b",
+            "taskId": "01a17b87-9364-76af-b673-6ec37d021511",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-camunda-restart-alpha"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:04:05Z"
+        },
+        "contextId": "load-alpha"
+      }
+    }
+  ],
+  "exactResultChecks": 120,
+  "verdict": "PASS"
+}

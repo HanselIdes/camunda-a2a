@@ -1,0 +1,485 @@
+connectors-1  | 2026-10-27T14:50:44.413Z  WARN  1 --- [           main] i.m.core.instrument.MeterRegistry        : This Gauge has been already registered (MeterId{name='executor.active', tags=[tag(name=camundaClientExecutor)]}), the registration will be ignored. Note that subsequent logs will be logged at debug level.
+connectors-1  | WARNING: A restricted method in java.lang.System has been called
+connectors-1  | WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (jar:nested:/opt/app/connector-runtime-bundle-8.9.17-with-dependencies.jar/!BOOT-INF/lib/netty-common-4.2.19.Final.jar!/)
+connectors-1  | WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+connectors-1  | WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+connectors-1  | 2026-10-27T14:50:45.721Z  WARN  1 --- [           main] i.m.c.i.b.cache.CaffeineCacheMetrics     : The cache 'processDefinitions' is not recording statistics. No meters except 'cache.size' will be registered. Call 'Caffeine#recordStats()' prior to building the cache for metrics to be recorded.
+connectors-1  | 2026-10-27T14:50:46.365Z  WARN  1 --- [worker-ELG-1-14] i.c.client.impl.CamundaCallCredentials   : The request's security level does not guarantee that the credentials will be confidential.
+connectors-1  | 2026-10-27T14:50:47.293Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:47.293Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:47.294Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:47.294Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:47.295Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:47.296Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:47.415Z  WARN  1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1  | 2026-10-27T14:50:50.754Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:50.754479218Z, message=Webhook processing failed
+connectors-1  | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1  | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+camunda-1     | [2026-10-27 14:50:27.607] [main] WARN  	io.camunda.configuration.UnifiedConfigurationHelper - The following legacy configuration properties should be removed in favor of 'camunda.data.secondary-storage.elasticsearch.bulk.delay': zeebe.broker.exporters.camundaexporter.args.bulk.delay
+camunda-1     | [2026-10-27 14:50:27.631] [main] WARN  	io.camunda.configuration.beanoverrides.BrokerBasedPropertiesOverride - The following legacy property is no longer supported and should be removed in favor of 'camunda.data.exporters': zeebe.broker.exporters
+camunda-1        | [2026-10-27 14:50:28.052] [main] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:28.321] [main] WARN  	io.camunda.zeebe.broker.system - No backup store is configured. Backups will not be taken
+camunda-1        | [2026-10-27 14:50:28.373] [main] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:28.415] [main] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:28.731] [ForkJoinPool.commonPool-worker-1] WARN  	io.camunda.zeebe.gateway - Basic Authentication only supports a very small number of API requests per second. Please refer to the documentation https://docs.camunda.io/docs/next/self-managed/operational-guides/troubleshooting/#basic-authentication-performance
+camunda-1        | [2026-10-27 14:50:28.911] [main] WARN  	io.camunda.application.commons.backup.BackupConfig - No backup repository configured for elasticsearch secondary storage. Backup endpoints are active but will reject all requests until a repository is configured via 'camunda.data.secondary-storage.elasticsearch.backup.repository-name'.
+camunda-1        | [2026-10-27 14:50:29.019] [main] WARN  	io.camunda.document.store.SimpleDocumentStoreRegistry - No document stores configured. Using fallback in-memory document store.
+camunda-1        | [2026-10-27 14:50:29.053] [main] WARN  	io.camunda.service.license.CamundaLicense - No license detected when one is expected. Please provide a license through the CAMUNDA_LICENSE_KEY environment variable.
+camunda-1        | [2026-10-27 14:50:29.120] [zb-actors-1] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:29.136] [main] WARN  	io.camunda.operate.connect.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:29.226] [main] WARN  	io.camunda.operate.connect.ElasticsearchConnector - Elasticsearch cluster is not accessible
+camunda-1        | [2026-10-27 14:50:29.238] [main] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:29.280] [pool-3-thread-1] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+connectors-1     | 2026-10-27T14:50:50.755Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+camunda-1        | [2026-10-27 14:50:30.142] [zb-actors-1] [{actor-name=ZeebePartition-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.zeebe.broker.system - MigrationSnapshotDirector failed, marking it as unhealthy: HealthReport[componentName=MigrationSnapshotDirector, status=UNHEALTHY, issue=HealthIssue[message=Snapshot not taken yet, retryCount=1, will retry in PT0S, throwable=null, cause=null, since=2026-10-27T14:50:30.141651458Z], children={}]
+camunda-1        | [2026-10-27 14:50:30.146] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={}], StreamProcessor-1=HealthReport[componentName=StreamProcessor-1, status=HEALTHY, issue=null, children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:30.146] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={SnapshotDirector-1=HealthReport[componentName=SnapshotDirector-1, status=HEALTHY, issue=null, children={}], ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={}], StreamProcessor-1=HealthReport[componentName=StreamProcessor-1, status=HEALTHY, issue=null, children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:30.147] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={SnapshotDirector-1=HealthReport[componentName=SnapshotDirector-1, status=HEALTHY, issue=null, children={}], ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={}], StreamProcessor-1=HealthReport[componentName=StreamProcessor-1, status=HEALTHY, issue=null, children={}], MigrationSnapshotDirector=HealthReport[componentName=MigrationSnapshotDirector, status=UNHEALTHY, issue=HealthIssue[message=Snapshot not taken yet, retryCount=1, will retry in PT0S, throwable=null, cause=null, since=2026-10-27T14:50:30.141651458Z], children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:30.147] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={SnapshotDirector-1=HealthReport[componentName=SnapshotDirector-1, status=HEALTHY, issue=null, children={}], ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={}], StreamProcessor-1=HealthReport[componentName=StreamProcessor-1, status=HEALTHY, issue=null, children={}], MigrationSnapshotDirector=HealthReport[componentName=MigrationSnapshotDirector, status=UNHEALTHY, issue=HealthIssue[message=Snapshot not taken yet, retryCount=1, will retry in PT0S, throwable=null, cause=null, since=2026-10-27T14:50:30.141651458Z], children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:30.152] [zb-actors-1] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={SnapshotDirector-1=HealthReport[componentName=SnapshotDirector-1, status=HEALTHY, issue=null, children={}], ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=UNHEALTHY, issue=HealthIssue[message=Services not installed, throwable=null, cause=null, since=2026-10-27T14:50:29.089897430Z], children={}], StreamProcessor-1=HealthReport[componentName=StreamProcessor-1, status=HEALTHY, issue=null, children={}], Exporter-1=HealthReport[componentName=Exporter-1, status=HEALTHY, issue=null, children={}], MigrationSnapshotDirector=HealthReport[componentName=MigrationSnapshotDirector, status=UNHEALTHY, issue=HealthIssue[message=Snapshot not taken yet, retryCount=1, will retry in PT0S, throwable=null, cause=null, since=2026-10-27T14:50:30.141651458Z], children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:30.157] [zb-actors-1] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN  	io.camunda.zeebe.broker.system - Partition-1 failed, marking it as unhealthy: HealthReport[componentName=Partition-1, status=UNHEALTHY, issue=HealthIssue[message=Snapshot not taken yet, retryCount=1, will retry in PT0S, throwable=null, cause=null, since=2026-10-27T14:50:30.141651458Z], children={SnapshotDirector-1=HealthReport[componentName=SnapshotDirector-1, status=HEALTHY, issue=null, children={}], ZeebePartitionHealth-1=HealthReport[componentName=ZeebePartitionHealth-1, status=HEALTHY, issue=null, children={}], StreamProcessor-1=HealthReport[componentName=StreamProcessor-1, status=HEALTHY, issue=null, children={}], Exporter-1=HealthReport[componentName=Exporter-1, status=HEALTHY, issue=null, children={}], MigrationSnapshotDirector=HealthReport[componentName=MigrationSnapshotDirector, status=UNHEALTHY, issue=HealthIssue[message=Snapshot not taken yet, retryCount=1, will retry in PT0S, throwable=null, cause=null, since=2026-10-27T14:50:30.141651458Z], children={}], RaftPartition-1=HealthReport[componentName=RaftPartition-1, status=HEALTHY, issue=null, children={}]}]
+camunda-1        | [2026-10-27 14:50:30.157] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:30.166] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:30.190] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:30.192] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:30.213] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.zeebe.broker.exporter - Failed to open exporter 'camundaexporter'. Retrying...
+camunda-1        | [2026-10-27 14:50:30.864] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:30.866] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:30.884] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.zeebe.broker.exporter - Failed to open exporter 'camundaexporter'. Retrying...
+camunda-1        | [2026-10-27 14:50:31.693] [main] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:31.698] [main] WARN  	io.camunda.tasklist.connect.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:31.706] [main] WARN  	io.camunda.tasklist.connect.ElasticsearchConnector - Elasticsearch cluster is not accessible
+camunda-1        | [2026-10-27 14:50:31.716] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1        | [2026-10-27 14:50:31.718] [zb-fs-workers-0] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN  	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+connectors-1     | 2026-10-27T14:50:51.032Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:51.032809176Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+camunda-1        | [2026-10-27 14:50:32.526] [main] WARN  	org.springframework.boot.actuate.endpoint.EndpointId - Endpoint ID 'usage-metrics' contains invalid characters, please migrate to a valid format.
+camunda-1        | [2026-10-27 14:50:32.892] [main] WARN  	org.springdoc.core.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+camunda-1        | [2026-10-27 14:50:32.892] [main] WARN  	org.springdoc.core.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+connectors-1     | 2026-10-27T14:50:51.033Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+elasticsearch-1  | {"@timestamp":"2026-10-27T14:50:22.798Z","log.level": "WARN","message":"OpenTelemetry API usage issue detected. To see more details, enable FINEST logging for io.opentelemetry.usage. Stacktraces are includes to identify the offending call site.", "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"elasticsearch.server","process.thread.name":"elasticsearch[89e82890d13f][cluster_coordination][T#1]","log.logger":"io.opentelemetry.usage","elasticsearch.node.name":"89e82890d13f","elasticsearch.cluster.name":"docker-cluster"}
+connectors-1     | 2026-10-27T14:50:54.520Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.520084345Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.520Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.531Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.530961886Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.531Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.541Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.541140886Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.541Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.551Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.551654803Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.551Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.561Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.561469886Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.561Z  WARN  1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.571Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.571257761Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.571Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.580Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.580825053Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.581Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.590Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.590147928Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.590Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.600Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.600124511Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.600Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.609Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.608943470Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.609Z  WARN  1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.617Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.617637803Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.617Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.628Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.628200636Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.628Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.638Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.638461595Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.638Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.649Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.649699095Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.649Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.660Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.660604136Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.660Z  WARN  1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.670Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.670237511Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.670Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.681Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.680851636Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.682Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.701Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.700894886Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.701Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.713Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.713125636Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.713Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.725Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.724945761Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.725Z  WARN  1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.737Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.737708470Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.737Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.749Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.749131845Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.749Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.762Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.762076095Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.762Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.779Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.779458761Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.779Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.810Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.809765428Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.810Z  WARN  1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.828Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.828378761Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.828Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.852Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.852535261Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.853Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.878Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:54.875297928Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:54.879Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.010Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:55.009732553Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.015Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.068Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:55.067891512Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.069Z  WARN  1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.118Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:55.118602095Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.119Z  WARN  1 --- [nio-8080-exec-3] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.168Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-9] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:55.168037178Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.168Z  WARN  1 --- [nio-8080-exec-9] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.203Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:55.203310178Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.205Z  WARN  1 --- [nio-8080-exec-5] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.261Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=CONNECTOR 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:50:55.261002720Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:50:55.261Z  WARN  1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:51:23.011Z ERROR processInstanceKey=2251799813688911, jobKey=2251799813688934, elementInstanceKey=2251799813688924, processDefinitionKey=2251799813685323 1 --- [rker-virtual-73] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:24.056Z ERROR processInstanceKey=2251799813688911, jobKey=2251799813688978, elementInstanceKey=2251799813688968, processDefinitionKey=2251799813685323 1 --- [rker-virtual-74] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:24.566Z ERROR processInstanceKey=2251799813688911, jobKey=2251799813689005, elementInstanceKey=2251799813688995, processDefinitionKey=2251799813685323 1 --- [rker-virtual-75] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:30.046Z ERROR processInstanceKey=2251799813689836, jobKey=2251799813689859, elementInstanceKey=2251799813689849, processDefinitionKey=2251799813685323 1 --- [rker-virtual-93] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:30.679Z ERROR processInstanceKey=2251799813689836, jobKey=2251799813689894, elementInstanceKey=2251799813689884, processDefinitionKey=2251799813685323 1 --- [rker-virtual-94] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:31.256Z ERROR processInstanceKey=2251799813689836, jobKey=2251799813689921, elementInstanceKey=2251799813689911, processDefinitionKey=2251799813685323 1 --- [rker-virtual-95] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:51.382Z ERROR processInstanceKey=2251799813692453, jobKey=2251799813692476, elementInstanceKey=2251799813692466, processDefinitionKey=2251799813685323 1 --- [ker-virtual-152] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:51.958Z ERROR processInstanceKey=2251799813692453, jobKey=2251799813692504, elementInstanceKey=2251799813692494, processDefinitionKey=2251799813685323 1 --- [ker-virtual-153] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:51:52.614Z ERROR processInstanceKey=2251799813692453, jobKey=2251799813692541, elementInstanceKey=2251799813692531, processDefinitionKey=2251799813685323 1 --- [ker-virtual-154] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:05.497Z ERROR processInstanceKey=2251799813694198, jobKey=2251799813694221, elementInstanceKey=2251799813694211, processDefinitionKey=2251799813685323 1 --- [ker-virtual-191] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:06.051Z ERROR processInstanceKey=2251799813694198, jobKey=2251799813694275, elementInstanceKey=2251799813694265, processDefinitionKey=2251799813685323 1 --- [ker-virtual-192] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:06.680Z ERROR processInstanceKey=2251799813694198, jobKey=2251799813694311, elementInstanceKey=2251799813694301, processDefinitionKey=2251799813685323 1 --- [ker-virtual-193] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:13.720Z ERROR processInstanceKey=2251799813695144, jobKey=2251799813695167, elementInstanceKey=2251799813695157, processDefinitionKey=2251799813685323 1 --- [ker-virtual-212] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:14.734Z ERROR processInstanceKey=2251799813695144, jobKey=2251799813695194, elementInstanceKey=2251799813695184, processDefinitionKey=2251799813685323 1 --- [ker-virtual-213] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:15.611Z ERROR processInstanceKey=2251799813695144, jobKey=2251799813695221, elementInstanceKey=2251799813695211, processDefinitionKey=2251799813685323 1 --- [ker-virtual-214] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:36.284Z ERROR processInstanceKey=2251799813697824, jobKey=2251799813697847, elementInstanceKey=2251799813697837, processDefinitionKey=2251799813685323 1 --- [ker-virtual-273] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:36.828Z ERROR processInstanceKey=2251799813697824, jobKey=2251799813697877, elementInstanceKey=2251799813697867, processDefinitionKey=2251799813685323 1 --- [ker-virtual-274] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:37.328Z ERROR processInstanceKey=2251799813697824, jobKey=2251799813697905, elementInstanceKey=2251799813697895, processDefinitionKey=2251799813685323 1 --- [ker-virtual-275] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:50.657Z ERROR processInstanceKey=2251799813699584, jobKey=2251799813699607, elementInstanceKey=2251799813699597, processDefinitionKey=2251799813685323 1 --- [ker-virtual-313] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:51.353Z ERROR processInstanceKey=2251799813699584, jobKey=2251799813699635, elementInstanceKey=2251799813699625, processDefinitionKey=2251799813685323 1 --- [ker-virtual-314] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:52:52.230Z ERROR processInstanceKey=2251799813699584, jobKey=2251799813699664, elementInstanceKey=2251799813699654, processDefinitionKey=2251799813685323 1 --- [ker-virtual-315] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:12.981Z ERROR processInstanceKey=2251799813709412, jobKey=2251799813709435, elementInstanceKey=2251799813709425, processDefinitionKey=2251799813685323 1 --- [ker-virtual-541] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:14.050Z ERROR processInstanceKey=2251799813709412, jobKey=2251799813709519, elementInstanceKey=2251799813709509, processDefinitionKey=2251799813685323 1 --- [ker-virtual-543] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:14.701Z ERROR processInstanceKey=2251799813709412, jobKey=2251799813709589, elementInstanceKey=2251799813709579, processDefinitionKey=2251799813685323 1 --- [ker-virtual-546] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:27.726Z ERROR processInstanceKey=2251799813711654, jobKey=2251799813711677, elementInstanceKey=2251799813711667, processDefinitionKey=2251799813685323 1 --- [ker-virtual-594] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:28.727Z ERROR processInstanceKey=2251799813711654, jobKey=2251799813711761, elementInstanceKey=2251799813711751, processDefinitionKey=2251799813685323 1 --- [ker-virtual-596] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:29.314Z ERROR processInstanceKey=2251799813711654, jobKey=2251799813711831, elementInstanceKey=2251799813711821, processDefinitionKey=2251799813685323 1 --- [ker-virtual-599] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:35.079Z ERROR processInstanceKey=2251799813712756, jobKey=2251799813712779, elementInstanceKey=2251799813712769, processDefinitionKey=2251799813685323 1 --- [ker-virtual-620] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:36.133Z ERROR processInstanceKey=2251799813712756, jobKey=2251799813712864, elementInstanceKey=2251799813712854, processDefinitionKey=2251799813685323 1 --- [ker-virtual-622] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:36.855Z ERROR processInstanceKey=2251799813712756, jobKey=2251799813712927, elementInstanceKey=2251799813712917, processDefinitionKey=2251799813685323 1 --- [ker-virtual-624] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:42.349Z ERROR processInstanceKey=2251799813713809, jobKey=2251799813713832, elementInstanceKey=2251799813713822, processDefinitionKey=2251799813685323 1 --- [ker-virtual-644] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:43.145Z ERROR processInstanceKey=2251799813713809, jobKey=2251799813713916, elementInstanceKey=2251799813713906, processDefinitionKey=2251799813685323 1 --- [ker-virtual-646] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:54:43.978Z ERROR processInstanceKey=2251799813713809, jobKey=2251799813713987, elementInstanceKey=2251799813713977, processDefinitionKey=2251799813685323 1 --- [ker-virtual-649] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:15.251Z ERROR processInstanceKey=2251799813719262, jobKey=2251799813719285, elementInstanceKey=2251799813719275, processDefinitionKey=2251799813685323 1 --- [ker-virtual-770] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:15.851Z ERROR processInstanceKey=2251799813719262, jobKey=2251799813719369, elementInstanceKey=2251799813719359, processDefinitionKey=2251799813685323 1 --- [ker-virtual-772] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:16.965Z ERROR processInstanceKey=2251799813719262, jobKey=2251799813719440, elementInstanceKey=2251799813719430, processDefinitionKey=2251799813685323 1 --- [ker-virtual-775] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:28.335Z ERROR processInstanceKey=2251799813721478, jobKey=2251799813721501, elementInstanceKey=2251799813721491, processDefinitionKey=2251799813685323 1 --- [ker-virtual-822] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:28.958Z ERROR processInstanceKey=2251799813721478, jobKey=2251799813721585, elementInstanceKey=2251799813721575, processDefinitionKey=2251799813685323 1 --- [ker-virtual-824] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:29.715Z ERROR processInstanceKey=2251799813721478, jobKey=2251799813721655, elementInstanceKey=2251799813721645, processDefinitionKey=2251799813685323 1 --- [ker-virtual-827] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:35.209Z ERROR processInstanceKey=2251799813722563, jobKey=2251799813722586, elementInstanceKey=2251799813722576, processDefinitionKey=2251799813685323 1 --- [ker-virtual-847] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:35.881Z ERROR processInstanceKey=2251799813722563, jobKey=2251799813722669, elementInstanceKey=2251799813722659, processDefinitionKey=2251799813685323 1 --- [ker-virtual-849] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:36.590Z ERROR processInstanceKey=2251799813722563, jobKey=2251799813722739, elementInstanceKey=2251799813722729, processDefinitionKey=2251799813685323 1 --- [ker-virtual-852] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:44.350Z ERROR processInstanceKey=2251799813723903, jobKey=2251799813723926, elementInstanceKey=2251799813723916, processDefinitionKey=2251799813685323 1 --- [ker-virtual-879] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:45.090Z ERROR processInstanceKey=2251799813723903, jobKey=2251799813724009, elementInstanceKey=2251799813723999, processDefinitionKey=2251799813685323 1 --- [ker-virtual-881] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:45.918Z ERROR processInstanceKey=2251799813723903, jobKey=2251799813724080, elementInstanceKey=2251799813724070, processDefinitionKey=2251799813685323 1 --- [ker-virtual-884] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:53.401Z ERROR processInstanceKey=2251799813725223, jobKey=2251799813725246, elementInstanceKey=2251799813725236, processDefinitionKey=2251799813685323 1 --- [ker-virtual-910] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:54.040Z ERROR processInstanceKey=2251799813725223, jobKey=2251799813725329, elementInstanceKey=2251799813725319, processDefinitionKey=2251799813685323 1 --- [ker-virtual-912] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:55:54.844Z ERROR processInstanceKey=2251799813725223, jobKey=2251799813725399, elementInstanceKey=2251799813725389, processDefinitionKey=2251799813685323 1 --- [ker-virtual-915] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:56:02.318Z ERROR processInstanceKey=2251799813726543, jobKey=2251799813726566, elementInstanceKey=2251799813726556, processDefinitionKey=2251799813685323 1 --- [ker-virtual-941] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:56:03.329Z ERROR processInstanceKey=2251799813726543, jobKey=2251799813726649, elementInstanceKey=2251799813726639, processDefinitionKey=2251799813685323 1 --- [ker-virtual-943] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:56:04.376Z ERROR processInstanceKey=2251799813726543, jobKey=2251799813726719, elementInstanceKey=2251799813726709, processDefinitionKey=2251799813685323 1 --- [ker-virtual-946] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:56:18.774Z ERROR processInstanceKey=2251799813728595, jobKey=2251799813728618, elementInstanceKey=2251799813728608, processDefinitionKey=2251799813685323 1 --- [ker-virtual-989] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:56:19.566Z ERROR processInstanceKey=2251799813728595, jobKey=2251799813728646, elementInstanceKey=2251799813728636, processDefinitionKey=2251799813685323 1 --- [ker-virtual-990] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1     | 2026-10-27T14:56:20.417Z ERROR processInstanceKey=2251799813728595, jobKey=2251799813728673, elementInstanceKey=2251799813728663, processDefinitionKey=2251799813685323 1 --- [ker-virtual-991] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 404  HTTP/1.1
+connectors-1     | io.camunda.connector.api.error.ConnectorException: 
+connectors-1     | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1     | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)

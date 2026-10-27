@@ -1,0 +1,79 @@
+{
+  "source": "841468ecc2ff40e6fb7bf0fea381978833812ce9",
+  "configured": {
+    "engine": "8.8.21",
+    "connectors": "8.9.0",
+    "elasticsearch": "8.17.0",
+    "authentication": "basic",
+    "authorizations": true,
+    "retention": false,
+    "exporterDelaySeconds": 1,
+    "executionThreads": 4,
+    "activeVersionPolling": false,
+    "businessProcess": "a2a-card-dispute"
+  },
+  "images": [
+    {
+      "id": "sha256:e2851adb2b6c85520a3b89f661ff3dc8847f34d3eeded2f657a3aa582ce0f217",
+      "tags": [
+        "camunda/camunda:8.8.21"
+      ],
+      "digests": [
+        "camunda/camunda@sha256:e2851adb2b6c85520a3b89f661ff3dc8847f34d3eeded2f657a3aa582ce0f217"
+      ]
+    },
+    {
+      "id": "sha256:64a98d8cb1226dc3bd392aaa19f1a6a39d017376ff6829bb7a1f67ee09c03aca",
+      "tags": [
+        "camunda/connectors-bundle:8.9.0"
+      ],
+      "digests": [
+        "camunda/connectors-bundle@sha256:64a98d8cb1226dc3bd392aaa19f1a6a39d017376ff6829bb7a1f67ee09c03aca"
+      ]
+    },
+    {
+      "id": "sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2",
+      "tags": [
+        "docker.elastic.co/elasticsearch/elasticsearch:8.17.0"
+      ],
+      "digests": [
+        "docker.elastic.co/elasticsearch/elasticsearch@sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2"
+      ]
+    }
+  ],
+  "dockerServerVersion": "29.9.2",
+  "composeVersion": "Docker Compose version v5.6.1",
+  "pythonVersion": "3.9.6 (default, Aug 25 2026, 21:26:21) \n[Clang 21.0.0 (clang-2100.3.34.2)]",
+  "modelServerVersion": "0.40.3",
+  "model": {
+    "name": "qwen3-coder-30b-64k:latest",
+    "digest": "13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253"
+  },
+  "effectiveExporter": [
+    "ExporterConfiguration{connect=io.camunda.search.connect.configuration.ConnectConfiguration@27215154, index=IndexConfiguration{numberOfShards=1, numberOfReplicas=1, templatePriority=null, replicasByIndexName={}, shardsByIndexName={}, variableSizeThreshold=8191, zeebeIndexPrefix='zeebe-record, refreshInterval=null, refreshIntervalByIndexName={}}, bulk=BulkConfiguration{delay=1, size=5000, memoryLimit=20}, history=ArchiverConfiguration{, elsRolloverDateFormat='date', rolloverInterval='1d', rolloverBatchSize=100, waitPeriodBeforeArchiving='1h', delayBetweenRuns=2000, maxDelayBetweenRuns=60000, retention=RetentionConfiguration{enabled=false, minimumAge='30d', policyName='camunda-retention-policy', usageMetricsMinimumAge='730d', usageMetricsPolicyName='camunda-usage-metrics-retention-policy', applyPolicyJobInterval=PT1H}, trackArchivalMetricsForProcessInstance=true}, createSchema=true, batchOperationCache=CacheConfiguration{cacheSize=10000}, processCache=CacheConfiguration{cacheSize=10000}, formCache=CacheConfiguration{cacheSize=10000}, postExport=PostExportConfiguration{batchSize=100, delayBetweenRuns=2000, maxDelayBetweenRuns=5000, ignoreMissingData=false}, batchOperation=BatchOperationConfiguration{exportItemsOnCreation=true}, skipVariableWriteWithoutUserTasks=false}",
+    "ExporterConfiguration{connect=io.camunda.search.connect.configuration.ConnectConfiguration@4cb10062, index=IndexConfiguration{numberOfShards=1, numberOfReplicas=1, templatePriority=null, replicasByIndexName={}, shardsByIndexName={}, variableSizeThreshold=8191, zeebeIndexPrefix='zeebe-record, refreshInterval=null, refreshIntervalByIndexName={}}, bulk=BulkConfiguration{delay=1, size=5000, memoryLimit=20}, history=ArchiverConfiguration{, elsRolloverDateFormat='date', rolloverInterval='1d', rolloverBatchSize=100, waitPeriodBeforeArchiving='1h', delayBetweenRuns=2000, maxDelayBetweenRuns=60000, retention=RetentionConfiguration{enabled=false, minimumAge='30d', policyName='camunda-retention-policy', usageMetricsMinimumAge='730d', usageMetricsPolicyName='camunda-usage-metrics-retention-policy', applyPolicyJobInterval=PT1H}, trackArchivalMetricsForProcessInstance=true}, createSchema=true, batchOperationCache=CacheConfiguration{cacheSize=10000}, processCache=CacheConfiguration{cacheSize=10000}, formCache=CacheConfiguration{cacheSize=10000}, postExport=PostExportConfiguration{batchSize=100, delayBetweenRuns=2000, maxDelayBetweenRuns=5000, ignoreMissingData=false}, batchOperation=BatchOperationConfiguration{exportItemsOnCreation=true}, skipVariableWriteWithoutUserTasks=false}"
+  ],
+  "curlVersion": "curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.1",
+  "observedEngineTopology": {
+    "brokers": [
+      {
+        "nodeId": 0,
+        "host": "172.28.0.3",
+        "port": 26501,
+        "partitions": [
+          {
+            "partitionId": 1,
+            "role": "leader",
+            "health": "healthy"
+          }
+        ],
+        "version": "8.8.21"
+      }
+    ],
+    "clusterSize": 1,
+    "partitionsCount": 1,
+    "replicationFactor": 1,
+    "gatewayVersion": "8.8.21",
+    "lastCompletedChangeId": "-1"
+  }
+}

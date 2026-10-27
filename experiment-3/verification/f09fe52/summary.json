@@ -1,0 +1,72 @@
+{
+  "testedSource": "f09fe52d6134419bb07a3d4386e2a1f622e43628",
+  "acceptanceStatus": "PARTIAL: cancellation checkpoint passed; final release-candidate series and other gates remain open.",
+  "native": {
+    "verdict": "PASS",
+    "sourceBeforeAndAfterClean": true,
+    "engine": "8.8.21",
+    "connectors": "8.9.0",
+    "elasticsearch": "8.17.0",
+    "exporterBulkDelaySeconds": 1,
+    "transport": "Certificate-verified direct HTTPS and shared API key; authenticated engine APIs.",
+    "command": "PROOF_AGENT_PROCESS=a2a-echo PROOF_OPERATIONAL_CHECKS=1 python3 experiment-3/tests/runtime/verify.py",
+    "reportDirectoryRequirement": "Supply a new PROOF_REPORT_DIR; never overwrite existing evidence.",
+    "operationalCases": 44,
+    "deterministicOrderings": ["cancel-first", "completion-first"],
+    "lateBusinessUserTaskCompletionHttpStatus": 404,
+    "randomizedCompletionCancel": {
+      "seed": 20261027,
+      "iterations": 24,
+      "canceled": 17,
+      "completed": 7
+    },
+    "followUpCancelRaces": 12,
+    "concurrentFollowUpPairs": 4,
+    "acceptedPerConcurrentFollowUpPair": 1,
+    "rejectedPerConcurrentFollowUpPair": 1,
+    "additionalChecks": [
+      "Cancellation while input-required",
+      "Repeated cancel returns -32002",
+      "Terminal follow-up returns -32004 without reviving the task",
+      "GetTask and artifact-inclusive ListTasks agree with stored root state",
+      "Cancellation result has no artifacts or status message",
+      "Completion winner retains exact completion text and artifact",
+      "Missing hook returns -32002 and leaves business work running",
+      "Unknown cancellation cannot change a different task",
+      "22 operation-key checks and 12 version checks",
+      "Persisted credential exclusion"
+    ],
+    "fixture": "Nonshipping controlled business process using stock Camunda user tasks; no custom worker/server.",
+    "runtimeCleanup": "Owned Compose containers and network removed."
+  },
+  "core": {
+    "verdict": "PASS",
+    "sourceBeforeAndAfterClean": true,
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "processTestLibrary": "8.10.4",
+    "configuredEngineImage": "camunda/camunda:8.10.2",
+    "transport": "Actual process-test engine with Harness HTTP adapter, not native stock Connectors.",
+    "randomizedOrdering": {"seed": 20261027, "iterations": 24, "canceled": 12, "completed": 12},
+    "lateActivatedAiJobCompletionHttpStatus": 404,
+    "boundedMissingIndexVisibility": "Internal -32603 / DEADLINE_EXCEEDED, never a successful canceled fallback."
+  },
+  "historicalFailures": [
+    "../0bc60d4/cancel-race-failure.json",
+    "../0bc60d4/cancel-race-failure.log",
+    "../b7e3dfb/native-terminal-attempt.json"
+  ],
+  "notEstablishedByThisCheckpoint": [
+    "Final full Maven suite",
+    "Three final-source TCK repetitions",
+    "Final-source official SDK and real-model flow",
+    "Final-source two-agent reliability",
+    "Pagination beyond 100 tasks",
+    "Credential, permission, engine and model error injection/recovery",
+    "Final mandatory-requirement dispositions",
+    "Timed fresh adoption including the cancellation hook",
+    "Actual Marketplace/Modeler import and external publication/legal gates"
+  ]
+}

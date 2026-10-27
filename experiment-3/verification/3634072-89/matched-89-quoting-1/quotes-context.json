@@ -1,0 +1,167 @@
+{
+  "input": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details.",
+  "requestRoot": {
+    "message": {
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+        }
+      ],
+      "messageId": "f895b896-eec3-4ad9-8c6d-c43c10a94dbf",
+      "role": "ROLE_USER"
+    },
+    "blocking": true
+  },
+  "jsonPrompt": "\"Synthetic diagnostic only: a merchant label says \\\"example\\\". Please ask for missing details.\"",
+  "agent": {
+    "context": {
+      "state": "READY",
+      "metadata": {
+        "processDefinitionKey": 2251799813685326,
+        "processInstanceKey": 2251799813685404
+      },
+      "metrics": {
+        "modelCalls": 1,
+        "tokenUsage": {
+          "inputTokenCount": 541,
+          "outputTokenCount": 26
+        }
+      },
+      "toolDefinitions": [
+        {
+          "name": "review_duplicate_charge",
+          "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "merchant": {
+                "type": "string",
+                "description": "Merchant named in the synthetic claim"
+              },
+              "currency": {
+                "type": "string",
+                "description": "Currency code supplied by the client"
+              },
+              "firstAmount": {
+                "type": "number",
+                "description": "First charge amount"
+              },
+              "secondAmount": {
+                "type": "number",
+                "description": "Second charge amount"
+              },
+              "expectedAmount": {
+                "type": "number",
+                "description": "Expected amount for the single order"
+              }
+            },
+            "required": [
+              "merchant",
+              "currency",
+              "firstAmount",
+              "secondAmount",
+              "expectedAmount"
+            ]
+          }
+        }
+      ],
+      "conversation": {
+        "type": "in-process",
+        "conversationId": "cc51cb9c-1f4f-4d7d-9fc2-96e21acc4153",
+        "messages": [
+          {
+            "role": "system",
+            "content": [
+              {
+                "type": "text",
+                "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "\"Synthetic diagnostic only: a merchant label says \\\"example\\\". Please ask for missing details.\""
+              }
+            ],
+            "metadata": {
+              "timestamp": "2026-10-27T15:05:15.896688799Z"
+            }
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "NEED_INPUT: Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+              }
+            ],
+            "metadata": {
+              "framework": {
+                "id": "chatcmpl-937",
+                "finishReason": "STOP",
+                "tokenUsage": {
+                  "inputTokenCount": 541,
+                  "outputTokenCount": 26,
+                  "totalTokenCount": 567,
+                  "inputTokensDetails": {
+                    "cachedTokens": 517,
+                    "cacheWriteTokens": null
+                  },
+                  "outputTokensDetails": null
+                }
+              },
+              "timestamp": "2026-10-27T15:05:20.363978676Z"
+            }
+          }
+        ]
+      }
+    },
+    "responseText": "NEED_INPUT: Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+  },
+  "task": {
+    "history": [
+      {
+        "role": "ROLE_USER",
+        "messageId": "f895b896-eec3-4ad9-8c6d-c43c10a94dbf",
+        "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+        "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+        "parts": [
+          {
+            "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+          }
+        ]
+      },
+      {
+        "role": "ROLE_AGENT",
+        "messageId": "01a17de4-fa38-76de-ac6c-409dc5078de2",
+        "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+        "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+        "parts": [
+          {
+            "text": "Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+          }
+        ]
+      }
+    ],
+    "id": "01a17de4-e528-7447-b07c-835c820897dc",
+    "status": {
+      "state": "TASK_STATE_INPUT_REQUIRED",
+      "message": {
+        "role": "ROLE_AGENT",
+        "messageId": "01a17de4-fa38-76de-ac6c-409dc5078de2",
+        "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+        "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+        "parts": [
+          {
+            "text": "Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+          }
+        ]
+      },
+      "timestamp": "2026-10-27T15:05:20Z"
+    },
+    "contextId": "01a17de4-e526-7400-9583-7228519e1fec"
+  }
+}

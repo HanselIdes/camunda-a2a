@@ -1,0 +1,169 @@
+[
+  {
+    "Id": "eafcfe773eb7907295df8266521b09abba385bd067d30951ccbc3d58a1e70229",
+    "Name": "/a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1",
+    "Image": "sha256:4d3fdc54b7792734e2cd0752e73f07e4d0dea324df00aa4c75452b92a6e084da",
+    "State": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 10021,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-27T14:44:52.17215901Z",
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "Health": {
+        "Status": "healthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-27T14:44:57.227851846Z",
+            "End": "2026-10-27T14:44:57.249236721Z",
+            "ExitCode": 4,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T14:45:02.250263459Z",
+            "End": "2026-10-27T14:45:02.345772376Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T14:45:07.346844503Z",
+            "End": "2026-10-27T14:45:07.406352045Z",
+            "ExitCode": 0,
+            "Output": ""
+          }
+        ]
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "755f935f9cbf27fae1891267f556b6bb6d4b39fe6dc6a1b1152132897185571e",
+        "Source": "/var/lib/docker/volumes/755f935f9cbf27fae1891267f556b6bb6d4b39fe6dc6a1b1152132897185571e/_data",
+        "Destination": "/tmp",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "8e76bee9bb3c741e6d7df8d7627fa277a4be693c2ecdaa69c207db2d27847c05",
+        "Source": "/var/lib/docker/volumes/8e76bee9bb3c741e6d7df8d7627fa277a4be693c2ecdaa69c207db2d27847c05/_data",
+        "Destination": "/usr/local/camunda/data",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      },
+      {
+        "Type": "volume",
+        "Name": "ff20247cd798a8bce50b8eaabe57cda2fa36a5ef7b2e55074c44ad4c28d75e94",
+        "Source": "/var/lib/docker/volumes/ff20247cd798a8bce50b8eaabe57cda2fa36a5ef7b2e55074c44ad4c28d75e94/_data",
+        "Destination": "/usr/local/camunda/logs",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "d359c097599d2a252b5217d5f7f95fdaa916b0530fcfa94dff52eabdeb093ae8",
+    "Name": "/a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1",
+    "Image": "sha256:0080587ef18a7ef2ae8c91ebd31f3fd961694c1333cc8aa1965a59c064e10f35",
+    "State": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 10788,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-27T14:45:02.767477251Z",
+      "FinishedAt": "0001-01-01T00:00:00Z"
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "<VALIDATION_TEMP>",
+        "Destination": "/certificates",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "volume",
+        "Name": "33e78d5f63b6d8e84feda18d8d663889b4bcaf10a5c886594c684c65f4f3fc86",
+        "Source": "/var/lib/docker/volumes/33e78d5f63b6d8e84feda18d8d663889b4bcaf10a5c886594c684c65f4f3fc86/_data",
+        "Destination": "/tmp",
+        "Driver": "local",
+        "Mode": "",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "e13bd0ce41b32281c6597bf35392f67f4d27f74e44448bd36a300b6213cbea42",
+    "Name": "/a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1",
+    "Image": "sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2",
+    "State": {
+      "Status": "running",
+      "Running": true,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 9651,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-10-27T14:44:41.586177963Z",
+      "FinishedAt": "0001-01-01T00:00:00Z",
+      "Health": {
+        "Status": "healthy",
+        "FailingStreak": 0,
+        "Log": [
+          {
+            "Start": "2026-10-27T14:44:46.643233341Z",
+            "End": "2026-10-27T14:44:46.680393633Z",
+            "ExitCode": 7,
+            "Output": "curl: (7) Failed to connect to localhost port 9200: Connection refused\n"
+          },
+          {
+            "Start": "2026-10-27T14:44:51.682712343Z",
+            "End": "2026-10-27T14:44:51.763951427Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T14:44:56.765283137Z",
+            "End": "2026-10-27T14:44:56.796277346Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T14:45:01.798371959Z",
+            "End": "2026-10-27T14:45:01.831833251Z",
+            "ExitCode": 0,
+            "Output": ""
+          },
+          {
+            "Start": "2026-10-27T14:45:06.83301317Z",
+            "End": "2026-10-27T14:45:06.859142253Z",
+            "ExitCode": 0,
+            "Output": ""
+          }
+        ]
+      }
+    },
+    "Mounts": []
+  }
+]

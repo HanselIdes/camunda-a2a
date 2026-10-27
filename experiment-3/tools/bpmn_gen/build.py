@@ -251,7 +251,7 @@ def decisions():
     push = ('"CreateTaskPushNotificationConfig","GetTaskPushNotificationConfig",'
             '"ListTaskPushNotificationConfigs","DeleteTaskPushNotificationConfig"')
     known = '"SendMessage","GetTask","ListTasks","CancelTask",' + push
-    cols = ["-"] * 8
+    cols = ["-"] * 9
 
     def row(desc, over, out):
         ins = list(cols)
@@ -277,6 +277,8 @@ def decisions():
             ['"error"', "-32005", '"CONTENT_TYPE_NOT_SUPPORTED"', '"Unsupported media type in message part"']),
         row("A task id is required", {3: '"GetTask","CancelTask",' + push, 6: f},
             ['"error"', "-32602", "null", '"Invalid params: id is required"']),
+        row("Inline push config supplied while push is disabled", {3: '"SendMessage"', 7: f, 8: "true"},
+            ['"error"', "-32003", '"PUSH_NOTIFICATION_NOT_SUPPORTED"', '"Push notifications are not supported"']),
         row("Valid request", {}, ["ctx.method", "null", "null", "null"]),
     ]
     write("dmn/a2a-validate.dmn", dmn.table(
@@ -288,7 +290,8 @@ def decisions():
          ("Message valid", "ctx.msgOk", "boolean"),
          ("Media types supported", "ctx.mediaOk", "boolean"),
          ("Task id present", "ctx.idOk", "boolean"),
-         ("Push notifications enabled", "ctx.pushEnabled", "boolean")],
+         ("Push notifications enabled", "ctx.pushEnabled", "boolean"),
+         ("Inline push config supplied", "ctx.taskPush != null", "boolean")],
         [("route", "Route", "string"), ("code", "Error code", "number"),
          ("reason", "Error reason", "string"), ("message", "Error message", "string")],
         vrules))

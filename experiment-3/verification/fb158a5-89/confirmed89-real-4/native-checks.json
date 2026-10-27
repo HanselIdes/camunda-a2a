@@ -1,0 +1,168 @@
+{
+  "authentication": [
+    {
+      "method": "SendMessage",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "SendMessage",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "GetTask",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "GetTask",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "ListTasks",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "ListTasks",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "CancelTask",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "CancelTask",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "SendStreamingMessage",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "SendStreamingMessage",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "SubscribeToTask",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "SubscribeToTask",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "GetExtendedAgentCard",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "GetExtendedAgentCard",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "CreateTaskPushNotificationConfig",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "CreateTaskPushNotificationConfig",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "GetTaskPushNotificationConfig",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "GetTaskPushNotificationConfig",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "ListTaskPushNotificationConfigs",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "ListTaskPushNotificationConfigs",
+      "key": "invalid",
+      "status": 401
+    },
+    {
+      "method": "DeleteTaskPushNotificationConfig",
+      "key": "missing",
+      "status": 401
+    },
+    {
+      "method": "DeleteTaskPushNotificationConfig",
+      "key": "invalid",
+      "status": 401
+    }
+  ],
+  "unauthorizedResourceExistenceHidden": true,
+  "unauthorizedBusinessStartCountUnchanged": true,
+  "knownUnknownResourceChecks": 12,
+  "versionNegotiation": [
+    {
+      "version": "1.0",
+      "sameTask": true
+    },
+    {
+      "version": "1.0.2",
+      "sameTask": true
+    },
+    {
+      "version": "1.0.999",
+      "sameTask": true
+    },
+    {
+      "version": "1.1",
+      "errorCode": -32009
+    },
+    {
+      "version": "1.9",
+      "errorCode": -32009
+    },
+    {
+      "version": "2.0",
+      "errorCode": -32009
+    },
+    {
+      "version": "0.3",
+      "errorCode": -32009
+    },
+    {
+      "version": "1",
+      "errorCode": -32009
+    },
+    {
+      "version": "1.x",
+      "errorCode": -32009
+    },
+    {
+      "version": "1.0.x",
+      "errorCode": -32009
+    },
+    {
+      "version": "",
+      "errorCode": -32009
+    },
+    {
+      "version": null,
+      "errorCode": -32009
+    }
+  ],
+  "verdict": "PASS"
+}

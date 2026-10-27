@@ -1,0 +1,29 @@
+{
+  "verdict": "PASS",
+  "patchNegotiation": [
+    {
+      "advertisedVersion": "1.0",
+      "sameSelectedInterfaceAndContext": true
+    },
+    {
+      "advertisedVersion": "1.0.2",
+      "sameSelectedInterfaceAndContext": true
+    },
+    {
+      "advertisedVersion": "1.0.999",
+      "sameSelectedInterfaceAndContext": true
+    }
+  ],
+  "receivedRequestVersions": [
+    {
+      "method": "SendMessage",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "patchProofScope": "Packaged discovery expression evaluated by the actual engine with patch-varied cards.",
+  "headerProofScope": "Actual protocol root headers from supplied BPMN client SendMessage and its exact GetTask connector in an isolated stock-BPMN fixture, matched by result task ID."
+}

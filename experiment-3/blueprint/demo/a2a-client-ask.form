@@ -1,0 +1,36 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "### Review a synthetic card dispute\n\nA BPMN client calls the remote AI agent through authenticated A2A 1.0. No real financial actions.",
+      "id": "Field_a2a_client_ask_0",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "question",
+      "label": "Question",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.",
+      "id": "Field_a2a_client_ask_1",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "a2a-client-ask",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "camunda-a2a",
+    "version": "1"
+  },
+  "schemaVersion": 18
+}

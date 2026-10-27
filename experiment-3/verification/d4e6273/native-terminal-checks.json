@@ -1,0 +1,2158 @@
+{
+  "verdict": "PASS",
+  "seed": 20261027,
+  "randomizedCompletionCancelIterations": 24,
+  "followUpCancelIterations": 12,
+  "concurrentFollowUpIterations": 4,
+  "records": [
+    {
+      "case": "cancel-first",
+      "lateBusinessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "a3a70d70-fdd7-4ad8-a17f-a9039842d8b3",
+            "taskId": "01a17b6e-f9e1-7538-9029-0f14119fe67a",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6e-f9e1-7538-9029-0f14119fe67a",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:37:16Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "completion-first",
+      "cancelError": -32002,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "95c89e62-f120-48be-8b05-8290e0fc06bc",
+            "taskId": "01a17b6f-19d8-7708-b9c5-dc0b4996cd48",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-2356-7a08-ad07-de7bf18918f9",
+            "taskId": "01a17b6f-19d8-7708-b9c5-dc0b4996cd48",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-19d8-7708-b9c5-dc0b4996cd48",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-2356-7a08-ad07-de7bf18918f9",
+            "taskId": "01a17b6f-19d8-7708-b9c5-dc0b4996cd48",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:37:23Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 0,
+      "cancelDelaySeconds": 0.04590145882197056,
+      "completionDelaySeconds": 2.020468695637017,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "e20f6b8e-8625-4944-be8b-d06c98674f8f",
+            "taskId": "01a17b6f-34a8-70ef-ab2e-c72434525890",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-34a8-70ef-ab2e-c72434525890",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:37:30Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 1,
+      "cancelDelaySeconds": 0.057198781367727734,
+      "completionDelaySeconds": 0.4689656274086318,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "58e46eb8-8a69-4ce7-b8f5-6cc7cb5920c6",
+            "taskId": "01a17b6f-50a5-70ad-abe5-f7004db48466",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-5bb3-75ec-b2c6-f9cc9989a774",
+            "taskId": "01a17b6f-50a5-70ad-abe5-f7004db48466",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-50a5-70ad-abe5-f7004db48466",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-5bb3-75ec-b2c6-f9cc9989a774",
+            "taskId": "01a17b6f-50a5-70ad-abe5-f7004db48466",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:37:37Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 2,
+      "cancelDelaySeconds": 0.030340230227977837,
+      "completionDelaySeconds": 0.06423484585595135,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "7d02c775-1648-4c7f-bc2c-c26d8443bf6a",
+            "taskId": "01a17b6f-6e08-7da6-96db-32ff92ae8aaa",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-792e-7234-9785-e7eb73272583",
+            "taskId": "01a17b6f-6e08-7da6-96db-32ff92ae8aaa",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-6e08-7da6-96db-32ff92ae8aaa",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-792e-7234-9785-e7eb73272583",
+            "taskId": "01a17b6f-6e08-7da6-96db-32ff92ae8aaa",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:37:45Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 3,
+      "cancelDelaySeconds": 0.14773547222036576,
+      "completionDelaySeconds": 1.0498833573285937,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "137bd0e0-6514-4c4d-9a27-315f6b2586a5",
+            "taskId": "01a17b6f-8ba9-7eb6-abc9-a35a760401e7",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-8ba9-7eb6-abc9-a35a760401e7",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:37:52Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 4,
+      "cancelDelaySeconds": 0.24685510629596294,
+      "completionDelaySeconds": 2.362163701624018,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "3765a62d-e9da-4776-981f-36b06a21bc54",
+            "taskId": "01a17b6f-a83a-7dc6-ba79-0182787ffb4f",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-a83a-7dc6-ba79-0182787ffb4f",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:38:00Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 5,
+      "cancelDelaySeconds": 0.218599946274793,
+      "completionDelaySeconds": 0.5822364758037479,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "7662249c-aeff-4400-b779-8f5ad47cdf96",
+            "taskId": "01a17b6f-c6db-78a0-b2f1-eae75f51c613",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-d1c7-7051-a6ab-f18f24429c33",
+            "taskId": "01a17b6f-c6db-78a0-b2f1-eae75f51c613",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-c6db-78a0-b2f1-eae75f51c613",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b6f-d1c7-7051-a6ab-f18f24429c33",
+            "taskId": "01a17b6f-c6db-78a0-b2f1-eae75f51c613",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:38:08Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 6,
+      "cancelDelaySeconds": 0.14841883497809868,
+      "completionDelaySeconds": 2.249630370814795,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "88394eb9-a4a8-4bb0-a6d7-8a20ad660238",
+            "taskId": "01a17b6f-e4f6-75a1-b43e-bdc2cf4c33c8",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b6f-e4f6-75a1-b43e-bdc2cf4c33c8",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:38:16Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 7,
+      "cancelDelaySeconds": 0.21156826661611905,
+      "completionDelaySeconds": 0.6394541148947799,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "5f2fbba6-5d9b-4010-91a1-ae2e03af42aa",
+            "taskId": "01a17b70-01ff-7938-9340-adae3565ca26",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-1147-7fdf-a659-8c52aa77f0e8",
+            "taskId": "01a17b70-01ff-7938-9340-adae3565ca26",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-01ff-7938-9340-adae3565ca26",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-1147-7fdf-a659-8c52aa77f0e8",
+            "taskId": "01a17b70-01ff-7938-9340-adae3565ca26",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:38:24Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 8,
+      "cancelDelaySeconds": 0.24381902480031944,
+      "completionDelaySeconds": 0.5015307568999633,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "92e53310-e62f-4fe1-a4ca-31a27c19b892",
+            "taskId": "01a17b70-2306-7e28-8a08-e3587b2ea5d0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-2e06-7fde-8bf6-62dbab61617a",
+            "taskId": "01a17b70-2306-7e28-8a08-e3587b2ea5d0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-2306-7e28-8a08-e3587b2ea5d0",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-2e06-7fde-8bf6-62dbab61617a",
+            "taskId": "01a17b70-2306-7e28-8a08-e3587b2ea5d0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:38:31Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 9,
+      "cancelDelaySeconds": 0.2338535658863083,
+      "completionDelaySeconds": 1.0192658962647068,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "c0873786-453e-40a1-94a9-880d63109221",
+            "taskId": "01a17b70-3f12-7514-9806-4d0bd4cb8d56",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-3f12-7514-9806-4d0bd4cb8d56",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:38:38Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 10,
+      "cancelDelaySeconds": 0.07788119621952488,
+      "completionDelaySeconds": 2.2253395980922095,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "14981ff3-3492-4a3e-91be-dfa496fd329d",
+            "taskId": "01a17b70-568a-7032-91bb-be8547694efc",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-568a-7032-91bb-be8547694efc",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:38:44Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 11,
+      "cancelDelaySeconds": 0.09562990461524293,
+      "completionDelaySeconds": 0.02882081711803819,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "2b801fb3-bdbe-4551-a34d-2ac32b6690d3",
+            "taskId": "01a17b70-70f1-7d15-8945-2609d2a480d9",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-7685-7e68-9ca2-ee060a3a108f",
+            "taskId": "01a17b70-70f1-7d15-8945-2609d2a480d9",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-70f1-7d15-8945-2609d2a480d9",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-7685-7e68-9ca2-ee060a3a108f",
+            "taskId": "01a17b70-70f1-7d15-8945-2609d2a480d9",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:38:50Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 12,
+      "cancelDelaySeconds": 0.2411598133684918,
+      "completionDelaySeconds": 1.6449689718828486,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "a7eff66e-a043-4f3b-a973-80bd44f5ebec",
+            "taskId": "01a17b70-89fb-728c-bb77-07a313f0df3d",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-89fb-728c-bb77-07a313f0df3d",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:38:58Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 13,
+      "cancelDelaySeconds": 0.27588016825220923,
+      "completionDelaySeconds": 0.6662185474862261,
+      "businessCompletionHttpStatus": 204,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "a2460be3-b825-49d2-8f43-be0cc4755784",
+            "taskId": "01a17b70-a58b-745c-872d-aabe8e32c222",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-b48d-7677-aa3b-9eee5cabfe73",
+            "taskId": "01a17b70-a58b-745c-872d-aabe8e32c222",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-a58b-745c-872d-aabe8e32c222",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b70-b48d-7677-aa3b-9eee5cabfe73",
+            "taskId": "01a17b70-a58b-745c-872d-aabe8e32c222",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:39:06Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 14,
+      "cancelDelaySeconds": 0.09187922752800406,
+      "completionDelaySeconds": 1.6172414746392094,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "28989bb8-350b-407f-8d7e-99e9e9b6d16e",
+            "taskId": "01a17b70-c682-732d-b4e0-ac94a6ec83ae",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-c682-732d-b4e0-ac94a6ec83ae",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:39:14Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 15,
+      "cancelDelaySeconds": 0.18789057699328418,
+      "completionDelaySeconds": 0.6744914703730795,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "900ee671-dab8-4eae-aa3e-4dd4552d4fc8",
+            "taskId": "01a17b70-e4a2-792e-9f31-a9f9bc8f6ee6",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b70-e4a2-792e-9f31-a9f9bc8f6ee6",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:39:22Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 16,
+      "cancelDelaySeconds": 0.09136119592809262,
+      "completionDelaySeconds": 1.3094493700387624,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "7e9a24f7-1dee-4cd6-863b-de0d7e0e4608",
+            "taskId": "01a17b71-04bc-7d54-8afd-2a976d0854a0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-04bc-7d54-8afd-2a976d0854a0",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:39:30Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 17,
+      "cancelDelaySeconds": 0.11717987430686977,
+      "completionDelaySeconds": 1.4628873274845593,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "25c4bdc5-db05-49e8-835a-cf12e2653b76",
+            "taskId": "01a17b71-23dc-75f2-8f6f-fbada95e61c7",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-23dc-75f2-8f6f-fbada95e61c7",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:39:38Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 18,
+      "cancelDelaySeconds": 0.213081500497822,
+      "completionDelaySeconds": 2.3249020445435766,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "89d773b9-51a4-4ab3-99c1-1ec438e397d6",
+            "taskId": "01a17b71-42df-79f3-a887-4780257bbf82",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-42df-79f3-a887-4780257bbf82",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:39:45Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 19,
+      "cancelDelaySeconds": 0.1152755735104676,
+      "completionDelaySeconds": 1.4903893080644228,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "bb51109b-8dee-4b56-b152-4f6e3b51f063",
+            "taskId": "01a17b71-5cf9-7ef5-91ec-3e13b7bdf165",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-5cf9-7ef5-91ec-3e13b7bdf165",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:39:52Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 20,
+      "cancelDelaySeconds": 0.2156719333944411,
+      "completionDelaySeconds": 0.961908157707157,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "c9953cd7-cfa2-4a65-890b-2a2cd040c59c",
+            "taskId": "01a17b71-7bad-747a-8ba2-95ec7a2ae789",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-7bad-747a-8ba2-95ec7a2ae789",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:00Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 21,
+      "cancelDelaySeconds": 0.19097289908823753,
+      "completionDelaySeconds": 0.8156052004956521,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "98a801b4-00da-45bb-a39e-7949f24b2bea",
+            "taskId": "01a17b71-9ddb-75b7-9b65-2f50e2702faa",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-9ddb-75b7-9b65-2f50e2702faa",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:09Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 22,
+      "cancelDelaySeconds": 0.273773980186047,
+      "completionDelaySeconds": 1.0868798126852532,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "5724cc02-442d-4920-bb77-7cbbcb42de8c",
+            "taskId": "01a17b71-beb5-76ff-bd4c-7eff3444d6c2",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-beb5-76ff-bd4c-7eff3444d6c2",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:17Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "randomized-completion-cancel",
+      "iteration": 23,
+      "cancelDelaySeconds": 0.08637533024875872,
+      "completionDelaySeconds": 2.2772844721242014,
+      "businessCompletionHttpStatus": 404,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "2a65b55c-84dc-4f87-aa19-45c865fe9bd3",
+            "taskId": "01a17b71-d843-787c-92ca-0143d33143c9",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-d843-787c-92ca-0143d33143c9",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:23Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 0,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "64c504c1-a755-4bae-9490-df328ddc05b4",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "7d87f4aa-00ce-4541-8aa4-d0fc3d454c87",
+                "taskId": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17b71-f2c8-74e1-a568-6052a7b2e2f9",
+                "taskId": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "6ef2d71c-9371-463c-892c-5614a395aec6",
+                "taskId": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled continuation"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+            "status": {
+              "state": "TASK_STATE_CANCELED",
+              "timestamp": "2026-10-27T03:40:29Z"
+            },
+            "contextId": "native-terminal-ordering"
+          }
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "7d87f4aa-00ce-4541-8aa4-d0fc3d454c87",
+            "taskId": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b71-f2c8-74e1-a568-6052a7b2e2f9",
+            "taskId": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "6ef2d71c-9371-463c-892c-5614a395aec6",
+            "taskId": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b71-f26a-70ac-8b32-3b4df4f91d7f",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:29Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 1,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "975718d3-450c-4282-acd0-d7772bb8b9ae",
+        "error": {
+          "code": -32004,
+          "message": "Task is not waiting for input",
+          "data": [
+            {
+              "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+              "reason": "UNSUPPORTED_OPERATION",
+              "domain": "a2a-protocol.org"
+            }
+          ]
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "1fe9d159-fb7f-417a-b43f-5576a28399e2",
+            "taskId": "01a17b72-0ae0-7659-a3f8-4f248d5e53ed",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-0b3e-7650-bf57-dc96afca4ac2",
+            "taskId": "01a17b72-0ae0-7659-a3f8-4f248d5e53ed",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-0ae0-7659-a3f8-4f248d5e53ed",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:36Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 2,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "77061889-384b-4bf6-a6e6-169aeca81361",
+        "error": {
+          "code": -32004,
+          "message": "Task is not waiting for input",
+          "data": [
+            {
+              "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+              "reason": "UNSUPPORTED_OPERATION",
+              "domain": "a2a-protocol.org"
+            }
+          ]
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "612f0cb5-b03e-4d03-8368-5d3283a4323c",
+            "taskId": "01a17b72-269b-7b59-9214-a997e76b2667",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-26fb-757f-8fce-778aa50f3c52",
+            "taskId": "01a17b72-269b-7b59-9214-a997e76b2667",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-269b-7b59-9214-a997e76b2667",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:43Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 3,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "92b040da-aac1-46a0-b515-2300aa0805dd",
+        "error": {
+          "code": -32004,
+          "message": "Task is not waiting for input",
+          "data": [
+            {
+              "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+              "reason": "UNSUPPORTED_OPERATION",
+              "domain": "a2a-protocol.org"
+            }
+          ]
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "0e2152fe-ef58-4dd3-abf5-ba1c234fd4af",
+            "taskId": "01a17b72-3f1c-7a2d-be8d-b78d5bfc77de",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-3f80-7ab9-8870-a1aab66a273a",
+            "taskId": "01a17b72-3f1c-7a2d-be8d-b78d5bfc77de",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-3f1c-7a2d-be8d-b78d5bfc77de",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:51Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 4,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "c9396e79-6210-4564-a934-ae2a57747850",
+        "error": {
+          "code": -32004,
+          "message": "Task is not waiting for input",
+          "data": [
+            {
+              "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+              "reason": "UNSUPPORTED_OPERATION",
+              "domain": "a2a-protocol.org"
+            }
+          ]
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "66aca7dd-463f-4a7e-9c59-cc14ac141ad2",
+            "taskId": "01a17b72-616e-79ec-a0d5-782fb6dddd3c",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-61d0-70c4-8907-baa86b7ad31b",
+            "taskId": "01a17b72-616e-79ec-a0d5-782fb6dddd3c",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-616e-79ec-a0d5-782fb6dddd3c",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:40:58Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 5,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "c2cba734-cb27-453c-b02d-501252516f78",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "7929ef82-921e-42c5-bf82-be3637fe9651",
+                "taskId": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17b72-7e90-7daf-93a9-486dce3d4619",
+                "taskId": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "df4fd6b1-42b8-432e-af94-53c4bc6abd70",
+                "taskId": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled continuation"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+            "status": {
+              "state": "TASK_STATE_CANCELED",
+              "timestamp": "2026-10-27T03:41:07Z"
+            },
+            "contextId": "native-terminal-ordering"
+          }
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "7929ef82-921e-42c5-bf82-be3637fe9651",
+            "taskId": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-7e90-7daf-93a9-486dce3d4619",
+            "taskId": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "df4fd6b1-42b8-432e-af94-53c4bc6abd70",
+            "taskId": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-7e31-7073-b009-2012fa68a9a0",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:07Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 6,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "548a9da8-338d-4d61-8600-158e0c4210b7",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "cd50c0fb-ecdb-4745-872d-11509cb5696f",
+                "taskId": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17b72-9d98-77a1-8f31-bb6474c4abee",
+                "taskId": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "8ad2571e-5120-41e9-9b65-6b6ba637d8fc",
+                "taskId": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled continuation"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+            "status": {
+              "state": "TASK_STATE_CANCELED",
+              "timestamp": "2026-10-27T03:41:14Z"
+            },
+            "contextId": "native-terminal-ordering"
+          }
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "cd50c0fb-ecdb-4745-872d-11509cb5696f",
+            "taskId": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-9d98-77a1-8f31-bb6474c4abee",
+            "taskId": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "8ad2571e-5120-41e9-9b65-6b6ba637d8fc",
+            "taskId": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-9d3b-7e4d-b583-8aca2886b0b3",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:14Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 7,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "ac9f19e1-9e86-42d0-9348-4920972e934d",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "0d60fd62-f51e-4daf-ae7c-2bc1e9d0aef4",
+                "taskId": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17b72-bcd1-7e3c-8a03-069b190d5ffe",
+                "taskId": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "3a980c19-39de-4295-b25f-72e302a4f73c",
+                "taskId": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled continuation"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+            "status": {
+              "state": "TASK_STATE_CANCELED",
+              "timestamp": "2026-10-27T03:41:21Z"
+            },
+            "contextId": "native-terminal-ordering"
+          }
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "0d60fd62-f51e-4daf-ae7c-2bc1e9d0aef4",
+            "taskId": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-bcd1-7e3c-8a03-069b190d5ffe",
+            "taskId": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "3a980c19-39de-4295-b25f-72e302a4f73c",
+            "taskId": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-bc6f-73d0-a906-bf0cfcb85276",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:21Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 8,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "fbc8aacd-c8a2-4b5e-be98-19b5e27d8a79",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "a3d3dfa8-5e59-4139-9645-1afe60981eee",
+                "taskId": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17b72-d669-7a20-ba19-a47d75ac543d",
+                "taskId": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "5ecb3c5f-f2b7-4cf3-9213-02fa76a73b86",
+                "taskId": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled continuation"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+            "status": {
+              "state": "TASK_STATE_CANCELED",
+              "timestamp": "2026-10-27T03:41:28Z"
+            },
+            "contextId": "native-terminal-ordering"
+          }
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "a3d3dfa8-5e59-4139-9645-1afe60981eee",
+            "taskId": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-d669-7a20-ba19-a47d75ac543d",
+            "taskId": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "5ecb3c5f-f2b7-4cf3-9213-02fa76a73b86",
+            "taskId": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-d60a-70f7-9dce-35aa3fba5773",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:28Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 9,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "e8b13e63-fe58-4a5d-b788-11147a2b5a19",
+        "error": {
+          "code": -32004,
+          "message": "Task is not waiting for input",
+          "data": [
+            {
+              "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+              "reason": "UNSUPPORTED_OPERATION",
+              "domain": "a2a-protocol.org"
+            }
+          ]
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "8eb83fb4-5b0b-49d4-9a12-ca8d9d626655",
+            "taskId": "01a17b72-f36a-70ee-be89-abfc1674431a",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b72-f3c9-734b-8ffb-201eb612db55",
+            "taskId": "01a17b72-f36a-70ee-be89-abfc1674431a",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b72-f36a-70ee-be89-abfc1674431a",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:35Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 10,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "165a0121-654f-4482-8897-395d304c9954",
+        "result": {
+          "task": {
+            "history": [
+              {
+                "role": "ROLE_USER",
+                "messageId": "4f3aa920-66cd-4e4d-8fdf-6b147ddeb684",
+                "taskId": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "input-required"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_AGENT",
+                "messageId": "01a17b73-0c7a-70eb-9596-8f7e8617a342",
+                "taskId": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled clarification"
+                  }
+                ]
+              },
+              {
+                "role": "ROLE_USER",
+                "messageId": "987a12b2-3952-4142-9752-38d61bba5611",
+                "taskId": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+                "contextId": "native-terminal-ordering",
+                "parts": [
+                  {
+                    "text": "Controlled continuation"
+                  }
+                ]
+              }
+            ],
+            "id": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+            "status": {
+              "state": "TASK_STATE_CANCELED",
+              "timestamp": "2026-10-27T03:41:43Z"
+            },
+            "contextId": "native-terminal-ordering"
+          }
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "4f3aa920-66cd-4e4d-8fdf-6b147ddeb684",
+            "taskId": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-0c7a-70eb-9596-8f7e8617a342",
+            "taskId": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "987a12b2-3952-4142-9752-38d61bba5611",
+            "taskId": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-0c1c-7eba-bf38-0d581bfe0fb2",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:43Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "follow-up-cancel-race",
+      "iteration": 11,
+      "followUpResponse": {
+        "jsonrpc": "2.0",
+        "id": "a21c1d82-5715-4d1d-b9c1-b2d41dd40089",
+        "error": {
+          "code": -32004,
+          "message": "Task is not waiting for input",
+          "data": [
+            {
+              "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+              "reason": "UNSUPPORTED_OPERATION",
+              "domain": "a2a-protocol.org"
+            }
+          ]
+        }
+      },
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "e14a9dae-58f7-48a9-91a5-6f911c47a175",
+            "taskId": "01a17b73-2af9-701f-9ef8-1b5d9d360c3c",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-2b57-75de-b0cc-146298ab834c",
+            "taskId": "01a17b73-2af9-701f-9ef8-1b5d9d360c3c",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-2af9-701f-9ef8-1b5d9d360c3c",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:41:51Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "concurrent-follow-ups",
+      "iteration": 0,
+      "acceptedFollowUps": 1,
+      "rejectedFollowUps": 1,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "1a740356-0f7c-4df1-b823-99153f083bc4",
+            "taskId": "01a17b73-4963-7532-880d-77e1237f155b",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-49c2-7d7e-ab7f-01c9aed00602",
+            "taskId": "01a17b73-4963-7532-880d-77e1237f155b",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "6b173843-ed4f-47ba-a031-ccd6506282ca",
+            "taskId": "01a17b73-4963-7532-880d-77e1237f155b",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-4963-7532-880d-77e1237f155b",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:42:01Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "concurrent-follow-ups",
+      "iteration": 1,
+      "acceptedFollowUps": 1,
+      "rejectedFollowUps": 1,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "2835f0bf-9183-41f6-893e-22c3ba97ca37",
+            "taskId": "01a17b73-7150-7115-9e76-d31080f0db95",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-71ae-7eee-bb58-adcd1f277fcf",
+            "taskId": "01a17b73-7150-7115-9e76-d31080f0db95",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "6859ae9d-2e7d-4449-8d42-eaf2dfeac6c7",
+            "taskId": "01a17b73-7150-7115-9e76-d31080f0db95",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-7150-7115-9e76-d31080f0db95",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:42:11Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "concurrent-follow-ups",
+      "iteration": 2,
+      "acceptedFollowUps": 1,
+      "rejectedFollowUps": 1,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "bdf27941-2c22-4c46-804b-3c25d5ab75d2",
+            "taskId": "01a17b73-98a8-7558-a2ff-819048fa4e65",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-9906-7b85-9f28-61a3b3b7935c",
+            "taskId": "01a17b73-98a8-7558-a2ff-819048fa4e65",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "99c39927-3e9e-4014-afc0-e672f5c6558a",
+            "taskId": "01a17b73-98a8-7558-a2ff-819048fa4e65",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-98a8-7558-a2ff-819048fa4e65",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:42:22Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "concurrent-follow-ups",
+      "iteration": 3,
+      "acceptedFollowUps": 1,
+      "rejectedFollowUps": 1,
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "76c5624e-8082-4c76-857e-b3fab45fd5cc",
+            "taskId": "01a17b73-bf61-7428-8075-c3d5383a113d",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-bfbe-732f-8ea2-f41f3dd50991",
+            "taskId": "01a17b73-bf61-7428-8075-c3d5383a113d",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_USER",
+            "messageId": "886bfaf7-c4d1-410c-9060-13deaee746f0",
+            "taskId": "01a17b73-bf61-7428-8075-c3d5383a113d",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled continuation"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-bf61-7428-8075-c3d5383a113d",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:42:31Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "cancel-input-required",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "30c6f8ac-44ff-45bd-9719-73bbf31c2bb2",
+            "taskId": "01a17b73-e7dd-7ad3-b510-c7acd1a481cb",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "input-required"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b73-e83b-7a3d-9dfe-9949e573b78d",
+            "taskId": "01a17b73-e7dd-7ad3-b510-c7acd1a481cb",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled clarification"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b73-e7dd-7ad3-b510-c7acd1a481cb",
+        "status": {
+          "state": "TASK_STATE_CANCELED",
+          "timestamp": "2026-10-27T03:42:39Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    },
+    {
+      "case": "missing-hook",
+      "cancelError": -32002,
+      "task": {
+        "artifacts": [
+          {
+            "artifactId": "controlled",
+            "parts": [
+              {
+                "text": "Controlled artifact"
+              }
+            ]
+          }
+        ],
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "83a4b761-cf35-4c0c-8013-6ada6cb152cb",
+            "taskId": "01a17b74-08c3-75fb-940a-731582a0ff77",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "controlled"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b74-3184-785e-9d16-1cb862af1849",
+            "taskId": "01a17b74-08c3-75fb-940a-731582a0ff77",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b74-08c3-75fb-940a-731582a0ff77",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b74-3184-785e-9d16-1cb862af1849",
+            "taskId": "01a17b74-08c3-75fb-940a-731582a0ff77",
+            "contextId": "native-terminal-ordering",
+            "parts": [
+              {
+                "text": "Controlled completion"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:42:54Z"
+        },
+        "contextId": "native-terminal-ordering"
+      }
+    }
+  ],
+  "conditionalFeatures": "No custom worker/server; nonshipping controlled business user tasks."
+}

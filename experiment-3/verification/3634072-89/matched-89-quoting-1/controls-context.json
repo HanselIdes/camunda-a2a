@@ -1,0 +1,167 @@
+{
+  "input": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details.",
+  "requestRoot": {
+    "message": {
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details."
+        }
+      ],
+      "messageId": "253c2b35-69c7-4c57-9c74-995e3fa7879e",
+      "role": "ROLE_USER"
+    },
+    "blocking": true
+  },
+  "jsonPrompt": "\"Synthetic diagnostic only: A\\u0009B\\u000dC\\u0008D\\u000cE\\u0001F. Please ask for missing details.\"",
+  "agent": {
+    "context": {
+      "state": "READY",
+      "metadata": {
+        "processDefinitionKey": 2251799813685326,
+        "processInstanceKey": 2251799813686176
+      },
+      "metrics": {
+        "modelCalls": 1,
+        "tokenUsage": {
+          "inputTokenCount": 565,
+          "outputTokenCount": 29
+        }
+      },
+      "toolDefinitions": [
+        {
+          "name": "review_duplicate_charge",
+          "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "merchant": {
+                "type": "string",
+                "description": "Merchant named in the synthetic claim"
+              },
+              "currency": {
+                "type": "string",
+                "description": "Currency code supplied by the client"
+              },
+              "firstAmount": {
+                "type": "number",
+                "description": "First charge amount"
+              },
+              "secondAmount": {
+                "type": "number",
+                "description": "Second charge amount"
+              },
+              "expectedAmount": {
+                "type": "number",
+                "description": "Expected amount for the single order"
+              }
+            },
+            "required": [
+              "merchant",
+              "currency",
+              "firstAmount",
+              "secondAmount",
+              "expectedAmount"
+            ]
+          }
+        }
+      ],
+      "conversation": {
+        "type": "in-process",
+        "conversationId": "f69c8fcd-a06a-43c7-9ce5-e6f2154d5e7e",
+        "messages": [
+          {
+            "role": "system",
+            "content": [
+              {
+                "type": "text",
+                "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "\"Synthetic diagnostic only: A\\u0009B\\u000dC\\u0008D\\u000cE\\u0001F. Please ask for missing details.\""
+              }
+            ],
+            "metadata": {
+              "timestamp": "2026-10-27T15:05:30.5355975Z"
+            }
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "NEED_INPUT: Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+              }
+            ],
+            "metadata": {
+              "framework": {
+                "id": "chatcmpl-442",
+                "finishReason": "STOP",
+                "tokenUsage": {
+                  "inputTokenCount": 565,
+                  "outputTokenCount": 29,
+                  "totalTokenCount": 594,
+                  "inputTokensDetails": {
+                    "cachedTokens": 521,
+                    "cacheWriteTokens": null
+                  },
+                  "outputTokensDetails": null
+                }
+              },
+              "timestamp": "2026-10-27T15:05:31.127253917Z"
+            }
+          }
+        ]
+      }
+    },
+    "responseText": "NEED_INPUT: Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+  },
+  "task": {
+    "history": [
+      {
+        "role": "ROLE_USER",
+        "messageId": "253c2b35-69c7-4c57-9c74-995e3fa7879e",
+        "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+        "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+        "parts": [
+          {
+            "text": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details."
+          }
+        ]
+      },
+      {
+        "role": "ROLE_AGENT",
+        "messageId": "01a17de5-23a2-72e0-97fe-6fa0847618a2",
+        "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+        "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+        "parts": [
+          {
+            "text": "Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+          }
+        ]
+      }
+    ],
+    "id": "01a17de5-203c-7efb-8eb7-f9417e502346",
+    "status": {
+      "state": "TASK_STATE_INPUT_REQUIRED",
+      "message": {
+        "role": "ROLE_AGENT",
+        "messageId": "01a17de5-23a2-72e0-97fe-6fa0847618a2",
+        "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+        "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+        "parts": [
+          {
+            "text": "Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+          }
+        ]
+      },
+      "timestamp": "2026-10-27T15:05:31Z"
+    },
+    "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da"
+  }
+}

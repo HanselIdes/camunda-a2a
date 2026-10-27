@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "bc0a6938fcf9fb216e249c8fb5db0a8407f5d998",
+  "acceptanceStatus": "PARTIAL",
+  "cleanSourceBeforeAndAfter": true,
+  "engineVersion": "8.8.21",
+  "connectorsVersion": "8.9.0",
+  "elasticsearchVersion": "8.17.0",
+  "sdkVersion": "1.2.3",
+  "realModelBpmnClient": "PASS with exact synthetic reconciliation and final user-task completion",
+  "sdk": "PASS: discovery, clarification, same-task follow-up, exact artifact, get/list and patch-varied card negotiation",
+  "bpmnClientPatchHandling": "Exact packaged discovery expression evaluated by stock engine script task with 1.0, 1.0.2 and 1.0.999 cards",
+  "bpmnClientHeaders": "Native received headers from full client's SendMessage and its exact GetTask connector in an isolated stock-BPMN fixture",
+  "scope": "Supplemental client/header evidence, not final-source acceptance. The polling fixture does not claim the full client's polling branch executed when fast work completed in SendMessage."
+}

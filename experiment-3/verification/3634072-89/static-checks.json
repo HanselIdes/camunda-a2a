@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-27",
+  "source": "91cf7a57e2adfa6e522756319c6381a6c8798de4",
+  "scope": "Source/static regressions only, not a substitute for the failed real-model semantic gate",
+  "pythonHarnessTests": {
+    "command": "python3 -m unittest discover -s experiment-3/tests/runtime -p 'test_*.py'",
+    "executed": 34,
+    "failures": 0,
+    "verdict": "PASS"
+  },
+  "generation": {
+    "commands": [
+      "python3 experiment-3/tools/build_core.py --check",
+      "python3 experiment-3/tools/build_blueprint.py --check"
+    ],
+    "verdict": "PASS"
+  },
+  "resourceClosure": {
+    "command": "python3 experiment-3/tools/check_resources.py",
+    "resources": 12,
+    "verdict": "PASS"
+  },
+  "bpmnLint": {
+    "command": "c8ctl bpmn lint FILE",
+    "files": [
+      "experiment-3/blueprint/demo/a2a-card-dispute.bpmn",
+      "experiment-3/blueprint/demo/a2a-card.bpmn",
+      "experiment-3/blueprint/demo/a2a-client.bpmn",
+      "experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn",
+      "experiment-3/blueprint/profiles/oauth/a2a-protocol.bpmn"
+    ],
+    "errors": 0,
+    "warnings": 0,
+    "verdict": "PASS"
+  },
+  "mavenCpt": "NOT RUN: no Java sources changed; no different configured CPT runtime substituted for the approved exact pair",
+  "acceptance": "FAIL: missing-input grounding behavior remains materially wrong"
+}

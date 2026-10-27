@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_client" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:process id="a2a-client" name="A2A client: ask the agent" isExecutable="true">
+    <bpmn:startEvent id="QuestionAsked" name="Question asked">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="a2a-client-ask" />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_QuestionAsked_DiscoverAgent</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="DiscoverAgent" name="Read the Agent Card" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="GET" target="method" />
+          <zeebe:input source="{{secrets.A2A_AGENT_CARD_URL}}" target="url" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="=20" target="readTimeoutInSeconds" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={agentName: response.body.name, agentUrl: (response.body.supportedInterfaces[item.protocolBinding = &quot;JSONRPC&quot;])[1].url, skillNames: for s in response.body.skills return s.name}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_QuestionAsked_DiscoverAgent</bpmn:incoming>
+      <bpmn:outgoing>Flow_DiscoverAgent_MessageJoin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="MessageJoin" name="Message to send">
+      <bpmn:incoming>Flow_DiscoverAgent_MessageJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_AnswerAgent_MessageJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_MessageJoin_BuildMessage</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="BuildMessage" name="Build message">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=context merge([ {messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: if followUp instance of string then followUp else question}], if reply != null and reply.taskId != null then [{data: {syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}}] else [])}, if reply != null and reply.taskId != null then {taskId: reply.taskId, contextId: reply.contextId} else {}])" resultVariable="outgoing" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_MessageJoin_BuildMessage</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuildMessage_SendMessage</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="SendMessage" name="Send message to the agent" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="{{secrets.A2A_RPC_URL}}" target="url" />
+          <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: &quot;{{secrets.A2A_API_KEY}}&quot;}" target="headers" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="120" target="readTimeoutInSeconds" />
+          <zeebe:input source="={jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: {message: outgoing}}" target="body" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={rpc: response.body}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_BuildMessage_SendMessage</bpmn:incoming>
+      <bpmn:outgoing>Flow_SendMessage_ReadJoin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="ReadJoin" name="Reply received">
+      <bpmn:incoming>Flow_SendMessage_ReadJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_GetTask_ReadJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReadJoin_ReadReply</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="ReadReply" name="Read the agent's reply">
+      <bpmn:extensionElements>
+        <zeebe:script expression="= (for r in [rpc.result] return for t in [if r.task != null then r.task else if r.id != null then r else null] return for m in [if t != null then t.status.message else r.message] return {state: if rpc.error != null then &quot;RPC_ERROR&quot; else if t != null then t.status.state else &quot;MESSAGE&quot;, taskId: t.id, contextId: if t != null then t.contextId else m.contextId, text: if rpc.error != null then string(rpc.error.message) else string join(for part in m.parts return if part.text != null then part.text else &quot;&quot;, &quot; &quot;), reconciliation: if t != null and t.artifacts instance of list then (for a in t.artifacts[item.name = &quot;reconciliation&quot;] return a.parts[1].data)[1] else null, toolNames: if t.artifacts = null then [] else flatten(for tr in t.artifacts[item.name = &quot;tool-trace&quot;] return for c in tr.parts[1].data.toolCalls return c.name), replies: (if reply != null then reply.replies else 0) + 1})[1][1][1]" resultVariable="reply" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ReadJoin_ReadReply</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReadReply_ReplyState</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:exclusiveGateway id="ReplyState" name="Task state?" default="Flow_ReplyState_BuildResult">
+      <bpmn:incoming>Flow_ReadReply_ReplyState</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReplyState_AnswerAgent</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ReplyState_WaitBeforePoll</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ReplyState_BuildResult</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="AnswerAgent" name="Answer the agent's question">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="a2a-client-answer" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=null" target="followUp" />
+          <zeebe:output source="=followUp" target="followUp" />
+          <zeebe:input source="=null" target="claimMerchant" />
+          <zeebe:output source="=claimMerchant" target="claimMerchant" />
+          <zeebe:input source="=null" target="claimCurrency" />
+          <zeebe:output source="=claimCurrency" target="claimCurrency" />
+          <zeebe:input source="=null" target="claimFirstAmount" />
+          <zeebe:output source="=claimFirstAmount" target="claimFirstAmount" />
+          <zeebe:input source="=null" target="claimSecondAmount" />
+          <zeebe:output source="=claimSecondAmount" target="claimSecondAmount" />
+          <zeebe:input source="=null" target="claimExpectedAmount" />
+          <zeebe:output source="=claimExpectedAmount" target="claimExpectedAmount" />
+          <zeebe:input source="=null" target="claimSyntheticOnly" />
+          <zeebe:output source="=claimSyntheticOnly" target="claimSyntheticOnly" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ReplyState_AnswerAgent</bpmn:incoming>
+      <bpmn:outgoing>Flow_AnswerAgent_MessageJoin</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:intermediateCatchEvent id="WaitBeforePoll" name="Wait before polling">
+      <bpmn:incoming>Flow_ReplyState_WaitBeforePoll</bpmn:incoming>
+      <bpmn:outgoing>Flow_WaitBeforePoll_GetTask</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="WaitBeforePoll_def">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT2S"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:serviceTask id="GetTask" name="Ask for the task state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="{{secrets.A2A_RPC_URL}}" target="url" />
+          <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: &quot;{{secrets.A2A_API_KEY}}&quot;}" target="headers" />
+          <zeebe:input source="=false" target="storeResponse" />
+          <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+          <zeebe:input source="60" target="readTimeoutInSeconds" />
+          <zeebe:input source="={jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: reply.taskId}}" target="body" />
+          <zeebe:input source="=false" target="ignoreNullValues" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+          <zeebe:header key="resultExpression" value="={rpc: response.body}" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_WaitBeforePoll_GetTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_GetTask_ReadJoin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:scriptTask id="BuildResult" name="Build result text">
+      <bpmn:extensionElements>
+        <zeebe:script expression="= &quot;### &quot; + (if reply.state = &quot;TASK_STATE_COMPLETED&quot; or reply.state = &quot;MESSAGE&quot; then &quot;Answer from &quot; + agentName else if reply.state = &quot;TASK_STATE_WORKING&quot; or reply.state = &quot;TASK_STATE_SUBMITTED&quot; then agentName + &quot; did not finish in time&quot; else agentName + &quot; did not complete the request&quot;) + &quot;\n\n&quot; + reply.text + (if count(reply.toolNames) &gt; 0 then &quot;\n\n**Tools the agent used:** &quot; + string join(reply.toolNames, &quot;, &quot;) else &quot;&quot;) + &quot;\n\n&quot; + (if reply.taskId != null then &quot;A2A task `&quot; + reply.taskId + &quot;`, context `&quot; + reply.contextId + &quot;`, &quot; else &quot;&quot;) + &quot;final state &quot; + reply.state+ (if reply.reconciliation != null then &quot;\n\n**Synthetic reconciliation**\n\nMerchant: &quot; + reply.reconciliation.merchant + &quot;\n\nPaid: &quot; + string(reply.reconciliation.paidAmount) + &quot; &quot; + reply.reconciliation.currency + &quot;\n\nExpected: &quot; + string(reply.reconciliation.expectedAmount) + &quot; &quot; + reply.reconciliation.currency + &quot;\n\nOvercharge: &quot; + string(reply.reconciliation.overchargeAmount) + &quot; &quot; + reply.reconciliation.currency + &quot;\n\nNext step: &quot; + reply.reconciliation.recommendation else &quot;&quot;)" resultVariable="resultText" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ReplyState_BuildResult</bpmn:incoming>
+      <bpmn:outgoing>Flow_BuildResult_ShowResult</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:userTask id="ShowResult" name="Review the result">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition formId="a2a-client-result" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_BuildResult_ShowResult</bpmn:incoming>
+      <bpmn:outgoing>Flow_ShowResult_ConversationFinished</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="ConversationFinished" name="Conversation finished">
+      <bpmn:incoming>Flow_ShowResult_ConversationFinished</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_QuestionAsked_DiscoverAgent" sourceRef="QuestionAsked" targetRef="DiscoverAgent" />
+    <bpmn:sequenceFlow id="Flow_DiscoverAgent_MessageJoin" sourceRef="DiscoverAgent" targetRef="MessageJoin" />
+    <bpmn:sequenceFlow id="Flow_MessageJoin_BuildMessage" sourceRef="MessageJoin" targetRef="BuildMessage" />
+    <bpmn:sequenceFlow id="Flow_BuildMessage_SendMessage" sourceRef="BuildMessage" targetRef="SendMessage" />
+    <bpmn:sequenceFlow id="Flow_SendMessage_ReadJoin" sourceRef="SendMessage" targetRef="ReadJoin" />
+    <bpmn:sequenceFlow id="Flow_ReadJoin_ReadReply" sourceRef="ReadJoin" targetRef="ReadReply" />
+    <bpmn:sequenceFlow id="Flow_ReadReply_ReplyState" sourceRef="ReadReply" targetRef="ReplyState" />
+    <bpmn:sequenceFlow id="Flow_ReplyState_AnswerAgent" name="input required" sourceRef="ReplyState" targetRef="AnswerAgent">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=reply.state = "TASK_STATE_INPUT_REQUIRED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ReplyState_WaitBeforePoll" name="still working" sourceRef="ReplyState" targetRef="WaitBeforePoll">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=(reply.state = "TASK_STATE_WORKING" or reply.state = "TASK_STATE_SUBMITTED") and reply.replies &lt; 100</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ReplyState_BuildResult" name="otherwise" sourceRef="ReplyState" targetRef="BuildResult" />
+    <bpmn:sequenceFlow id="Flow_AnswerAgent_MessageJoin" sourceRef="AnswerAgent" targetRef="MessageJoin" />
+    <bpmn:sequenceFlow id="Flow_WaitBeforePoll_GetTask" sourceRef="WaitBeforePoll" targetRef="GetTask" />
+    <bpmn:sequenceFlow id="Flow_GetTask_ReadJoin" sourceRef="GetTask" targetRef="ReadJoin" />
+    <bpmn:sequenceFlow id="Flow_BuildResult_ShowResult" sourceRef="BuildResult" targetRef="ShowResult" />
+    <bpmn:sequenceFlow id="Flow_ShowResult_ConversationFinished" sourceRef="ShowResult" targetRef="ConversationFinished" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-client">
+      <bpmndi:BPMNShape id="QuestionAsked_di" bpmnElement="QuestionAsked">
+        <dc:Bounds x="150" y="232" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DiscoverAgent_di" bpmnElement="DiscoverAgent">
+        <dc:Bounds x="230" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MessageJoin_di" bpmnElement="MessageJoin" isMarkerVisible="true">
+        <dc:Bounds x="390" y="225" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BuildMessage_di" bpmnElement="BuildMessage">
+        <dc:Bounds x="480" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SendMessage_di" bpmnElement="SendMessage">
+        <dc:Bounds x="630" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReadJoin_di" bpmnElement="ReadJoin" isMarkerVisible="true">
+        <dc:Bounds x="790" y="225" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReadReply_di" bpmnElement="ReadReply">
+        <dc:Bounds x="880" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReplyState_di" bpmnElement="ReplyState" isMarkerVisible="true">
+        <dc:Bounds x="1040" y="225" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AnswerAgent_di" bpmnElement="AnswerAgent">
+        <dc:Bounds x="1140" y="50" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WaitBeforePoll_di" bpmnElement="WaitBeforePoll">
+        <dc:Bounds x="1157" y="372" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GetTask_di" bpmnElement="GetTask">
+        <dc:Bounds x="1250" y="350" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BuildResult_di" bpmnElement="BuildResult">
+        <dc:Bounds x="1140" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ShowResult_di" bpmnElement="ShowResult">
+        <dc:Bounds x="1290" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ConversationFinished_di" bpmnElement="ConversationFinished">
+        <dc:Bounds x="1440" y="232" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_QuestionAsked_DiscoverAgent_di" bpmnElement="Flow_QuestionAsked_DiscoverAgent">
+        <di:waypoint x="186" y="250" />
+        <di:waypoint x="230" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DiscoverAgent_MessageJoin_di" bpmnElement="Flow_DiscoverAgent_MessageJoin">
+        <di:waypoint x="330" y="250" />
+        <di:waypoint x="390" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_MessageJoin_BuildMessage_di" bpmnElement="Flow_MessageJoin_BuildMessage">
+        <di:waypoint x="440" y="250" />
+        <di:waypoint x="480" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildMessage_SendMessage_di" bpmnElement="Flow_BuildMessage_SendMessage">
+        <di:waypoint x="580" y="250" />
+        <di:waypoint x="630" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_SendMessage_ReadJoin_di" bpmnElement="Flow_SendMessage_ReadJoin">
+        <di:waypoint x="730" y="250" />
+        <di:waypoint x="790" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReadJoin_ReadReply_di" bpmnElement="Flow_ReadJoin_ReadReply">
+        <di:waypoint x="840" y="250" />
+        <di:waypoint x="880" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReadReply_ReplyState_di" bpmnElement="Flow_ReadReply_ReplyState">
+        <di:waypoint x="980" y="250" />
+        <di:waypoint x="1040" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReplyState_AnswerAgent_di" bpmnElement="Flow_ReplyState_AnswerAgent">
+        <di:waypoint x="1065" y="225" />
+        <di:waypoint x="1065" y="90" />
+        <di:waypoint x="1140" y="90" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReplyState_WaitBeforePoll_di" bpmnElement="Flow_ReplyState_WaitBeforePoll">
+        <di:waypoint x="1065" y="275" />
+        <di:waypoint x="1065" y="390" />
+        <di:waypoint x="1157" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReplyState_BuildResult_di" bpmnElement="Flow_ReplyState_BuildResult">
+        <di:waypoint x="1090" y="250" />
+        <di:waypoint x="1140" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AnswerAgent_MessageJoin_di" bpmnElement="Flow_AnswerAgent_MessageJoin">
+        <di:waypoint x="1190" y="50" />
+        <di:waypoint x="1190" y="10" />
+        <di:waypoint x="415" y="10" />
+        <di:waypoint x="415" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WaitBeforePoll_GetTask_di" bpmnElement="Flow_WaitBeforePoll_GetTask">
+        <di:waypoint x="1193" y="390" />
+        <di:waypoint x="1250" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GetTask_ReadJoin_di" bpmnElement="Flow_GetTask_ReadJoin">
+        <di:waypoint x="1300" y="430" />
+        <di:waypoint x="1300" y="490" />
+        <di:waypoint x="815" y="490" />
+        <di:waypoint x="815" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_BuildResult_ShowResult_di" bpmnElement="Flow_BuildResult_ShowResult">
+        <di:waypoint x="1240" y="250" />
+        <di:waypoint x="1290" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ShowResult_ConversationFinished_di" bpmnElement="Flow_ShowResult_ConversationFinished">
+        <di:waypoint x="1390" y="250" />
+        <di:waypoint x="1440" y="250" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

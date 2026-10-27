@@ -1,0 +1,31 @@
+{
+  "verdict": "FAIL",
+  "sourceBaseCommit": "8a3a0d58814e9db00e76fcc26fcb1f97d2edb5f7",
+  "sourceState": "Uncommitted diagnostic; exact worktree fingerprint was not captured. Not acceptance evidence.",
+  "exporterBulkDelaySeconds": 5,
+  "tckProvenance": {
+    "tckCommit": "263b9cfaf16a554bdfb166a7ba5b67716e946349",
+    "patchedSourceSha256": "8fd33aea1814e32723545d3725af254505bf990363c355679f9f779de7aed74a",
+    "pytestExit": 1,
+    "gateExit": 1,
+    "target": "direct stock-Connectors HTTPS; explicit discovery URL; API-key trust boundary",
+    "adapter": "TLS CA, scoped API-key header, local container-host alias, exact endpoint path"
+  },
+  "gateOutput": "RESULT executed=68 skipped=167 failures=2 errors=0 must_pass=55 must_allowlisted=58 incidents=0 verdict=FAIL\n  PROBLEM: junit has 2 failures and 0 errors\n  PROBLEM: JSONRPC-SVC-002 is FAIL on {'jsonrpc': 'FAIL'} and not allowlisted: .venv/lib/python3.13/site-packages/httpx/_transports/default.py:101: in map_httpcore_exceptions\n    yield\n.venv/lib/python3.13/site-packages/httpx/_transports/default.py:250: in handle_request\n    res\n",
+  "failures": [
+    "Unconditional direct-Message case returned a Task before the generic business outcome mode existed.",
+    "Raw Extensions-header call exceeded unchanged five-second read timeout."
+  ],
+  "originalSanitizedReportsSha256": {
+    "compatibility.json": "a309bfe474e943724ba89a3b6070853ba3a7756f299eba27f9746678eeb29fb9",
+    "junitreport.xml": "c9eb1a243ddaebfc6de2bdf909419802d9c2822b1da418b5498d69aca77c5be2",
+    "runner.log": "d62837c43c38265af9ffaf30b19c17d98873473886cd988aee5027f5567ba286"
+  },
+  "laterDefaultDelayDiagnostic": {
+    "verdict": "provisional pass; not exact-source acceptance",
+    "rawExtensionsSeconds": 4.553,
+    "normalRpcMaximumSeconds": 6.089,
+    "remainingRawReadHeadroomSeconds": 0.447
+  },
+  "scope": "Preserves the default-delay failure and timing variance; subsequent one-second deployment setting is explicit, not automatic BPMN behavior."
+}

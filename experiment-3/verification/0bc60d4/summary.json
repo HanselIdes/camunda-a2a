@@ -1,0 +1,108 @@
+{
+  "testedSource": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+  "acceptanceStatus": "BLOCKED: deterministic cancellation/completion defect; full suite and remaining race/error gates not closed.",
+  "runs": [
+    {
+      "run": 1,
+      "executed": 68,
+      "skipped": 167,
+      "mustPassed": 56,
+      "mustExcluded": 58,
+      "failures": 0,
+      "errors": 0,
+      "incidents": 0,
+      "extensionsSeconds": [
+        2.36
+      ],
+      "rpcSeconds": {
+        "min": 0.099,
+        "median": 1.636,
+        "max": 3.909
+      }
+    },
+    {
+      "run": 2,
+      "executed": 68,
+      "skipped": 167,
+      "mustPassed": 56,
+      "mustExcluded": 58,
+      "failures": 0,
+      "errors": 0,
+      "incidents": 0,
+      "extensionsSeconds": [
+        1.446
+      ],
+      "rpcSeconds": {
+        "min": 0.095,
+        "median": 1.802,
+        "max": 3.795
+      }
+    },
+    {
+      "run": 3,
+      "executed": 68,
+      "skipped": 167,
+      "mustPassed": 56,
+      "mustExcluded": 58,
+      "failures": 0,
+      "errors": 0,
+      "incidents": 0,
+      "extensionsSeconds": [
+        1.463
+      ],
+      "rpcSeconds": {
+        "min": 0.096,
+        "median": 1.302,
+        "max": 4.095
+      }
+    }
+  ],
+  "rawExtensionsReadTimeoutSeconds": 5,
+  "normalRpcReadTimeoutSeconds": 30,
+  "extensionsSeconds": {
+    "min": 1.446,
+    "median": 1.463,
+    "max": 2.36
+  },
+  "rpcSeconds": {
+    "count": 195,
+    "min": 0.095,
+    "median": 1.713,
+    "max": 4.095
+  },
+  "scope": "TCK MUST gate passed: 56 passed, 58 excluded with detailed reasons; not full A2A conformance.",
+  "native88": "PASS: real-model, BPMN client, SDK 1.2.3 and native checks.",
+  "native89": "PASS: 8.9.5/Connectors 8.9.0 native, BPMN client, SDK and native checks; matrix evidence, not expanded advertised support.",
+  "native810": "FAIL: 8.10.2/Connectors 8.10.0 started with HTTPS healthcheck, but the model outcome lacked reconciliation evidence and returned TASK_STATE_FAILED; SDK did not run.",
+  "reliability": "PASS: 100 sequential/20 concurrent exact outcomes, separate deployments, boundaries, independent duplicate tasks and owned restarts. Not a cancellation-race or error-injection pass.",
+  "fullSuite": "Not run at this source; final-candidate series is deferred pending the cancellation defect.",
+  "sourceFilesSha256": {
+    "experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn": "c252f054c0379be76f9e0890d615ebe8f2771e338b5942cf2b180f352460b0fd",
+    "experiment-3/blueprint/demo/a2a-card-dispute.bpmn": "9fe7fac1a402fa863f11a5f9e4b24d0bb7cc696fbc0c1ab8007d3e14978c929b",
+    "experiment-3/tests/runtime/verify.py": "27c1c25694471af1a5811af52801b183d1569c0a7f6fb761ac97fe747025c93c"
+  },
+  "filesSha256": {
+    "gate.json": "8f7fffa25d1bdbc68c032f1c3d556d74925dd7d95dca16c897457acbdcd62e98",
+    "provenance-1.json": "951568d9ff4f13b255ae5fb8b349e1afb60616e806960fb5c122229d2270f7b7",
+    "request-timings-1.json": "d9fad43159db023f890ea03578024a9bff4abf845527d93d5578083aaf078c53",
+    "provenance-2.json": "951568d9ff4f13b255ae5fb8b349e1afb60616e806960fb5c122229d2270f7b7",
+    "request-timings-2.json": "edfe01909b06348539b2d57b685102ba1e98cd7a2b9a7525c93198fdc2eaea95",
+    "provenance-3.json": "951568d9ff4f13b255ae5fb8b349e1afb60616e806960fb5c122229d2270f7b7",
+    "request-timings-3.json": "7288530e439bf1ec3319099957f940dbe3a6b782340f05ea2ad49fb97b12074d",
+    "88-runtime-provenance.json": "8a59a627e89c0684bcd3dcbe5fe7b647ff31a6a2a6fa1239e59899898915b7b7",
+    "88-native-checks.json": "596f16b13602eda9975ff8b6854ef72fc61471f2f8c4881eca997c470587b68e",
+    "88-sdk.json": "0a40444c1a840bdfae977b1d618df4d347d8cd87666696eb874119ba64f95744",
+    "89-runtime-provenance.json": "daef57fe8306713daa8a34a1e7bb949dc06ab0183a6b8631601e06106c47bddb",
+    "89-native-checks.json": "596f16b13602eda9975ff8b6854ef72fc61471f2f8c4881eca997c470587b68e",
+    "89-sdk.json": "0a40444c1a840bdfae977b1d618df4d347d8cd87666696eb874119ba64f95744",
+    "810-failed-runtime-provenance.json": "d3443be9320a1dc653e13ee658a928566325ad674cba6cb33e6ce7283badb543",
+    "reliability-summary.json": "ad46d91d0e9835f60cc61e9c68b517f393ad9834757d2594c91b9dd6749d123c",
+    "alpha-runtime-provenance.json": "8a59a627e89c0684bcd3dcbe5fe7b647ff31a6a2a6fa1239e59899898915b7b7",
+    "alpha-native-checks.json": "596f16b13602eda9975ff8b6854ef72fc61471f2f8c4881eca997c470587b68e",
+    "beta-runtime-provenance.json": "8a59a627e89c0684bcd3dcbe5fe7b647ff31a6a2a6fa1239e59899898915b7b7",
+    "beta-native-checks.json": "596f16b13602eda9975ff8b6854ef72fc61471f2f8c4881eca997c470587b68e",
+    "exact-result-records.json": "d76ff7cbd8aa399bc3a5fd16c48a2c812d820accea36e6c1676d16007f8e6538",
+    "cancel-race-failure.log": "829b704438db67dc0d5c059a8212c337769c0b6c848fc93a337f01297078ff34",
+    "cancel-race-failure.json": "cdcd45756b3e3bfd012e9a9a386e17d4761e94f844f70babe6ef49c337186715"
+  }
+}

@@ -1,0 +1,265 @@
+ Network a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5_default Creating 
+ Network a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5_default Creating 
+ Network a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5_default Created 
+ Network a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5_default Created 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Creating 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Created 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Creating 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Created 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Creating 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Created 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Starting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Started 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Waiting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Healthy 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Starting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Started 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Waiting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Healthy 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Starting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Started 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Waiting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Waiting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Waiting 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Healthy 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Healthy 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Healthy 
+{"check": "unauthenticated topology", "status": 401, "response": "{\"type\":\"about:blank\",\"title\":\"Unauthorized\",\"status\":401,\"detail\":\"An Authentication object was not found in the SecurityContext\",\"instance\":\"/v2/topology\"}"}
+{"check": "authenticated topology", "status": 200, "response": "{\"brokers\":[{\"nodeId\":0,\"host\":\"172.27.0.3\",\"port\":26501,\"partitions\":[{\"partitionId\":1,\"role\":\"leader\",\"health\":\"healthy\"}],\"version\":\"8.8.44\"}],\"clusterSize\":1,\"partitionsCount\":1,\"replicationFactor\":1,\"gatewayVersion\":\"8.8.44\",\"lastCompletedChangeId\":\"-1\"}"}
+{"check": "expression evaluation", "status": 404, "response": "{\"type\":\"about:blank\",\"title\":\"Not Found\",\"status\":404,\"detail\":\"No static resource v2/expression/evaluation.\",\"instance\":\"/v2/expression/evaluation\"}"}
+{"check": "cluster variables", "status": 404, "response": "{\"type\":\"about:blank\",\"title\":\"Not Found\",\"status\":404,\"detail\":\"No static resource v2/cluster-variables/search.\",\"instance\":\"/v2/cluster-variables/search\"}"}
+{"check": "tag search", "status": 200, "response": "{\"items\":[],\"page\":{\"totalItems\":0,\"hasMoreTotalItems\":false}}"}
+deployment status 200
+missing API key rejected: 401
+invalid API key rejected: 401
+{"check": "authenticated echo", "status": 200, "response": null}
+Runtime diagnostic logs (exit code 0 ): camunda-1  | 	io.camunda.zeebe.logstreams.snapshot - Finished taking temporary snapshot, need to wait until last written event position 88 is committed, current commit position is 77. After that snapshot will be committed.
+camunda-1  | [2026-10-27 14:44:57.137] [zb-fs-workers-0] [{actor-name=SnapshotStore-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.zeebe.snapshots.impl.FileBasedSnapshotStoreImpl - Committed new snapshot 0-0-21-0-0-1bbcef68, isBoostrap: false
+camunda-1  | [2026-10-27 14:44:57.138] [zb-actors-0] [{actor-name=ZeebePartition-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.zeebe.broker.system - MigrationSnapshotDirector recovered, marking it as healthy
+camunda-1  | [2026-10-27 14:44:57.139] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] INFO 
+camunda-1  | 	io.camunda.zeebe.broker.system - Partition-1 recovered, marking it as healthy
+camunda-1  | [2026-10-27 14:44:57.139] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] INFO 
+camunda-1  | 	io.camunda.zeebe.broker.system - Partition-1 recovered, marking it as healthy
+camunda-1  | [2026-10-27 14:44:57.395] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.exporter.CamundaExporter - Opening Exporter on partition 1
+camunda-1  | [2026-10-27 14:44:57.397] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1  | 	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:57.399] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1  | 	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:57.410] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.exporter.CamundaExporter - Exporter resources closed
+camunda-1  | [2026-10-27 14:44:57.410] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1  | 	io.camunda.zeebe.broker.exporter - Failed to open exporter 'camundaexporter'. Retrying...
+camunda-1  | [2026-10-27 14:44:58.091] [pool-3-thread-1] INFO 
+camunda-1  | 	io.camunda.search.schema.SchemaManager - Stored schema version metadata: 8.8.44
+camunda-1  | [2026-10-27 14:44:58.116] [pool-3-thread-1] INFO 
+camunda-1  | 	io.camunda.search.schema.SchemaManager - Schema management completed.
+camunda-1  | [2026-10-27 14:44:58.118] [main] INFO 
+camunda-1  | 	io.camunda.application.commons.search.SearchEngineSchemaInitializer - Search engine schema initialization complete.
+camunda-1  | [2026-10-27 14:44:58.156] [main] INFO 
+camunda-1  | 	io.camunda.operate.webapp.StartupBean - INIT: Start operation executor...
+camunda-1  | [2026-10-27 14:44:58.157] [main] INFO 
+camunda-1  | 	io.camunda.operate.webapp.StartupBean - INIT: DONE
+camunda-1  | [2026-10-27 14:44:58.260] [main] INFO 
+camunda-1  | 	io.camunda.tasklist.WebappModuleConfiguration - Starting module: webapp
+camunda-1  | [2026-10-27 14:44:58.261] [Thread-14] WARN 
+camunda-1  | 	org.elasticsearch.client.RestClient - request [POST http://elasticsearch:9200/operate-operation-8.4.1_/_search?typed_keys=true&max_concurrent_shard_requests=5&search_type=query_then_fetch&batched_reduce_size=512] returned 4 warnings: [299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [from] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [to] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_lower] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_upper] used, this field is unused and will be removed entirely"]
+camunda-1  | [2026-10-27 14:44:58.262] [main] WARN 
+camunda-1  | 	io.camunda.tasklist.connect.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:58.275] [main] WARN 
+camunda-1  | 	io.camunda.tasklist.connect.ElasticsearchConnector - Elasticsearch cluster is not accessible
+camunda-1  | [2026-10-27 14:44:58.279] [main] WARN 
+camunda-1  | 	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:58.382] [main] INFO 
+camunda-1  | 	org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name camundaUserDetailsService
+camunda-1  | [2026-10-27 14:44:58.411] [main] INFO 
+camunda-1  | 	io.camunda.authentication.config.WebSecurityConfig - The API is protected by HTTP Basic authentication.
+camunda-1  | [2026-10-27 14:44:58.422] [main] INFO 
+camunda-1  | 	org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping - Adding welcome page: class path resource [META-INF/resources/identity/index.html]
+camunda-1  | [2026-10-27 14:44:58.550] [main] WARN 
+camunda-1  | 	org.springframework.boot.actuate.endpoint.EndpointId - Endpoint ID 'usage-metrics' contains invalid characters, please migrate to a valid format.
+camunda-1  | [2026-10-27 14:44:58.572] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.exporter.CamundaExporter - Opening Exporter on partition 1
+camunda-1  | [2026-10-27 14:44:58.575] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1  | 	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:58.576] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1  | 	io.camunda.search.connect.es.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:58.618] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.search.schema.SchemaManager - Validate '34' existing indices based on '34' descriptors
+camunda-1  | [2026-10-27 14:44:58.648] [main] INFO 
+camunda-1  | 	io.camunda.authentication.config.WebSecurityConfig - Web Applications Login/Logout is setup.
+camunda-1  | [2026-10-27 14:44:58.655] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] INFO 
+camunda-1  | 	io.camunda.exporter.CamundaExporter - Exporter opened
+camunda-1  | [2026-10-27 14:44:58.694] [main] WARN 
+camunda-1  | 	io.camunda.tasklist.connect.ElasticsearchConnector - Username and/or password for are empty. Basic authentication for elasticsearch is not used.
+camunda-1  | [2026-10-27 14:44:58.701] [main] INFO 
+camunda-1  | 	io.camunda.tasklist.connect.ElasticsearchConnector - Elasticsearch cluster health: Yellow
+camunda-1  | [2026-10-27 14:44:58.701] [main] WARN 
+camunda-1  | 	io.camunda.tasklist.connect.ElasticsearchConnector - Elasticsearch cluster is not accessible
+camunda-1  | [2026-10-27 14:44:59.100] [main] INFO 
+camunda-1  | 	org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:164)
+connectors-1  | 	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88)
+connectors-1  | 	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+connectors-1  | 	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+connectors-1  | 	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86)
+connectors-1  | 	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71)
+connectors-1  | 	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:348)
+connectors-1  | 	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:413)
+connectors-1  | 	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71)
+connectors-1  | 	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1308)
+connectors-1  | 	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2198)
+connectors-1  | 	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74)
+connectors-1  | 	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:974)
+connectors-1  | 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:492)
+connectors-1  | 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:80)
+connectors-1  | 	at java.base/java.lang.Thread.run(Unknown Source)
+connectors-1  | , data={}, healthChange=null]
+connectors-1  | 2026-10-27T14:45:08.341Z  WARN 1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1  | 
+connectors-1  | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1  | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1  | 	at io.camunda.connector.inbound.HttpWebhookExecutable.triggerWebhook(HttpWebhookExecutable.java:117)
+connectors-1  | 	at io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController.processWebhook(InboundWebhookRestController.java:303)
+connectors-1  | 	at io.camunda.connector.runtime.inbound.webhook.InboundWebhookRestController.inbound(InboundWebhookRestController.java:241)
+connectors-1  | 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+connectors-1  | 	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+connectors-1  | 	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:258)
+connectors-1  | 	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:191)
+connectors-1  | 	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+connectors-1  | 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:991)
+connectors-1  | 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:896)
+connectors-1  | 	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+connectors-1  | 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+connectors-1  | 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+connectors-1  | 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+connectors-1  | 	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+connectors-1  | 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+connectors-1  | 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+connectors-1  | 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:197)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:57)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:110)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+connectors-1  | 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:166)
+connectors-1  | 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:142)
+connectors-1  | 	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:164)
+connectors-1  | 	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88)
+connectors-1  | 	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:540)
+connectors-1  | 	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+connectors-1  | 	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:86)
+connectors-1  | 	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:71)
+connectors-1  | 	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:348)
+connectors-1  | 	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:413)
+connectors-1  | 	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:71)
+connectors-1  | 	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:1308)
+connectors-1  | 	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:2198)
+connectors-1  | 	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:74)
+connectors-1  | 	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:974)
+connectors-1  | 	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:492)
+connectors-1  | 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:80)
+connectors-1  | 	at java.base/java.lang.Thread.run(Unknown Source)
+connectors-1  | 
+connectors-1  | 2026-10-27T14:45:08.344Z  INFO 1 --- [   scheduling-1] i.c.c.r.i.state.ProcessStateStoreImpl    : Activating newly deployed process definition: a2a-card
+connectors-1  | 2026-10-27T14:45:08.357Z  INFO 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=INFO, tag=POST, timestamp=2026-10-27T14:45:08.357037337Z, message=URL: https://127.0.0.1:54884/inbound/a2a, data={}, healthChange=null]
+connectors-1  | 2026-10-27T14:45:08.467Z  INFO 1 --- [pool-4-thread-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=INFO, tag=Health, timestamp=2026-10-27T14:45:08.467167212Z, message=Health status changed to UP, details: null, data={}, healthChange=Health{status=UP, error=null, details=null}]
+connectors-1  | 2026-10-27T14:45:08.467Z  INFO 1 --- [pool-4-thread-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=INFO, tag=Lifecycle, timestamp=2026-10-27T14:45:08.467366462Z, message=Activated inbound connector io.camunda:webhook:1 with deduplication ID '<default>-2251799813685303-CardRequested', data={}, healthChange=null]
+connectors-1  | 2026-10-27T14:45:08.640Z  INFO 1 --- [nio-8080-exec-3] i.c.c.r.c.i.c.InboundCorrelationHandler  : Created a process instance with key 2251799813685351
+connectors-1  | 2026-10-27T14:45:08.642Z  INFO 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=INFO, tag=Correlation, timestamp=2026-10-27T14:45:08.642127004Z, message=Process instance created, data={processInstanceKey=2251799813685351}, healthChange=null]
+connectors-1  | 2026-10-27T14:45:08.646Z  INFO 1 --- [pool-2-thread-3] i.c.c.r.o.job.SpringConnectorJobHandler  : Received job: 2251799813685386 of type: io.camunda:http-json:1 for tenant: <default>
+camunda-1     | [2026-10-27 14:44:59.144] [main] INFO 
+camunda-1     | 	org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 9600 (http)
+camunda-1     | [2026-10-27 14:44:59.170] [main] INFO 
+camunda-1     | 	org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 67 ms
+camunda-1     | Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+camunda-1     | [2026-10-27 14:44:59.195] [main] INFO 
+camunda-1     | 	org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver - Exposing 17 endpoints beneath base path '/actuator'
+camunda-1     | [2026-10-27 14:44:59.234] [main] INFO 
+camunda-1     | 	org.springframework.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 9600 (http) with context path '/'
+camunda-1     | [2026-10-27 14:44:59.249] [main] INFO 
+camunda-1     | 	io.camunda.application.StandaloneCamunda - Started StandaloneCamunda in 6.244 seconds (process running for 6.99)
+camunda-1     | [2026-10-27 14:44:59.289] [main] WARN 
+camunda-1     | 	org.springdoc.core.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+camunda-1     | [2026-10-27 14:44:59.290] [main] WARN 
+camunda-1     | 	org.springdoc.core.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+camunda-1     | [2026-10-27 14:45:00.272] [Thread-14] WARN 
+camunda-1     | 	org.elasticsearch.client.RestClient - request [POST http://elasticsearch:9200/operate-operation-8.4.1_/_search?typed_keys=true&max_concurrent_shard_requests=5&search_type=query_then_fetch&batched_reduce_size=512] returned 4 warnings: [299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [from] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [to] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_lower] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_upper] used, this field is unused and will be removed entirely"]
+camunda-1     | [2026-10-27 14:45:02.278] [Thread-14] WARN 
+camunda-1     | 	org.elasticsearch.client.RestClient - request [POST http://elasticsearch:9200/operate-operation-8.4.1_/_search?typed_keys=true&max_concurrent_shard_requests=5&search_type=query_then_fetch&batched_reduce_size=512] returned 4 warnings: [299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [from] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [to] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_lower] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_upper] used, this field is unused and will be removed entirely"]
+camunda-1     | [2026-10-27 14:45:02.304] [http-nio-0.0.0.0-9600-exec-1] INFO 
+camunda-1     | 	org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServletRegistration'
+camunda-1     | [2026-10-27 14:45:02.304] [http-nio-0.0.0.0-9600-exec-1] INFO 
+camunda-1     | 	org.springframework.web.servlet.DispatcherServlet - Completed initialization in 0 ms
+camunda-1     | [2026-10-27 14:45:03.345] [http-nio-0.0.0.0-8080-exec-1] INFO 
+camunda-1     | 	org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+camunda-1     | [2026-10-27 14:45:03.346] [http-nio-0.0.0.0-8080-exec-1] INFO 
+camunda-1     | 	org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+camunda-1     | [2026-10-27 14:45:04.288] [Thread-14] WARN 
+camunda-1     | 	org.elasticsearch.client.RestClient - request [POST http://elasticsearch:9200/operate-operation-8.4.1_/_search?typed_keys=true&max_concurrent_shard_requests=5&search_type=query_then_fetch&batched_reduce_size=512] returned 4 warnings: [299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [from] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [to] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_lower] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_upper] used, this field is unused and will be removed entirely"]
+camunda-1     | [2026-10-27 14:45:06.294] [Thread-14] WARN 
+camunda-1     | 	org.elasticsearch.client.RestClient - request [POST http://elasticsearch:9200/operate-operation-8.4.1_/_search?typed_keys=true&max_concurrent_shard_requests=5&search_type=query_then_fetch&batched_reduce_size=512] returned 4 warnings: [299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [from] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [to] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_lower] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_upper] used, this field is unused and will be removed entirely"]
+camunda-1     | [2026-10-27 14:45:08.299] [Thread-14] WARN 
+camunda-1     | 	org.elasticsearch.client.RestClient - request [POST http://elasticsearch:9200/operate-operation-8.4.1_/_search?typed_keys=true&max_concurrent_shard_requests=5&search_type=query_then_fetch&batched_reduce_size=512] returned 4 warnings: [299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [from] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [to] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_lower] used, this field is unused and will be removed entirely"],[299 Elasticsearch-8.17.0-2b6a7fed44faa321997703718f07ee0420804b41 "Deprecated field [include_upper] used, this field is unused and will be removed entirely"]
+
+Active incidents: 200 {"items":[],"page":{"totalItems":0,"hasMoreTotalItems":false}}
+Process states: []
+Task variables: 200 {"items":[],"page":{"totalItems":0,"hasMoreTotalItems":false}}
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Stopping 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Stopped 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Removing 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-connectors-1 Removed 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Stopping 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Stopped 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Removing 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-camunda-1 Removed 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Stopping 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Stopped 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Removing 
+ Container a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5-elasticsearch-1 Removed 
+ Network a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5_default Removing 
+ Network a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5_default Removed 
+Traceback (most recent call last):
+  File "<SESSION_ARTIFACTS>/matched-latest-run.py", line 171, in <module>
+    runpy.run_path(str(RUNTIME / "verify.py"), run_name="__main__")
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "<VALIDATION_WORKSPACE>/experiment-3/tests/runtime/verify.py", line 306, in <module>
+    assert status == 200 and body["id"] == "proof-request", (status, body)
+TypeError: 'NoneType' object is not subscriptable

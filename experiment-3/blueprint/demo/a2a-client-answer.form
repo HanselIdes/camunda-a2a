@@ -1,0 +1,116 @@
+{
+  "components": [
+    {
+      "type": "text",
+      "text": "=\"### Confirm synthetic claim\\n\\n\" + reply.text",
+      "id": "Field_a2a_client_answer_0",
+      "layout": {
+        "row": "Row_0",
+        "columns": null
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "followUp",
+      "label": "Additional context (optional)",
+      "id": "Field_a2a_client_answer_1",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      }
+    },
+    {
+      "type": "textfield",
+      "key": "claimMerchant",
+      "label": "Merchant",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_a2a_client_answer_2",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      }
+    },
+    {
+      "type": "textfield",
+      "key": "claimCurrency",
+      "label": "Currency",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_a2a_client_answer_3",
+      "layout": {
+        "row": "Row_3",
+        "columns": null
+      }
+    },
+    {
+      "type": "number",
+      "key": "claimFirstAmount",
+      "label": "First charge amount",
+      "validate": {
+        "required": true,
+        "min": 0
+      },
+      "decimalDigits": 2,
+      "id": "Field_a2a_client_answer_4",
+      "layout": {
+        "row": "Row_4",
+        "columns": null
+      }
+    },
+    {
+      "type": "number",
+      "key": "claimSecondAmount",
+      "label": "Second charge amount",
+      "validate": {
+        "required": true,
+        "min": 0
+      },
+      "decimalDigits": 2,
+      "id": "Field_a2a_client_answer_5",
+      "layout": {
+        "row": "Row_5",
+        "columns": null
+      }
+    },
+    {
+      "type": "number",
+      "key": "claimExpectedAmount",
+      "label": "Expected order amount",
+      "validate": {
+        "required": true,
+        "min": 0
+      },
+      "decimalDigits": 2,
+      "id": "Field_a2a_client_answer_6",
+      "layout": {
+        "row": "Row_6",
+        "columns": null
+      }
+    },
+    {
+      "type": "checkbox",
+      "key": "claimSyntheticOnly",
+      "label": "I confirm these are synthetic demonstration values",
+      "validate": {
+        "required": true
+      },
+      "id": "Field_a2a_client_answer_7",
+      "layout": {
+        "row": "Row_7",
+        "columns": null
+      }
+    }
+  ],
+  "type": "default",
+  "id": "a2a-client-answer",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.8.0",
+  "exporter": {
+    "name": "camunda-a2a",
+    "version": "1"
+  },
+  "schemaVersion": 18
+}

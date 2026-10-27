@@ -1,0 +1,69 @@
+{
+  "reportSource": "separate actual Hub/editor validation session; authorized session artifacts",
+  "assetSource": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+  "upstreamTemplateSource": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+  "twelveSourceHashPairsMatchExistingInventory": true,
+  "copiedScreenshotsProfilesCredentialsOrRawLogs": false,
+  "files": [
+    {
+      "file": "hub-validation-current.json",
+      "inputSha256": "3222c5d9218aca07ec973738fff72e8c99a19bea09f487a3117ed498348814c7",
+      "publishedSha256": "3ebcfed9a654212ae71149eb172a1602106dd141adca90bcf362ce48d8502ef5",
+      "transformations": [
+        "removed runtime owner session identifier",
+        "removed absolute session artifact root",
+        "omitted private artifact/profile/routes/log/screenshot index entries; no underlying files copied",
+        "removed Hub anonymous volume identifiers",
+        "replaced unrelated host process IDs with non-identifying ownership summary"
+      ]
+    },
+    {
+      "file": "hub-deployed-resource-integrity.json",
+      "inputSha256": "eecb887fe269f97c2edb82ebf45a7ada248b071c1e1a7aebf1a32e208522d607",
+      "publishedSha256": "e31c8aa4db88f22afe9f2929e0570ac5fe3f70bdbd6c94f886770dafb2f9514d",
+      "transformations": [
+        "JSON formatting only; field values unchanged"
+      ]
+    },
+    {
+      "file": "hub-save-reopen-observations.json",
+      "inputSha256": "723b560e11b485373fdba019b799247014969c5dc6e26a73d9e418c59508091e",
+      "publishedSha256": "474f93628c3cf8136809b96a39c0673094ec5a52179fb926cfe46bcbbad8f37e",
+      "transformations": [
+        "JSON formatting only; field values unchanged"
+      ]
+    },
+    {
+      "file": "tasklist-fresh-journey-result.json",
+      "inputSha256": "28e61ec168a0462bcd6916ecef082b7bff82609bfdc9ba21d0f931dc7f29fbcf",
+      "publishedSha256": "fc15e144561a1a5db7f780f71198bd3034d552395a3a55fc5765e07c38597406",
+      "transformations": [
+        "JSON formatting only; field values unchanged"
+      ]
+    },
+    {
+      "file": "tasklist-fresh-answer-observations.json",
+      "inputSha256": "846d86a49ce446c986efab40fd1689ec8d2470ced2c8d49581361369c0a34670",
+      "publishedSha256": "d14a1716a23aa9ce2451b5117e9faf9a7f3695b97c0bb7404743d3d8bfe8cb07",
+      "transformations": [
+        "JSON formatting only; field values unchanged"
+      ]
+    },
+    {
+      "file": "tasklist-fresh-answer-completion.json",
+      "inputSha256": "6acdf3c966fe083e76c8174afa907db0f3c9686da0773fe2d74771f877cfd396",
+      "publishedSha256": "77b41338988461b4bc7d8dc106ec09847ade632be2be7e12f7b1de1d4e35c79e",
+      "transformations": [
+        "JSON formatting only; field values unchanged"
+      ]
+    },
+    {
+      "file": "tasklist-fresh-result-observations.json",
+      "inputSha256": "bb66fc1c4cf94f203c4de237568bc192894bcfcdf00f929a941f3f4fff87d76e",
+      "publishedSha256": "69c371de25c9c6d6efe8d3d2a131b14f6275b6c1a7e1cf82c172e05bc55165b6",
+      "transformations": [
+        "replaced fresh journey task/context identifiers with stable placeholders"
+      ]
+    }
+  ]
+}

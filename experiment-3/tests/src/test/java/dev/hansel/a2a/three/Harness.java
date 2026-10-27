@@ -41,6 +41,8 @@ final class Harness {
   volatile String agentProcess = FIXTURE;
   /** Runs before each engine call with "METHOD path", so a test can change engine state at that exact moment. */
   volatile java.util.function.Consumer<String> beforeEngineCall = call -> {};
+  volatile java.util.function.BiFunction<String, Integer, Integer> afterEngineStatus = (call, status) -> status;
+  volatile java.util.function.BiFunction<String, Object, Object> afterEngineResponse = (call, body) -> body;
 
   Harness(final CamundaClient client, final CamundaProcessTestContext context) {
     this.client = client;
@@ -80,7 +82,7 @@ final class Harness {
       final String payload = body == null ? null : secrets(JSON.writeValueAsString(body));
       request.method(method, payload == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(payload));
       final var response = HTTP.send(request.build(), HttpResponse.BodyHandlers.ofString());
-      final int status = response.statusCode();
+      final int status = afterEngineStatus.apply(method + " " + url.substring(rest.length()), response.statusCode());
       if (status >= 400) {
         // the errorExpression shared by the engine calls: 404 and 409 become BPMN errors, anything else fails
         final String code = status == 404 ? "NOT_FOUND" : status == 409 ? "CONFLICT" : null;
@@ -91,7 +93,8 @@ final class Harness {
         }
         return;
       }
-      final Object responseBody = response.body() == null || response.body().isBlank() ? null : JSON.readValue(response.body(), Object.class);
+      final Object responseBody = afterEngineResponse.apply(method + " " + url.substring(rest.length()),
+          response.body() == null || response.body().isBlank() ? null : JSON.readValue(response.body(), Object.class));
       final String resultExpression = job.getCustomHeaders().get("resultExpression");
       final var complete = jobClient.newCompleteCommand(job);
       if (resultExpression != null && !resultExpression.isBlank()) {

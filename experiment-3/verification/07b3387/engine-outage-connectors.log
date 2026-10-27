@@ -1,0 +1,17 @@
+connectors-1  | 2026-10-27T11:33:02.972Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=RUNTIME 1 --- [nio-8080-exec-5] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=Correlation, timestamp=2026-10-27T11:33:02.972920630Z, message=Zeebe client status error: io exception, data={}, healthChange=null]
+connectors-1  | 2026-10-27T11:33:02.975Z  WARN  1 --- [pool-2-thread-1] io.camunda.client.job.poller             : Failed to activate jobs for worker message and job type io.camunda:sendMessage:1
+connectors-1  | io.grpc.StatusRuntimeException: UNAVAILABLE: io exception
+connectors-1  | Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: camunda/172.27.0.3:26500
+connectors-1  | Caused by: java.net.ConnectException: Connection refused
+connectors-1  | 2026-10-27T11:33:03.016Z  WARN  1 --- [pool-2-thread-2] io.camunda.client.job.poller             : Failed to activate jobs for worker RabbitMQ Producer and job type io.camunda:connector-rabbitmq:1
+connectors-1  | io.grpc.StatusRuntimeException: UNAVAILABLE: io exception
+connectors-1  | Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: camunda/172.27.0.3:26500
+connectors-1  | Caused by: java.net.ConnectException: Connection refused
+connectors-1  | 2026-10-27T11:33:03.026Z  WARN  1 --- [pool-2-thread-1] io.camunda.client.job.worker             : Failed to stream jobs of type 'io.camunda:aws-textract:1' to worker 'AWS Textract'
+connectors-1  | io.grpc.StatusRuntimeException: UNAVAILABLE: io exception
+connectors-1  | Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: camunda/172.27.0.3:26500
+connectors-1  | Caused by: java.net.ConnectException: Connection refused
+connectors-1  | 2026-10-27T11:33:03.028Z  WARN  1 --- [pool-2-thread-4] io.camunda.client.job.worker             : Failed to stream jobs of type 'io.camunda.agenticai:adhoctoolsschema:1' to worker 'Ad-hoc tools schema'
+connectors-1  | io.grpc.StatusRuntimeException: UNAVAILABLE: io exception
+connectors-1  | Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: camunda/172.27.0.3:26500
+connectors-1  | Caused by: java.net.ConnectException: Connection refused

@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "id": "quoting-backslashes",
+  "method": "SendMessage",
+  "params": {
+    "message": {
+      "messageId": "4badebd5-4aa2-41a0-97c4-9bc23f4175b0",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details."
+        }
+      ]
+    }
+  }
+}

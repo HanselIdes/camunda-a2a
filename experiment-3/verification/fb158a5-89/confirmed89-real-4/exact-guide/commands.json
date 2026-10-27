@@ -1,0 +1,17 @@
+[
+  {
+    "name": "card",
+    "exactGuideBash": "A2A_CURL_ARGS=(--cacert \"$A2A_CA_FILE\" --resolve \"host.docker.internal:${A2A_CONNECTORS_PORT}:127.0.0.1\")\n\ncurl --fail \"${A2A_CURL_ARGS[@]}\" \"$A2A_AGENT_CARD_URL\"",
+    "exitCode": 0
+  },
+  {
+    "name": "send",
+    "exactGuideBash": "A2A_CURL_ARGS=(--cacert \"$A2A_CA_FILE\" --resolve \"host.docker.internal:${A2A_CONNECTORS_PORT}:127.0.0.1\")\n\ncurl --fail \"${A2A_CURL_ARGS[@]}\" \"$A2A_RPC_URL\" \\\n  -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \\\n  -H \"X-A2A-Api-Key: $A2A_API_KEY\" \\\n  --data '{\"jsonrpc\":\"2.0\",\"id\":\"demo-send\",\"method\":\"SendMessage\",\"params\":{\"message\":{\"messageId\":\"demo-request-1\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"},{\"data\":{\"syntheticClaim\":{\"merchant\":\"Northwind Electronics\",\"currency\":\"USD\",\"chargeAmounts\":[49.95,49.95],\"expectedAmount\":49.95,\"syntheticOnly\":true}}}]}}}'\n",
+    "exitCode": 0
+  },
+  {
+    "name": "poll-0",
+    "exactGuideBash": "A2A_CURL_ARGS=(--cacert \"$A2A_CA_FILE\" --resolve \"host.docker.internal:${A2A_CONNECTORS_PORT}:127.0.0.1\")\n\ncurl --fail \"${A2A_CURL_ARGS[@]}\" \"$A2A_RPC_URL\" \\\n  -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \\\n  -H \"X-A2A-Api-Key: $A2A_API_KEY\" \\\n  --data \"{\\\"jsonrpc\\\":\\\"2.0\\\",\\\"id\\\":\\\"demo-poll\\\",\\\"method\\\":\\\"GetTask\\\",\\\"params\\\":{\\\"id\\\":\\\"$TASK_ID\\\"}}\"\n",
+    "exitCode": 0
+  }
+]

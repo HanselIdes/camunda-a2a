@@ -1,0 +1,138 @@
+{
+  "targetCommit": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+  "targetWorktreeDirty": false,
+  "sequentialTasks": 100,
+  "concurrentTasks": 20,
+  "measuredPeakActiveTaskOperations": 20,
+  "businessTimerSeconds": 15,
+  "creationWindowSeconds": 3.1136541250000107,
+  "minimumProvenBusinessOverlapSeconds": 11.88634587499999,
+  "agents": 2,
+  "isolation": "Two separate authenticated Self-Managed deployments.",
+  "boundaryChecks": {
+    "alpha": {
+      "foreignTasksNotFound": true,
+      "exactPaginatedTasks": 60,
+      "historyLimit": 1
+    },
+    "beta": {
+      "foreignTasksNotFound": true,
+      "exactPaginatedTasks": 60,
+      "historyLimit": 1
+    }
+  },
+  "duplicates": {
+    "alpha": {
+      "behavior": "Independent new tasks; message IDs do not deduplicate side effects.",
+      "taskIds": [
+        "01a17abe-685c-7c2e-87da-23c08bd68bc1",
+        "01a17abe-7312-79cb-a247-ae5a7a816236"
+      ]
+    },
+    "beta": {
+      "behavior": "Independent new tasks; message IDs do not deduplicate side effects.",
+      "taskIds": [
+        "01a17abe-7c31-7241-85d9-873d478bc9c0",
+        "01a17abe-83fc-760c-8a01-13147fcad647"
+      ]
+    }
+  },
+  "restarts": [
+    {
+      "service": "connectors",
+      "preservedTask": "01a17aba-a63b-7971-863a-3c23cdbe9e95",
+      "newTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "alpha-1793060679495037000",
+            "taskId": "01a17abe-afb3-763d-9fac-df5de5ec5a37",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-connectors-restart-alpha"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17abe-b015-7262-9f63-c90325803496",
+            "taskId": "01a17abe-afb3-763d-9fac-df5de5ec5a37",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-connectors-restart-alpha"
+              }
+            ]
+          }
+        ],
+        "id": "01a17abe-afb3-763d-9fac-df5de5ec5a37",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17abe-b015-7262-9f63-c90325803496",
+            "taskId": "01a17abe-afb3-763d-9fac-df5de5ec5a37",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-connectors-restart-alpha"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T00:24:39Z"
+        },
+        "contextId": "load-alpha"
+      }
+    },
+    {
+      "service": "camunda",
+      "preservedTask": "01a17aba-a63b-7971-863a-3c23cdbe9e95",
+      "newTask": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "alpha-1793060693273257000",
+            "taskId": "01a17abe-e58f-7028-a69b-15f02594c2a0",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-camunda-restart-alpha"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17abe-e616-7573-ba7b-7096fb3f1932",
+            "taskId": "01a17abe-e58f-7028-a69b-15f02594c2a0",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-camunda-restart-alpha"
+              }
+            ]
+          }
+        ],
+        "id": "01a17abe-e58f-7028-a69b-15f02594c2a0",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17abe-e616-7573-ba7b-7096fb3f1932",
+            "taskId": "01a17abe-e58f-7028-a69b-15f02594c2a0",
+            "contextId": "load-alpha",
+            "parts": [
+              {
+                "text": "after-camunda-restart-alpha"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T00:24:53Z"
+        },
+        "contextId": "load-alpha"
+      }
+    }
+  ],
+  "exactResultChecks": 120,
+  "verdict": "PASS"
+}

@@ -1,0 +1,202 @@
+{
+  "inventorySource": "91cf7a57e2adfa6e522756319c6381a6c8798de4",
+  "shippingBehaviorSource": "363407202ff641ee666b92ba74162de56a40fb83",
+  "execution": "Local exact-version validation, overall FAIL; not publication acceptance",
+  "localAssets": [
+    {
+      "path": "experiment-3/blueprint/README.md",
+      "classification": "documentation",
+      "sha256": "2b4bd707310f7c9ee7f4d3bfac32853903c314cab71b9d74ed94bfc5a0dca48d",
+      "blob": "9c4a275cf88988a73109714dfad423ed5b7038b8",
+      "changedSinceDe16278": true,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-card-dispute.bpmn",
+      "classification": "selected-import",
+      "sha256": "76384b0a23b76c61144bfe12fa60b8179b49d6311b91a1011af558b1061c8440",
+      "blob": "37995e4825a74fafe137ae366312e594de8aabed",
+      "changedSinceDe16278": true,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-card.bpmn",
+      "classification": "selected-import",
+      "sha256": "82c845e9ca215d836bb4cb22ba927e969bc5f01c63ce9c38214853b51acb1bc2",
+      "blob": "75bba24f8716b7dbe6bc1063b177e650f94c3f2c",
+      "changedSinceDe16278": true,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client-answer.form",
+      "classification": "selected-import",
+      "sha256": "0cf13f81302e63ce6ef7f1b2bbe50a16934db7fe9120154a3dc9e5666c380251",
+      "blob": "e4e2c95a5587dedba08f7372f8d64ee88e878707",
+      "changedSinceDe16278": false,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client-ask.form",
+      "classification": "selected-import",
+      "sha256": "bb5ca4b1bf138266958c70c5af3d106b7c8e226a156f2c31da966dcea8cfd057",
+      "blob": "1aa0e99847450b1d8d64a2dfb1dc239499862f07",
+      "changedSinceDe16278": false,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client-result.form",
+      "classification": "selected-import",
+      "sha256": "5fc2c5f2918343e988a8fdad24ef1ccb48d526bc120b7ddfd98bd31cbb4c1e69",
+      "blob": "8b85ce5a593de3d5f607e08fcb37ae009074d8dc",
+      "changedSinceDe16278": false,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client.bpmn",
+      "classification": "selected-import",
+      "sha256": "3bef30111c46336d5cb166f1ed2ac2c3a7cec9dc464fb048bf3f3fa052e6331d",
+      "blob": "706f219bb3627f10bf601299398c6c1e6943e420",
+      "changedSinceDe16278": true,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/docker-compose.yml",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "1ad88bb54844a2acc8a5960a36be5be53dea04b7073e9c43a78a1ee6ff3287aa",
+      "blob": "6f041516de2dfed908fc5db22522347cc8d326f1",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn",
+      "classification": "selected-import",
+      "sha256": "c0b0bfcfde1c2e16c3088b9f0c377358a497faf96ecf22e9e7909939f88f8c77",
+      "blob": "85283a4301f2dfcc7030565c2343a3d999539304",
+      "changedSinceDe16278": true,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/profiles/oauth/a2a-protocol.bpmn",
+      "classification": "nonshipping-unverified-oauth",
+      "sha256": "ed60209480b4c7891e8a2e7aa84a38685202bbce0736095f406c694a247ae550",
+      "blob": "5165dba69610b35f9fa17a05647bc5e983614a1a",
+      "changedSinceDe16278": true,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/blueprint/proxy/nginx.conf",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "9b0066b868f9217d6eb90658b8517c70cb4b94e5225778a7a09b7792d1d6da2e",
+      "blob": "02e02a51306b78893927b30bf72f3c560abc9bb9",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/blueprint/smoke.py",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "0aba9a36150c16264a53c6dc042613e820033da11ac9d0d346cec97d9f73cdf9",
+      "blob": "a4daec4ab280cbf794018def7a27214878e464ff",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/blueprint/smoke.sh",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "083d37cc0b04d0a24fdc1023a039d35f7747a4a4f01a5505b8cf60eb7176e29e",
+      "blob": "37363725c7f1f835d2e01ccc78060945507932ab",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/blueprint/templates/a2a-core-card.json",
+      "classification": "selected-import",
+      "sha256": "d08c84704ecbbd37666e5dd8fc1b0c4e98a3fda1597d0d0533d247a27a96ba30",
+      "blob": "89a16837310d6628ce1e8bd569a606a4988710ee",
+      "changedSinceDe16278": true,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/templates/a2a-core-rpc.json",
+      "classification": "selected-import",
+      "sha256": "b8354cc32208a81210b94cbe78582040a669632652fcec78a8d9653d36483c85",
+      "blob": "cdac084248c393f0b9dd2044d95ad0d7aa4da8d2",
+      "changedSinceDe16278": true,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/blueprint/templates/http-json.json",
+      "classification": "selected-import",
+      "sha256": "af0668b3dbf8343aa3330cbc2dab748de26f19a10a429243095430b5ee22d420",
+      "blob": "693f4a6e39a38abcb0fc73514e447b72fb86ec48",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/bpmn/a2a-echo.bpmn",
+      "classification": "documented-deterministic-reference",
+      "sha256": "b7238c1b752c05147e2607f7df7012a3950a09d2c4543b0cb397d481c5d462e0",
+      "blob": "96f0983e96a2f6d7115e4cf5cd522b532e4e6d93",
+      "changedSinceDe16278": true,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/dmn/a2a-validate.dmn",
+      "classification": "selected-import",
+      "sha256": "c335fb5a5c127d4f9b145bd93e2428835589efb06bf9ffc7d92e2f4861174979",
+      "blob": "93170811ea4665ba4941a1d0f67002f8bd61bf8f",
+      "changedSinceDe16278": false,
+      "webImport": true
+    },
+    {
+      "path": "experiment-3/scripts/c8run-demo.sh",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "9254d97f2e3e1efb7297b2eae459852f784be17d991430c777c7009ca769c55c",
+      "blob": "74b429331a3dab7c944f10ca11dc7345b9046a47",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/scripts/coverage.py",
+      "classification": "contributor-diagnostic",
+      "sha256": "00b0f014dbcd45f4bee3fae376b2bdcef1208f2267b802fe39810dc8c62aa16a",
+      "blob": "624eecd6a30c1e193730c391eb290a4dbf86afec",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/scripts/deploy.sh",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "d362f42da456491f50e8cd756d255f2f9a717831b28d3c0c37a0766a76257b6d",
+      "blob": "29453d3f3ff7978ca0dcb99686ef3df39fe0a597",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/scripts/token-trace.py",
+      "classification": "contributor-diagnostic",
+      "sha256": "355985f23ee2363b457a2b0ab4268058591006408a0a600fc11fa743b948bb2c",
+      "blob": "9502d53da0404b11ce9b3ac153be59c8a308b0a3",
+      "changedSinceDe16278": false,
+      "webImport": false
+    },
+    {
+      "path": "experiment-3/scripts/trace.py",
+      "classification": "contributor-diagnostic",
+      "sha256": "2689d07d3eb65d8fa44729d86e9a77aebffaf005bb10ea503b99374458fb7bcd",
+      "blob": "64d5b1a25e5a5e9eea776daa6e52f6c213c6c6ae",
+      "changedSinceDe16278": false,
+      "webImport": false
+    }
+  ],
+  "upstreamTemplate": {
+    "repository": "camunda/connectors",
+    "revision": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+    "path": "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+    "sha256": "3d9ac20785e2ae06b2f907a9a25bd0409db2eb3b2734ce45709f04ee2f92c0b6",
+    "blob": "02db883618475dac8ed413578cef4e81f4ecfed4",
+    "rawUrl": "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+    "rawReadbackStatus": 200,
+    "webImport": false,
+    "disposition": "Required full install closure; SaaS exact-version registry prerequisite"
+  }
+}

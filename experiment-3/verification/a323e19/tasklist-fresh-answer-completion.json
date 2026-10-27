@@ -1,0 +1,16 @@
+{
+  "journey": "fresh-H2",
+  "answer": "Synthetic validation H2: the expected amount for this single order is USD 49.95. Merchant Northwind Electronics, currency USD, charge amounts USD 49.95 and USD 49.95.",
+  "method": "Actual Assign to me and Complete Task UI",
+  "responses": [
+    {
+      "path": "/v2/user-tasks/:task/assignment",
+      "status": 204
+    },
+    {
+      "path": "/v2/user-tasks/:task/completion",
+      "status": 204
+    }
+  ],
+  "text": "Task completed\nJust now\nSkip to main content\nTasklist\nTasks\nProcesses\nNon-production license\nNon-commercial license\nAll open tasks\nAnswer the agent's question\nA2A client: ask the agent\nMe\nMedium\n1 minute ago\nAuto-select first available task\nAuto-select first available task\nPick a task to work on"
+}

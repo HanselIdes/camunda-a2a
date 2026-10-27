@@ -1,0 +1,39 @@
+{
+  "sourceCommit": "a45de8c15e9bb7fb83313e5f9ceaae1ffd83bd30",
+  "acceptanceStatus": "PARTIAL",
+  "cleanSourceBeforeAndAfter": true,
+  "core": {
+    "tests": 28,
+    "suites": 2,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "configuredEngineVersion": "8.10.2",
+    "processTestVersion": "8.10.4",
+    "scope": "Actual engine with Harness HTTP adapter, including committed-correlation/NOT_FOUND retry, lost-response incident, ambiguous missing-index and complete-list regressions. Not native transport fault injection."
+  },
+  "native": {
+    "engine": "8.8.21",
+    "connectors": "8.9.0",
+    "elasticsearch": "8.17.0",
+    "terminalCases": 44,
+    "apiKeyChecks": 22,
+    "versionChecks": 12,
+    "listedExactTasks": 125,
+    "listedUniqueIds": 125,
+    "a2aPageCounts": [
+      37,
+      37,
+      37,
+      14
+    ],
+    "persistedCredentialExclusion": "PASS",
+    "ownedRuntimeCleanup": "PASS"
+  },
+  "remaining": [
+    "Final-source complete Maven suite, three TCK repeats, SDK/real-model/BPMN client and two-agent workload/restart series.",
+    "Credential/permission/engine/model failure injection and recovery, plus final individual mandatory-requirement dispositions.",
+    "Observed Modeler/Marketplace import, timed fresh adoption and external publication/legal gates."
+  ],
+  "historicalEvidence": "Earlier source reports and failures remain immutable and are not acceptance evidence for this protocol source."
+}

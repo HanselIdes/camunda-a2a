@@ -10,6 +10,7 @@ every PUSH-* requirement must PASS, and CORE-CAP-001 (the error for an unsupport
 import fnmatch
 import json
 import os
+from pathlib import Path
 import re
 import sys
 import urllib.request
@@ -18,6 +19,15 @@ import xml.etree.ElementTree as ET
 HERE = os.path.dirname(os.path.abspath(__file__))
 REASONS = {"capability-not-declared", "capability-declared", "other-binding", "client-side", "not-exercised"}
 RELEVANT = {"jsonrpc", "agent_card"}
+# These pinned TCK tests skip before the collector records their requirement.
+EARLY_SKIP_REQUIREMENTS = {
+    "core_operations.test_transport_behavior.TestJsonRpcStreaming::test_streaming_content_type":
+        ["JSONRPC-SSE-001"],
+    "core_operations.test_transport_behavior.TestRestFormat::test_response_content_type":
+        ["HTTP_JSON-SVC-001"],
+    "core_operations.test_transport_behavior.TestRestFormat::test_response_validates_against_schema":
+        ["HTTP_JSON-SVC-001"],
+}
 # Must be PASS and may never be allowlisted.
 NEVER_ALLOWED = [
     "CORE-SEND-001", "CORE-SEND-003", "CORE-GET-*", "CORE-CANCEL-*", "CORE-LIST-*", "CORE-EXECUTION-MODE-*",
@@ -34,7 +44,7 @@ def never_allowed(req_id):
 
 def load_allowlist(path):
     reqs, skips, errors = {}, [], []
-    for n, line in enumerate(open(path), 1):
+    for n, line in enumerate(Path(path).read_text().splitlines(), 1):
         line = line.strip()
         if not line or line.startswith("#"):
             continue
@@ -54,9 +64,9 @@ def load_allowlist(path):
         if kind == "REQ":
             if never_allowed(target):
                 errors.append("allowlist line %d: %s must be PASS and cannot be allowlisted" % (n, target))
-            reqs[target] = reason
+            reqs[target] = {"reason": reason, "note": note}
         else:
-            skips.append((re.compile(target, re.I), reason))
+            skips.append((re.compile(target, re.I), reason, note))
     return reqs, skips, errors
 
 
@@ -74,8 +84,9 @@ def main(argv):
     if push:
         # the capability is declared: the PUSH-* requirements are not optional any more
         reqs_allowed = {k: v for k, v in reqs_allowed.items() if not k.startswith("PUSH-")}
-        skip_rules = [(rx, r) for rx, r in skip_rules if "PUSH" not in rx.pattern.upper()]
-        skip_rules.append((re.compile(r"TestCapabilityPushNotifications::test_push_not_supported|test_push_notification_not_supported_error"), "capability-declared"))
+        skip_rules = [(rx, r, note) for rx, r, note in skip_rules if "PUSH" not in rx.pattern.upper()]
+        skip_rules.append((re.compile(r"TestCapabilityPushNotifications::test_push_not_supported|test_push_notification_not_supported_error"),
+                           "capability-declared", "Push is declared; unsupported-capability error does not apply."))
 
     # 1. junit: failures, errors, and a plausible number of executed tests
     suite = ET.parse(os.path.join(reports, "junitreport.xml")).getroot()
@@ -91,21 +102,39 @@ def main(argv):
         problems.append("only %d tests executed (expected 50 or more): a run that executes nothing is a failure" % executed)
 
     # 2. every junit skip must match an allowlisted pattern
+    compat = json.loads(Path(reports, "compatibility.json").read_text())
+    requirements_by_test = {}
+    for rid, requirement in compat["per_requirement"].items():
+        for test_id in requirement.get("test_ids", []):
+            normalized = test_id.replace(".py::", ".").replace("::", ".").replace("/", ".")
+            requirements_by_test.setdefault(normalized, []).append(rid)
     unmatched = []
+    skip_audit = []
     for tc in ET.parse(os.path.join(reports, "junitreport.xml")).getroot().iter("testcase"):
         if tc.find("skipped") is None:
             continue
         node = (tc.get("classname") or "").replace("tests.compatibility.", "") + "::" + (tc.get("name") or "")
-        if not any(rx.search(node) for rx, _ in skip_rules):
-            msg = (tc.find("skipped").get("message") or "")[:80]
+        matched = [{"pattern": rx.pattern, "reason": reason, "note": note}
+                   for rx, reason, note in skip_rules if rx.search(node)]
+        msg = tc.find("skipped").get("message") or ""
+        normalized = (tc.get("classname") or "") + "." + (tc.get("name") or "")
+        requirement_ids = requirements_by_test.get(normalized, EARLY_SKIP_REQUIREMENTS.get(node, []))
+        skip_audit.append({"test": node, "message": msg, "requirementIds": requirement_ids,
+                           "requirementMapping": "collector" if normalized in requirements_by_test
+                           else "pinned TCK source: test_transport_behavior.py",
+                           "allowlistMatches": matched})
+        if not matched:
+            msg = msg[:80]
             unmatched.append("%s (%s)" % (node, msg))
+        if not requirement_ids:
+            problems.append("skipped test has no requirement mapping: " + node)
     for u in unmatched:
         problems.append("skip not allowlisted: " + u)
 
     # 3. every MUST requirement is PASS on jsonrpc/agent_card unless allowlisted
-    compat = json.load(open(os.path.join(reports, "compatibility.json")))
     passed = allowlisted = 0
     seen = set()
+    requirement_audit = []
     for rid, v in compat["per_requirement"].items():
         if v["level"] != "MUST":
             continue
@@ -115,6 +144,8 @@ def main(argv):
             ok = all(s == "PASS" for s in relevant.values())
         else:  # only checked on another binding without touching the SUT's interface (static TCK checks)
             ok = v["status"] == "PASS"
+        requirement_audit.append({"id": rid, "status": v["status"], "transports": v["transports"],
+                                  "passesGate": ok, "exclusion": None if ok else reqs_allowed.get(rid)})
         if ok:
             passed += 1
             continue
@@ -134,7 +165,11 @@ def main(argv):
     try:
         req = urllib.request.Request(rest + "/v2/incidents/search", data=b"{}",
                                      headers={"Content-Type": "application/json"}, method="POST")
-        total = json.load(urllib.request.urlopen(req, timeout=20))["page"]["totalItems"]
+        authorization = os.environ.get("A2A_TCK_ENGINE_AUTHORIZATION")
+        if authorization:
+            req.add_header("Authorization", authorization)
+        with urllib.request.urlopen(req, timeout=20) as response:
+            total = json.load(response)["page"]["totalItems"]
         if total != 0:
             problems.append("engine reports %d incidents" % total)
     except Exception as e:  # noqa: BLE001
@@ -146,6 +181,12 @@ def main(argv):
     print(line)
     for p in problems:
         print("  PROBLEM: " + p)
+    with open(os.path.join(reports, "gate.json"), "w") as file:
+        json.dump({"executed": executed, "skipped": skipped, "failures": failures, "errors": errors,
+                   "mustPass": passed, "mustAllowlisted": allowlisted, "incidents": total,
+                   "verdict": "FAIL" if problems else "OK", "problems": problems,
+                   "mustRequirements": requirement_audit, "skippedTests": skip_audit}, file, indent=2)
+        file.write("\n")
     return 1 if problems else 0
 
 

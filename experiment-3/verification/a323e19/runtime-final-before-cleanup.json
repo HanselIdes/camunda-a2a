@@ -1,0 +1,64 @@
+{
+  "incidents": {
+    "items": [
+      {
+        "processDefinitionId": "a2a-client",
+        "errorType": "JOB_NO_RETRIES",
+        "errorMessage": "| Error variables: {error={type=io.camunda.connector.api.error.ConnectorException, message=, variables={response={headers={Keep-Alive=timeout=60, Connection=keep-alive, Content-Length=0, Date=Tue, 27 Oct 2026 12:42:34 GMT}, body=}}, code=404}}",
+        "elementId": "DiscoverAgent",
+        "creationTime": "2026-10-27T12:42:34.671Z",
+        "state": "ACTIVE",
+        "tenantId": "<default>",
+        "incidentKey": "2251799813686131",
+        "processDefinitionKey": "2251799813686106",
+        "processInstanceKey": "2251799813686114",
+        "elementInstanceKey": "2251799813686119",
+        "jobKey": "2251799813686126"
+      },
+      {
+        "processDefinitionId": "a2a-client",
+        "errorType": "JOB_NO_RETRIES",
+        "errorMessage": "| Error variables: {error={type=io.camunda.connector.api.error.ConnectorException, message=, variables={response={headers={Keep-Alive=timeout=60, Transfer-Encoding=chunked, Connection=keep-alive, Date=Tue, 27 Oct 2026 12:46:11 GMT, Content-Type=application/json}, body={status=ABORTED, message=Connection RemoteClientConnection{channel=[id: 0x7070dcf8, L:/172.28.0.3:51046 ! R:/172.28.0.3:26501]} was closed}}}, code=409}}",
+        "elementId": "SendMessage",
+        "creationTime": "2026-10-27T12:46:11.515Z",
+        "state": "ACTIVE",
+        "tenantId": "<default>",
+        "incidentKey": "2251799813686902",
+        "processDefinitionKey": "2251799813686199",
+        "processInstanceKey": "2251799813686256",
+        "elementInstanceKey": "2251799813686286",
+        "jobKey": "2251799813686296"
+      }
+    ],
+    "page": {
+      "totalItems": 2,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODYxMzFd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODY5MDJd"
+    }
+  },
+  "containers": [
+    {
+      "name": "/a2a-proof-92e923cf734db8ae16c55e2611e73a5d-camunda-1",
+      "imageId": "sha256:e2851adb2b6c85520a3b89f661ff3dc8847f34d3eeded2f657a3aa582ce0f217",
+      "restartCount": 0,
+      "oomKilled": false,
+      "running": true
+    },
+    {
+      "name": "/a2a-proof-92e923cf734db8ae16c55e2611e73a5d-connectors-1",
+      "imageId": "sha256:64a98d8cb1226dc3bd392aaa19f1a6a39d017376ff6829bb7a1f67ee09c03aca",
+      "restartCount": 0,
+      "oomKilled": false,
+      "running": true
+    },
+    {
+      "name": "/a2a-proof-92e923cf734db8ae16c55e2611e73a5d-elasticsearch-1",
+      "imageId": "sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2",
+      "restartCount": 0,
+      "oomKilled": false,
+      "running": true
+    }
+  ],
+  "purpose": "Final pre-cleanup record; failed chains preserved in evidence, not repaired. Fresh form result reported separately."
+}

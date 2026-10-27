@@ -1,0 +1,52 @@
+{
+  "httpStatus": 200,
+  "body": {
+    "jsonrpc": "2.0",
+    "id": "quoting-controls",
+    "result": {
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "253c2b35-69c7-4c57-9c74-995e3fa7879e",
+            "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+            "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17de5-23a2-72e0-97fe-6fa0847618a2",
+            "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+            "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+            "parts": [
+              {
+                "text": "Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+              }
+            ]
+          }
+        ],
+        "id": "01a17de5-203c-7efb-8eb7-f9417e502346",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17de5-23a2-72e0-97fe-6fa0847618a2",
+            "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+            "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+            "parts": [
+              {
+                "text": "Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:05:31Z"
+        },
+        "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da"
+      }
+    }
+  }
+}

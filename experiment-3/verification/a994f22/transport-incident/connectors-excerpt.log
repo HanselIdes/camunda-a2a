@@ -1,0 +1,86 @@
+connectors-1  | 2026-10-27T12:46:11.308Z  WARN executableId=67d889a6725c9fafd44c08d329d03b8bc10ba6908ebc62fdfe4d0a9609ea3e91, source=RUNTIME 1 --- [io-8080-exec-10] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=Correlation, timestamp=2026-10-27T12:46:11.307806173Z, message=Zeebe client status error: Connection RemoteClientConnection{channel=[id: 0x7070dcf8, L:/172.28.0.3:51046 ! R:/172.28.0.3:26501]} was closed, data={}, healthChange=null]
+connectors-1  | 2026-10-27T12:46:11.381Z ERROR processInstanceKey=2251799813686256, jobKey=2251799813686296, elementInstanceKey=2251799813686286, processDefinitionKey=2251799813686199 1 --- [pool-2-thread-3] i.c.c.h.c.c.a.CustomResponseHandler      : Failed to process response: 409  HTTP/1.1
+connectors-1  | 
+connectors-1  | io.camunda.connector.api.error.ConnectorException: 
+connectors-1  | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1  | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.CustomResponseHandler.handleResponse(CustomResponseHandler.java:57)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.CustomResponseHandler.handleResponse(CustomResponseHandler.java:33)
+connectors-1  | 	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:247)
+connectors-1  | 	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:188)
+connectors-1  | 	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:162)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.proxy.ProxyAwareHttpClient.execute(ProxyAwareHttpClient.java:70)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.CustomApacheHttpClient.execute(CustomApacheHttpClient.java:61)
+connectors-1  | 	at io.camunda.connector.http.base.HttpService.executeConnectorRequest(HttpService.java:33)
+connectors-1  | 	at io.camunda.connector.http.rest.HttpJsonFunction.execute(HttpJsonFunction.java:85)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.getConnectorResult(SpringConnectorJobHandler.java:183)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.internalHandle(SpringConnectorJobHandler.java:172)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.executeJob(SpringConnectorJobHandler.java:156)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.lambda$handle$0(SpringConnectorJobHandler.java:148)
+connectors-1  | 	at io.micrometer.core.instrument.AbstractTimer.recordCallable(AbstractTimer.java:176)
+connectors-1  | 	at io.camunda.client.metrics.MicrometerMetricsRecorder.executeWithTimer(MicrometerMetricsRecorder.java:70)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.handle(SpringConnectorJobHandler.java:145)
+connectors-1  | 	at io.camunda.client.impl.worker.JobRunnableFactoryImpl.executeJob(JobRunnableFactoryImpl.java:61)
+connectors-1  | 	at io.camunda.client.impl.worker.JobRunnableFactoryImpl.lambda$create$0(JobRunnableFactoryImpl.java:49)
+connectors-1  | 	at io.camunda.client.impl.worker.BlockingExecutor.lambda$execute$0(BlockingExecutor.java:50)
+connectors-1  | 	at io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)
+connectors-1  | 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+connectors-1  | 	at java.base/java.lang.Thread.run(Unknown Source)
+connectors-1  | 
+connectors-1  | 2026-10-27T12:46:11.384Z ERROR processInstanceKey=2251799813686256, jobKey=2251799813686296, elementInstanceKey=2251799813686286, processDefinitionKey=2251799813686199 1 --- [pool-2-thread-3] i.c.c.r.o.job.SpringConnectorJobHandler  : Exception while completing job: JobForLog[key=2251799813686296, customHeaders={elementTemplateId=io.camunda.connectors.HttpJson.v2, elementTemplateVersion=12, retryBackoff=PT0S, resultExpression=={rpc: response.body}}, tenantId=<default>, bpmnProcessId=a2a-client, type=io.camunda:http-json:1, processDefinitionKey=2251799813686199, processDefinitionVersion=2, processInstanceKey=2251799813686256], message: 
+connectors-1  | 
+connectors-1  | java.lang.Exception: 
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.OutboundConnectorExceptionHandler.handleGenericException(OutboundConnectorExceptionHandler.java:150)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.OutboundConnectorExceptionHandler.manageConnectorJobHandlerException(OutboundConnectorExceptionHandler.java:100)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.getConnectorResult(SpringConnectorJobHandler.java:191)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.internalHandle(SpringConnectorJobHandler.java:172)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.executeJob(SpringConnectorJobHandler.java:156)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.lambda$handle$0(SpringConnectorJobHandler.java:148)
+connectors-1  | 	at io.micrometer.core.instrument.AbstractTimer.recordCallable(AbstractTimer.java:176)
+connectors-1  | 	at io.camunda.client.metrics.MicrometerMetricsRecorder.executeWithTimer(MicrometerMetricsRecorder.java:70)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.handle(SpringConnectorJobHandler.java:145)
+connectors-1  | 	at io.camunda.client.impl.worker.JobRunnableFactoryImpl.executeJob(JobRunnableFactoryImpl.java:61)
+connectors-1  | 	at io.camunda.client.impl.worker.JobRunnableFactoryImpl.lambda$create$0(JobRunnableFactoryImpl.java:49)
+connectors-1  | 	at io.camunda.client.impl.worker.BlockingExecutor.lambda$execute$0(BlockingExecutor.java:50)
+connectors-1  | 	at io.micrometer.core.instrument.internal.TimedRunnable.run(TimedRunnable.java:49)
+connectors-1  | 	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.FutureTask.run(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+connectors-1  | 	at java.base/java.lang.Thread.run(Unknown Source)
+connectors-1  | Caused by: io.camunda.connector.api.error.ConnectorException: 
+connectors-1  | 	at io.camunda.connector.api.error.ConnectorExceptionBuilder.build(ConnectorExceptionBuilder.java:50)
+connectors-1  | 	at io.camunda.connector.http.client.exception.ConnectorExceptionMapper.from(ConnectorExceptionMapper.java:64)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.CustomResponseHandler.handleResponse(CustomResponseHandler.java:57)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.CustomResponseHandler.handleResponse(CustomResponseHandler.java:33)
+connectors-1  | 	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:247)
+connectors-1  | 	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:188)
+connectors-1  | 	at org.apache.hc.client5.http.impl.classic.CloseableHttpClient.execute(CloseableHttpClient.java:162)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.proxy.ProxyAwareHttpClient.execute(ProxyAwareHttpClient.java:70)
+connectors-1  | 	at io.camunda.connector.http.client.client.apache.CustomApacheHttpClient.execute(CustomApacheHttpClient.java:61)
+connectors-1  | 	at io.camunda.connector.http.base.HttpService.executeConnectorRequest(HttpService.java:33)
+connectors-1  | 	at io.camunda.connector.http.rest.HttpJsonFunction.execute(HttpJsonFunction.java:85)
+connectors-1  | 	at io.camunda.connector.runtime.outbound.job.SpringConnectorJobHandler.getConnectorResult(SpringConnectorJobHandler.java:183)
+connectors-1  | 	... 16 common frames omitted
+connectors-1  | 
+connectors-1  | 2026-10-27T12:46:11.450Z  INFO processInstanceKey=2251799813686364, jobKey=2251799813686880, elementInstanceKey=2251799813686870, processDefinitionKey=2251799813686204 1 --- [pool-2-thread-1] i.c.c.r.o.job.SpringConnectorJobHandler  : Completing job: 2251799813686880 for tenant: <default>
+connectors-1  | 2026-10-27T12:46:11.699Z  WARN  1 --- [ult-executor-59] io.camunda.client.job.poller             : Failed to activate jobs for worker IDP Structured Extraction Connector and job type io.camunda:idp-structured-connector-template:1
+connectors-1  | 
+connectors-1  | io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 19.971324375s. Name resolution delay 0.000000000 seconds. [closed=[CANCELLED], committed=[call_credentials_delay=9937575547ns, remote_addr=camunda/172.28.0.3:26500]]
+connectors-1  | 	at io.grpc.Status.asRuntimeException(Status.java:532)
+connectors-1  | 	at io.grpc.stub.ClientCalls$StreamObserverToCallListenerAdapter.onClose(ClientCalls.java:581)
+connectors-1  | 	at io.grpc.internal.ClientCallImpl.closeObserver(ClientCallImpl.java:566)
+connectors-1  | 	at io.grpc.internal.ClientCallImpl.access$100(ClientCallImpl.java:72)
+connectors-1  | 	at io.grpc.internal.ClientCallImpl$ClientStreamListenerImpl$1StreamClosed.runInternal(ClientCallImpl.java:734)
+connectors-1  | 	at io.grpc.internal.ClientCallImpl$ClientStreamListenerImpl$1StreamClosed.runInContext(ClientCallImpl.java:715)
+connectors-1  | 	at io.grpc.internal.ContextRunnable.run(ContextRunnable.java:37)
+connectors-1  | 	at io.grpc.internal.SerializingExecutor.run(SerializingExecutor.java:133)
+connectors-1  | 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+connectors-1  | 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+connectors-1  | 	at java.base/java.lang.Thread.run(Unknown Source)
+connectors-1  | 

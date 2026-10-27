@@ -1,0 +1,88 @@
+{
+  "topology": {
+    "brokers": [
+      {
+        "nodeId": 0,
+        "host": "172.28.0.3",
+        "port": 26501,
+        "partitions": [
+          {
+            "partitionId": 1,
+            "role": "leader",
+            "health": "healthy"
+          }
+        ],
+        "version": "8.8.21"
+      }
+    ],
+    "clusterSize": 1,
+    "partitionsCount": 1,
+    "replicationFactor": 1,
+    "gatewayVersion": "8.8.21",
+    "lastCompletedChangeId": "-1"
+  },
+  "incidents": {
+    "items": [
+      {
+        "processDefinitionId": "a2a-client",
+        "errorType": "JOB_NO_RETRIES",
+        "errorMessage": "| Error variables: {error={type=io.camunda.connector.api.error.ConnectorException, message=, variables={response={headers={Keep-Alive=timeout=60, Connection=keep-alive, Content-Length=0, Date=Tue, 27 Oct 2026 12:42:34 GMT}, body=}}, code=404}}",
+        "elementId": "DiscoverAgent",
+        "creationTime": "2026-10-27T12:42:34.671Z",
+        "state": "ACTIVE",
+        "tenantId": "<default>",
+        "incidentKey": "2251799813686131",
+        "processDefinitionKey": "2251799813686106",
+        "processInstanceKey": "2251799813686114",
+        "elementInstanceKey": "2251799813686119",
+        "jobKey": "2251799813686126"
+      },
+      {
+        "processDefinitionId": "a2a-client",
+        "errorType": "JOB_NO_RETRIES",
+        "errorMessage": "| Error variables: {error={type=io.camunda.connector.api.error.ConnectorException, message=, variables={response={headers={Keep-Alive=timeout=60, Transfer-Encoding=chunked, Connection=keep-alive, Date=Tue, 27 Oct 2026 12:46:11 GMT, Content-Type=application/json}, body={status=ABORTED, message=Connection RemoteClientConnection{channel=[id: 0x7070dcf8, L:/172.28.0.3:51046 ! R:/172.28.0.3:26501]} was closed}}}, code=409}}",
+        "elementId": "SendMessage",
+        "creationTime": "2026-10-27T12:46:11.515Z",
+        "state": "ACTIVE",
+        "tenantId": "<default>",
+        "incidentKey": "2251799813686902",
+        "processDefinitionKey": "2251799813686199",
+        "processInstanceKey": "2251799813686256",
+        "elementInstanceKey": "2251799813686286",
+        "jobKey": "2251799813686296"
+      }
+    ],
+    "page": {
+      "totalItems": 2,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODYxMzFd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODY5MDJd"
+    }
+  },
+  "containers": [
+    {
+      "name": "/a2a-proof-92e923cf734db8ae16c55e2611e73a5d-camunda-1",
+      "status": "running",
+      "oomKilled": false,
+      "startedAt": "2026-10-27T12:30:53.319035584Z",
+      "restartCount": 0,
+      "health": "healthy"
+    },
+    {
+      "name": "/a2a-proof-92e923cf734db8ae16c55e2611e73a5d-connectors-1",
+      "status": "running",
+      "oomKilled": false,
+      "startedAt": "2026-10-27T12:31:03.913094547Z",
+      "restartCount": 0,
+      "health": null
+    },
+    {
+      "name": "/a2a-proof-92e923cf734db8ae16c55e2611e73a5d-elasticsearch-1",
+      "status": "running",
+      "oomKilled": false,
+      "startedAt": "2026-10-27T12:30:42.739211593Z",
+      "restartCount": 0,
+      "health": "healthy"
+    }
+  ]
+}

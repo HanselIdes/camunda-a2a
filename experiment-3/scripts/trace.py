@@ -27,11 +27,19 @@ IMPLEMENTED = {
     "CORE-SEND-003": ("a2a-validate rule 9", ["DmnTest#validatesRequests", "ValidationTest#invalidParams"]),
     "CORE-GET-001": ("a2a-rpc: FindTask, ReadTask (a2a-await), BuildTaskView", ["TaskTest#terminalTaskAnswersGetAndRejectsCancelAndSend", "AgentTest#taskAnswersGetTaskAndCancelWhileTheAgentIsWorking"]),
     "CORE-GET-002": ("a2a-rpc: BuildNotFound", ["TaskTest#unknownTaskIsNotFoundForGetCancelAndFollowUp", "WebhookIntegrationTest#unknownTaskIsNotFoundBecauseNoInstanceCarriesItsTag"]),
-    "CORE-LIST-001": ("a2a-rpc: SearchTasks, ReadTasks, BuildTaskList", ['ListTasksTest#listsTheTasksOfAContextNewestFirstWithoutArtifacts', 'ListTasksTest#unknownContextAndOddContextIdsAreHandled']),
-    "CORE-LIST-002": ('a2a-rpc: BuildTaskList (offset cursor in pageToken)', ['ListTasksTest#pagesWithCursorTokens']),
-    "CORE-LIST-003": ('a2a-rpc: BuildTaskList (sort by status timestamp, descending)', ['ListTasksTest#listsTheTasksOfAContextNewestFirstWithoutArtifacts']),
-    "CORE-LIST-004": ('a2a-rpc: BuildTaskList (empty nextPageToken on the last page)', ['ListTasksTest#pagesWithCursorTokens']),
-    "CORE-LIST-005": ('a2a-rpc: BuildTaskList (artifacts dropped unless includeArtifacts)', ['ListTasksTest#listsTheTasksOfAContextNewestFirstWithoutArtifacts']),
+    "CORE-LIST-001": ("Packaged a2a-list-collect; a2a-rpc: BuildTaskList",
+                      ["CoreListingTest#listsAll125ExactTasksAcrossEngineAndA2APagesWithStableTimestampTies",
+                       "CoreListingTest#emptyListsAndCollidingContextTagsRetainExactContextFiltering",
+                       "CoreListingTest#incompleteRootStateExpiresWithAnErrorInsteadOfAPartialSuccessfulList"]),
+    "CORE-LIST-002": ("Packaged BuildTaskList (offset pageToken over complete engine collection)",
+                      ["CoreListingTest#listsAll125ExactTasksAcrossEngineAndA2APagesWithStableTimestampTies",
+                       "CoreListingTest#missingRepeatedAndOverlappingEngineCursorsCannotReturnTruncatedSuccess"]),
+    "CORE-LIST-003": ("Packaged BuildTaskList (status timestamp descending, task ID descending for ties)",
+                      ["CoreListingTest#listsAll125ExactTasksAcrossEngineAndA2APagesWithStableTimestampTies"]),
+    "CORE-LIST-004": ("Packaged BuildTaskList (empty nextPageToken on the last page)",
+                      ["CoreListingTest#listsAll125ExactTasksAcrossEngineAndA2APagesWithStableTimestampTies"]),
+    "CORE-LIST-005": ("Packaged BuildTaskList (artifacts dropped unless includeArtifacts)",
+                      ["CoreProtocolTest#messageResponseModeCannotDiscardBusinessArtifacts"]),
     "PUSH-CREATE-001": ("a2a-rpc: PreparePushOp, CreateConfig or ReplaceConfig (one cluster variable per config)", ['PushTest#configurationOperationsWorkOnCompletedAndWaitingTasks']),
     "PUSH-CREATE-002": ("a2a-rpc: AwaitConfig, ReadConfigs (cluster variables outlive the task process)", ['PushTest#configurationOperationsWorkOnCompletedAndWaitingTasks', 'PushIntegrationTest#configurationOperationsWorkThroughTheRealConnectors']),
     "PUSH-GET-001": ("a2a-rpc: ReadConfigs, PreparePushOp", ['PushTest#configurationOperationsWorkOnCompletedAndWaitingTasks']),
@@ -42,7 +50,8 @@ IMPLEMENTED = {
     "PUSH-DELIVER-001": ('a2a-push-notify: DeliverNotification (Authorization header)', ['PushTest#configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange', 'PushIntegrationTest#cardDeclaresPushAndDeliveryReachesTheHostWithTheConfiguredAuthentication']),
     "PUSH-DELIVER-002": ("a2a-task-update: FindPushConfigs, StartPushDelivery; a2a-rpc: FindCancelPush; a2a-push-notify", ['PushTest#configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange', 'PushTest#cancelIsDeliveredToo']),
     "PUSH-DELIVER-003": ("a2a-task-update: StartPushDelivery (payload {task})", ['PushTest#configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange']),
-    "CORE-CANCEL-001": ("a2a-rpc: MarkCanceled, StoreCanceled, CancelAgent, AwaitCanceled", ["TaskTest#cancelInputRequiredTaskAndCancelAgainFails"]),
+    "CORE-CANCEL-001": ("Packaged RequestCancellation, AwaitCanceled; business A2ACancellation",
+                        ["CoreProtocolTest#cancellationInterruptsBusinessWorkAndCommitsOnlyOneTerminalOutcome"]),
     "CORE-CANCEL-002": ("a2a-rpc: Cancelable, BuildNotCancelable", ["TaskTest#terminalTaskAnswersGetAndRejectsCancelAndSend", "TaskTest#cancelInputRequiredTaskAndCancelAgainFails"]),
     "CORE-CANCEL-003": ("a2a-rpc: BuildNotFound", ["TaskTest#unknownTaskIsNotFoundForGetCancelAndFollowUp"]),
     "CORE-EXECUTION-MODE-001": ("a2a-rpc: AwaitNewTask, AwaitFollowUp (until a settled state)", ["TaskTest#completeTaskReturnsCompletedTaskWithStatusMessage", "AgentTest#sendMessageReturnsWorkingStateWhenTheAgentIsSlow"]),
@@ -76,7 +85,9 @@ IMPLEMENTED = {
     "CARD-STRUCT-001": ("a2a-card: response expression of the card start event", ["TemplatesIntegrationTest#agentCardIsServedOnGetWithTheConfiguredEndpointAndCapabilities", "CardTest#committedCardMatchesTheCardGeneratedFromTheAgentTools"]),
     "BIND-FIELD-001": ("a2a-card: supportedInterfaces", ["WebhookIntegrationTest#agentCardIsServedWithThePublicUrlAndTheToolSkills"]),
     "VER-SERVER-002": ("a2a-validate rule 1", ["ValidationTest#unsupportedVersionIsRejected", "DmnTest#validatesRequests"]),
-    "VER-SERVER-003": ("a2a-validate: empty or missing A2A-Version is accepted", ["ValidationTest#patchVersionAndMissingVersionAreAccepted"]),
+    "VER-SERVER-001": ("Packaged ParseRequest: advertised Major.Minor matching", ["CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics"]),
+    "VER-SERVER-003": ("Packaged ParseRequest: missing/empty defaults to unsupported 0.3", ["CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics"]),
+    "VER-CLIENT-002": ("Packaged ParseRequest: numeric patch ignored (server evidence only)", ["CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics"]),
     "JSONRPC-FMT-001": ("a2a-rpc: Parse request, response builders", ["ValidationTest#unknownMethodAndInvalidRequest", "ValidationTest#idIsEchoedAndListTasksReturnsEmptyPage"]),
     "JSONRPC-FMT-002": ("a2a-rpc webhook response expression", ["WebhookIntegrationTest#sendMessageGetTaskAndCancelRoundTripThroughTheRealConnectors"]),
     "JSONRPC-SVC-001": ("a2a-validate: PascalCase method names", ["DmnTest#validatesRequests"]),
@@ -108,11 +119,11 @@ NA = {
         "HTTP_JSON-URL-001", "HTTP_JSON-URL-002", "HTTP_JSON-SVC-001", "HTTP_JSON-SVC-002", "HTTP_JSON-QP-001",
         "HTTP_JSON-ERR-001", "HTTP_JSON-ERR-002", "HTTP_JSON-STATUS-001", "HTTP_JSON-SSE-001",
         "BIND-EQUIV-001", "BIND-EQUIV-002", "BIND-EQUIV-003", "BIND-EQUIV-004"],
-    "client-side": ["VER-CLIENT-001", "VER-CLIENT-002"],
+    "client-side": ["VER-CLIENT-001"],
     "not-exercised": [
         "CARD-SIGN-001", "CARD-SIGN-002", "CARD-SIGN-003", "CARD-SIGN-004", "AUTH-TLS-001", "AUTH-SERVER-002",
         "AUTH-INTASK-001", "AUTH-INTASK-002", "AUTH-INTASK-003", "AUTH-INTASK-004", "AUTH-SCOPE-001", "AUTH-SCOPE-002",
-        "AUTH-SCOPE-003", "VER-SERVER-001"],
+        "AUTH-SCOPE-003"],
 }
 NA_BY_ID = {i: r for r, ids in NA.items() for i in ids}
 
@@ -151,7 +162,11 @@ def matrix(ids):
             rows.append("| %s | %s | %s | |" % (i, elements, "; ".join("`%s`" % t for t in tests)))
         else:
             rows.append("| %s | | | %s |" % (i, NA_BY_ID.get(i, "")))
-    return "\n".join(rows)
+    cells = [[cell.strip() for cell in row.strip("|").split("|")] for row in rows]
+    widths = [max(len(row[column]) for row in cells) for column in range(4)]
+    cells[1] = ["-" * width for width in widths]
+    return "\n".join("| " + " | ".join(cell.ljust(width) for cell, width in zip(row, widths)) + " |"
+                     for row in cells)
 
 
 def readme_matrix():

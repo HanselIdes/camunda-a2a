@@ -1,0 +1,62 @@
+ Network a2a-proof-caa3053f8260ae4db7cba5e8532d04e2_default Creating 
+ Network a2a-proof-caa3053f8260ae4db7cba5e8532d04e2_default Creating 
+ Network a2a-proof-caa3053f8260ae4db7cba5e8532d04e2_default Created 
+ Network a2a-proof-caa3053f8260ae4db7cba5e8532d04e2_default Created 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Creating 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Created 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Creating 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Created 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Creating 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Created 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Starting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Started 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Waiting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Healthy 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Starting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Started 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Waiting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Healthy 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Starting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Started 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Waiting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Waiting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Waiting 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Healthy 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Healthy 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Healthy 
+{"check": "unauthenticated topology", "status": 401, "response": "{\"type\":\"about:blank\",\"title\":\"Unauthorized\",\"status\":401,\"detail\":\"An Authentication object was not found in the SecurityContext\",\"instance\":\"/v2/topology\"}"}
+{"check": "authenticated topology", "status": 200, "response": "{\"brokers\":[{\"nodeId\":0,\"host\":\"172.27.0.3\",\"port\":26501,\"partitions\":[{\"partitionId\":1,\"role\":\"leader\",\"health\":\"healthy\"}],\"version\":\"8.9.26\"}],\"clusterId\":\"8724aba1-c3a1-4709-bcd8-da830727ad85\",\"clusterSize\":1,\"partitionsCount\":1,\"replicationFactor\":1,\"gatewayVersion\":\"8.9.26\",\"lastCompletedChangeId\":\"-1\"}"}
+{"check": "expression evaluation", "status": 200, "response": "{\"expression\":\"=1+1\",\"result\":2,\"warnings\":[]}"}
+{"check": "cluster variables", "status": 200, "response": "{\"page\":{\"totalItems\":0,\"hasMoreTotalItems\":false,\"startCursor\":null,\"endCursor\":null},\"items\":[]}"}
+{"check": "tag search", "status": 200, "response": "{\"page\":{\"totalItems\":0,\"hasMoreTotalItems\":false,\"startCursor\":null,\"endCursor\":null},\"items\":[]}"}
+deployment status 200
+missing API key rejected: 401
+invalid API key rejected: 401
+{"check": "authenticated echo", "status": 200, "response": {"jsonrpc": "2.0", "id": "proof-request", "result": {"task": {"artifacts": [{"artifactId": "01a17e17-066c-7c98-91e8-5e406f95b027", "name": "reconciliation", "parts": [{"data": {"currency": "USD", "matchingAmounts": true, "merchant": "Northwind Electronics", "overchargeAmount": 49.95, "syntheticOnly": true, "recommendation": "REQUEST_HUMAN_REVIEW", "chargeAmounts": [49.95, 49.95], "paidAmount": 99.9, "expectedAmount": 49.95}}]}], "history": [{"role": "ROLE_USER", "messageId": "proof-message", "taskId": "01a17e16-f6a4-7912-95a0-d43f4179ab8a", "contextId": "01a17e16-f6a2-7d43-a4ae-7707767007a1", "parts": [{"text": "Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."}, {"data": {"syntheticClaim": {"syntheticOnly": true, "chargeAmounts": [49.95, 49.95], "currency": "USD", "merchant": "Northwind Electronics", "expectedAmount": 49.95}}}]}, {"role": "ROLE_AGENT", "messageId": "01a17e17-0672-76c4-b7de-d1bb8f7a5830", "taskId": "01a17e16-f6a4-7912-95a0-d43f4179ab8a", "contextId": "01a17e16-f6a2-7d43-a4ae-7707767007a1", "parts": [{"text": "Synthetic charges reconciled for human review. No refund or financial action was performed."}]}], "id": "01a17e16-f6a4-7912-95a0-d43f4179ab8a", "status": {"state": "TASK_STATE_COMPLETED", "message": {"role": "ROLE_AGENT", "messageId": "01a17e17-0672-76c4-b7de-d1bb8f7a5830", "taskId": "01a17e16-f6a4-7912-95a0-d43f4179ab8a", "contextId": "01a17e16-f6a2-7d43-a4ae-7707767007a1", "parts": [{"text": "Synthetic charges reconciled for human review. No refund or financial action was performed."}]}, "timestamp": "2026-10-27T16:00:00Z"}, "contextId": "01a17e16-f6a2-7d43-a4ae-7707767007a1"}}}}
+real-model synthetic reconciliation with exact arithmetic evidence: PASS
+real-model card-dispute numeric-leading follow-up completes same task with four-message history: PASS
+direct HTTPS discovery, truthful endpoint/skill and API-key schema: PASS
+BPMN client -> direct HTTPS A2A protocol -> real agent -> exact result -> user review: PASS
+deployment status 200
+Captured model input/context diagnostics without credentials
+Six actual model inputs preserve numeric/quote/backslash/newline/control/expression text: PASS
+Engine confirmation validation, real invalid/partial requests and grounded model tool: PASS
+completed task polling preserves expected task: PASS
+All operation key checks, unauthorized resource non-disclosure and version semantics: PASS
+Independent a2a-sdk 1.2.3 discovery/send/follow-up/get/list and exact real-model result: PASS
+All persisted process variables exclude runtime credentials and arbitrary headers: PASS
+Literal current guide card/send/get and all nine fields: PASS
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Stopping 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Stopped 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Removing 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-connectors-1 Removed 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Stopping 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Stopped 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Removing 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-camunda-1 Removed 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Stopping 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Stopped 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Removing 
+ Container a2a-proof-caa3053f8260ae4db7cba5e8532d04e2-elasticsearch-1 Removed 
+ Network a2a-proof-caa3053f8260ae4db7cba5e8532d04e2_default Removing 
+ Network a2a-proof-caa3053f8260ae4db7cba5e8532d04e2_default Removed 

@@ -1,0 +1,52 @@
+{
+  "httpStatus": 200,
+  "body": {
+    "jsonrpc": "2.0",
+    "id": "quoting-quotes",
+    "result": {
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "f895b896-eec3-4ad9-8c6d-c43c10a94dbf",
+            "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+            "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17de4-fa38-76de-ac6c-409dc5078de2",
+            "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+            "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+            "parts": [
+              {
+                "text": "Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+              }
+            ]
+          }
+        ],
+        "id": "01a17de4-e528-7447-b07c-835c820897dc",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17de4-fa38-76de-ac6c-409dc5078de2",
+            "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+            "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+            "parts": [
+              {
+                "text": "Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:05:20Z"
+        },
+        "contextId": "01a17de4-e526-7400-9583-7228519e1fec"
+      }
+    }
+  }
+}

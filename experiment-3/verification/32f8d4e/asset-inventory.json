@@ -1,0 +1,152 @@
+{
+  "inventorySource": "32f8d4e451b36ec35ee6fa0f03880b6d893205dc",
+  "execution": "none; source inventory only",
+  "desktopReportSha256": "615c221f3a5007db0725277cf1e3921046ba2fa77eb54e37b262df5266fab8e6",
+  "localAssets": [
+    {
+      "path": "experiment-3/blueprint/README.md",
+      "classification": "documentation",
+      "sha256": "96ec3dff01edc6938d4ba80f33eeae9ed8cdb3128965574e3cbbf08cb8a293d7",
+      "blob": "5a3a5e077d522e3a6920f51f0af62e1a3a413b5b"
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-card-dispute.bpmn",
+      "classification": "selected-import",
+      "sha256": "3a695f96c43b15ae714b821fb9f2debe458c853392ee7358a210461bec063beb",
+      "blob": "e6c0e98d6a59cff9822a761ad764106834636580"
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-card.bpmn",
+      "classification": "selected-import",
+      "sha256": "90dfc0d151787a78db9bb04bc3d631eba85fb8582e4012baaba4fced0bc5e5cc",
+      "blob": "e7c5a3e1f6043acc5e31860203e82bd059823897"
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client-answer.form",
+      "classification": "selected-import",
+      "sha256": "0cf13f81302e63ce6ef7f1b2bbe50a16934db7fe9120154a3dc9e5666c380251",
+      "blob": "e4e2c95a5587dedba08f7372f8d64ee88e878707"
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client-ask.form",
+      "classification": "selected-import",
+      "sha256": "bb5ca4b1bf138266958c70c5af3d106b7c8e226a156f2c31da966dcea8cfd057",
+      "blob": "1aa0e99847450b1d8d64a2dfb1dc239499862f07"
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client-result.form",
+      "classification": "selected-import",
+      "sha256": "5fc2c5f2918343e988a8fdad24ef1ccb48d526bc120b7ddfd98bd31cbb4c1e69",
+      "blob": "8b85ce5a593de3d5f607e08fcb37ae009074d8dc"
+    },
+    {
+      "path": "experiment-3/blueprint/demo/a2a-client.bpmn",
+      "classification": "selected-import",
+      "sha256": "02b69a0d74cf95e147b303bf9afb70f8ca7f4bce2675344a02f2bdae66ca78bf",
+      "blob": "eeaab0aa96172772f8e715cc0b45f00f962f4340"
+    },
+    {
+      "path": "experiment-3/blueprint/docker-compose.yml",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "1ad88bb54844a2acc8a5960a36be5be53dea04b7073e9c43a78a1ee6ff3287aa",
+      "blob": "6f041516de2dfed908fc5db22522347cc8d326f1"
+    },
+    {
+      "path": "experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn",
+      "classification": "selected-import",
+      "sha256": "6e10a1cbc8a20065b6685b0d0753bb568ba491df74e4b41e0c0989e26f4942bc",
+      "blob": "8b272b2bbbc36aed1d25f307a42ca193449fba94"
+    },
+    {
+      "path": "experiment-3/blueprint/profiles/oauth/a2a-protocol.bpmn",
+      "classification": "nonshipping-unverified-oauth",
+      "sha256": "3b541eeb9e3442381c980a0ecc9909c3d3a0e073a222342eb2cb2072b89b5d33",
+      "blob": "12f47058eac1191c5f93630f1dd35c6bae27e619"
+    },
+    {
+      "path": "experiment-3/blueprint/proxy/nginx.conf",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "9b0066b868f9217d6eb90658b8517c70cb4b94e5225778a7a09b7792d1d6da2e",
+      "blob": "02e02a51306b78893927b30bf72f3c560abc9bb9"
+    },
+    {
+      "path": "experiment-3/blueprint/smoke.py",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "0aba9a36150c16264a53c6dc042613e820033da11ac9d0d346cec97d9f73cdf9",
+      "blob": "a4daec4ab280cbf794018def7a27214878e464ff"
+    },
+    {
+      "path": "experiment-3/blueprint/smoke.sh",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "083d37cc0b04d0a24fdc1023a039d35f7747a4a4f01a5505b8cf60eb7176e29e",
+      "blob": "37363725c7f1f835d2e01ccc78060945507932ab"
+    },
+    {
+      "path": "experiment-3/blueprint/templates/a2a-core-card.json",
+      "classification": "selected-import",
+      "sha256": "656532bacb4bff4409143b0a11ab66dd5552db85acfd827fba65a8694f5bd853",
+      "blob": "3aa30ba2f16139fd235fa354b45e942180f056e3"
+    },
+    {
+      "path": "experiment-3/blueprint/templates/a2a-core-rpc.json",
+      "classification": "selected-import",
+      "sha256": "1384ad621badb6f8a9b9571eaa251fbf496097ac171925f784a99a899104de34",
+      "blob": "d2378c7747375119f82e93ff87e9315f37765009"
+    },
+    {
+      "path": "experiment-3/blueprint/templates/http-json.json",
+      "classification": "selected-import",
+      "sha256": "af0668b3dbf8343aa3330cbc2dab748de26f19a10a429243095430b5ee22d420",
+      "blob": "693f4a6e39a38abcb0fc73514e447b72fb86ec48"
+    },
+    {
+      "path": "experiment-3/bpmn/a2a-echo.bpmn",
+      "classification": "documented-deterministic-reference",
+      "sha256": "b085bc4a250054e78540634294c53234591b5e8f6b24ec095785387df7b38221",
+      "blob": "3f1b8972e20d2e2175b09ae7e5e02de2238eaf51"
+    },
+    {
+      "path": "experiment-3/dmn/a2a-validate.dmn",
+      "classification": "selected-import",
+      "sha256": "c335fb5a5c127d4f9b145bd93e2428835589efb06bf9ffc7d92e2f4861174979",
+      "blob": "93170811ea4665ba4941a1d0f67002f8bd61bf8f"
+    },
+    {
+      "path": "experiment-3/scripts/c8run-demo.sh",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "9254d97f2e3e1efb7297b2eae459852f784be17d991430c777c7009ca769c55c",
+      "blob": "74b429331a3dab7c944f10ca11dc7345b9046a47"
+    },
+    {
+      "path": "experiment-3/scripts/coverage.py",
+      "classification": "contributor-diagnostic",
+      "sha256": "00b0f014dbcd45f4bee3fae376b2bdcef1208f2267b802fe39810dc8c62aa16a",
+      "blob": "624eecd6a30c1e193730c391eb290a4dbf86afec"
+    },
+    {
+      "path": "experiment-3/scripts/deploy.sh",
+      "classification": "historical-nonshipping-tooling",
+      "sha256": "d362f42da456491f50e8cd756d255f2f9a717831b28d3c0c37a0766a76257b6d",
+      "blob": "29453d3f3ff7978ca0dcb99686ef3df39fe0a597"
+    },
+    {
+      "path": "experiment-3/scripts/token-trace.py",
+      "classification": "contributor-diagnostic",
+      "sha256": "355985f23ee2363b457a2b0ab4268058591006408a0a600fc11fa743b948bb2c",
+      "blob": "9502d53da0404b11ce9b3ac153be59c8a308b0a3"
+    },
+    {
+      "path": "experiment-3/scripts/trace.py",
+      "classification": "contributor-diagnostic",
+      "sha256": "2689d07d3eb65d8fa44729d86e9a77aebffaf005bb10ea503b99374458fb7bcd",
+      "blob": "64d5b1a25e5a5e9eea776daa6e52f6c213c6c6ae"
+    }
+  ],
+  "upstreamTemplate": {
+    "repository": "camunda/connectors",
+    "revision": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+    "path": "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+    "sha256": "3d9ac20785e2ae06b2f907a9a25bd0409db2eb3b2734ce45709f04ee2f92c0b6",
+    "blob": "02db883618475dac8ed413578cef4e81f4ecfed4"
+  }
+}

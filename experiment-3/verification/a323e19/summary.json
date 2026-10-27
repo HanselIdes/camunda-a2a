@@ -1,0 +1,28 @@
+{
+  "integrationBaseline": "a323e19dd35869e3bfc97ced1fb0687a9a71375f",
+  "packagedSource": "d4e6273c862b387ee7b2a49b992cd4db5f56a922",
+  "editorAssetSource": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+  "hubSource": "e1fa2b8cec1a8d402c3a47005ede5d954d26320f",
+  "runtimeSource": "841468ecc2ff40e6fb7bf0fea381978833812ce9",
+  "externalGuideSource": "a994f22f03ae5e6a90155607ebadbf8ce97338bb",
+  "recommendation": "Accept selected-profile editor/configuration/deployment/form and relevant-runtime outcome evidence, retaining failed chains/exclusions; do not accept literal historical-version criterion or authorize merge/publication",
+  "requiredVersionGaps": [
+    "Historical full-suite actual integration storage product/version not retained",
+    "Optional SaaS provider-managed internal storage/version not observed; source attribution separately incomplete"
+  ],
+  "cleanup": "Owned runtime removed after final capture; no shared-service changes",
+  "filesSha256": {
+    "README.md": "387acd66188f382de9e740f8e112033f3abf68388c004ac51e88637559da4de8",
+    "hub-deployed-resource-integrity.json": "e31c8aa4db88f22afe9f2929e0570ac5fe3f70bdbd6c94f886770dafb2f9514d",
+    "hub-save-reopen-observations.json": "474f93628c3cf8136809b96a39c0673094ec5a52179fb926cfe46bcbbad8f37e",
+    "hub-validation-current.json": "3ebcfed9a654212ae71149eb172a1602106dd141adca90bcf362ce48d8502ef5",
+    "required-version-gaps.md": "80a7a80c6f59573dabd37a995a9d21577f479e43d7d3f1cff2564ca9186564c7",
+    "runtime-cleanup.json": "905e2207d9421053567c0adc8bba3062f183d0867cc00f064c106d861314d712",
+    "runtime-final-before-cleanup.json": "3c23da02c5ccecdf523d52da868d49c3ecf1f411c880e3231d17dbb0ec667720",
+    "sanitation-provenance.json": "33e91d44695e53edc364d6ca9dd6bfe123a8685fa440f8099ae60235deb400ff",
+    "tasklist-fresh-answer-completion.json": "77b41338988461b4bc7d8dc106ec09847ade632be2be7e12f7b1de1d4e35c79e",
+    "tasklist-fresh-answer-observations.json": "d14a1716a23aa9ce2451b5117e9faf9a7f3695b97c0bb7404743d3d8bfe8cb07",
+    "tasklist-fresh-journey-result.json": "fc15e144561a1a5db7f780f71198bd3034d552395a3a55fc5765e07c38597406",
+    "tasklist-fresh-result-observations.json": "69c371de25c9c6d6efe8d3d2a131b14f6275b6c1a7e1cf82c172e05bc55165b6"
+  }
+}

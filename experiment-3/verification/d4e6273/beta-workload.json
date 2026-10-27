@@ -1,0 +1,2952 @@
+{
+  "agent": "beta",
+  "isolation": "Separate authenticated engine and Connectors per agent.",
+  "results": [
+    {
+      "started": 48.880218166,
+      "accepted": 50.301634416,
+      "finished": 50.301644375,
+      "expectedText": "beta-sequential-1",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073542068048000",
+            "taskId": "01a17b82-f438-70cb-b9d4-eab787ccfe9d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-1"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b82-f4ad-7d3f-af75-d46dea9bdda5",
+            "taskId": "01a17b82-f438-70cb-b9d4-eab787ccfe9d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-1"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b82-f438-70cb-b9d4-eab787ccfe9d",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b82-f4ad-7d3f-af75-d46dea9bdda5",
+            "taskId": "01a17b82-f438-70cb-b9d4-eab787ccfe9d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-1"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:02Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 52.630838416,
+      "accepted": 55.043451291,
+      "finished": 55.04348475,
+      "expectedText": "beta-sequential-3",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073545818699000",
+            "taskId": "01a17b83-02eb-7718-9ae5-741148333bcd",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-3"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-036b-70bb-ad5a-3a1adf5c9db2",
+            "taskId": "01a17b83-02eb-7718-9ae5-741148333bcd",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-3"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-02eb-7718-9ae5-741148333bcd",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-036b-70bb-ad5a-3a1adf5c9db2",
+            "taskId": "01a17b83-02eb-7718-9ae5-741148333bcd",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-3"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:06Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 57.081027666,
+      "accepted": 58.374547666,
+      "finished": 59.695218291,
+      "expectedText": "beta-sequential-5",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073550268917000",
+            "taskId": "01a17b83-1463-789b-84ca-a8ceb2f10d7e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-5"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-155a-7282-b90b-eae31e96226b",
+            "taskId": "01a17b83-1463-789b-84ca-a8ceb2f10d7e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-5"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-1463-789b-84ca-a8ceb2f10d7e",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-155a-7282-b90b-eae31e96226b",
+            "taskId": "01a17b83-1463-789b-84ca-a8ceb2f10d7e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-5"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:10Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 62.256578916,
+      "accepted": 63.388636583,
+      "finished": 63.388649125,
+      "expectedText": "beta-sequential-7",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073555444515000",
+            "taskId": "01a17b83-287f-72db-a110-5ae894d00a9e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-7"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-28f6-7fab-a686-5fec91be8239",
+            "taskId": "01a17b83-287f-72db-a110-5ae894d00a9e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-7"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-287f-72db-a110-5ae894d00a9e",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-28f6-7fab-a686-5fec91be8239",
+            "taskId": "01a17b83-287f-72db-a110-5ae894d00a9e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-7"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:15Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 64.673187458,
+      "accepted": 67.023635458,
+      "finished": 67.023663625,
+      "expectedText": "beta-sequential-9",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073557861133000",
+            "taskId": "01a17b83-31dc-758a-bf0e-0f8783d1d699",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-9"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-3263-7b6c-8304-b9315d4b49f1",
+            "taskId": "01a17b83-31dc-758a-bf0e-0f8783d1d699",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-9"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-31dc-758a-bf0e-0f8783d1d699",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-3263-7b6c-8304-b9315d4b49f1",
+            "taskId": "01a17b83-31dc-758a-bf0e-0f8783d1d699",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-9"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:18Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 69.048382458,
+      "accepted": 70.864545333,
+      "finished": 70.864570833,
+      "expectedText": "beta-sequential-11",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073562236359000",
+            "taskId": "01a17b83-42f4-732f-ab8a-e2fefdefe412",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-11"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-4363-7fb7-888b-3c71dc1fb742",
+            "taskId": "01a17b83-42f4-732f-ab8a-e2fefdefe412",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-11"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-42f4-732f-ab8a-e2fefdefe412",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-4363-7fb7-888b-3c71dc1fb742",
+            "taskId": "01a17b83-42f4-732f-ab8a-e2fefdefe412",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-11"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:22Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 74.267474458,
+      "accepted": 76.624042791,
+      "finished": 76.624049916,
+      "expectedText": "beta-sequential-13",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073567455489000",
+            "taskId": "01a17b83-574f-7d9a-9db7-c69d01a38fd0",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-13"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-57bc-7e8c-944c-39ad81aee20f",
+            "taskId": "01a17b83-574f-7d9a-9db7-c69d01a38fd0",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-13"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-574f-7d9a-9db7-c69d01a38fd0",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-57bc-7e8c-944c-39ad81aee20f",
+            "taskId": "01a17b83-574f-7d9a-9db7-c69d01a38fd0",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-13"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:27Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 77.915066875,
+      "accepted": 80.133514708,
+      "finished": 80.133530708,
+      "expectedText": "beta-sequential-15",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073571103108000",
+            "taskId": "01a17b83-6589-7f03-9a11-6098585f0592",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-15"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-6615-7976-8ff5-78ce12080a7f",
+            "taskId": "01a17b83-6589-7f03-9a11-6098585f0592",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-15"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-6589-7f03-9a11-6098585f0592",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-6615-7976-8ff5-78ce12080a7f",
+            "taskId": "01a17b83-6589-7f03-9a11-6098585f0592",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-15"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:31Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 82.915299208,
+      "accepted": 84.568281416,
+      "finished": 84.56829525,
+      "expectedText": "beta-sequential-17",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073576103378000",
+            "taskId": "01a17b83-7919-714f-9c0b-a616b90d8ef2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-17"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-7988-7f7e-8f70-c9e6d73b4f52",
+            "taskId": "01a17b83-7919-714f-9c0b-a616b90d8ef2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-17"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-7919-714f-9c0b-a616b90d8ef2",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-7988-7f7e-8f70-c9e6d73b4f52",
+            "taskId": "01a17b83-7919-714f-9c0b-a616b90d8ef2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-17"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:36Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 86.510320625,
+      "accepted": 87.762438583,
+      "finished": 87.762460333,
+      "expectedText": "beta-sequential-19",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073579698427000",
+            "taskId": "01a17b83-8724-79bf-b24e-ecc5f7fc4872",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-19"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-8791-749e-8679-461dcadce016",
+            "taskId": "01a17b83-8724-79bf-b24e-ecc5f7fc4872",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-19"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-8724-79bf-b24e-ecc5f7fc4872",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-8791-749e-8679-461dcadce016",
+            "taskId": "01a17b83-8724-79bf-b24e-ecc5f7fc4872",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-19"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:39Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 90.312087875,
+      "accepted": 92.662260083,
+      "finished": 92.662274833,
+      "expectedText": "beta-sequential-21",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073583500220000",
+            "taskId": "01a17b83-9613-7b41-abc7-6f3bea239864",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-21"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-967c-76da-91e1-f1de82720c3d",
+            "taskId": "01a17b83-9613-7b41-abc7-6f3bea239864",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-21"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-9613-7b41-abc7-6f3bea239864",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-967c-76da-91e1-f1de82720c3d",
+            "taskId": "01a17b83-9613-7b41-abc7-6f3bea239864",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-21"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:43Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 95.297124083,
+      "accepted": 98.2511625,
+      "finished": 98.251188208,
+      "expectedText": "beta-sequential-23",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073588485293000",
+            "taskId": "01a17b83-a98c-73e3-98c7-da5ee395b802",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-23"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-a9f9-7aa7-b27a-42c5df2c3b62",
+            "taskId": "01a17b83-a98c-73e3-98c7-da5ee395b802",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-23"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-a98c-73e3-98c7-da5ee395b802",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-a9f9-7aa7-b27a-42c5df2c3b62",
+            "taskId": "01a17b83-a98c-73e3-98c7-da5ee395b802",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-23"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:48Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 100.502326416,
+      "accepted": 103.240769666,
+      "finished": 103.240782416,
+      "expectedText": "beta-sequential-25",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073593690534000",
+            "taskId": "01a17b83-bdc7-7689-b179-721427163f52",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-25"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-be37-7ecc-b912-7f155565dbf7",
+            "taskId": "01a17b83-bdc7-7689-b179-721427163f52",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-25"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-bdc7-7689-b179-721427163f52",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-be37-7ecc-b912-7f155565dbf7",
+            "taskId": "01a17b83-bdc7-7689-b179-721427163f52",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-25"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:53Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 103.975521791,
+      "accepted": 105.654794875,
+      "finished": 105.654808125,
+      "expectedText": "beta-sequential-27",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073597163755000",
+            "taskId": "01a17b83-cb5b-7656-b918-ccb31792db2c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-27"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-cbc9-7bf5-af41-1279bb7d752d",
+            "taskId": "01a17b83-cb5b-7656-b918-ccb31792db2c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-27"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-cb5b-7656-b918-ccb31792db2c",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-cbc9-7bf5-af41-1279bb7d752d",
+            "taskId": "01a17b83-cb5b-7656-b918-ccb31792db2c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-27"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T03:59:57Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 108.113863416,
+      "accepted": 109.849414,
+      "finished": 109.849472916,
+      "expectedText": "beta-sequential-29",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073601302127000",
+            "taskId": "01a17b83-db8f-71b3-a3b9-b49c768c424e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-29"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-dc0d-7823-9b4a-83d098bd93c1",
+            "taskId": "01a17b83-db8f-71b3-a3b9-b49c768c424e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-29"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-db8f-71b3-a3b9-b49c768c424e",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-dc0d-7823-9b4a-83d098bd93c1",
+            "taskId": "01a17b83-db8f-71b3-a3b9-b49c768c424e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-29"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:01Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 112.163978791,
+      "accepted": 113.878380833,
+      "finished": 113.878393291,
+      "expectedText": "beta-sequential-31",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073605352271000",
+            "taskId": "01a17b83-eb54-732d-98e7-e5aa48b2e1ed",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-31"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-ebc2-799e-bd87-0c9607070b28",
+            "taskId": "01a17b83-eb54-732d-98e7-e5aa48b2e1ed",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-31"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-eb54-732d-98e7-e5aa48b2e1ed",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-ebc2-799e-bd87-0c9607070b28",
+            "taskId": "01a17b83-eb54-732d-98e7-e5aa48b2e1ed",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-31"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:05Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 115.145088041,
+      "accepted": 118.673860416,
+      "finished": 118.673883,
+      "expectedText": "beta-sequential-33",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073608333402000",
+            "taskId": "01a17b83-f6fb-76ea-aeed-3d280c9d27ff",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-33"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-f762-7ed1-907c-bbe7d906cf4f",
+            "taskId": "01a17b83-f6fb-76ea-aeed-3d280c9d27ff",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-33"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b83-f6fb-76ea-aeed-3d280c9d27ff",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b83-f762-7ed1-907c-bbe7d906cf4f",
+            "taskId": "01a17b83-f6fb-76ea-aeed-3d280c9d27ff",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-33"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:08Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 120.902054541,
+      "accepted": 123.392634208,
+      "finished": 123.39265825,
+      "expectedText": "beta-sequential-35",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073614090411000",
+            "taskId": "01a17b84-0d79-7216-900b-752d6f99d3c2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-35"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-0de9-7a89-a8d1-8ae5a2912530",
+            "taskId": "01a17b84-0d79-7216-900b-752d6f99d3c2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-35"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-0d79-7216-900b-752d6f99d3c2",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-0de9-7a89-a8d1-8ae5a2912530",
+            "taskId": "01a17b84-0d79-7216-900b-752d6f99d3c2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-35"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:14Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 125.084373666,
+      "accepted": 126.193191916,
+      "finished": 126.193199333,
+      "expectedText": "beta-sequential-37",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073618272762000",
+            "taskId": "01a17b84-1de2-7efc-90c7-ea0e4e10bf5d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-37"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-1e5b-7fbd-ac57-fe6eca8f5590",
+            "taskId": "01a17b84-1de2-7efc-90c7-ea0e4e10bf5d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-37"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-1de2-7efc-90c7-ea0e4e10bf5d",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-1e5b-7fbd-ac57-fe6eca8f5590",
+            "taskId": "01a17b84-1de2-7efc-90c7-ea0e4e10bf5d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-37"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:18Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 128.209880916,
+      "accepted": 129.871161583,
+      "finished": 129.871183666,
+      "expectedText": "beta-sequential-39",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073621398291000",
+            "taskId": "01a17b84-2a02-75d2-bea8-99bf897c9a1d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-39"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-2a71-751b-9949-e408b05e18ed",
+            "taskId": "01a17b84-2a02-75d2-bea8-99bf897c9a1d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-39"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-2a02-75d2-bea8-99bf897c9a1d",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-2a71-751b-9949-e408b05e18ed",
+            "taskId": "01a17b84-2a02-75d2-bea8-99bf897c9a1d",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-39"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:21Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 131.673392666,
+      "accepted": 133.075719083,
+      "finished": 133.075726916,
+      "expectedText": "beta-sequential-41",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073624861828000",
+            "taskId": "01a17b84-3782-7683-b92e-2515acdfa2f4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-41"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-37ec-7e21-8a9d-256930ec8196",
+            "taskId": "01a17b84-3782-7683-b92e-2515acdfa2f4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-41"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-3782-7683-b92e-2515acdfa2f4",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-37ec-7e21-8a9d-256930ec8196",
+            "taskId": "01a17b84-3782-7683-b92e-2515acdfa2f4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-41"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:25Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 137.043495041,
+      "accepted": 138.113431333,
+      "finished": 140.160651083,
+      "expectedText": "beta-sequential-43",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073630231969000",
+            "taskId": "01a17b84-4c82-7405-b183-900035b409e0",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-43"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-4cf5-70ae-ba42-f833cafbc604",
+            "taskId": "01a17b84-4c82-7405-b183-900035b409e0",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-43"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-4c82-7405-b183-900035b409e0",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-4cf5-70ae-ba42-f833cafbc604",
+            "taskId": "01a17b84-4c82-7405-b183-900035b409e0",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-43"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:30Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 141.860652041,
+      "accepted": 144.240630833,
+      "finished": 144.240638166,
+      "expectedText": "beta-sequential-45",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073635049162000",
+            "taskId": "01a17b84-5f56-7d27-9625-0f161cccb08b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-45"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-5fbd-7335-8ed9-9cd90a3a8151",
+            "taskId": "01a17b84-5f56-7d27-9625-0f161cccb08b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-45"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-5f56-7d27-9625-0f161cccb08b",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-5fbd-7335-8ed9-9cd90a3a8151",
+            "taskId": "01a17b84-5f56-7d27-9625-0f161cccb08b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-45"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:35Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 146.171112375,
+      "accepted": 147.13565175,
+      "finished": 148.112617958,
+      "expectedText": "beta-sequential-47",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073639359658000",
+            "taskId": "01a17b84-7029-7f35-ae7d-355e60688dc5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-47"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-7090-7deb-ba01-c86ebc6f0fa9",
+            "taskId": "01a17b84-7029-7f35-ae7d-355e60688dc5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-47"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-7029-7f35-ae7d-355e60688dc5",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-7090-7deb-ba01-c86ebc6f0fa9",
+            "taskId": "01a17b84-7029-7f35-ae7d-355e60688dc5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-47"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:39Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 150.79589925,
+      "accepted": 152.344016375,
+      "finished": 152.344034583,
+      "expectedText": "beta-sequential-49",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073643984477000",
+            "taskId": "01a17b84-8239-73e0-b379-c8a61baa76d3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-49"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-82a0-763a-949f-8f0468b7ab72",
+            "taskId": "01a17b84-8239-73e0-b379-c8a61baa76d3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-49"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-8239-73e0-b379-c8a61baa76d3",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-82a0-763a-949f-8f0468b7ab72",
+            "taskId": "01a17b84-8239-73e0-b379-c8a61baa76d3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-49"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:44Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 153.827329208,
+      "accepted": 155.735497666,
+      "finished": 155.735509625,
+      "expectedText": "beta-sequential-51",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073647015927000",
+            "taskId": "01a17b84-8e18-7ffa-9a1d-af79b0a24130",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-51"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-8e85-7422-b2ad-d3594a738746",
+            "taskId": "01a17b84-8e18-7ffa-9a1d-af79b0a24130",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-51"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-8e18-7ffa-9a1d-af79b0a24130",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-8e85-7422-b2ad-d3594a738746",
+            "taskId": "01a17b84-8e18-7ffa-9a1d-af79b0a24130",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-51"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:47Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 158.526618666,
+      "accepted": 160.609318875,
+      "finished": 160.609327375,
+      "expectedText": "beta-sequential-53",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073651715251000",
+            "taskId": "01a17b84-a06b-77cf-8b9e-0ef7e3367eb7",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-53"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-a0d3-742f-90ce-6901f95690e0",
+            "taskId": "01a17b84-a06b-77cf-8b9e-0ef7e3367eb7",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-53"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-a06b-77cf-8b9e-0ef7e3367eb7",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-a0d3-742f-90ce-6901f95690e0",
+            "taskId": "01a17b84-a06b-77cf-8b9e-0ef7e3367eb7",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-53"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:51Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 162.331611416,
+      "accepted": 164.156350791,
+      "finished": 164.1563675,
+      "expectedText": "beta-sequential-55",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073655520272000",
+            "taskId": "01a17b84-af4a-74ae-8b5b-499eb904f82c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-55"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-afb4-7089-80d8-e51e04992874",
+            "taskId": "01a17b84-af4a-74ae-8b5b-499eb904f82c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-55"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-af4a-74ae-8b5b-499eb904f82c",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-afb4-7089-80d8-e51e04992874",
+            "taskId": "01a17b84-af4a-74ae-8b5b-499eb904f82c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-55"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:55Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 166.497290416,
+      "accepted": 168.310547291,
+      "finished": 168.310554875,
+      "expectedText": "beta-sequential-57",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073659685984000",
+            "taskId": "01a17b84-bf9f-7636-bc14-be143c2afda3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-57"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-c00e-7314-a7e8-cfe71dcd209d",
+            "taskId": "01a17b84-bf9f-7636-bc14-be143c2afda3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-57"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-bf9f-7636-bc14-be143c2afda3",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-c00e-7314-a7e8-cfe71dcd209d",
+            "taskId": "01a17b84-bf9f-7636-bc14-be143c2afda3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-57"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:00:59Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 169.68831875,
+      "accepted": 171.353402416,
+      "finished": 171.353429875,
+      "expectedText": "beta-sequential-59",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073662877032000",
+            "taskId": "01a17b84-cc13-70a5-8f53-09ec54603aa2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-59"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-cc8d-7579-a162-bf73cbae8dc0",
+            "taskId": "01a17b84-cc13-70a5-8f53-09ec54603aa2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-59"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-cc13-70a5-8f53-09ec54603aa2",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-cc8d-7579-a162-bf73cbae8dc0",
+            "taskId": "01a17b84-cc13-70a5-8f53-09ec54603aa2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-59"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:03Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 173.916635875,
+      "accepted": 175.69152625,
+      "finished": 175.691533458,
+      "expectedText": "beta-sequential-61",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073667105380000",
+            "taskId": "01a17b84-dc8c-71f0-a6ea-eae31e70ce2b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-61"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-dcf4-7522-b673-3c3f4852ee17",
+            "taskId": "01a17b84-dc8c-71f0-a6ea-eae31e70ce2b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-61"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-dc8c-71f0-a6ea-eae31e70ce2b",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-dcf4-7522-b673-3c3f4852ee17",
+            "taskId": "01a17b84-dc8c-71f0-a6ea-eae31e70ce2b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-61"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:07Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 178.138562375,
+      "accepted": 180.233163666,
+      "finished": 180.233176583,
+      "expectedText": "beta-sequential-63",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073671327337000",
+            "taskId": "01a17b84-ed04-7201-b6af-f55c15416016",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-63"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-ed68-77ee-ba84-5d66e06000af",
+            "taskId": "01a17b84-ed04-7201-b6af-f55c15416016",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-63"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-ed04-7201-b6af-f55c15416016",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-ed68-77ee-ba84-5d66e06000af",
+            "taskId": "01a17b84-ed04-7201-b6af-f55c15416016",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-63"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:11Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 182.598666791,
+      "accepted": 184.978224916,
+      "finished": 184.978262541,
+      "expectedText": "beta-sequential-65",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073675787474000",
+            "taskId": "01a17b84-fe86-7242-b89a-33d23d7494e2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-65"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-fefa-7198-bec8-547bd457884a",
+            "taskId": "01a17b84-fe86-7242-b89a-33d23d7494e2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-65"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b84-fe86-7242-b89a-33d23d7494e2",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b84-fefa-7198-bec8-547bd457884a",
+            "taskId": "01a17b84-fe86-7242-b89a-33d23d7494e2",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-65"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:16Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 187.522132041,
+      "accepted": 189.625912583,
+      "finished": 189.625934041,
+      "expectedText": "beta-sequential-67",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073680710976000",
+            "taskId": "01a17b85-11b9-74b2-be9f-199c0686c8b9",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-67"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-1232-7800-a91f-0b3f6f741753",
+            "taskId": "01a17b85-11b9-74b2-be9f-199c0686c8b9",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-67"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-11b9-74b2-be9f-199c0686c8b9",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-1232-7800-a91f-0b3f6f741753",
+            "taskId": "01a17b85-11b9-74b2-be9f-199c0686c8b9",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-67"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:20Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 191.547243875,
+      "accepted": 192.847850458,
+      "finished": 192.847857625,
+      "expectedText": "beta-sequential-69",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073684736117000",
+            "taskId": "01a17b85-2164-7fb8-af05-624d3d9629b1",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-69"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-21ce-7d06-a98f-74967d830a81",
+            "taskId": "01a17b85-2164-7fb8-af05-624d3d9629b1",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-69"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-2164-7fb8-af05-624d3d9629b1",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-21ce-7d06-a98f-74967d830a81",
+            "taskId": "01a17b85-2164-7fb8-af05-624d3d9629b1",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-69"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:24Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 194.993649291,
+      "accepted": 196.606699708,
+      "finished": 196.606707166,
+      "expectedText": "beta-sequential-71",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073688182548000",
+            "taskId": "01a17b85-2edf-7f46-8633-06d1ae698b29",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-71"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-2f45-7ca9-b8bc-0b48b81a4efa",
+            "taskId": "01a17b85-2edf-7f46-8633-06d1ae698b29",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-71"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-2edf-7f46-8633-06d1ae698b29",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-2f45-7ca9-b8bc-0b48b81a4efa",
+            "taskId": "01a17b85-2edf-7f46-8633-06d1ae698b29",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-71"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:28Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 199.180377166,
+      "accepted": 201.528663458,
+      "finished": 201.52868475,
+      "expectedText": "beta-sequential-73",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073692369307000",
+            "taskId": "01a17b85-3f3a-7ebb-8fab-984de3e1f000",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-73"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-3fa4-71cf-ac6e-25dc5f14abfc",
+            "taskId": "01a17b85-3f3a-7ebb-8fab-984de3e1f000",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-73"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-3f3a-7ebb-8fab-984de3e1f000",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-3fa4-71cf-ac6e-25dc5f14abfc",
+            "taskId": "01a17b85-3f3a-7ebb-8fab-984de3e1f000",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-73"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:32Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 203.6780215,
+      "accepted": 205.10238775,
+      "finished": 205.102400625,
+      "expectedText": "beta-sequential-75",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073696866983000",
+            "taskId": "01a17b85-50ce-7c2d-999b-f68e752cde2a",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-75"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-513a-7fe8-8a93-8eec31834c72",
+            "taskId": "01a17b85-50ce-7c2d-999b-f68e752cde2a",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-75"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-50ce-7c2d-999b-f68e752cde2a",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-513a-7fe8-8a93-8eec31834c72",
+            "taskId": "01a17b85-50ce-7c2d-999b-f68e752cde2a",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-75"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:37Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 207.65205925,
+      "accepted": 209.730633333,
+      "finished": 209.730659791,
+      "expectedText": "beta-sequential-77",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073700841052000",
+            "taskId": "01a17b85-6054-7bd2-8778-b019d143feb6",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-77"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-60ce-73be-a3c3-816f1b135996",
+            "taskId": "01a17b85-6054-7bd2-8778-b019d143feb6",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-77"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-6054-7bd2-8778-b019d143feb6",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-60ce-73be-a3c3-816f1b135996",
+            "taskId": "01a17b85-6054-7bd2-8778-b019d143feb6",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-77"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:41Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 210.995013666,
+      "accepted": 213.000025666,
+      "finished": 213.000030791,
+      "expectedText": "beta-sequential-79",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073704184030000",
+            "taskId": "01a17b85-6d60-769a-9c89-f0d50a70ef48",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-79"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-6dc8-77e3-adb4-9f88a683cac6",
+            "taskId": "01a17b85-6d60-769a-9c89-f0d50a70ef48",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-79"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-6d60-769a-9c89-f0d50a70ef48",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-6dc8-77e3-adb4-9f88a683cac6",
+            "taskId": "01a17b85-6d60-769a-9c89-f0d50a70ef48",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-79"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:44Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 215.343124208,
+      "accepted": 216.343524583,
+      "finished": 218.841609583,
+      "expectedText": "beta-sequential-81",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073708532171000",
+            "taskId": "01a17b85-7e61-7ccc-9838-1221789e9f17",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-81"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-7ec8-7c96-966f-627118cdcc9c",
+            "taskId": "01a17b85-7e61-7ccc-9838-1221789e9f17",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-81"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-7e61-7ccc-9838-1221789e9f17",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-7ec8-7c96-966f-627118cdcc9c",
+            "taskId": "01a17b85-7e61-7ccc-9838-1221789e9f17",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-81"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:48Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 220.776899541,
+      "accepted": 222.173596416,
+      "finished": 222.173618375,
+      "expectedText": "beta-sequential-83",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073713965986000",
+            "taskId": "01a17b85-93ab-7173-bd83-edabba1255b3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-83"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-941e-75ed-9390-cd7311e5ad40",
+            "taskId": "01a17b85-93ab-7173-bd83-edabba1255b3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-83"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-93ab-7173-bd83-edabba1255b3",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-941e-75ed-9390-cd7311e5ad40",
+            "taskId": "01a17b85-93ab-7173-bd83-edabba1255b3",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-83"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:54Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 224.229966916,
+      "accepted": 225.880554166,
+      "finished": 227.260834291,
+      "expectedText": "beta-sequential-85",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073717419079000",
+            "taskId": "01a17b85-a110-7bec-847e-9256ed5c77e5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-85"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-a175-7363-aa40-392eed430e9c",
+            "taskId": "01a17b85-a110-7bec-847e-9256ed5c77e5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-85"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-a110-7bec-847e-9256ed5c77e5",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-a175-7363-aa40-392eed430e9c",
+            "taskId": "01a17b85-a110-7bec-847e-9256ed5c77e5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-85"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:01:57Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 229.609601208,
+      "accepted": 230.674482791,
+      "finished": 230.674495458,
+      "expectedText": "beta-sequential-87",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073722798754000",
+            "taskId": "01a17b85-b614-7f0a-9d69-aae655edb3e4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-87"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-b679-7ed1-ad55-e035ad8470dc",
+            "taskId": "01a17b85-b614-7f0a-9d69-aae655edb3e4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-87"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-b614-7f0a-9d69-aae655edb3e4",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-b679-7ed1-ad55-e035ad8470dc",
+            "taskId": "01a17b85-b614-7f0a-9d69-aae655edb3e4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-87"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:02Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 233.028933125,
+      "accepted": 234.538746,
+      "finished": 234.538759041,
+      "expectedText": "beta-sequential-89",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073726218109000",
+            "taskId": "01a17b85-c36d-7296-b516-95ef91c7fe88",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-89"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-c3d0-7296-84d8-45dc9231a09c",
+            "taskId": "01a17b85-c36d-7296-b516-95ef91c7fe88",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-89"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-c36d-7296-b516-95ef91c7fe88",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-c3d0-7296-84d8-45dc9231a09c",
+            "taskId": "01a17b85-c36d-7296-b516-95ef91c7fe88",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-89"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:06Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 236.027316875,
+      "accepted": 237.95616325,
+      "finished": 237.956175666,
+      "expectedText": "beta-sequential-91",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073729216515000",
+            "taskId": "01a17b85-cf23-748a-a767-160216eb0a0c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-91"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-cf85-719a-b1a3-157e860fce1c",
+            "taskId": "01a17b85-cf23-748a-a767-160216eb0a0c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-91"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-cf23-748a-a767-160216eb0a0c",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-cf85-719a-b1a3-157e860fce1c",
+            "taskId": "01a17b85-cf23-748a-a767-160216eb0a0c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-91"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:09Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 239.759705416,
+      "accepted": 241.673266,
+      "finished": 241.673278375,
+      "expectedText": "beta-sequential-93",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073732948932000",
+            "taskId": "01a17b85-ddbb-7fbf-8b44-1ca66bb8dd05",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-93"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-de1e-7fa7-9758-4201d5649d0a",
+            "taskId": "01a17b85-ddbb-7fbf-8b44-1ca66bb8dd05",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-93"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-ddbb-7fbf-8b44-1ca66bb8dd05",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-de1e-7fa7-9758-4201d5649d0a",
+            "taskId": "01a17b85-ddbb-7fbf-8b44-1ca66bb8dd05",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-93"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:13Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 243.26770275,
+      "accepted": 245.074123375,
+      "finished": 245.0741305,
+      "expectedText": "beta-sequential-95",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073736456954000",
+            "taskId": "01a17b85-eb6a-7bb5-86f9-5fe063f3fddf",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-95"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-ebd5-75ee-8690-84c76e48ca0a",
+            "taskId": "01a17b85-eb6a-7bb5-86f9-5fe063f3fddf",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-95"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-eb6a-7bb5-86f9-5fe063f3fddf",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-ebd5-75ee-8690-84c76e48ca0a",
+            "taskId": "01a17b85-eb6a-7bb5-86f9-5fe063f3fddf",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-95"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:16Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 246.907552083,
+      "accepted": 249.526484875,
+      "finished": 249.526497833,
+      "expectedText": "beta-sequential-97",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073740096829000",
+            "taskId": "01a17b85-f9a4-7a59-b3ff-ed00d15dd62c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-97"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-fa08-7afe-9802-2f2cd45cd29e",
+            "taskId": "01a17b85-f9a4-7a59-b3ff-ed00d15dd62c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-97"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b85-f9a4-7a59-b3ff-ed00d15dd62c",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b85-fa08-7afe-9802-2f2cd45cd29e",
+            "taskId": "01a17b85-f9a4-7a59-b3ff-ed00d15dd62c",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-97"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:20Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 252.2005625,
+      "accepted": 253.664798125,
+      "finished": 255.247326125,
+      "expectedText": "beta-sequential-99",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073745389880000",
+            "taskId": "01a17b86-0e53-72e1-83da-cbe02ef0209b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-99"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-0eb4-7581-ad56-64e9ffa400c8",
+            "taskId": "01a17b86-0e53-72e1-83da-cbe02ef0209b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-99"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-0e53-72e1-83da-cbe02ef0209b",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-0eb4-7581-ad56-64e9ffa400c8",
+            "taskId": "01a17b86-0e53-72e1-83da-cbe02ef0209b",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-sequential-99"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:25Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.5764785,
+      "accepted": 258.121735291,
+      "finished": 274.352562333,
+      "expectedText": "beta-concurrent-0",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748765820000",
+            "taskId": "01a17b86-1cd3-70d3-a971-7d6ca851c6d5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-0"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5aca-7cec-8b04-1c5235915910",
+            "taskId": "01a17b86-1cd3-70d3-a971-7d6ca851c6d5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-0"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1cd3-70d3-a971-7d6ca851c6d5",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5aca-7cec-8b04-1c5235915910",
+            "taskId": "01a17b86-1cd3-70d3-a971-7d6ca851c6d5",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-0"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.577679791,
+      "accepted": 257.971424083,
+      "finished": 274.400623875,
+      "expectedText": "beta-concurrent-1",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748767020000",
+            "taskId": "01a17b86-1c55-7992-9cba-d3a7cc49c3bf",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-1"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ab7-70bb-9460-41f44c56391e",
+            "taskId": "01a17b86-1c55-7992-9cba-d3a7cc49c3bf",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-1"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1c55-7992-9cba-d3a7cc49c3bf",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ab7-70bb-9460-41f44c56391e",
+            "taskId": "01a17b86-1c55-7992-9cba-d3a7cc49c3bf",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-1"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.578740416,
+      "accepted": 258.112538958,
+      "finished": 274.410729958,
+      "expectedText": "beta-concurrent-2",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748768081000",
+            "taskId": "01a17b86-1cb9-7a7b-a105-4f90e2d80d91",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-2"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ac4-7fe9-b320-240aac4c6837",
+            "taskId": "01a17b86-1cb9-7a7b-a105-4f90e2d80d91",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-2"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1cb9-7a7b-a105-4f90e2d80d91",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ac4-7fe9-b320-240aac4c6837",
+            "taskId": "01a17b86-1cb9-7a7b-a105-4f90e2d80d91",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-2"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.580175125,
+      "accepted": 257.809785375,
+      "finished": 273.794489333,
+      "expectedText": "beta-concurrent-3",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748769515000",
+            "taskId": "01a17b86-1cdd-7328-94a0-7af9da15d0ad",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-3"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ace-70d9-ab7e-09c85a8b79f4",
+            "taskId": "01a17b86-1cdd-7328-94a0-7af9da15d0ad",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-3"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1cdd-7328-94a0-7af9da15d0ad",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ace-70d9-ab7e-09c85a8b79f4",
+            "taskId": "01a17b86-1cdd-7328-94a0-7af9da15d0ad",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-3"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.581038791,
+      "accepted": 258.104237666,
+      "finished": 274.303709041,
+      "expectedText": "beta-concurrent-4",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748770379000",
+            "taskId": "01a17b86-1c6a-7b4c-a08f-05886189ffdc",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-4"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5abb-7919-a174-476b6cd1d06f",
+            "taskId": "01a17b86-1c6a-7b4c-a08f-05886189ffdc",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-4"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1c6a-7b4c-a08f-05886189ffdc",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5abb-7919-a174-476b6cd1d06f",
+            "taskId": "01a17b86-1c6a-7b4c-a08f-05886189ffdc",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-4"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.58203625,
+      "accepted": 257.579233125,
+      "finished": 273.890908916,
+      "expectedText": "beta-concurrent-5",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748771377000",
+            "taskId": "01a17b86-1cb0-7ef7-823f-0a70fb39d506",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-5"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ac1-72ad-a3ba-bb44c1d6a2e8",
+            "taskId": "01a17b86-1cb0-7ef7-823f-0a70fb39d506",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-5"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1cb0-7ef7-823f-0a70fb39d506",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ac1-72ad-a3ba-bb44c1d6a2e8",
+            "taskId": "01a17b86-1cb0-7ef7-823f-0a70fb39d506",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-5"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.583069125,
+      "accepted": 257.842101166,
+      "finished": 273.893897958,
+      "expectedText": "beta-concurrent-6",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748772409000",
+            "taskId": "01a17b86-1cea-729d-8fe1-8a73b5d3ff6e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-6"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ad1-719a-802b-374a8eb1bf3d",
+            "taskId": "01a17b86-1cea-729d-8fe1-8a73b5d3ff6e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-6"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1cea-729d-8fe1-8a73b5d3ff6e",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ad1-719a-802b-374a8eb1bf3d",
+            "taskId": "01a17b86-1cea-729d-8fe1-8a73b5d3ff6e",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-6"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.583479375,
+      "accepted": 257.88933775,
+      "finished": 274.444334,
+      "expectedText": "beta-concurrent-7",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748772820000",
+            "taskId": "01a17b86-1cc5-7cdb-8cc8-9e91234842c4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-7"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ac7-78ab-a845-c36f92025cdf",
+            "taskId": "01a17b86-1cc5-7cdb-8cc8-9e91234842c4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-7"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1cc5-7cdb-8cc8-9e91234842c4",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ac7-78ab-a845-c36f92025cdf",
+            "taskId": "01a17b86-1cc5-7cdb-8cc8-9e91234842c4",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-7"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.583990833,
+      "accepted": 257.827082291,
+      "finished": 274.528273875,
+      "expectedText": "beta-concurrent-8",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748773331000",
+            "taskId": "01a17b86-1c49-78b9-970f-1fdb8cbed975",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-8"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ab2-7672-b2a2-1465c9d7a763",
+            "taskId": "01a17b86-1c49-78b9-970f-1fdb8cbed975",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-8"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1c49-78b9-970f-1fdb8cbed975",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5ab2-7672-b2a2-1465c9d7a763",
+            "taskId": "01a17b86-1c49-78b9-970f-1fdb8cbed975",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-8"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    },
+    {
+      "started": 255.584932958,
+      "accepted": 258.127000791,
+      "finished": 274.470569375,
+      "expectedText": "beta-concurrent-9",
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "beta-1793073748774273000",
+            "taskId": "01a17b86-1ca3-7870-b05c-7f8b298050c1",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-9"
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5abe-747e-97c3-938981869787",
+            "taskId": "01a17b86-1ca3-7870-b05c-7f8b298050c1",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-9"
+              }
+            ]
+          }
+        ],
+        "id": "01a17b86-1ca3-7870-b05c-7f8b298050c1",
+        "status": {
+          "state": "TASK_STATE_COMPLETED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17b86-5abe-747e-97c3-938981869787",
+            "taskId": "01a17b86-1ca3-7870-b05c-7f8b298050c1",
+            "contextId": "load-beta",
+            "parts": [
+              {
+                "text": "beta-concurrent-9"
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T04:02:45Z"
+        },
+        "contextId": "load-beta"
+      }
+    }
+  ],
+  "duplicateTaskIds": [
+    "01a17b87-2c13-7b19-95ce-26e864af7875",
+    "01a17b87-3256-7e73-893b-64749dd6b0a6"
+  ],
+  "restartChecks": [],
+  "verdict": "PASS"
+}

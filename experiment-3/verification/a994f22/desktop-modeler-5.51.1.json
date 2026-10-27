@@ -1,0 +1,438 @@
+{
+  "verdict": "PASS_FOR_DESKTOP_IMPORT_CONFIGURATION_FORM_PREVIEW_SAVE_REOPEN_AND_DEPLOYMENT_ONLY",
+  "application": "Camunda Modeler",
+  "version": "5.51.1",
+  "platform": "macOS",
+  "continuationEnvironment": {
+    "macOSVersion": "26.7.1",
+    "electronVersion": "43.0.0",
+    "chromiumVersion": "150.0.7871.46",
+    "scope": "Observed during the deployment-preparation continuation. Historical host versions were not separately captured."
+  },
+  "sourceRevision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+  "assets": [
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn",
+      "sha256": "6e10a1cbc8a20065b6685b0d0753bb568ba491df74e4b41e0c0989e26f4942bc",
+      "blob": "8b272b2bbbc36aed1d25f307a42ca193449fba94"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/dmn/a2a-validate.dmn",
+      "sha256": "c335fb5a5c127d4f9b145bd93e2428835589efb06bf9ffc7d92e2f4861174979",
+      "blob": "93170811ea4665ba4941a1d0f67002f8bd61bf8f"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/demo/a2a-card.bpmn",
+      "sha256": "90dfc0d151787a78db9bb04bc3d631eba85fb8582e4012baaba4fced0bc5e5cc",
+      "blob": "e7c5a3e1f6043acc5e31860203e82bd059823897"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/demo/a2a-card-dispute.bpmn",
+      "sha256": "3a695f96c43b15ae714b821fb9f2debe458c853392ee7358a210461bec063beb",
+      "blob": "e6c0e98d6a59cff9822a761ad764106834636580"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/demo/a2a-client.bpmn",
+      "sha256": "02b69a0d74cf95e147b303bf9afb70f8ca7f4bce2675344a02f2bdae66ca78bf",
+      "blob": "eeaab0aa96172772f8e715cc0b45f00f962f4340"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/demo/a2a-client-ask.form",
+      "sha256": "bb5ca4b1bf138266958c70c5af3d106b7c8e226a156f2c31da966dcea8cfd057",
+      "blob": "1aa0e99847450b1d8d64a2dfb1dc239499862f07"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/demo/a2a-client-answer.form",
+      "sha256": "0cf13f81302e63ce6ef7f1b2bbe50a16934db7fe9120154a3dc9e5666c380251",
+      "blob": "e4e2c95a5587dedba08f7372f8d64ee88e878707"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/demo/a2a-client-result.form",
+      "sha256": "5fc2c5f2918343e988a8fdad24ef1ccb48d526bc120b7ddfd98bd31cbb4c1e69",
+      "blob": "8b85ce5a593de3d5f607e08fcb37ae009074d8dc"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/templates/a2a-core-rpc.json",
+      "sha256": "1384ad621badb6f8a9b9571eaa251fbf496097ac171925f784a99a899104de34",
+      "blob": "d2378c7747375119f82e93ff87e9315f37765009"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/templates/a2a-core-card.json",
+      "sha256": "656532bacb4bff4409143b0a11ab66dd5552db85acfd827fba65a8694f5bd853",
+      "blob": "3aa30ba2f16139fd235fa354b45e942180f056e3"
+    },
+    {
+      "repository": "HanselIdes/camunda-a2a",
+      "revision": "b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c",
+      "path": "experiment-3/blueprint/templates/http-json.json",
+      "sha256": "af0668b3dbf8343aa3330cbc2dab748de26f19a10a429243095430b5ee22d420",
+      "blob": "693f4a6e39a38abcb0fc73514e447b72fb86ec48"
+    },
+    {
+      "repository": "camunda/connectors",
+      "revision": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+      "path": "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+      "sha256": "3d9ac20785e2ae06b2f907a9a25bd0409db2eb3b2734ce45709f04ee2f92c0b6",
+      "blob": "02db883618475dac8ed413578cef4e81f4ecfed4"
+    }
+  ],
+  "imports": [
+    {
+      "name": "a2a-protocol.bpmn",
+      "type": "cloud-bpmn",
+      "active": "a2a-protocol.bpmn",
+      "lint": [],
+      "renderedNodeCount": 4
+    },
+    {
+      "name": "a2a-validate.dmn",
+      "type": "cloud-dmn",
+      "active": "a2a-validate.dmn",
+      "lint": [],
+      "renderedNodeCount": 3
+    },
+    {
+      "name": "a2a-card.bpmn",
+      "type": "cloud-bpmn",
+      "active": "a2a-card.bpmn",
+      "lint": [
+        {
+          "category": "warn",
+          "name": "Engine profile",
+          "message": "This file targets Camunda 8.8, but the connected cluster runs Camunda 8.10.",
+          "rule": "camunda/version-mismatch",
+          "action": {
+            "label": "Update engine profile to 8.10",
+            "handler": "set-engine-profile",
+            "options": {
+              "executionPlatformVersion": "8.10.0"
+            }
+          }
+        }
+      ],
+      "renderedNodeCount": 4
+    },
+    {
+      "name": "a2a-card-dispute.bpmn",
+      "type": "cloud-bpmn",
+      "active": "a2a-card-dispute.bpmn",
+      "lint": [
+        {
+          "category": "warn",
+          "name": "Engine profile",
+          "message": "This file targets Camunda 8.8, but the connected cluster runs Camunda 8.10.",
+          "rule": "camunda/version-mismatch",
+          "action": {
+            "label": "Update engine profile to 8.10",
+            "handler": "set-engine-profile",
+            "options": {
+              "executionPlatformVersion": "8.10.0"
+            }
+          }
+        }
+      ],
+      "renderedNodeCount": 4
+    },
+    {
+      "name": "a2a-client.bpmn",
+      "type": "cloud-bpmn",
+      "active": "a2a-client.bpmn",
+      "lint": [
+        {
+          "category": "warn",
+          "name": "Engine profile",
+          "message": "This file targets Camunda 8.8, but the connected cluster runs Camunda 8.10.",
+          "rule": "camunda/version-mismatch",
+          "action": {
+            "label": "Update engine profile to 8.10",
+            "handler": "set-engine-profile",
+            "options": {
+              "executionPlatformVersion": "8.10.0"
+            }
+          }
+        }
+      ],
+      "renderedNodeCount": 4
+    },
+    {
+      "name": "a2a-client-ask.form",
+      "type": "cloud-form",
+      "active": "a2a-client-ask.form",
+      "lint": [
+        {
+          "category": "warn",
+          "name": "Engine profile",
+          "message": "This file targets Camunda 8.8, but the connected cluster runs Camunda 8.10.",
+          "rule": "camunda/version-mismatch",
+          "action": {
+            "label": "Update engine profile to 8.10",
+            "handler": "set-engine-profile",
+            "options": {
+              "executionPlatformVersion": "8.10.0"
+            }
+          }
+        }
+      ],
+      "renderedNodeCount": 3,
+      "formEditorChildren": 1
+    },
+    {
+      "name": "a2a-client-answer.form",
+      "type": "cloud-form",
+      "active": "a2a-client-answer.form",
+      "lint": [
+        {
+          "category": "warn",
+          "name": "Engine profile",
+          "message": "This file targets Camunda 8.8, but the connected cluster runs Camunda 8.10.",
+          "rule": "camunda/version-mismatch",
+          "action": {
+            "label": "Update engine profile to 8.10",
+            "handler": "set-engine-profile",
+            "options": {
+              "executionPlatformVersion": "8.10.0"
+            }
+          }
+        }
+      ],
+      "renderedNodeCount": 3,
+      "formEditorChildren": 1
+    },
+    {
+      "name": "a2a-client-result.form",
+      "type": "cloud-form",
+      "active": "a2a-client-result.form",
+      "lint": [
+        {
+          "category": "warn",
+          "name": "Engine profile",
+          "message": "This file targets Camunda 8.8, but the connected cluster runs Camunda 8.10.",
+          "rule": "camunda/version-mismatch",
+          "action": {
+            "label": "Update engine profile to 8.10",
+            "handler": "set-engine-profile",
+            "options": {
+              "executionPlatformVersion": "8.10.0"
+            }
+          }
+        }
+      ],
+      "renderedNodeCount": 3,
+      "formEditorChildren": 1
+    }
+  ],
+  "formPreviewChecks": [
+    {
+      "name": "a2a-client-ask.form",
+      "preview": "Review a synthetic card dispute\n\nA BPMN client calls the remote AI agent through authenticated A2A 1.0. No real financial actions.\n\nQuestion*\nField is required.",
+      "schemaVersionInEditor": 19,
+      "serializedSchemaVersion": 18,
+      "serializationLength": 985,
+      "emptyErrors": {
+        "Field_a2a_client_ask_1": [
+          "Field is required."
+        ]
+      },
+      "filledErrors": {},
+      "submission": {
+        "data": {
+          "question": "Review the two synthetic Northwind charges."
+        },
+        "errors": {},
+        "files": {}
+      },
+      "expectedInput": "Review the two synthetic Northwind charges."
+    },
+    {
+      "name": "a2a-client-answer.form",
+      "preview": "Synthetic review agent needs more information\n\nWhich charge should I review?\n\nYour answer*\nField is required.",
+      "schemaVersionInEditor": 19,
+      "serializedSchemaVersion": 18,
+      "serializationLength": 744,
+      "emptyErrors": {
+        "Field_a2a_client_answer_1": [
+          "Field is required."
+        ]
+      },
+      "filledErrors": {},
+      "submission": {
+        "data": {
+          "followUp": "Review the duplicate Northwind charge."
+        },
+        "errors": {},
+        "files": {}
+      },
+      "expectedInput": "Review the duplicate Northwind charge."
+    },
+    {
+      "name": "a2a-client-result.form",
+      "preview": "Northwind / USD / overcharge 49.95 / REQUEST_HUMAN_REVIEW",
+      "schemaVersionInEditor": 19,
+      "serializedSchemaVersion": 18,
+      "serializationLength": 422
+    }
+  ],
+  "saveReopenChecks": [
+    {
+      "name": "a2a-protocol.bpmn",
+      "serializedLength": 129348,
+      "reopened": {
+        "name": "a2a-protocol.bpmn",
+        "type": "cloud-bpmn",
+        "lint": [],
+        "rendered": 4
+      }
+    },
+    {
+      "name": "a2a-validate.dmn",
+      "serializedLength": 15617,
+      "reopened": {
+        "name": "a2a-validate.dmn",
+        "type": "cloud-dmn",
+        "lint": [],
+        "rendered": 2
+      }
+    },
+    {
+      "name": "a2a-card.bpmn",
+      "serializedLength": 3820,
+      "reopened": {
+        "name": "a2a-card.bpmn",
+        "type": "cloud-bpmn",
+        "lint": [],
+        "rendered": 4
+      }
+    },
+    {
+      "name": "a2a-card-dispute.bpmn",
+      "serializedLength": 21768,
+      "reopened": {
+        "name": "a2a-card-dispute.bpmn",
+        "type": "cloud-bpmn",
+        "lint": [],
+        "rendered": 4
+      }
+    },
+    {
+      "name": "a2a-client.bpmn",
+      "serializedLength": 19611,
+      "reopened": {
+        "name": "a2a-client.bpmn",
+        "type": "cloud-bpmn",
+        "lint": [],
+        "rendered": 4
+      }
+    },
+    {
+      "name": "a2a-client-ask.form",
+      "serializedLength": 985,
+      "reopened": {
+        "name": "a2a-client-ask.form",
+        "type": "cloud-form",
+        "lint": [],
+        "rendered": 3
+      }
+    },
+    {
+      "name": "a2a-client-answer.form",
+      "serializedLength": 744,
+      "reopened": {
+        "name": "a2a-client-answer.form",
+        "type": "cloud-form",
+        "lint": [],
+        "rendered": 3
+      }
+    },
+    {
+      "name": "a2a-client-result.form",
+      "serializedLength": 422,
+      "reopened": {
+        "name": "a2a-client-result.form",
+        "type": "cloud-form",
+        "lint": [],
+        "rendered": 0
+      }
+    }
+  ],
+  "templateConfigurationCheck": {
+    "copyOnly": true,
+    "configuredValue": "a2a-editor-check",
+    "saved": true,
+    "reopened": "a2a-protocol.bpmn",
+    "persisted": true,
+    "lint": []
+  },
+  "deploymentPreparation": {
+    "submitted": false,
+    "source": "Original immutable resources, not the edited roundtrip protocol copy.",
+    "grouping": "Eight BPMN, DMN, and form files in an isolated folder with an empty .process-application marker.",
+    "templates": "Four pinned templates under .camunda/element-templates.",
+    "actualDialog": "Deploy process application",
+    "actualFileCountText": "8 files will be deployed",
+    "runtime": "No validation-owned target was ready. No deployment was submitted to an existing engine.",
+    "formRoundtripComparison": "All three saved forms match the complete source JSON. Their only byte difference is the omitted final newline."
+  },
+  "deployment": {
+    "submitted": true,
+    "application": "Camunda Modeler 5.51.1",
+    "engine": "8.8.21",
+    "connectors": "8.9.0",
+    "storage": "Elasticsearch 8.17.0",
+    "authentication": "Basic authentication with platform authorizations enabled.",
+    "targetOwnership": "Separate validation-owned Compose project. No unrelated engine received a deployment.",
+    "resourceCount": 8,
+    "resources": "Copies of the pinned resources, not the edited roundtrip protocol. Desktop omitted the active client BPMN's final newline before deployment.",
+    "workflow": "Selected owned Self-Managed connection and submitted Deploy process application through the actual Desktop UI.",
+    "actualNotification": "Process application deployed",
+    "actualDetail": "a2a-client.bpmn and 7 additional files deployed.",
+    "engineConfirmation": "All eight process IDs and a2a-validate have version 2 after Desktop deployment. Version 1 came from the preceding Hub deployment.",
+    "deployedSourceReadback": "Seven version-2 process-definition XML responses and the validation DMN match the frozen source bytes. The client differs only by its omitted final newline.",
+    "clientSourceSha256": "02b69a0d74cf95e147b303bf9afb70f8ca7f4bce2675344a02f2bdae66ca78bf",
+    "clientDeployedSha256": "d47bef4147b8b9c02b5361bb63a12e0b3402c9cd90d4e2d6be2874287c00e14b",
+    "readbackCorrection": "The initial comparison used mutable deployment inputs. Comparison with the frozen source identified the newline-only client difference.",
+    "processIds": [
+      "a2a-card-dispute",
+      "a2a-card",
+      "a2a-client",
+      "a2a-rpc",
+      "a2a-task-update",
+      "a2a-await",
+      "a2a-correlate",
+      "a2a-list-collect"
+    ],
+    "parentStartedOrCompletedInstances": false,
+    "automationLimit": "Initial connection input automation did not retain every debounced field. Waiting 800 milliseconds between inputs and checking persisted fields corrected the harness.",
+    "runtimeFormCompletion": "Pending separate Tasklist checks."
+  },
+  "limits": [
+    "Desktop deployed all eight original resources. Runtime form completion remains pending.",
+    "No Web Modeler or Marketplace import acceptance follows from Desktop checks.",
+    "The form playground exposes schema 19 internally. Actual getXML output and saved roundtrip files retain schema 18 for all three unchanged forms. Serialized copies were not runtime-tested.",
+    "The installed app automatically discovers a local engine. Version-mismatch warnings were retained, not waived.",
+    "Bundled HTTP v12 and AI Agent v5 templates duplicate the explicitly pinned project templates, producing duplicate-template warnings. Required template references resolved.",
+    "The first automation attempts used hidden windows, design-mode controls, or insufficient input debounce. Those harness attempts are non-acceptance; the final checks used visible validation controls, trusted CDP input and settled form state.",
+    "Input validation and expression checks used synthetic data. They are functional editor checks, not human usability evidence."
+  ],
+  "automation": "Actual installed Electron app via CDP. Standard app file-open, save/serialization, and native file backend. Tab UI clicks, template property input, actual form preview/validation, and trusted Chromium input. No substitute editor or protocol mock.",
+  "cleanup": "All owned Desktop instances stopped after the actual deployment and schema checks. Original pinned assets retain their recorded hashes. The shared validation-owned runtime remains available for Hub Tasklist checks."
+}

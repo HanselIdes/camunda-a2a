@@ -1,0 +1,363 @@
+{
+  "clientVariables": {
+    "items": [
+      {
+        "value": "\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"",
+        "isTruncated": false,
+        "name": "question",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686257",
+        "scopeKey": "2251799813686256",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "20",
+        "isTruncated": false,
+        "name": "readTimeoutInSeconds",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686262",
+        "scopeKey": "2251799813686261",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"GET\"",
+        "isTruncated": false,
+        "name": "method",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686263",
+        "scopeKey": "2251799813686261",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "false",
+        "isTruncated": false,
+        "name": "storeResponse",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686264",
+        "scopeKey": "2251799813686261",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "20",
+        "isTruncated": false,
+        "name": "connectionTimeoutInSeconds",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686265",
+        "scopeKey": "2251799813686261",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"{{secrets.A2A_AGENT_CARD_URL}}\"",
+        "isTruncated": false,
+        "name": "url",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686266",
+        "scopeKey": "2251799813686261",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "{\"type\":\"noAuth\"}",
+        "isTruncated": false,
+        "name": "authentication",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686267",
+        "scopeKey": "2251799813686261",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"https://host.docker.internal:60147/inbound/a2a\"",
+        "isTruncated": false,
+        "name": "agentUrl",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686276",
+        "scopeKey": "2251799813686256",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"Synthetic card-dispute reviewer\"",
+        "isTruncated": false,
+        "name": "agentName",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686277",
+        "scopeKey": "2251799813686256",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "[\"Reconcile synthetic charges\"]",
+        "isTruncated": false,
+        "name": "skillNames",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686278",
+        "scopeKey": "2251799813686256",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "{\"messageId\":\"01a17d64-f36b-7d5e-ba0f-ff63f4fac957\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"}]}",
+        "isTruncated": false,
+        "name": "outgoing",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686284",
+        "scopeKey": "2251799813686256",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"120\"",
+        "isTruncated": false,
+        "name": "readTimeoutInSeconds",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686287",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "{\"jsonrpc\":\"2.0\",\"id\":\"01a17d64-f373-7be4-85ff-3aca9c8c0397\",\"method\":\"SendMessage\",\"params\":{\"message\":{\"messageId\":\"01a17d64-f36b-7d5e-ba0f-ff63f4fac957\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"}]}}}",
+        "isTruncated": false,
+        "name": "body",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686288",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "false",
+        "isTruncated": false,
+        "name": "storeResponse",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686289",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"{{secrets.A2A_RPC_URL}}\"",
+        "isTruncated": false,
+        "name": "url",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686290",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "{\"A2A-Version\":\"1.0\",\"Content-Type\":\"application/json\",\"X-A2A-Api-Key\":\"{{secrets.A2A_API_KEY}}\"}",
+        "isTruncated": false,
+        "name": "headers",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686291",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "false",
+        "isTruncated": false,
+        "name": "ignoreNullValues",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686292",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "20",
+        "isTruncated": false,
+        "name": "connectionTimeoutInSeconds",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686293",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "\"POST\"",
+        "isTruncated": false,
+        "name": "method",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686294",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "{\"type\":\"noAuth\"}",
+        "isTruncated": false,
+        "name": "authentication",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686295",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      },
+      {
+        "value": "{\"type\":\"io.camunda.connector.api.error.ConnectorException\",\"message\":\"\",\"variables\":{\"response\":{\"headers\":{\"Keep-Alive\":\"timeout=60\",\"Transfer-Encoding\":\"chunked\",\"Connection\":\"keep-alive\",\"Date\":\"Tue, 27 Oct 2026 12:46:11 GMT\",\"Content-Type\":\"application/json\"},\"body\":{\"status\":\"ABORTED\",\"message\":\"Connection RemoteClientConnection{channel=[id: 0x7070dcf8, L:/172.28.0.3:51046 ! R:/172.28.0.3:26501]} was closed\"}}},\"code\":\"409\"}",
+        "isTruncated": false,
+        "name": "error",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686901",
+        "scopeKey": "2251799813686286",
+        "processInstanceKey": "2251799813686256"
+      }
+    ],
+    "page": {
+      "totalItems": 21,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODYyNTdd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODY5MDFd"
+    }
+  },
+  "rpcVariables": {
+    "items": [
+      {
+        "value": "{\"id\":\"01a17d64-f373-7be4-85ff-3aca9c8c0397\",\"jsonrpc\":\"2.0\",\"method\":\"SendMessage\",\"params\":{\"message\":{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"}],\"messageId\":\"01a17d64-f36b-7d5e-ba0f-ff63f4fac957\",\"role\":\"ROLE_USER\"}}}",
+        "isTruncated": false,
+        "name": "rpc",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686299",
+        "scopeKey": "2251799813686298",
+        "processInstanceKey": "2251799813686298"
+      },
+      {
+        "value": "{\"jsonrpc\":\"2.0\",\"id\":\"demo-send\",\"method\":\"SendMessage\",\"params\":{\"message\":{\"messageId\":\"demo-request-1\",\"role\":\"ROLE_USER\",\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"}]}}}",
+        "isTruncated": false,
+        "name": "rpc",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686979",
+        "scopeKey": "2251799813686978",
+        "processInstanceKey": "2251799813686978"
+      },
+      {
+        "value": "{\"jsonrpc\":\"2.0\",\"id\":\"demo-poll\",\"method\":\"GetTask\",\"params\":{\"id\":\"01a17d66-513e-7a39-8081-3aafefb73f59\"}}",
+        "isTruncated": false,
+        "name": "rpc",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687309",
+        "scopeKey": "2251799813687308",
+        "processInstanceKey": "2251799813687308"
+      },
+      {
+        "value": "{\"jsonrpc\":\"2.0\",\"id\":\"external-list\",\"method\":\"ListTasks\",\"params\":{\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\"}}",
+        "isTruncated": false,
+        "name": "rpc",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687399",
+        "scopeKey": "2251799813687398",
+        "processInstanceKey": "2251799813687398"
+      }
+    ],
+    "page": {
+      "totalItems": 4,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODYyOTld",
+      "endCursor": "WzIyNTE3OTk4MTM2ODczOTld"
+    }
+  },
+  "tasks": {
+    "items": [
+      {
+        "value": "{\"artifacts\":[],\"history\":[{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"}],\"messageId\":\"01a17d64-f36b-7d5e-ba0f-ff63f4fac957\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\"},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d65-b3f5-7596-95f6-102d4d27a171\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"parts\":[{\"text\":\"What is the expected amount for the single order at Northwind Electronics?\"}]}],\"id\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"status\":{\"state\":\"TASK_STATE_INPUT_REQUIRED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d65-b3f5-7596-95f6-102d4d27a171\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"parts\":[{\"text\":\"What is the expected amount for the single order at Northwind Electronics?\"}]},\"timestamp\":\"2026-10-27T12:46:19Z\"},\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686337",
+        "scopeKey": "2251799813686335",
+        "processInstanceKey": "2251799813686335"
+      },
+      {
+        "value": "{\"artifacts\":[],\"history\":[{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"}],\"messageId\":\"01a17d64-f36b-7d5e-ba0f-ff63f4fac957\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\"},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d65-b3f5-7596-95f6-102d4d27a171\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"parts\":[{\"text\":\"What is the expected amount for the single order at Northwind Electronics?\"}]}],\"id\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"status\":{\"state\":\"TASK_STATE_INPUT_REQUIRED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d65-b3f5-7596-95f6-102d4d27a171\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"parts\":[{\"text\":\"What is the expected amount for the single order at Northwind Electronics?\"}]},\"timestamp\":\"2026-10-27T12:46:19Z\"},\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686935",
+        "scopeKey": "2251799813686933",
+        "processInstanceKey": "2251799813686335"
+      },
+      {
+        "value": "{\"artifacts\":[],\"history\":[{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. Please reconcile; the expected amount has not been supplied yet.\"}],\"messageId\":\"01a17d64-f36b-7d5e-ba0f-ff63f4fac957\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\"},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d65-b3f5-7596-95f6-102d4d27a171\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"parts\":[{\"text\":\"What is the expected amount for the single order at Northwind Electronics?\"}]}],\"id\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"status\":{\"state\":\"TASK_STATE_INPUT_REQUIRED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d65-b3f5-7596-95f6-102d4d27a171\",\"taskId\":\"01a17d64-f40b-7547-8522-3a86ba9a1948\",\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"parts\":[{\"text\":\"What is the expected amount for the single order at Northwind Electronics?\"}]},\"timestamp\":\"2026-10-27T12:46:19Z\"},\"contextId\":\"01a17d64-f40a-7811-94cc-afa81c193945\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813686937",
+        "scopeKey": "2251799813686936",
+        "processInstanceKey": "2251799813686936"
+      },
+      {
+        "value": "{\"artifacts\":[{\"artifactId\":\"01a17d66-5d38-7743-88f0-21f8ba0995d9\",\"name\":\"reconciliation\",\"parts\":[{\"data\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}]}],\"history\":[{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"}],\"messageId\":\"demo-request-1\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\"},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]}],\"id\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"status\":{\"state\":\"TASK_STATE_COMPLETED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]},\"timestamp\":\"2026-10-27T12:47:02Z\"},\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687016",
+        "scopeKey": "2251799813687015",
+        "processInstanceKey": "2251799813687015"
+      },
+      {
+        "value": "{\"artifacts\":[{\"artifactId\":\"01a17d66-5d38-7743-88f0-21f8ba0995d9\",\"name\":\"reconciliation\",\"parts\":[{\"data\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}]}],\"history\":[{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"}],\"messageId\":\"demo-request-1\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\"},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]}],\"id\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"status\":{\"state\":\"TASK_STATE_COMPLETED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]},\"timestamp\":\"2026-10-27T12:47:02Z\"},\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687176",
+        "scopeKey": "2251799813687175",
+        "processInstanceKey": "2251799813687015"
+      },
+      {
+        "value": "{\"artifacts\":[{\"artifactId\":\"01a17d66-5d38-7743-88f0-21f8ba0995d9\",\"name\":\"reconciliation\",\"parts\":[{\"data\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}]}],\"history\":[{\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"}],\"messageId\":\"demo-request-1\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"role\":\"ROLE_USER\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\"},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]}],\"id\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"status\":{\"state\":\"TASK_STATE_COMPLETED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]},\"timestamp\":\"2026-10-27T12:47:02Z\"},\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687180",
+        "scopeKey": "2251799813687178",
+        "processInstanceKey": "2251799813687178"
+      },
+      {
+        "value": "{\"artifacts\":[{\"artifactId\":\"01a17d66-5d38-7743-88f0-21f8ba0995d9\",\"name\":\"reconciliation\",\"parts\":[{\"data\":{\"currency\":\"USD\",\"matchingAmounts\":true,\"merchant\":\"Northwind Electronics\",\"overchargeAmount\":49.95,\"syntheticOnly\":true,\"recommendation\":\"REQUEST_HUMAN_REVIEW\",\"chargeAmounts\":[49.95,49.95],\"paidAmount\":99.9,\"expectedAmount\":49.95}}]}],\"history\":[{\"role\":\"ROLE_USER\",\"messageId\":\"demo-request-1\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"}]},{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]}],\"id\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"status\":{\"state\":\"TASK_STATE_COMPLETED\",\"message\":{\"role\":\"ROLE_AGENT\",\"messageId\":\"01a17d66-5d3a-7253-ac05-73dfb4c4632a\",\"taskId\":\"01a17d66-513e-7a39-8081-3aafefb73f59\",\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"parts\":[{\"text\":\"Synthetic charges reconciled for human review. No refund or financial action was performed.\"}]},\"timestamp\":\"2026-10-27T12:47:02Z\"},\"contextId\":\"01a17d66-513e-7c6d-b517-85ab32da9e54\",\"rev\":2,\"responseMode\":\"task\"}",
+        "isTruncated": false,
+        "name": "task",
+        "tenantId": "<default>",
+        "variableKey": "2251799813687388",
+        "scopeKey": "2251799813687308",
+        "processInstanceKey": "2251799813687308"
+      }
+    ],
+    "page": {
+      "totalItems": 7,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODYzMzdd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODczODhd"
+    }
+  },
+  "businessInstances": {
+    "items": [
+      {
+        "processDefinitionId": "a2a-card-dispute",
+        "processDefinitionName": "Synthetic card-dispute A2A agent",
+        "processDefinitionVersion": 2,
+        "startDate": "2026-10-27T12:45:30.608Z",
+        "state": "ACTIVE",
+        "hasIncident": false,
+        "tenantId": "<default>",
+        "processInstanceKey": "2251799813686335",
+        "processDefinitionKey": "2251799813686209",
+        "tags": [
+          "ctx-01a17d64-f40a-7811-94cc-afa81c193945",
+          "a2a",
+          "task-01a17d64-f40b-7547-8522-3a86ba9a1948"
+        ]
+      },
+      {
+        "processDefinitionId": "a2a-card-dispute",
+        "processDefinitionName": "Synthetic card-dispute A2A agent",
+        "processDefinitionVersion": 2,
+        "startDate": "2026-10-27T12:47:00.001Z",
+        "endDate": "2026-10-27T12:47:02.974Z",
+        "state": "COMPLETED",
+        "hasIncident": false,
+        "tenantId": "<default>",
+        "processInstanceKey": "2251799813687015",
+        "processDefinitionKey": "2251799813686209",
+        "tags": [
+          "a2a",
+          "task-01a17d66-513e-7a39-8081-3aafefb73f59",
+          "ctx-01a17d66-513e-7c6d-b517-85ab32da9e54"
+        ]
+      }
+    ],
+    "page": {
+      "totalItems": 2,
+      "hasMoreTotalItems": false,
+      "startCursor": "WzIyNTE3OTk4MTM2ODYzMzVd",
+      "endCursor": "WzIyNTE3OTk4MTM2ODcwMTVd"
+    }
+  }
+}

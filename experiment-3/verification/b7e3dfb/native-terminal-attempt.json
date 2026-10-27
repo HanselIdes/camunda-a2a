@@ -1,0 +1,20 @@
+{
+  "testedSource": "b7e3dfb1bb80fe6bee435e945caa2d2fd6b52a70",
+  "targetWorktreeDirty": false,
+  "verdict": "FAIL",
+  "acceptanceEvidence": false,
+  "engine": "8.8.21",
+  "connectors": "8.9.0",
+  "exporterBulkDelaySeconds": 1,
+  "completedBeforeFailure": [
+    "Authenticated direct-TLS deterministic echo",
+    "22 operation-key checks",
+    "12 version-negotiation checks"
+  ],
+  "failurePhase": "Deployment of the nonshipping controlled business fixture",
+  "httpStatus": 400,
+  "diagnostic": "UndeclaredPrefix: Cannot resolve 'bpmn:tFormalExpression' as a QName: the prefix 'bpmn' is not declared.",
+  "cause": "The native fixture adapter changed XML namespace prefixes without retaining the bpmn prefix used by conditionExpression xsi:type values.",
+  "terminalRaceChecksExecuted": 0,
+  "interpretation": "A test-fixture serialization defect, not passing cancellation evidence. The committed protocol and deterministic example deployed successfully before this failure."
+}

@@ -1,0 +1,538 @@
+[
+  {
+    "method": "GET",
+    "path": "/inbound/a2a-card",
+    "extensionsHeader": false,
+    "seconds": 0.139,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.539,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.465,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.268,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.135,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.473,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.367,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.113,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.112,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.105,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.109,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.104,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.11,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.034,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.388,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.157,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.618,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.542,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.514,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.102,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.388,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.298,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.294,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.292,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.292,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.289,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.774,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.54,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.744,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.245,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.574,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.397,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.145,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.155,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.655,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.494,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.547,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.475,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.266,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.294,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.393,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.483,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.476,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.767,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.05,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.477,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.077,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.265,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 2.069,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.474,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.567,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 1.128,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": true,
+    "seconds": 1.764,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.098,
+    "status": 200,
+    "measurement": "headers"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.466,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 4.004,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.098,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.102,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.104,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.103,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.279,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.21,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 0.101,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.256,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.15,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.262,
+    "status": 200,
+    "measurement": "response-body"
+  },
+  {
+    "method": "POST",
+    "path": "/inbound/a2a",
+    "extensionsHeader": false,
+    "seconds": 3.73,
+    "status": 200,
+    "measurement": "response-body"
+  }
+]

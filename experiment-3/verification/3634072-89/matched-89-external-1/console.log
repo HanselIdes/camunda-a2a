@@ -1,0 +1,82 @@
+ Network a2a-proof-226bcbee4409967c3cff4757d2ab21da_default Creating 
+ Network a2a-proof-226bcbee4409967c3cff4757d2ab21da_default Creating 
+ Network a2a-proof-226bcbee4409967c3cff4757d2ab21da_default Created 
+ Network a2a-proof-226bcbee4409967c3cff4757d2ab21da_default Created 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Creating 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Created 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Creating 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Created 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Creating 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Created 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Starting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Started 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Waiting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Healthy 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Starting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Started 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Waiting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Healthy 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Starting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Started 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Waiting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Waiting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Waiting 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Healthy 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Healthy 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Healthy 
+deployment status 200
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Stopping 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Stopped 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Removing 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-connectors-1 Removed 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Stopping 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Stopped 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Removing 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-camunda-1 Removed 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Stopping 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Stopped 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Removing 
+ Container a2a-proof-226bcbee4409967c3cff4757d2ab21da-elasticsearch-1 Removed 
+ Network a2a-proof-226bcbee4409967c3cff4757d2ab21da_default Removing 
+ Network a2a-proof-226bcbee4409967c3cff4757d2ab21da_default Removed 
+Traceback (most recent call last):
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 1346, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/client.py", line 1257, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/client.py", line 1303, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/client.py", line 1252, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/client.py", line 1012, in _send_output
+    self.send(msg)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/client.py", line 952, in send
+    self.connect()
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/client.py", line 1426, in connect
+    self.sock = self._context.wrap_socket(self.sock,
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ssl.py", line 500, in wrap_socket
+    return self.sslsocket_class._create(
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ssl.py", line 1069, in _create
+    self.do_handshake()
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/ssl.py", line 1338, in do_handshake
+    self._sslobj.do_handshake()
+ssl.SSLEOFError: EOF occurred in violation of protocol (_ssl.c:1129)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<SESSION_ARTIFACTS>/matched-latest-external.py", line 41, in <module>
+    with urllib.request.urlopen(namespace["connectors_url"] + "/inbound/a2a-card",
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 214, in urlopen
+    return opener.open(url, data, timeout)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 517, in open
+    response = self._open(req, data)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 534, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 494, in _call_chain
+    result = func(*args)
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 1389, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+  File "<HOST_PYTHON_TOOLCHAIN>/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/urllib/request.py", line 1349, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error EOF occurred in violation of protocol (_ssl.c:1129)>

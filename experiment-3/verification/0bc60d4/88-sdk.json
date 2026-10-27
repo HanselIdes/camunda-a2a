@@ -1,0 +1,59 @@
+{
+  "sdk": "a2a-sdk",
+  "version": "1.2.3",
+  "transport": "JSONRPC",
+  "protocol": "1.0",
+  "tlsCertificateVerified": true,
+  "checks": [
+    "explicit discovery",
+    "SDK transport negotiation",
+    "nonblocking send",
+    "polling",
+    "input-required",
+    "numeric-leading follow-up",
+    "four-message history",
+    "exact reconciliation artifact",
+    "terminal retrieval",
+    "context-filtered list"
+  ],
+  "authenticatedRequests": 9,
+  "requestVersions": [
+    {
+      "method": "SendMessage",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "SendMessage",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "GetTask",
+      "protocolVersion": "1.0"
+    },
+    {
+      "method": "ListTasks",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "verdict": "PASS"
+}

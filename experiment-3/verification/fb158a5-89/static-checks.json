@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-27",
+  "source": "fb158a5798baa5cdbba9514a537c5e16098ef936",
+  "pythonHarnessTests": {
+    "command": "python3 -m unittest discover -s experiment-3/tests/runtime -p 'test_*.py'",
+    "executed": 38,
+    "verdict": "PASS"
+  },
+  "generation": {
+    "commands": [
+      "python3 experiment-3/tools/build_blueprint.py --check",
+      "python3 experiment-3/tools/build_core.py --check"
+    ],
+    "verdict": "PASS"
+  },
+  "resourceClosure": {
+    "command": "python3 experiment-3/tools/check_resources.py",
+    "resources": 12,
+    "verdict": "PASS"
+  },
+  "forms": {
+    "command": "node experiment-3/tools/validate_forms.cjs experiment-3/blueprint/demo/*.form",
+    "schema": "@bpmn-io/form-json-schema@1.18.0",
+    "validator": "ajv@8.17.1 and ajv-errors@3.0.0",
+    "node": "26.8.1",
+    "files": 3,
+    "verdict": "PASS",
+    "uiExecution": "Not performed on changed form"
+  },
+  "bpmnLint": {
+    "command": "c8ctl bpmn lint FILE",
+    "c8ctl": "4.5.0",
+    "files": [
+      "experiment-3/blueprint/demo/a2a-card-dispute.bpmn",
+      "experiment-3/blueprint/demo/a2a-client.bpmn",
+      "experiment-3/blueprint/demo/a2a-card.bpmn"
+    ],
+    "errors": 0,
+    "warnings": 0,
+    "verdict": "PASS"
+  }
+}

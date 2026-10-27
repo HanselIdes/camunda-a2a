@@ -1,0 +1,7 @@
+{
+  "source": "owned runtime docker compose logs --no-color --since35m camunda",
+  "completeCapturedLogSha256": "cf6ab26aaa55b0e2b9470fd6f3fd36b7349bcd246cbc840e019f770c12b54cb9",
+  "firstLine": 1197,
+  "lastLine": 1203,
+  "transformation": "contiguous excerpt; generated credentials redacted before capture; full log retained in private session artifacts"
+}

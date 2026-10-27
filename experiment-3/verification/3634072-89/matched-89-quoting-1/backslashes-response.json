@@ -1,0 +1,52 @@
+{
+  "httpStatus": 200,
+  "body": {
+    "jsonrpc": "2.0",
+    "id": "quoting-backslashes",
+    "result": {
+      "task": {
+        "history": [
+          {
+            "role": "ROLE_USER",
+            "messageId": "4badebd5-4aa2-41a0-97c4-9bc23f4175b0",
+            "taskId": "01a17de5-03d2-7717-8b09-035614607970",
+            "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da",
+            "parts": [
+              {
+                "text": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details."
+              }
+            ]
+          },
+          {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17de5-0c2d-74b3-baf4-b329c9d8869a",
+            "taskId": "01a17de5-03d2-7717-8b09-035614607970",
+            "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da",
+            "parts": [
+              {
+                "text": "Please provide the merchant name, currency code, the two charge amounts, and the expected amount for the single order from the synthetic data in the file C:\\lab\\order\\n.txt."
+              }
+            ]
+          }
+        ],
+        "id": "01a17de5-03d2-7717-8b09-035614607970",
+        "status": {
+          "state": "TASK_STATE_INPUT_REQUIRED",
+          "message": {
+            "role": "ROLE_AGENT",
+            "messageId": "01a17de5-0c2d-74b3-baf4-b329c9d8869a",
+            "taskId": "01a17de5-03d2-7717-8b09-035614607970",
+            "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da",
+            "parts": [
+              {
+                "text": "Please provide the merchant name, currency code, the two charge amounts, and the expected amount for the single order from the synthetic data in the file C:\\lab\\order\\n.txt."
+              }
+            ]
+          },
+          "timestamp": "2026-10-27T15:05:25Z"
+        },
+        "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da"
+      }
+    }
+  }
+}

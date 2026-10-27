@@ -1,0 +1,9 @@
+{
+  "method": "Real keyboard edit, observed PATCH200 and Autosaved status; reload confirms temporary note; explicit Meta+A/Backspace restoration; waited for autosave; reload confirms original empty documentation",
+  "temporaryValuePersisted": true,
+  "originalRestoredAndPersisted": true,
+  "restoreWrites": [
+    200
+  ],
+  "automationDeviation": "Playwright fill did not persist; early reload before completion also did not prove restoration. Only completed keyboard autosave plus reload is accepted."
+}

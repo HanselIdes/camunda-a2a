@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_controlled_business" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+  <bpmn:message id="ControlledFollowUpMessage" name="a2a-send">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="A2ACancelMessage" name="a2a-cancel">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:process id="a2a-controlled-business" name="Nonshipping cancellation-order regression fixture" isExecutable="true">
+    <bpmn:startEvent id="ControlledStart" name="Task received">
+      <bpmn:outgoing>Flow_ControlledStart_ControlledRoute</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="ControlledRoute" name="Ask for input?" default="Flow_ControlledRoute_ControlledWork">
+      <bpmn:incoming>Flow_ControlledStart_ControlledRoute</bpmn:incoming>
+      <bpmn:outgoing>Flow_ControlledRoute_ControlledAsk</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ControlledRoute_ControlledWork</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="ControlledWork" name="Complete controlled business work">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ControlledRoute_ControlledWork</bpmn:incoming>
+      <bpmn:incoming>Flow_ControlledFollowUp_ControlledWork</bpmn:incoming>
+      <bpmn:outgoing>Flow_ControlledWork_ControlledUpdate</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:callActivity id="ControlledUpdate" name="Commit completion">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=task" target="task" />
+          <zeebe:input source="={state: &quot;TASK_STATE_COMPLETED&quot;, text: &quot;Controlled completion&quot;, artifacts: [{artifactId: &quot;controlled&quot;, parts: [{text: &quot;Controlled artifact&quot;}]}]}" target="outcome" />
+          <zeebe:output source="=task" target="task" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ControlledWork_ControlledUpdate</bpmn:incoming>
+      <bpmn:outgoing>Flow_ControlledUpdate_ControlledEnd</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="ControlledAsk" name="Request client input">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=task" target="task" />
+          <zeebe:input source="={state: &quot;TASK_STATE_INPUT_REQUIRED&quot;, text: &quot;Controlled clarification&quot;}" target="outcome" />
+          <zeebe:output source="=task" target="task" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ControlledRoute_ControlledAsk</bpmn:incoming>
+      <bpmn:outgoing>Flow_ControlledAsk_ControlledFollowUp</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:intermediateCatchEvent id="ControlledFollowUp" name="Follow-up received">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="={id: task.id, contextId: task.contextId, rev: task.rev + 1, status: {state: &quot;TASK_STATE_WORKING&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}, artifacts: task.artifacts, history: append(task.history, put(put(followUp.message, &quot;taskId&quot;, task.id), &quot;contextId&quot;, task.contextId))}" target="task" />
+          <zeebe:output source="=followUp" target="req" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ControlledAsk_ControlledFollowUp</bpmn:incoming>
+      <bpmn:outgoing>Flow_ControlledFollowUp_ControlledWork</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="ControlledFollowUp_def" messageRef="ControlledFollowUpMessage" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="ControlledEnd" name="Completed">
+      <bpmn:incoming>Flow_ControlledUpdate_ControlledEnd</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_ControlledStart_ControlledRoute" sourceRef="ControlledStart" targetRef="ControlledRoute" />
+    <bpmn:sequenceFlow id="Flow_ControlledRoute_ControlledAsk" sourceRef="ControlledRoute" targetRef="ControlledAsk" name="yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=req.message.parts[1].text = "input-required"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ControlledRoute_ControlledWork" sourceRef="ControlledRoute" targetRef="ControlledWork" name="no" />
+    <bpmn:sequenceFlow id="Flow_ControlledAsk_ControlledFollowUp" sourceRef="ControlledAsk" targetRef="ControlledFollowUp" />
+    <bpmn:sequenceFlow id="Flow_ControlledFollowUp_ControlledWork" sourceRef="ControlledFollowUp" targetRef="ControlledWork" />
+    <bpmn:sequenceFlow id="Flow_ControlledWork_ControlledUpdate" sourceRef="ControlledWork" targetRef="ControlledUpdate" />
+    <bpmn:sequenceFlow id="Flow_ControlledUpdate_ControlledEnd" sourceRef="ControlledUpdate" targetRef="ControlledEnd" />
+    <bpmn:subProcess id="A2ACancellation" name="Cancel this A2A task" triggeredByEvent="true">
+      <bpmn:startEvent id="A2ACancelRequested" name="Cancellation requested" isInterrupting="true">
+        <bpmn:outgoing>A2ACancelToState</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="A2ACancelRequested_def" messageRef="A2ACancelMessage" />
+      </bpmn:startEvent>
+      <bpmn:scriptTask id="A2ASetCanceled" name="Commit terminal outcome">
+        <bpmn:extensionElements>
+          <zeebe:script resultVariable="task" expression="=if list contains([&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_REJECTED&quot;], task.status.state) then task else context merge([task, {rev: task.rev + 1, artifacts: [], status: {state: &quot;TASK_STATE_CANCELED&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}}])" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>A2ACancelToState</bpmn:incoming>
+        <bpmn:outgoing>A2ACancelToEnd</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:endEvent id="A2ACancelDone" name="Cancellation settled">
+        <bpmn:incoming>A2ACancelToEnd</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="A2ACancelToState" sourceRef="A2ACancelRequested" targetRef="A2ASetCanceled" />
+      <bpmn:sequenceFlow id="A2ACancelToEnd" sourceRef="A2ASetCanceled" targetRef="A2ACancelDone" />
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-controlled-business">
+      <bpmndi:BPMNShape id="ControlledStart_di" bpmnElement="ControlledStart">
+        <dc:Bounds x="150" y="62" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ControlledRoute_di" bpmnElement="ControlledRoute">
+        <dc:Bounds x="230" y="55" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ControlledWork_di" bpmnElement="ControlledWork">
+        <dc:Bounds x="340" y="40" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ControlledUpdate_di" bpmnElement="ControlledUpdate">
+        <dc:Bounds x="520" y="40" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ControlledAsk_di" bpmnElement="ControlledAsk">
+        <dc:Bounds x="340" y="240" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ControlledFollowUp_di" bpmnElement="ControlledFollowUp">
+        <dc:Bounds x="520" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ControlledEnd_di" bpmnElement="ControlledEnd">
+        <dc:Bounds x="700" y="62" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_ControlledStart_ControlledRoute_di" bpmnElement="Flow_ControlledStart_ControlledRoute">
+        <di:waypoint x="186" y="80" />
+        <di:waypoint x="230" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ControlledRoute_ControlledAsk_di" bpmnElement="Flow_ControlledRoute_ControlledAsk">
+        <di:waypoint x="280" y="80" />
+        <di:waypoint x="310" y="80" />
+        <di:waypoint x="310" y="280" />
+        <di:waypoint x="340" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ControlledRoute_ControlledWork_di" bpmnElement="Flow_ControlledRoute_ControlledWork">
+        <di:waypoint x="280" y="80" />
+        <di:waypoint x="340" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ControlledAsk_ControlledFollowUp_di" bpmnElement="Flow_ControlledAsk_ControlledFollowUp">
+        <di:waypoint x="440" y="280" />
+        <di:waypoint x="520" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ControlledFollowUp_ControlledWork_di" bpmnElement="Flow_ControlledFollowUp_ControlledWork">
+        <di:waypoint x="538" y="262" />
+        <di:waypoint x="538" y="-135" />
+        <di:waypoint x="390" y="-135" />
+        <di:waypoint x="390" y="40" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ControlledWork_ControlledUpdate_di" bpmnElement="Flow_ControlledWork_ControlledUpdate">
+        <di:waypoint x="440" y="80" />
+        <di:waypoint x="520" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ControlledUpdate_ControlledEnd_di" bpmnElement="Flow_ControlledUpdate_ControlledEnd">
+        <di:waypoint x="620" y="80" />
+        <di:waypoint x="700" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
+        <dc:Bounds x="150" y="400.0" width="420" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
+        <dc:Bounds x="180" y="462.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
+        <dc:Bounds x="270" y="440.0" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
+        <dc:Bounds x="450" y="462.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
+        <di:waypoint x="216" y="480.0" />
+        <di:waypoint x="270" y="480.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
+        <di:waypoint x="370" y="480.0" />
+        <di:waypoint x="450" y="480.0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
