@@ -119,6 +119,10 @@ Follow the [runtime setup guide](../README.md) before deployment. Import does no
 
 ## Deploy and run
 
+For this revised import, start with a fresh Modeler project when possible. Importing or renaming resources
+does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
+`profiles/basic/01-a2a-server.bpmn`, which now contains discovery.
+
 1. Import the 11 repository resources and the pinned server AI Agent template. Confirm that each BPMN template assignment resolves to the stated version, including catalog AI Agent Task v8.
 2. Configure secrets and the runtime requirements above.
 3. Deploy the selected BPMN, DMN, and form resources together.

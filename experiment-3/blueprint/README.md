@@ -14,9 +14,9 @@ leading-equals JSON input caused the real model to invent reconciliation fields 
 complete instead of asking for missing input. The existing synthetic-result guard does not validate
 that fields came from the request. This is a material missing-input/grounding limitation, not a
 formatting issue or a passed release gate. See the [versioned results and preserved failures](../verification/3634072-89/README.md).
-The [current confirmed-input prototype](../verification/fb158a5-89/README.md) passes its bounded
-checks on engine 8.9.26 / Connectors 8.9.17 / Elasticsearch 8.19.23. It adds explicit client
-confirmation and deterministic validation. No changed-form UI or SaaS verification is claimed.
+The [earlier confirmed-input prototype](../verification/fb158a5-89/README.md) passed its bounded
+checks on engine 8.9.26 / Connectors 8.9.17 / Elasticsearch 8.19.23. Those results do not verify
+the current numbered candidate.
 
 The demonstration has a client-side AI Agent Task (template version 8) that chooses among A2A discovery,
 send, poll, and user-input tools inside a parallel multi-instance ad-hoc subprocess. The protocol and
@@ -29,8 +29,9 @@ determination, financial integration, or custom HTTP server is included.
 ## 8.9+ candidate configuration
 
 The candidate targets **Camunda 8.9.26 with stock Connectors 8.9.17** and Elasticsearch 8.19.23.
-This is a specific validation profile, not a blanket claim for every 8.9+ combination. Run the
-source-specific client-agent verifier on a clean commit before treating this candidate as runtime-verified.
+The focused client-agent E2E passed on clean source commit
+[`d4f92c1`](../verification/d4f92c1/README.md). This is a specific validation profile, not a blanket
+claim for every 8.9+ combination.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
 
@@ -283,6 +284,10 @@ Changing provider type, business tools, or system instructions requires configur
 Use only the Basic profile. Do not import or deploy the OAuth profile alongside it; both profiles use the
 same executable process IDs. The [numbered demo README](demo/README.md) is itself an importable raw Markdown
 resource and contains the ordered manifest, exact labels, setup, and example request.
+
+For this revised import, start with a fresh Modeler project when possible. Importing or renaming resources
+does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
+`profiles/basic/01-a2a-server.bpmn`, which now contains discovery.
 
 The complete import closure is 11 repository resources plus the pinned upstream server AI Agent Job Worker v5
 template (12 import resources total): seven BPMN/DMN/form resources, three local element-template JSON files,
