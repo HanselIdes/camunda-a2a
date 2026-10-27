@@ -344,6 +344,7 @@ and check the synthetic-only confirmation. In the bundled client process, the ou
 `data.syntheticClaim` part only from that form result; the model cannot supply claim fields as tool arguments.
 Follow-up messages reuse the task and context IDs returned by the initial send; the model cannot supply those
 identifiers either. This is a prototype interaction: the model decides whether and when to call each tool.
+Polling also uses the task ID returned by the initial send rather than an AI-supplied identifier.
 
 External clients may submit this structured confirmation on the initial request for one-shot completion,
 or on a follow-up with the original `taskId` and `contextId`:

@@ -23,11 +23,11 @@ SYSTEM_PROMPT = (
     "You are the client-side AI agent for a synthetic A2A demonstration. "
     "The remote server agent owns the review; do not invent case facts or make financial decisions. "
     "Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. "
-    "When the server returns a task, use GetA2ATask to poll it. If the server requests input, "
+    "GetA2ATask polls the task returned by the prior send. If the server requests input, "
     "call AskClientForInput with the server's exact question, then send the user's answer and "
     "confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from "
     "the prior send result, and takes confirmation data only from the AskClientForInput form result. "
-    "Never send model-inferred values or invent task identifiers. "
+    "Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. "
     "Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. "
     "Report failures and nonterminal states accurately. This example performs no real financial action."
 )
@@ -116,9 +116,10 @@ def build():
     p.node(
         "serviceTask", "GetA2ATask", "Poll A2A task",
         985, 125, parent="ClientTools",
-        doc=("Read the current state of an A2A task after SendA2AMessage returns a task ID. "
-             "Poll while the task is working and use the returned state and message to decide "
-             "whether to request input or report a terminal result."),
+        doc=("Read the current state of the task returned by the prior SendA2AMessage call. "
+             "The task ID comes from that response, not an AI tool argument. Poll while work "
+             "continues and use the returned state and message to decide whether to request input "
+             "or report a terminal result."),
     )
     p.node(
         "userTask", "AskClientForInput", "Ask client for missing input",
@@ -210,16 +211,19 @@ def build():
                         '"X-A2A-Api-Key": "{{secrets.A2A_API_KEY}}"}'),
             ("body", one("""={
               jsonrpc: "2.0", id: uuid(), method: "SendMessage",
-              params: context merge([
-                {message: {
+              params: {
+                message: context merge([
+                  {
                   messageId: uuid(), role: "ROLE_USER",
                   parts: concatenate(
                     [{text: fromAi(toolCall.text, "The user's request or follow-up text", "string")}],
                     CONFIRMED_CLIENT_DATA_PARTS
                   )
-                }, configuration: {returnImmediately: true}},
+                  },
                 PREVIOUS_A2A_TASK_PARAMS
-              ])
+                ]),
+                configuration: {returnImmediately: true}
+              }
             }""".replace("CONFIRMED_CLIENT_DATA_PARTS", CONFIRMED_CLIENT_DATA_PARTS)
                  .replace("PREVIOUS_A2A_TASK_PARAMS", PREVIOUS_A2A_TASK_PARAMS))),
             ("readTimeoutInSeconds", "60"),
@@ -233,8 +237,8 @@ def build():
                         '"X-A2A-Api-Key": "{{secrets.A2A_API_KEY}}"}'),
             ("body", one("""={
               jsonrpc: "2.0", id: uuid(), method: "GetTask",
-              params: {id: fromAi(toolCall.taskId, "The existing A2A task ID", "string")}
-            }""")),
+              params: {id: get value(PREVIOUS_A2A_TASK_PARAMS, "taskId")}
+            }""".replace("PREVIOUS_A2A_TASK_PARAMS", PREVIOUS_A2A_TASK_PARAMS))),
             ("readTimeoutInSeconds", "30"),
             ("retries", "1"),
             ("resultExpression", "={toolCallResult: response.body}"),
