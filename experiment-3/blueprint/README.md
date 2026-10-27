@@ -328,11 +328,30 @@ direct discovery webhook; it has not been independently verified for this candid
 
 For a minimal external check, set `A2A_RPC_URL`, `A2A_AGENT_CARD_URL` and `A2A_API_KEY` in your local shell
 without committing their values or including them in screenshots. These shell variables do not configure connector
-secrets automatically. The examples below require curl and send synthetic data only:
+secrets automatically. The examples below require Bash and curl and send synthetic data only.
+For a normally resolvable endpoint with a trusted certificate, initialize:
 
-```sh
-curl --fail "$A2A_AGENT_CARD_URL"
-curl --fail "$A2A_RPC_URL" \
+```bash
+A2A_CURL_ARGS=()
+```
+
+For a Docker Desktop **local validation lab only**, `host.docker.internal` may resolve inside containers
+but not on the host. Keep that advertised hostname and its certificate SAN consistent for both clients.
+Set `A2A_CA_FILE` to the lab CA certificate and `A2A_CONNECTORS_PORT` to the actual published loopback port,
+then use this client-scoped mapping instead:
+
+```bash
+A2A_CURL_ARGS=(--cacert "$A2A_CA_FILE" --resolve "host.docker.internal:${A2A_CONNECTORS_PORT}:127.0.0.1")
+```
+
+This affects only these curl requests, not system DNS or other clients. The certificate must include
+`host.docker.internal`; curl still verifies hostname and CA trust. The Connectors Java client must trust
+the same CA and resolve the advertised host normally on its Docker network. Do not use this loopback mapping
+for remote clusters or production: supply real DNS and an appropriately trusted certificate there.
+
+```bash
+curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_AGENT_CARD_URL"
+curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
   -H "X-A2A-Api-Key: $A2A_API_KEY" \
   --data '{"jsonrpc":"2.0","id":"demo-send","method":"SendMessage","params":{"message":{"messageId":"demo-request-1","role":"ROLE_USER","parts":[{"text":"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."}]}}}'
@@ -340,8 +359,8 @@ curl --fail "$A2A_RPC_URL" \
 
 Read `result.task.id` from the response, set `TASK_ID` to that value and poll:
 
-```sh
-curl --fail "$A2A_RPC_URL" \
+```bash
+curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
   -H "X-A2A-Api-Key: $A2A_API_KEY" \
   --data "{\"jsonrpc\":\"2.0\",\"id\":\"demo-poll\",\"method\":\"GetTask\",\"params\":{\"id\":\"$TASK_ID\"}}"
