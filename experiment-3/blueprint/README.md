@@ -1,8 +1,10 @@
 # A2A community blueprint candidate
 
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
-[license and licensing limitations](../../README.md#license-and-support). Fresh-adopter timing, observed
-Modeler/Marketplace import and external licensing/eligibility approval remain separate release gates.
+[license and licensing limitations](../../README.md#license-and-support). This is a functional prototype:
+informed-agent checks are allowed; no adoption-time threshold or human-usability claim applies.
+Editor deployment and runtime form checks remain incomplete. Marketplace import and external
+licensing/eligibility approval are separate deferred release gates, not prototype acceptance.
 SaaS runtime support is unverified.
 
 The demonstration is a BPMN client calling an A2A 1.0 JSON-RPC endpoint, which starts a server-side AI agent.
@@ -26,7 +28,10 @@ fraud determination, financial integration, document processing or unreleased pr
 
 This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 proof. Other combinations and model
 providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
-Modeler import and Tasklist form rendering still require their own observed checks.
+The [cross-surface evidence matrix](../verification/32f8d4e/prototype-evidence.md) records exact known
+versions, unknowns, included assets and per-outcome evidence gaps. Desktop Modeler 5.51.1 import/render,
+template configuration, form preview and save/reopen have partial evidence; editor deployment,
+runtime form-UI completion and the supported Self-Managed Hub workflow remain separate checks.
 
 The execution-thread setting matters when client and server use the same Connectors runtime: a synchronous
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
@@ -67,7 +72,7 @@ requirements, **eight supplementally verified applicable** requirements, and **5
 requirements. Inactive signing and delegated-authorization conditions are not tested passes. This establishes
 the recorded declared Basic JSON-RPC profile only, not production eligibility, other profiles or publication.
 
-## Timed adoption
+## Historical adaptation diagnostic
 
 A separate AI-agent review session with prior knowledge of the repository reported
 [139 seconds at source 597b152](../verification/597b152/adoption.md), starting with a ready cluster, model
@@ -160,7 +165,8 @@ name the gates that were still open there; use the frozen-source audit above for
 
 ## Prepare the cluster
 
-Start timing an adoption attempt only after the cluster, Modeler, runtime, model and credentials are ready.
+Record cluster, editor, runtime, model and credential prerequisites before functional verification.
+There is no setup-time threshold. Record actual supplied settings, steps, results and any deviations.
 Keep the engine API authenticated. Configure the stock Connectors runtime's engine connection as usual; the
 engine credentials below also authenticate the protocol's REST calls.
 
@@ -273,6 +279,16 @@ and public discovery card. Do not use the archived experiment's unauthenticated 
 
 The AI template remains an upstream dependency with its own proprietary module terms; its JSON is imported from
 upstream rather than copied into this repository. See [third-party notices](../../THIRD_PARTY_NOTICES.md).
+
+For Desktop Modeler, prepare a separate
+[process application](https://docs.camunda.io/docs/8.8/components/modeler/desktop-modeler/process-applications/)
+directory containing only the eight resource files listed above. Put the four templates in
+`.camunda/element-templates/` beneath that directory and create an empty `.process-application` marker
+at its root (or use **File > New Process Application**). Open a diagram from this directory and choose
+**Open process application deployment**. Confirm that the dialog says **8 files will be deployed**.
+Deploying a standalone diagram does not automatically include the other seven resources.
+Do not include roundtrip copies, archived resources or both profiles in this group.
+Desktop 5.51.1 grouping and the eight-file dialog have been observed; submission/runtime verification is pending.
 
 Deploy all eight BPMN/DMN/form resources together, so the forms and decision are available to the processes.
 No generator execution, protocol editing, custom worker, nginx route or standard-path ingress is required.
@@ -441,9 +457,10 @@ business-input clarification is not an in-task authorization flow.
 Repeating a new-task submission with the same `messageId` creates independent tasks. There is no message-ID
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
-The source-specific checkpoints above distinguish engineering results from final release acceptance.
-Fresh-adopter timing, Modeler/form usability, actual Marketplace import and external legal/eligibility gates
-remain open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
+The source-specific checkpoints above distinguish functional prototype evidence from deferred release approval.
+Editor deployment and runtime form completion remain incomplete; human usability and fresh-adopter timing
+are not prototype criteria. Actual Marketplace import and external legal/eligibility approval remain deferred.
+The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
 business outcomes.
@@ -491,6 +508,10 @@ The OAuth profile remains nonshipping and unverified.
 
 The original experiments, fixture diagrams, conformance patches and old generated templates/icons are nonshipping
 verification or historical material. They are not part of the Modeler import set above.
+Despite their location under `blueprint/`, `docker-compose.yml`, `proxy/nginx.conf`, `smoke.py` and `smoke.sh`
+are historical unauthenticated experiment tooling, not this Basic prototype's installation path.
+Likewise, `../scripts/deploy.sh` and `../scripts/c8run-demo.sh` deploy historical resources, not the selected
+import set. Trace, coverage and token scripts are contributor diagnostics, not included runtime assets.
 Actual Marketplace import, licensing authority, unmaintained eligibility and publication remain separate gates.
 Contact the [repository issue tracker](https://github.com/HanselIdes/camunda-a2a/issues); no support response is promised.
 

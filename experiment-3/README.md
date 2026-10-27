@@ -120,8 +120,11 @@ The [frozen-source engineering record](verification/d4e6273/summary.json) covers
 three scoped TCK MUST-gate repeats, native failures/recovery, independent clients and two-agent reliability.
 The [timed AI-agent execution report](verification/597b152/adoption.md) records 139 seconds by a review
 session with prior repository knowledge, not a fresh human adopter or usability study.
-Neither establishes full A2A conformance or support for unverified version combinations. Modeler/form usability,
-fresh-adopter timing, actual Marketplace-to-Modeler import and external legal/eligibility approval remain outstanding.
+Neither establishes full A2A conformance or support for unverified version combinations.
+Editor deployment and runtime form completion remain incomplete. The
+[prototype evidence matrix](verification/32f8d4e/prototype-evidence.md) records relevant-runtime gaps and
+partial Desktop checks. Fresh-adopter timing and human usability are not prototype criteria;
+actual Marketplace-to-Modeler import and external legal/eligibility approval remain deferred release gates.
 Do not use the archived experimental card or client as companions to these candidate profiles.
 
 For contributors, `bpmn/a2a-protocol.bpmn` is the input to the profile builder. The builder preserves surviving diagram

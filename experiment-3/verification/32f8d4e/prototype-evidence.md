@@ -1,0 +1,93 @@
+# Prototype evidence integration
+
+Inventory source: `32f8d4e451b36ec35ee6fa0f03880b6d893205dc`. This is a documentation audit,
+not a new test execution. The only declared runtime combination is authenticated Self-Managed
+**engine 8.8.21 / stock Connectors 8.9.0 / Elasticsearch 8.17.0**, Basic, push disabled,
+direct HTTPS, local model. Other runtime combinations below are historical attempts, not advertised support.
+Informed-agent functional checks are allowed. There is no adoption-time or human-usability acceptance claim.
+
+## Attempted combinations and exact-version gaps
+
+`Unknown` means not recorded in the cited evidence, not an inferred default. A deployment method
+is not a separately versioned product: record its tool version as unknown when absent.
+
+| Attempt and original source | Engine / Connectors / storage | Editor and deployment | Recorded result and limits |
+| --- | --- | --- | --- |
+| Native reference, `d4e6273c862b387ee7b2a49b992cd4db5f56a922` | 8.8.21 / 8.9.0 / Elasticsearch 8.17.0; image IDs/digests in [native provenance](../d4e6273/native-provenance.json) | No Modeler used; Python verifier, Docker Compose, engine REST deployment. Python/Docker/Compose exact versions unknown. | Native auth/version, terminal/listing/failure checks, real model/BPMN client/SDK, three scoped TCK repeats and two-agent workload/restarts passed. Not editor or visual form completion. |
+| Native outage/transport supplement, `07b33876396bfcb8c0dfa58336dd1bd2cfd0b640` | 8.8.21 / 8.9.0 / Elasticsearch 8.17.0; [image digests](../07b3387/runtime-provenance.json) | No Modeler used; Python verifier/Compose/REST, exact tool versions unknown. | Three native gap cases passed; [failed harness attempt](../07b3387/failed-attempt-runtime-provenance.json) at d7290ae retained. Packaged assets unchanged from d4e6273. |
+| Earlier 8.8 checkpoints, 96357f5 / 0bc60d4 / f09fe52 / a45de8c / e4dd045 / bc0a693 | Same 8.8.21 / 8.9.0 / Elasticsearch 8.17.0; each directory retains its own full source pin/provenance | No Modeler used; isolated native Compose/REST; exact tool versions unknown. | Historical scopes only: do not transfer their PASS to changed source. Cancellation defect at 0bc60d4 and QName failure at b7e3dfb remain failures. |
+| 8.9 matrix, `0bc60d4b57697284f0ef8bbf4c039db65bf4b118` | 8.9.5 / 8.9.0 / Elasticsearch 8.17.0; [provenance/digests](../0bc60d4/89-runtime-provenance.json) | No Modeler used; isolated Compose/REST, exact tool versions unknown. | Native/real-model/BPMN client/SDK passed on that older source. No final-source terminal/failure/conformance series for this combination; not advertised. |
+| 8.10 native matrix, same 0bc60d4 source | 8.10.2 / 8.10.0 / Elasticsearch 8.17.0 configured by that source's runtime Compose; [failed provenance](../0bc60d4/810-failed-runtime-provenance.json) has no captured image digests | No Modeler used; isolated Compose/REST, exact tool versions unknown. | Real-agent result FAILED without expected reconciliation; SDK unrun. Not supported by the successful Maven suite. |
+| Maven process/integration suite, d4e6273 | Configured engine 8.10.2 / Connectors 8.10.0 for integration tests; Camunda Process Test 8.10.4. Storage product/version and runtime image digests not recorded in [suite report](../d4e6273/full-suite-checks.json). | No Modeler used; `mvn -q clean test` in tests directory. Exact Maven/JDK patch versions unknown. | 190 tests/19 suites, zero failures/errors/skips/reruns. Mix of engine-backed Harness adapters, mocked business/model jobs and stock-connector integration; not a native 8.10 candidate profile pass. |
+| Optional SaaS attempt, source not pinned in public report | Reported engine 8.8.44 / Connectors 8.8.24; managed storage/version unknown | Modeler/deployment tool versions unknown; [historical disclosure](../../README.md#candidate-validation-profiles-not-a-release) only | Secret registration unavailable and webhook 403, including valid key; blocked/unverified, not advertised. Exact source/provenance gap remains. |
+| Functional adaptation diagnostic, `597b1524d58a41db9d7465d523073bce0fd9223e` | Reported 8.8.21 / 8.9.0 / Elasticsearch 8.17.0; tags, no captured image digests | No Modeler used; Docker Desktop/macOS and REST, exact Docker/Desktop/macOS versions unknown | [Transcribed informed-agent run](../597b152/adoption.md), not a fresh adopter or timing criterion. Derived raw-XML process had no BPMNDI. |
+| Desktop import/render/preview/save-reopen, `b6b1baf55fe32e5ff0f961e6dab6c99b966cbe3c` | No target deployment submitted; engine/Connectors/storage not established by this check | Camunda Modeler **5.51.1**, macOS version unknown; actual installed Electron app via CDP | [Integrated report](desktop-modeler-5.51.1.json) covers pinned imports, template property persistence, required-field form preview and save/reopen only. Auto-discovered local engine warning says 8.10, not an exact engine patch or authorized deployment target. Playground exposes schema 19 internally; actual getXML output and saved copies retain schema 18 for all three unchanged forms. Saved copies not runtime-tested. |
+| Self-Managed Hub editor verification | No target runtime result yet; engine/Connectors/storage unknown for the editor workflow | Hub development source reported as `e1fa2b8` (short pin only); exact build/dependency versions and durable report pending external integration | Supported developer setup is in progress, not an import/configure/deploy/form completion pass. No claim follows from readiness alone. |
+| Archived quickstart/c8run configuration, not a candidate attempt report | Compose declares 8.10.2 / 8.10.0 / H2 RDBMS (H2 version unknown); c8run script defaults 8.10.2, bundled Connectors/storage versions unknown | No candidate Modeler/deployment report | Configuration values are not observed execution evidence. Historical scripts/proxy disable auth or use other skills; excluded from the selected Basic prototype. |
+
+The model pin for the native reference is local Ollama `qwen3-coder-30b-64k:latest`,
+digest `13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253`.
+Exact Ollama server version is unknown. SDK is `a2a-sdk==1.2.3`.
+The TCK pin is `263b9cfaf16a554bdfb166a7ba5b67716e946349`, patched-source SHA-256
+`8fd33aea1814e32723545d3725af254505bf990363c355679f9f779de7aed74a`.
+Unknown deployment/editor versions prevent claiming a fully observed version matrix.
+
+## Outcome-to-evidence map
+
+These are local evidence IDs, not copied acceptance text. PASS is scoped to the cited source and runtime.
+PARTIAL/GAP rows cannot become passes because an unrelated unit test or editor preview succeeded.
+
+| ID / promised outcome | Relevant evidence | Disposition and remaining gap |
+| --- | --- | --- |
+| SETUP: documented setup and exact external response | [597b152 diagnostic](../597b152/adoption.md), [d4e6273 SDK](../d4e6273/sdk-real-model-sdk.json), guide | PARTIAL: informed-agent REST setup/result observed, all supplied settings/deviations listed. Advertised hostname differed from the diagnostic's external localhost URL; fully followed revised instructions/editor deployment pending. No timing threshold. |
+| CONTRACT: select a different deterministic process without protocol edits/workers | Diagnostic's word-count follow-up/cancel cases; [native terminal checks](../d4e6273/native-terminal-checks.json) on controlled fixture | Functional adaptation observed. Raw-XML diagnostic fixture is nonshipping, lacked diagram layout and was not Modeler-authored. |
+| AGENT: exact real-model arithmetic and same-task clarification | [SDK report](../d4e6273/sdk-real-model-sdk.json), [series sdk-real-model stage](../d4e6273/series-provenance.json), `verify.py` assertions at d4e6273 | Native PASS, not just HTTP success. Exact artifact, verbatim numeric-leading follow-up, four-message history. No SaaS/Camunda-provided-model pass. |
+| DISCOVERY: truthful direct HTTPS URL/skills/auth and useful client context | [Client expression/header report](../d4e6273/sdk-real-model-bpmn-client-versions.json), SDK explicit discovery, native stage | Native PASS: direct connector URLs, explicit card fetch, received 1.0 headers and patch-varied expressions. TCK has scoped hostname/path adaptations, not standard-path ingress proof. |
+| EDITORS: import/configure/deploy and complete all forms | Desktop report above; Hub report pending | PARTIAL/GAP: Desktop render/templates/preview/save-reopen only. No submitted Desktop deployment, Hub workflow or runtime form-UI completion. Native REST completion of ShowResult is not UI evidence; ask/answer forms were deployed, not completed visually. Schema-18 saved copies lack runtime evidence. |
+| VERSIONS: every advertised combination | Version table above; [asset hashes](asset-inventory.json) | Reference native combination only. 8.9 historical, 8.10 native failed, SaaS blocked. Exact editor/deployment/storage unknowns remain explicit, not broad 8.8+ support. |
+| CONFORMANCE: applicable declared-profile mandatory requirements | [114-MUST audit](../d4e6273/combined-mandatory-audit.json), [16 supplemental dispositions](../d4e6273/requirement-dispositions.json), three `tck-*-gate.json` reports | PASS for recorded Basic profile: 56 TCK, eight supplemental, 50 inactive/other-binding. Exclusions are not passes; not full A2A conformance. |
+| CLIENTS: independent SDK and supplied BPMN client | SDK, client-version and series reports above | Native PASS: SDK discovery/send/poll/list/clarification and client-to-real-agent result, with user task completed through engine REST. Polling task copied into isolated fixture for actual header proof; not proof every fast full-client run polled. |
+| ERRORS: unsupported capabilities, bad request/version/IDs/content types/context | [Pinned TCK gate](../d4e6273/tck-1-gate.json), [native auth/version matrix](../d4e6273/native-native-checks.json), supplemental audit | Native scoped checks with requirement-level TCK dispositions. Legacy `ValidationTest` accepting a missing version is not candidate version evidence; candidate rejects default 0.3. |
+| LIFECYCLE: immediate/slow/nonblocking/poll/input/cancel/repeat/terminal operations | TCK repeats on explicitly nonshipping fixture; SDK real-agent; 44 native terminal records | PASS within recorded fixtures/runtimes; cancellation also rejects late completion with 404. Controlled fixture is not the public demo. |
+| DATA: artifacts/history limits/failure/list/pagination | TCK gate, SDK artifact/history, [native listing](../d4e6273/native-listing-checks.json) | Native PASS with **125 context-filtered** exact results. Unfiltered scan ceiling/retention cleanup unmeasured; no partial-success pagination or unlimited-history claim. |
+| RACES: follow-up serialization/cancel-completion/terminal agreement | 44 native terminal cases; [Core case list](../d4e6273/full-suite-cases.json), CoreProtocolTest | Native races plus deterministic engine-backed injections. Commit-then-lost-response/NOT_FOUND and invisible-state branches are Core adapter checks, not native network-loss proof. |
+| LOAD: 100 sequential/20 concurrent/two-agent exactness | [Reliability summary](../d4e6273/reliability-summary.json), alpha/beta workload records | Native PASS: 120 unique exact outcomes, measured overlapping working tasks, foreign get/cancel/follow-up boundaries, exact owned listings. Not a production-capacity guarantee. |
+| RETRIES: duplicates/delayed index/restarts | Reliability records; native transport repair; CoreListingTest/CoreProtocolTest cases | Independent duplicate tasks and owned restarts native PASS. Synthetic cursor/batch/index faults tested through Harness; no claim those faults were induced on a production exporter. |
+| AUTH: valid HTTPS key/engine auth, reject missing/invalid keys before work | Native matrix/provenance; SDK TLS verification | Native PASS with platform authorizations enabled and no unauthorized business starts; credentials checked absent from stored variables. Shared trust boundary, no per-user isolation. |
+| FAILURES: credentials/permissions/model/outage/core transport | [Native failure map](../07b3387/failure-evidence-map.md), d4e6273 failure records | Applicable checks PASS with distinctions between deployment-wide secret failures, derived input/provider faults and true owned-engine outage. Combined admin membership/grant repair is not least-privilege proof. |
+| WAITS: bounded infrastructure failures and operator repair | Same native failure map; Core expiry tests | Explicit 503, five-second caller timeouts and actionable incidents/diagnostics; no fabricated success. Eventual webhook responses after caller timeout unobserved. Native loss after correlation commit not injected. |
+| OPERATIONS: history retention/resource use/cleanup | Guide; runtime Compose/exporter configuration; owned cleanup logs | Constraints documented: retention disabled, one-second exporter flush/four threads. Enabled retention/visual cleanup/unfiltered ceiling remain unverified, not production eligibility. |
+| ASSETS: every selected BPMN/DMN/template/form works in its relevant surface | Per-file [inventory](asset-inventory.json), Desktop report, native records, 12-resource closure | PARTIAL: runtime/server/client assets work as recorded; template editor integration partial, forms preview only, deployment/visual runtime form checks pending. Static closure is not editor execution. |
+| REPRODUCE: exact commands/source/result provenance | d4e6273 series and original summaries; 07b3387 commands/raw logs; guide | Evidence is immutable and source-specific. Adaptation diagnostic lacks raw logs/digests. No historical test rerun or relabeling in this integration. |
+| EXCLUDED: push callbacks/settings, OAuth expiry, optional standard-path ingress | Declared card/profile, native failure map | NOT APPLICABLE to selected Basic push-disabled direct-URL profile; unsupported-capability rejection remains checked. No delivery/expiry/ingress pass. |
+| RELEASE: Marketplace/legal/publication/LinkedIn | Separate authorization required | Deferred, not prototype functionality or an authorization to merge/submit/publish. Human usability/ease/adoption timing not claimed. |
+
+## Asset and script boundary
+
+The selected import set is exactly the 11 repository resources plus upstream AI Agent v5 returned by
+`tools/check_resources.py`, pinned at `camunda/connectors@844cb028a43e2a15d31f5a49e6cb0a9961c0f208`.
+The [inventory](asset-inventory.json) records every selected local file's SHA-256/Git blob,
+the separately linked deterministic echo, and every other tracked file in `blueprint/` and `scripts/`.
+No file is accepted merely because its directory is named blueprint.
+
+`blueprint/docker-compose.yml`, `proxy/nginx.conf`, `smoke.py`, `smoke.sh`, `scripts/deploy.sh`
+and `scripts/c8run-demo.sh` belong to the historical unauthenticated experiment, not candidate installation.
+The smoke program expects time/temperature/capital tools, not synthetic charge reconciliation.
+The OAuth profile is nonshipping/unverified. Trace/coverage/token scripts are contributor diagnostics;
+generators and tests are contributor-only, not adopter prerequisites. No execution of these archival scripts
+is implied by the native candidate evidence.
+
+## Desktop report provenance and remaining integration
+
+`desktop-modeler-5.51.1.json` is an unchanged sanitized report supplied by the separate editor-validation
+session and integrated here with explicit authorization. Its local custody commit is
+`d6e321cca6d1795a91d467480fba41d5a096742f`; that custody commit has no public URL.
+This identifies report provenance, not a publicly accessible source repository or a new execution.
+All 11 local source SHA-256/blob pairs match this inventory; the twelfth upstream template has its own pin.
+Engine-profile and duplicate bundled/project-template warnings remain in the report.
+The report's editor PASS is deliberately narrower than runtime or human-usability acceptance.
+
+Open cross-cutting gaps: complete observed editor/deployment versions; supported Hub workflow;
+Desktop/Hub deployment and form UI completion, including saved schema-18 forms; and fully recorded
+setup with any deviations. The supplied Hub progress pin is not yet a durable integrated result.
+Neither audit criterion is represented as unconditionally complete while these relevant-runtime gaps remain.
