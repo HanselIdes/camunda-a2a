@@ -325,6 +325,33 @@ try:
     )
     assert task is not None, f"Client agent did not observe a completed A2A task: {final_tasks}"
     assert task["id"] == sent_tasks[0]["id"], (task, sent_tasks)
+    user_messages = [
+        message for message in task.get("history", [])
+        if message.get("role") == "ROLE_USER"
+    ]
+    assert len(user_messages) >= 2, f"Expected initial and confirmed A2A messages: {user_messages}"
+    initial_data_parts = [
+        part for part in user_messages[0].get("parts", [])
+        if isinstance(part, dict) and "data" in part
+    ]
+    assert not initial_data_parts, (
+        f"Client sent structured data before explicit confirmation: {initial_data_parts}"
+    )
+    confirmed_parts = [
+        part for message in user_messages[1:] for part in message.get("parts", [])
+        if isinstance(part, dict) and "data" in part
+    ]
+    expected_claim = {
+        "merchant": "Northwind Electronics",
+        "currency": "USD",
+        "chargeAmounts": [49.95, 49.95],
+        "expectedAmount": 49.95,
+        "syntheticOnly": True,
+    }
+    assert len(confirmed_parts) == 1, (
+        f"Expected one confirmed synthetic data part after the initial message: {confirmed_parts}"
+    )
+    assert confirmed_parts[0]["data"].get("syntheticClaim") == expected_claim, confirmed_parts
     artifact = next(item for item in task.get("artifacts", []) if item["name"] == "reconciliation")
     expected_artifact = {
         "merchant": "Northwind Electronics",

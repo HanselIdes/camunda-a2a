@@ -62,6 +62,8 @@ The client language model selects tools; the following is an intended journey, n
 5. Use `GetA2ATask` to inspect work and report the observed result.
 
 The ad-hoc subprocess executes `clientAgent.toolCalls` in parallel and returns each result's `id`, `name`, and `content` to the next agent invocation.
+The bundled `SendA2AMessage` tool has no model-supplied claim parameter: it adds a structured data part only from the
+`AskClientForInput` form result. Values in the initial free-text request or model output cannot satisfy this client confirmation step.
 The business agent and reconciliation tool are separate from the protocol. The model can request the tool, but cannot supply its financial arguments.
 The tool uses only deterministically validated client fields from the current message.
 

@@ -25,11 +25,31 @@ SYSTEM_PROMPT = (
     "Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. "
     "When the server returns a task, use GetA2ATask to poll it. If the server requests input, "
     "call AskClientForInput with the server's exact question, then send the user's answer and "
-    "confirmed syntheticClaim as a follow-up to the same task and context. Never invent confirmation "
-    "values, and never describe a request as completed unless a GetA2ATask response reports "
-    "TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs "
-    "no real financial action."
+    "confirmed syntheticClaim as a follow-up to the same task and context. SendA2AMessage takes "
+    "confirmation data only from the AskClientForInput form result; never send model-inferred values. "
+    "Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. "
+    "Report failures and nonterminal states accurately. This example performs no real financial action."
 )
+
+CONFIRMED_CLIENT_DATA_PARTS = """
+flatten(
+  for records in [flatten(
+    for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
+    return message.results[item.name = "AskClientForInput"]
+  )]
+  return if count(records) > 0 then
+    if records[count(records)].content instance of context then
+      if records[count(records)].content.toolCallResult instance of context then
+        if records[count(records)].content.toolCallResult.syntheticClaim instance of context then
+          [{data: {syntheticClaim: records[count(records)].content.toolCallResult.syntheticClaim}}]
+        else []
+      else if records[count(records)].content.syntheticClaim instance of context then
+        [{data: {syntheticClaim: records[count(records)].content.syntheticClaim}}]
+      else []
+    else []
+  else []
+)
+"""
 
 
 def build():
@@ -68,8 +88,9 @@ def build():
         "serviceTask", "SendA2AMessage", "Send A2A message",
         830, 125, parent="ClientTools",
         doc=("Send a new A2A 1.0 message or a follow-up to the same task. Use the user's request "
-             "as text; include a structured syntheticClaim only after the user confirms it with "
-             "AskClientForInput. Returns the JSON-RPC response and any created task."),
+             "as text. A structured syntheticClaim is added only from the AskClientForInput form "
+             "result; it cannot be supplied as an AI tool argument. Returns the JSON-RPC response "
+             "and any created task."),
     )
     p.node(
         "serviceTask", "GetA2ATask", "Poll A2A task",
@@ -173,17 +194,8 @@ def build():
                   messageId: uuid(), role: "ROLE_USER",
                   parts: concatenate(
                     [{text: fromAi(toolCall.text, "The user's request or follow-up text", "string")}],
-                    if fromAi(value: toolCall.claim,
-                              description: "Only a user-confirmed synthetic dispute claim",
-                              type: "object",
-                              schema: {type: "object", properties: {
-                                merchant: {type: "string"}, currency: {type: "string"},
-                                chargeAmounts: {type: "array", items: {type: "number"},
-                                                minItems: 2, maxItems: 2},
-                                expectedAmount: {type: "number"},
-                                syntheticOnly: {type: "boolean"}}},
-                              options: {required: false}) instance of context
-                    then [{data: {syntheticClaim: toolCall.claim}}] else [])
+                    CONFIRMED_CLIENT_DATA_PARTS
+                  )
                 }, configuration: {returnImmediately: true}},
                 if fromAi(value: toolCall.taskId, description: "Existing A2A task ID for a follow-up",
                           options: {required: false}) instance of string
@@ -192,7 +204,7 @@ def build():
                           options: {required: false}) instance of string
                 then {contextId: toolCall.contextId} else {}
               ])
-            }""")),
+            }""".replace("CONFIRMED_CLIENT_DATA_PARTS", CONFIRMED_CLIENT_DATA_PARTS))),
             ("readTimeoutInSeconds", "60"),
             ("retries", "1"),
             ("resultExpression", "={toolCallResult: response.body}"),

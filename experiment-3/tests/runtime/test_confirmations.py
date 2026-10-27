@@ -29,6 +29,15 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("agent.", validation.get("expression"))
         self.assertNotIn("history", validation.get("expression"))
 
+    def test_client_claim_data_comes_only_from_confirmed_form_result(self):
+        root = ET.parse(ROOT / "blueprint/demo/03-client-agent.bpmn").getroot()
+        task = next(e for e in root.iter() if e.get("id") == "SendA2AMessage")
+        body = next(e for e in task.iter(Z + "input") if e.get("target") == "body")
+        self.assertNotIn("toolCall.claim", body.get("source"))
+        self.assertIn("clientAgent.context.conversation.messages", body.get("source"))
+        self.assertIn('message.results[item.name = "AskClientForInput"]', body.get("source"))
+        self.assertIn("syntheticClaim", body.get("source"))
+
     def test_form_has_explicit_empty_confirmation_inputs(self):
         form = json.loads((ROOT / "blueprint/demo/05-client-agent-confirm.form").read_text())
         fields = {c.get("key"): c for c in form["components"] if c.get("key")}
