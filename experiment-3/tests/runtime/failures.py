@@ -1,8 +1,11 @@
 """Nonshipping stock-connector failure injection and operator recovery."""
+import base64
 import json
 import secrets
 import subprocess
 import time
+import urllib.error
+import urllib.request
 import uuid
 import xml.etree.ElementTree as ET
 
@@ -67,6 +70,16 @@ def run(root, reports, rpc, request, deploy, env, stack):
         assert status == 200, (path, status)
         return json.loads(body)["items"]
 
+    def stale_credential_status():
+        token = base64.b64encode((user + ":" + env["PROOF_RESTRICTED_PASSWORD"]).encode()).decode()
+        probe = urllib.request.Request("http://127.0.0.1:" + env["PROOF_ENGINE_PORT"] + "/v2/topology",
+                                       headers={"Authorization": "Basic " + token})
+        try:
+            with urllib.request.urlopen(probe, timeout=5) as response:
+                return response.status
+        except urllib.error.HTTPError as error:
+            return error.code
+
     def call(method, params):
         identifier = str(uuid.uuid4())
         status, response = rpc({"jsonrpc": "2.0", "id": identifier, "method": method, "params": params})
@@ -101,6 +114,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
             if mode == "revoked-credentials":
                 status, _ = request(f"/v2/users/{user}", {"password": secrets.token_urlsafe(32)}, method="PUT")
                 assert status == 200, ("revoke old password", status)
+                wait("rotated password becomes invalid", stale_credential_status, lambda value: value == 401)
             fault = reports / f"nonshipping-{mode}.bpmn"
             fault_model(protocol, fault, mode)
             deploy([fault])
