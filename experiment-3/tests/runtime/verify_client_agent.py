@@ -176,8 +176,12 @@ try:
         headers={"Authorization": "Basic " + authorization,
                  "Content-Type": f"multipart/form-data; boundary={boundary}"},
     )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        assert response.status == 200, response.status
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            assert response.status == 200, response.status
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode()
+        raise RuntimeError(f"Authenticated deployment failed with HTTP {error.code}: {detail}") from error
     report["checks"].append("authenticated 8.9 deployment of the seven BPMN/DMN/form resources")
 
     expected_card_url = (
