@@ -74,8 +74,9 @@ def run(root, reports, rpc, request, deploy, env, stack):
 
     def stale_credential_status():
         token = base64.b64encode((user + ":" + env["PROOF_RESTRICTED_PASSWORD"]).encode()).decode()
-        probe = urllib.request.Request("http://127.0.0.1:" + env["PROOF_ENGINE_PORT"] + "/v2/topology",
-                                       headers={"Authorization": "Basic " + token})
+        probe = urllib.request.Request("http://127.0.0.1:" + env["PROOF_ENGINE_PORT"] + "/v2/users/search",
+                                       data=b'{"page":{"limit":1}}',
+                                       headers={"Authorization": "Basic " + token, "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(probe, timeout=5) as response:
                 return response.status
