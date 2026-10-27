@@ -1,0 +1,51 @@
+ Network a2a-proof-40295827c3c7e81fa2293610ee7b547b_default Creating 
+ Network a2a-proof-40295827c3c7e81fa2293610ee7b547b_default Creating 
+ Network a2a-proof-40295827c3c7e81fa2293610ee7b547b_default Created 
+ Network a2a-proof-40295827c3c7e81fa2293610ee7b547b_default Created 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Creating 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Created 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Creating 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Created 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Creating 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Created 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Starting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Started 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Waiting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Healthy 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Starting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Started 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Waiting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Healthy 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Starting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Started 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Waiting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Waiting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Waiting 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Healthy 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Healthy 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Healthy 
+deployment status 200
+Safe card-readiness GET pending: URLError
+Safe card-readiness GET pending: URLError
+Safe card-readiness GET pending: URLError
+Safe card-readiness GET pending: URLError
+Safe card-readiness GET pending: HTTPError
+Safe card-readiness GET pending: HTTPError
+Safe card-readiness GET pending: HTTPError
+Literal current guide card/send/get and all nine fields: PASS
+Independent a2a-sdk 1.2.3 discovery/send/follow-up/get/list and exact real-model result: PASS
+All persisted process variables exclude runtime credentials and arbitrary headers: PASS
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Stopping 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Stopped 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Removing 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-connectors-1 Removed 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Stopping 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Stopped 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Removing 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-camunda-1 Removed 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Stopping 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Stopped 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Removing 
+ Container a2a-proof-40295827c3c7e81fa2293610ee7b547b-elasticsearch-1 Removed 
+ Network a2a-proof-40295827c3c7e81fa2293610ee7b547b_default Removing 
+ Network a2a-proof-40295827c3c7e81fa2293610ee7b547b_default Removed 

@@ -1,0 +1,56 @@
+ Network a2a-proof-f953623f5b8e04ae787917d2cd8842a3_default Creating 
+ Network a2a-proof-f953623f5b8e04ae787917d2cd8842a3_default Creating 
+ Network a2a-proof-f953623f5b8e04ae787917d2cd8842a3_default Created 
+ Network a2a-proof-f953623f5b8e04ae787917d2cd8842a3_default Created 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Creating 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Created 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Creating 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Created 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Creating 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Created 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Starting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Started 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Waiting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Healthy 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Starting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Started 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Waiting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Healthy 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Starting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Started 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Waiting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Waiting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Waiting 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Healthy 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Healthy 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Healthy 
+{"check": "unauthenticated topology", "status": 401, "response": "{\"type\":\"about:blank\",\"title\":\"Unauthorized\",\"status\":401,\"detail\":\"An Authentication object was not found in the SecurityContext\",\"instance\":\"/v2/topology\"}"}
+{"check": "authenticated topology", "status": 200, "response": "{\"brokers\":[{\"nodeId\":0,\"host\":\"172.27.0.3\",\"port\":26501,\"partitions\":[{\"partitionId\":1,\"role\":\"leader\",\"health\":\"healthy\"}],\"version\":\"8.9.26\"}],\"clusterId\":\"b425a4ae-e8ef-4008-82a0-875f47c47ac8\",\"clusterSize\":1,\"partitionsCount\":1,\"replicationFactor\":1,\"gatewayVersion\":\"8.9.26\",\"lastCompletedChangeId\":\"-1\"}"}
+{"check": "expression evaluation", "status": 200, "response": "{\"expression\":\"=1+1\",\"result\":2,\"warnings\":[]}"}
+{"check": "cluster variables", "status": 200, "response": "{\"page\":{\"totalItems\":0,\"hasMoreTotalItems\":false,\"startCursor\":null,\"endCursor\":null},\"items\":[]}"}
+{"check": "tag search", "status": 200, "response": "{\"page\":{\"totalItems\":0,\"hasMoreTotalItems\":false,\"startCursor\":null,\"endCursor\":null},\"items\":[]}"}
+deployment status 200
+missing API key rejected: 401
+invalid API key rejected: 401
+{"check": "authenticated echo", "status": 200, "response": {"jsonrpc": "2.0", "id": "proof-request", "result": {"task": {"history": [{"role": "ROLE_USER", "messageId": "proof-message", "taskId": "01a17dd7-b671-7233-8752-70a5b82f8be7", "contextId": "01a17dd7-b66f-71e2-ab25-87cfc1b2d543", "parts": [{"text": "8.8 authenticated echo"}]}, {"role": "ROLE_AGENT", "messageId": "01a17dd7-b853-75e8-ae55-dfaf4f9c1311", "taskId": "01a17dd7-b671-7233-8752-70a5b82f8be7", "contextId": "01a17dd7-b66f-71e2-ab25-87cfc1b2d543", "parts": [{"text": "8.8 authenticated echo"}]}], "id": "01a17dd7-b671-7233-8752-70a5b82f8be7", "status": {"state": "TASK_STATE_COMPLETED", "message": {"role": "ROLE_AGENT", "messageId": "01a17dd7-b853-75e8-ae55-dfaf4f9c1311", "taskId": "01a17dd7-b671-7233-8752-70a5b82f8be7", "contextId": "01a17dd7-b66f-71e2-ab25-87cfc1b2d543", "parts": [{"text": "8.8 authenticated echo"}]}, "timestamp": "2026-10-27T14:50:51Z"}, "contextId": "01a17dd7-b66f-71e2-ab25-87cfc1b2d543"}}}}
+completed task polling preserves expected task: PASS
+All operation key checks, unauthorized resource non-disclosure and version semantics: PASS
+deployment status 200
+deployment status 200
+Native cancellation/completion ordering and terminal-state checks: PASS
+deployment status 200
+All persisted process variables exclude runtime credentials and arbitrary headers: PASS
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Stopping 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Stopped 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Removing 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1 Removed 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Stopping 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Stopped 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Removing 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1 Removed 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Stopping 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Stopped 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Removing 
+ Container a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1 Removed 
+ Network a2a-proof-f953623f5b8e04ae787917d2cd8842a3_default Removing 
+ Network a2a-proof-f953623f5b8e04ae787917d2cd8842a3_default Removed 

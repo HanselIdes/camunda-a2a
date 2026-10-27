@@ -1,0 +1,81 @@
+camunda-1  | [2026-10-27 14:44:54.953] [main] WARN 
+camunda-1  | [2026-10-27 14:44:54.953] [main] WARN 
+camunda-1  | [2026-10-27 14:44:54.953] [main] WARN 
+camunda-1  | [2026-10-27 14:44:54.954] [main] WARN 
+camunda-1  | [2026-10-27 14:44:54.954] [main] WARN 
+camunda-1  | [2026-10-27 14:44:54.954] [main] WARN 
+camunda-1        | [2026-10-27 14:44:54.954] [main] WARN 
+camunda-1        | [2026-10-27 14:44:54.955] [main] WARN 
+camunda-1        | [2026-10-27 14:44:54.955] [main] WARN 
+camunda-1        | [2026-10-27 14:44:54.956] [main] WARN 
+camunda-1        | [2026-10-27 14:44:55.290] [main] WARN 
+camunda-1        | [2026-10-27 14:44:55.443] [main] WARN 
+camunda-1        | [2026-10-27 14:44:55.531] [main] WARN 
+camunda-1        | [2026-10-27 14:44:55.593] [main] WARN 
+camunda-1        | [2026-10-27 14:44:55.840] [zb-actors-1] [{actor-name=ActivateJobsHandler, actor-scheduler=Broker-0}] WARN 
+camunda-1        | [2026-10-27 14:44:55.921] [main] WARN 
+camunda-1        | [2026-10-27 14:44:55.975] [main] WARN 
+camunda-1        | [2026-10-27 14:44:56.144] [main] WARN 
+camunda-1        | [2026-10-27 14:44:56.167] [main] WARN 
+camunda-1        | [2026-10-27 14:44:56.218] [main] WARN 
+camunda-1        | [2026-10-27 14:44:56.244] [zb-actors-0] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN 
+camunda-1        | [2026-10-27 14:44:56.330] [main] WARN 
+camunda-1        | [2026-10-27 14:44:56.355] [main] WARN 
+camunda-1        | [2026-10-27 14:44:56.388] [pool-3-thread-1] WARN 
+camunda-1        | [2026-10-27 14:44:56.922] [zb-actors-1] [{actor-name=ZeebePartition-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:56.935] [zb-actors-1] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN 
+camunda-1        | [2026-10-27 14:44:56.938] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:56.939] [zb-actors-1] [{actor-name=HealthCheckService, actor-scheduler=Broker-0}] WARN 
+camunda-1        | [2026-10-27 14:44:56.943] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:56.959] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:56.961] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:56.975] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:57.397] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:57.399] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:57.410] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:58.261] [Thread-14] WARN 
+camunda-1        | [2026-10-27 14:44:58.262] [main] WARN 
+camunda-1        | [2026-10-27 14:44:58.275] [main] WARN 
+camunda-1        | [2026-10-27 14:44:58.279] [main] WARN 
+camunda-1        | [2026-10-27 14:44:58.550] [main] WARN 
+camunda-1        | [2026-10-27 14:44:58.575] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:58.576] [zb-fs-workers-1] [{actor-name=Exporter-1, actor-scheduler=Broker-0, partitionId=1}] WARN 
+camunda-1        | [2026-10-27 14:44:58.694] [main] WARN 
+camunda-1        | [2026-10-27 14:44:58.701] [main] WARN 
+camunda-1        | [2026-10-27 14:44:59.289] [main] WARN 
+camunda-1        | [2026-10-27 14:44:59.290] [main] WARN 
+camunda-1        | [2026-10-27 14:45:00.272] [Thread-14] WARN 
+camunda-1        | [2026-10-27 14:45:02.278] [Thread-14] WARN 
+camunda-1        | [2026-10-27 14:45:04.288] [Thread-14] WARN 
+camunda-1        | [2026-10-27 14:45:06.294] [Thread-14] WARN 
+camunda-1        | [2026-10-27 14:45:08.299] [Thread-14] WARN 
+connectors-1     | WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+connectors-1     | WARNING: sun.misc.Unsafe::objectFieldOffset has been called by scala.runtime.LazyVals$ (file:/opt/app/connector-runtime-bundle-8.8.24-with-dependencies.jar)
+connectors-1     | WARNING: Please consider reporting this to the maintainers of class scala.runtime.LazyVals$
+connectors-1     | WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+connectors-1     | WARNING: A restricted method in java.lang.System has been called
+connectors-1     | WARNING: java.lang.System::loadLibrary has been called by io.netty.util.internal.NativeLibraryUtil in an unnamed module (file:/opt/app/connector-runtime-bundle-8.8.24-with-dependencies.jar)
+connectors-1     | WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+connectors-1     | WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+connectors-1     | 2026-10-27T14:45:06.773Z  WARN 1 --- [-worker-ELG-1-2] i.c.client.impl.CamundaCallCredentials   : The request's security level does not guarantee that the credentials will be confidential.
+connectors-1     | 2026-10-27T14:45:06.773Z  WARN 1 --- [           main] i.c.client.impl.CamundaCallCredentials   : The request's security level does not guarantee that the credentials will be confidential.
+connectors-1     | 2026-10-27T14:45:06.996Z  WARN 1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1     | 2026-10-27T14:45:07.010Z  WARN 1 --- [           main] i.c.client.spring.bean.SpringMethodInfo  : Parameter names of method execute could not be discovered. Please set compiler flag -parameters if you rely on parameter names (e.g. for variable names to fetch from Zeebe)
+connectors-1     | 2026-10-27T14:45:08.268Z  WARN 1 --- [nio-8080-exec-1] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:45:08.268007170Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:45:08.268Z  WARN 1 --- [nio-8080-exec-1] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is missing
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:45:08.341Z  WARN 1 --- [nio-8080-exec-7] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=ERROR, tag=POST, timestamp=2026-10-27T14:45:08.341023129Z, message=Webhook processing failed
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:45:08.341Z  WARN 1 --- [nio-8080-exec-7] i.c.c.r.i.w.InboundWebhookRestController : Webhook failed with security-related exception
+connectors-1     | io.camunda.connector.api.inbound.webhook.WebhookConnectorException$WebhookSecurityException: Reason: INVALID_CREDENTIALS. Details: API key is invalid
+connectors-1     | 	at io.camunda.connector.inbound.authorization.AuthorizationResult$Failure$InvalidCredentials.toException(AuthorizationResult.java:44)
+connectors-1     | 2026-10-27T14:45:08.640Z  INFO 1 --- [nio-8080-exec-3] i.c.c.r.c.i.c.InboundCorrelationHandler  : Created a process instance with key 2251799813685351
+connectors-1     | 2026-10-27T14:45:08.642Z  INFO 1 --- [nio-8080-exec-3] i.c.c.r.c.i.a.ActivityLogRegistry        : Activity[severity=INFO, tag=Correlation, timestamp=2026-10-27T14:45:08.642127004Z, message=Process instance created, data={processInstanceKey=2251799813685351}, healthChange=null]
+elasticsearch-1  | {"@timestamp":"2026-10-27T14:44:58.225Z", "log.level": "WARN",  "data_stream.dataset":"deprecation.elasticsearch","data_stream.namespace":"default","data_stream.type":"logs","elasticsearch.event.category":"api","event.code":"deprecated_field_from","message":"Deprecated field [from] used, this field is unused and will be removed entirely" , "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"deprecation.elasticsearch","process.thread.name":"elasticsearch[e13bd0ce41b3][transport_worker][T#5]","log.logger":"org.elasticsearch.deprecation.xcontent.ParseField","elasticsearch.cluster.uuid":"5_FVwOwaSE-0MZvu_jXbNg","elasticsearch.node.id":"yrJcReRIRdKNszPOZoxa6Q","elasticsearch.node.name":"e13bd0ce41b3","elasticsearch.cluster.name":"docker-cluster"}
+elasticsearch-1  | {"@timestamp":"2026-10-27T14:44:58.226Z", "log.level": "WARN",  "data_stream.dataset":"deprecation.elasticsearch","data_stream.namespace":"default","data_stream.type":"logs","elasticsearch.event.category":"api","event.code":"deprecated_field_to","message":"Deprecated field [to] used, this field is unused and will be removed entirely" , "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"deprecation.elasticsearch","process.thread.name":"elasticsearch[e13bd0ce41b3][transport_worker][T#5]","log.logger":"org.elasticsearch.deprecation.xcontent.ParseField","elasticsearch.cluster.uuid":"5_FVwOwaSE-0MZvu_jXbNg","elasticsearch.node.id":"yrJcReRIRdKNszPOZoxa6Q","elasticsearch.node.name":"e13bd0ce41b3","elasticsearch.cluster.name":"docker-cluster"}
+elasticsearch-1  | {"@timestamp":"2026-10-27T14:44:58.227Z", "log.level": "WARN",  "data_stream.dataset":"deprecation.elasticsearch","data_stream.namespace":"default","data_stream.type":"logs","elasticsearch.event.category":"api","event.code":"deprecated_field_include_lower","message":"Deprecated field [include_lower] used, this field is unused and will be removed entirely" , "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"deprecation.elasticsearch","process.thread.name":"elasticsearch[e13bd0ce41b3][transport_worker][T#5]","log.logger":"org.elasticsearch.deprecation.xcontent.ParseField","elasticsearch.cluster.uuid":"5_FVwOwaSE-0MZvu_jXbNg","elasticsearch.node.id":"yrJcReRIRdKNszPOZoxa6Q","elasticsearch.node.name":"e13bd0ce41b3","elasticsearch.cluster.name":"docker-cluster"}
+elasticsearch-1  | {"@timestamp":"2026-10-27T14:44:58.227Z", "log.level": "WARN",  "data_stream.dataset":"deprecation.elasticsearch","data_stream.namespace":"default","data_stream.type":"logs","elasticsearch.event.category":"api","event.code":"deprecated_field_include_upper","message":"Deprecated field [include_upper] used, this field is unused and will be removed entirely" , "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"deprecation.elasticsearch","process.thread.name":"elasticsearch[e13bd0ce41b3][transport_worker][T#5]","log.logger":"org.elasticsearch.deprecation.xcontent.ParseField","elasticsearch.cluster.uuid":"5_FVwOwaSE-0MZvu_jXbNg","elasticsearch.node.id":"yrJcReRIRdKNszPOZoxa6Q","elasticsearch.node.name":"e13bd0ce41b3","elasticsearch.cluster.name":"docker-cluster"}
