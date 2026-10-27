@@ -12,6 +12,7 @@ from gen_card import feel_str, json_string_expression, skills_from_bpmn, skills_
 from bpmn_gen import build as original
 from bpmn_gen.agent import USER_PROMPT
 from bpmn_gen.client import client
+from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
 
 UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
@@ -110,7 +111,7 @@ def agent(path):
         ("errorExpression", '=if error != null then bpmnError("AGENT_FAILED", string(error.message)) else null'),
         ("retries", "1"),
     ])
-    return serialize(ET.parse(path).getroot())
+    return serialize(add_hook(ET.parse(path).getroot()))
 
 
 def card(path, agent_path):
@@ -147,10 +148,19 @@ def card(path, agent_path):
 
 def assets():
     output = {}
+    # Keep the authored business diagrams/layout; regenerate only their required cancellation hook.
+    for path in (ROOT / "bpmn/a2a-echo.bpmn", ROOT / "tck/fixture/a2a-tck-fixture.bpmn"):
+        output[path] = serialize(add_hook(ET.parse(path).getroot()))
     with tempfile.TemporaryDirectory(prefix="a2a-blueprint-") as directory:
         directory = Path(directory)
         agent_path = directory / "a2a-card-dispute.bpmn"
         output[DEMO / agent_path.name] = agent(agent_path)
+        controlled_agent = ET.fromstring(output[DEMO / agent_path.name])
+        controlled_agent.find(f"{{{B}}}process").set("id", "a2a-controlled-agent")
+        controlled_agent.find(
+            "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNDiagram/"
+            "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane").set("bpmnElement", "a2a-controlled-agent")
+        output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent)
         agent_path.write_bytes(output[DEMO / agent_path.name])
         output[DEMO / "a2a-card.bpmn"] = card(directory / "a2a-card.bpmn", agent_path)
         templates = ROOT / "blueprint/templates"
@@ -233,6 +243,30 @@ def assets():
         literal.flow("LiteralStart", "LiteralEncode")
         literal.flow("LiteralEncode", "LiteralEnd")
         output[ROOT / "tests/src/test/resources/bpmn/a2a-literal-prompt.bpmn"] = serialize(ET.fromstring(literal.xml()))
+        controlled = Proc("a2a-controlled-business", "Nonshipping cancellation-order regression fixture")
+        controlled.msg("ControlledFollowUpMessage", "a2a-send", "=task.id")
+        controlled.start("ControlledStart", "Task received", 150, 62)
+        controlled.xor("ControlledRoute", "Ask for input?", 230, 55)
+        controlled.node("userTask", "ControlledWork", "Complete controlled business work", 340, 40,
+                        ext="<zeebe:userTask />")
+        original.update_call(controlled, "ControlledUpdate", "Commit completion", 520, 40,
+                             '{state: "TASK_STATE_COMPLETED", text: "Controlled completion", artifacts: '
+                             '[{artifactId: "controlled", parts: [{text: "Controlled artifact"}]}]}')
+        original.update_call(controlled, "ControlledAsk", "Request client input", 340, 240,
+                             '{state: "TASK_STATE_INPUT_REQUIRED", text: "Controlled clarification"}')
+        controlled.catch_msg("ControlledFollowUp", "Follow-up received", 520, 262,
+                             "ControlledFollowUpMessage", ext=original.follow_up_mapping())
+        controlled.end("ControlledEnd", "Completed", 700, 62)
+        controlled.flow("ControlledStart", "ControlledRoute")
+        controlled.flow("ControlledRoute", "ControlledAsk", "yes",
+                        cond='=req.message.parts[1].text = "input-required"', route="down-out")
+        controlled.flow("ControlledRoute", "ControlledWork", "no", default=True)
+        controlled.flow("ControlledAsk", "ControlledFollowUp")
+        controlled.flow("ControlledFollowUp", "ControlledWork", route="over:175")
+        controlled.flow("ControlledWork", "ControlledUpdate")
+        controlled.flow("ControlledUpdate", "ControlledEnd")
+        output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-business.bpmn"] = serialize(
+            add_hook(ET.fromstring(controlled.xml())))
     return output
 
 

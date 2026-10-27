@@ -1,6 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_a2a_tck_fixture" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
-  <bpmn:message id="Msg_followUp" name="a2a-send"><bpmn:extensionElements><zeebe:subscription correlationKey="=task.id" /></bpmn:extensionElements></bpmn:message>
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_tck_fixture" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:message id="Msg_followUp" name="a2a-send">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:message id="A2ACancelMessage" name="a2a-cancel">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmn:process id="a2a-tck-fixture" name="A2A TCK fixture" isExecutable="true">
     <bpmn:startEvent id="TaskReceived" name="Task received">
       <bpmn:outgoing>Flow_TaskReceived_NextTurn</bpmn:outgoing>
@@ -11,17 +20,28 @@
       <bpmn:outgoing>Flow_NextTurn_ClassifyMessage</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:businessRuleTask id="ClassifyMessage" name="Classify message">
-      <bpmn:extensionElements><zeebe:calledDecision decisionId="a2a-classify" resultVariable="sc" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="a2a-classify" resultVariable="sc" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_NextTurn_ClassifyMessage</bpmn:incoming>
       <bpmn:outgoing>Flow_ClassifyMessage_ApplyScenario</bpmn:outgoing>
     </bpmn:businessRuleTask>
     <bpmn:scriptTask id="ApplyScenario" name="Apply scenario">
-      <bpmn:extensionElements><zeebe:script expression='={state: sc.state, responseMode: if starts with(req.message.messageId, "tck-message-response") then "message" else "task", text: if starts with(req.message.messageId, "tck-message-response") then "Direct message response" else if sc.statusText != null then sc.statusText else if sc.echo then "Unhandled messageId prefix: " + req.message.messageId else null, artifacts: if sc.artifact = null then null else [{artifactId: uuid(), name: "output", parts: if sc.artifact = "text" then [{text: "Generated text content"}] else if sc.artifact = "file" then [{raw: "dGNr", mediaType: "text/plain", filename: "output.txt"}] else if sc.artifact = "file-url" then [{url: "https://example.com/output.txt", mediaType: "text/plain", filename: "output.txt"}] else [{data: {key: "value", count: 42}}]}]}' resultVariable="outcome" /></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:script expression="={state: sc.state, responseMode: if starts with(req.message.messageId, &quot;tck-message-response&quot;) then &quot;message&quot; else &quot;task&quot;, text: if starts with(req.message.messageId, &quot;tck-message-response&quot;) then &quot;Direct message response&quot; else if sc.statusText != null then sc.statusText else if sc.echo then &quot;Unhandled messageId prefix: &quot; + req.message.messageId else null, artifacts: if sc.artifact = null then null else [{artifactId: uuid(), name: &quot;output&quot;, parts: if sc.artifact = &quot;text&quot; then [{text: &quot;Generated text content&quot;}] else if sc.artifact = &quot;file&quot; then [{raw: &quot;dGNr&quot;, mediaType: &quot;text/plain&quot;, filename: &quot;output.txt&quot;}] else if sc.artifact = &quot;file-url&quot; then [{url: &quot;https://example.com/output.txt&quot;, mediaType: &quot;text/plain&quot;, filename: &quot;output.txt&quot;}] else [{data: {key: &quot;value&quot;, count: 42}}]}]}" resultVariable="outcome" />
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_ClassifyMessage_ApplyScenario</bpmn:incoming>
       <bpmn:outgoing>Flow_ApplyScenario_UpdateTask</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:callActivity id="UpdateTask" name="Update A2A task">
-      <bpmn:extensionElements><zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" /><zeebe:ioMapping><zeebe:input source="=task" target="task" /><zeebe:input source="=outcome" target="outcome" /><zeebe:output source="=task" target="task" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=task" target="task" />
+          <zeebe:input source="=outcome" target="outcome" />
+          <zeebe:output source="=task" target="task" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_ApplyScenario_UpdateTask</bpmn:incoming>
       <bpmn:outgoing>Flow_UpdateTask_InputRequired</bpmn:outgoing>
     </bpmn:callActivity>
@@ -31,7 +51,12 @@
       <bpmn:outgoing>Flow_InputRequired_TaskDone</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:intermediateCatchEvent id="FollowUp" name="Follow-up received">
-      <bpmn:extensionElements><zeebe:ioMapping><zeebe:output source='={id: task.id, contextId: task.contextId, rev: task.rev + 1, status: {state: "TASK_STATE_WORKING", timestamp: substring(string(now()), 1, 19) + "Z"}, artifacts: task.artifacts, history: append(task.history, put(put(followUp.message, "taskId", task.id), "contextId", task.contextId))}' target="task" /><zeebe:output source="=followUp" target="req" /></zeebe:ioMapping></bpmn:extensionElements>
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="={id: task.id, contextId: task.contextId, rev: task.rev + 1, status: {state: &quot;TASK_STATE_WORKING&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}, artifacts: task.artifacts, history: append(task.history, put(put(followUp.message, &quot;taskId&quot;, task.id), &quot;contextId&quot;, task.contextId))}" target="task" />
+          <zeebe:output source="=followUp" target="req" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_InputRequired_FollowUp</bpmn:incoming>
       <bpmn:outgoing>Flow_FollowUp_NextTurn</bpmn:outgoing>
       <bpmn:messageEventDefinition id="FollowUp_def" messageRef="Msg_followUp" />
@@ -49,6 +74,24 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_InputRequired_TaskDone" sourceRef="InputRequired" targetRef="TaskDone" name="no" />
     <bpmn:sequenceFlow id="Flow_FollowUp_NextTurn" sourceRef="FollowUp" targetRef="NextTurn" />
+    <bpmn:subProcess id="A2ACancellation" name="Cancel this A2A task" triggeredByEvent="true">
+      <bpmn:startEvent id="A2ACancelRequested" name="Cancellation requested" isInterrupting="true">
+        <bpmn:outgoing>A2ACancelToState</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="A2ACancelRequested_def" messageRef="A2ACancelMessage" />
+      </bpmn:startEvent>
+      <bpmn:scriptTask id="A2ASetCanceled" name="Commit terminal outcome">
+        <bpmn:extensionElements>
+          <zeebe:script resultVariable="task" expression="=if list contains([&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_REJECTED&quot;], task.status.state) then task else context merge([task, {rev: task.rev + 1, artifacts: [], status: {state: &quot;TASK_STATE_CANCELED&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}}])" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>A2ACancelToState</bpmn:incoming>
+        <bpmn:outgoing>A2ACancelToEnd</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:endEvent id="A2ACancelDone" name="Cancellation settled">
+        <bpmn:incoming>A2ACancelToEnd</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="A2ACancelToState" sourceRef="A2ACancelRequested" targetRef="A2ASetCanceled" />
+      <bpmn:sequenceFlow id="A2ACancelToEnd" sourceRef="A2ASetCanceled" targetRef="A2ACancelDone" />
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-tck-fixture">
@@ -110,6 +153,26 @@
         <di:waypoint x="908" y="135" />
         <di:waypoint x="255" y="135" />
         <di:waypoint x="255" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
+        <dc:Bounds x="150" y="488.0" width="420" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
+        <dc:Bounds x="180" y="550.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
+        <dc:Bounds x="270" y="528.0" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
+        <dc:Bounds x="450" y="550.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
+        <di:waypoint x="216" y="568.0" />
+        <di:waypoint x="270" y="568.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
+        <di:waypoint x="370" y="568.0" />
+        <di:waypoint x="450" y="568.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

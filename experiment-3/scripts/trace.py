@@ -42,7 +42,8 @@ IMPLEMENTED = {
     "PUSH-DELIVER-001": ('a2a-push-notify: DeliverNotification (Authorization header)', ['PushTest#configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange', 'PushIntegrationTest#cardDeclaresPushAndDeliveryReachesTheHostWithTheConfiguredAuthentication']),
     "PUSH-DELIVER-002": ("a2a-task-update: FindPushConfigs, StartPushDelivery; a2a-rpc: FindCancelPush; a2a-push-notify", ['PushTest#configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange', 'PushTest#cancelIsDeliveredToo']),
     "PUSH-DELIVER-003": ("a2a-task-update: StartPushDelivery (payload {task})", ['PushTest#configGivenWithTheFirstMessageIsDeliveredOnEveryStateChange']),
-    "CORE-CANCEL-001": ("a2a-rpc: MarkCanceled, StoreCanceled, CancelAgent, AwaitCanceled", ["TaskTest#cancelInputRequiredTaskAndCancelAgainFails"]),
+    "CORE-CANCEL-001": ("Packaged RequestCancellation, AwaitCanceled; business A2ACancellation",
+                        ["CoreProtocolTest#cancellationInterruptsBusinessWorkAndCommitsOnlyOneTerminalOutcome"]),
     "CORE-CANCEL-002": ("a2a-rpc: Cancelable, BuildNotCancelable", ["TaskTest#terminalTaskAnswersGetAndRejectsCancelAndSend", "TaskTest#cancelInputRequiredTaskAndCancelAgainFails"]),
     "CORE-CANCEL-003": ("a2a-rpc: BuildNotFound", ["TaskTest#unknownTaskIsNotFoundForGetCancelAndFollowUp"]),
     "CORE-EXECUTION-MODE-001": ("a2a-rpc: AwaitNewTask, AwaitFollowUp (until a settled state)", ["TaskTest#completeTaskReturnsCompletedTaskWithStatusMessage", "AgentTest#sendMessageReturnsWorkingStateWhenTheAgentIsSlow"]),
@@ -153,7 +154,11 @@ def matrix(ids):
             rows.append("| %s | %s | %s | |" % (i, elements, "; ".join("`%s`" % t for t in tests)))
         else:
             rows.append("| %s | | | %s |" % (i, NA_BY_ID.get(i, "")))
-    return "\n".join(rows)
+    cells = [[cell.strip() for cell in row.strip("|").split("|")] for row in rows]
+    widths = [max(len(row[column]) for row in cells) for column in range(4)]
+    cells[1] = ["-" * width for width in widths]
+    return "\n".join("| " + " | ".join(cell.ljust(width) for cell, width in zip(row, widths)) + " |"
+                     for row in cells)
 
 
 def readme_matrix():

@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_card_dispute" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:message id="Msg_followUp" name="a2a-send">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:error id="AgentFailed" name="AgentFailed" errorCode="AGENT_FAILED" />
+  <bpmn:message id="A2ACancelMessage" name="a2a-cancel">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:process id="a2a-controlled-agent" name="Synthetic card-dispute A2A agent" isExecutable="true">
+    <bpmn:startEvent id="TaskReceived" name="A2A task received">
+      <bpmn:outgoing>Flow_TaskReceived_NextTurn</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="NextTurn">
+      <bpmn:incoming>Flow_TaskReceived_NextTurn</bpmn:incoming>
+      <bpmn:incoming>Flow_FollowUp_NextTurn</bpmn:incoming>
+      <bpmn:outgoing>Flow_NextTurn_EncodePrompt</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:adHocSubProcess id="AgentTools" name="Review synthetic card dispute" zeebe:modelerTemplate="io.camunda.connectors.agenticai.aiagent.jobworker.v1" zeebe:modelerTemplateVersion="5">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda.agenticai:aiagent-job-worker:1" retries="1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="openaiCompatible" target="provider.type" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
+          <zeebe:input source="=0" target="provider.openaiCompatible.model.parameters.temperature" />
+          <zeebe:input source="=&quot;You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.&quot;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=jsonPrompt" target="data.userPrompt.prompt" />
+          <zeebe:input source="=agent.context" target="agentContext" />
+          <zeebe:input source="in-process" target="data.memory.storage.type" />
+          <zeebe:input source="=20" target="data.memory.contextWindowSize" />
+          <zeebe:input source="=8" target="data.limits.maxModelCalls" />
+          <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
+          <zeebe:input source="text" target="data.response.format.type" />
+          <zeebe:input source="=false" target="data.response.format.parseJson" />
+          <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
+          <zeebe:input source="true" target="data.response.includeAgentContext" />
+          <zeebe:output source="=agent" target="agent" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="elementTemplateVersion" value="5" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.aiagent.jobworker.v1" />
+          <zeebe:header key="errorExpression" value="=if error != null then bpmnError(&quot;AGENT_FAILED&quot;, string(error.message)) else null" />
+          <zeebe:header key="retryBackoff" value="PT0S" />
+        </zeebe:taskHeaders>
+        <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult&#10;}" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_EncodePrompt_AgentTools</bpmn:incoming>
+      <bpmn:outgoing>Flow_AgentTools_UpdateTask</bpmn:outgoing>
+      <bpmn:scriptTask id="review_duplicate_charge" name="Reconcile synthetic charges">
+        <bpmn:documentation>Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:input source="=fromAi(toolCall.merchant, &quot;Merchant named in the synthetic claim&quot;, &quot;string&quot;)" target="merchant" />
+            <zeebe:input source="=fromAi(toolCall.currency, &quot;Currency code supplied by the client&quot;, &quot;string&quot;)" target="currency" />
+            <zeebe:input source="=fromAi(toolCall.firstAmount, &quot;First charge amount&quot;, &quot;number&quot;)" target="firstAmount" />
+            <zeebe:input source="=fromAi(toolCall.secondAmount, &quot;Second charge amount&quot;, &quot;number&quot;)" target="secondAmount" />
+            <zeebe:input source="=fromAi(toolCall.expectedAmount, &quot;Expected amount for the single order&quot;, &quot;number&quot;)" target="expectedAmount" />
+          </zeebe:ioMapping>
+          <zeebe:script expression="={ merchant: merchant, currency: currency, chargeAmounts: [firstAmount, secondAmount], expectedAmount: expectedAmount, paidAmount: decimal(firstAmount + secondAmount, 2), overchargeAmount: decimal(max([firstAmount + secondAmount - expectedAmount, 0]), 2), matchingAmounts: firstAmount = expectedAmount and secondAmount = expectedAmount, recommendation: &quot;REQUEST_HUMAN_REVIEW&quot;, syntheticOnly: true}" resultVariable="toolCallResult" />
+          <zeebe:properties>
+            <zeebe:property name="a2a:tags" value="synthetic,card-dispute,reconciliation" />
+            <zeebe:property name="a2a:examples" value="Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool." />
+          </zeebe:properties>
+        </bpmn:extensionElements>
+      </bpmn:scriptTask>
+    </bpmn:adHocSubProcess>
+    <bpmn:boundaryEvent id="AgentError" name="Agent failed" attachedToRef="AgentTools">
+      <bpmn:outgoing>Flow_AgentError_ReportFailure</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="AgentError_def" errorRef="AgentFailed" />
+    </bpmn:boundaryEvent>
+    <bpmn:callActivity id="UpdateTask" name="Update A2A task">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=task" target="task" />
+          <zeebe:input source="=(for reply in [agent.responseText] return for ask in [reply instance of string and starts with(trim(reply), &quot;NEED_INPUT:&quot;)] return for records in [flatten(for message in agent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;review_duplicate_charge&quot;])] return for evidence in [if count(records) &gt; 0 then records[count(records)].content else null] return {state: if ask then &quot;TASK_STATE_INPUT_REQUIRED&quot; else if evidence != null and evidence.syntheticOnly = true then &quot;TASK_STATE_COMPLETED&quot; else &quot;TASK_STATE_FAILED&quot;, text: if ask then trim(substring(trim(reply), 12)) else if evidence != null and evidence.syntheticOnly = true then &quot;Synthetic charges reconciled for human review. No refund or financial action was performed.&quot; else &quot;The agent did not produce the required reconciliation evidence.&quot;, artifacts: if ask then [] else if evidence != null and evidence.syntheticOnly = true then [{artifactId: uuid(), name: &quot;reconciliation&quot;, parts: [{data: evidence}]}] else []})[1][1][1][1]" target="outcome" />
+          <zeebe:output source="=task" target="task" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AgentTools_UpdateTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_UpdateTask_InputRequired</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="InputRequired" name="Input required?" default="Flow_InputRequired_TaskDone">
+      <bpmn:incoming>Flow_UpdateTask_InputRequired</bpmn:incoming>
+      <bpmn:outgoing>Flow_InputRequired_FollowUp</bpmn:outgoing>
+      <bpmn:outgoing>Flow_InputRequired_TaskDone</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="FollowUp" name="Follow-up received">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="={id: task.id, contextId: task.contextId, rev: task.rev + 1, status: {state: &quot;TASK_STATE_WORKING&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}, artifacts: task.artifacts, history: append(task.history, put(put(followUp.message, &quot;taskId&quot;, task.id), &quot;contextId&quot;, task.contextId))}" target="task" />
+          <zeebe:output source="=followUp" target="req" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_InputRequired_FollowUp</bpmn:incoming>
+      <bpmn:outgoing>Flow_FollowUp_NextTurn</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="FollowUp_def" messageRef="Msg_followUp" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="TaskDone" name="Task done">
+      <bpmn:incoming>Flow_InputRequired_TaskDone</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:callActivity id="ReportFailure" name="Report failure">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=task" target="task" />
+          <zeebe:input source="={state: &quot;TASK_STATE_FAILED&quot;, text: &quot;The agent could not complete the request.&quot;}" target="outcome" />
+          <zeebe:output source="=task" target="task" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_AgentError_ReportFailure</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReportFailure_TaskFailed</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="TaskFailed" name="Task failed">
+      <bpmn:incoming>Flow_ReportFailure_TaskFailed</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="EncodePrompt" name="Preserve literal input">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=&quot;\&quot;&quot; + replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(string join(for part in req.message.parts return if part.text != null then part.text else &quot;&quot;, &quot; &quot;), &quot;\\\\&quot;, &quot;\\\\\\\\&quot;), &quot;\&quot;&quot;, &quot;\\\\\&quot;&quot;), &quot;\\u0000&quot;, &quot;\\\\u0000&quot;), &quot;\\u0001&quot;, &quot;\\\\u0001&quot;), &quot;\\u0002&quot;, &quot;\\\\u0002&quot;), &quot;\\u0003&quot;, &quot;\\\\u0003&quot;), &quot;\\u0004&quot;, &quot;\\\\u0004&quot;), &quot;\\u0005&quot;, &quot;\\\\u0005&quot;), &quot;\\u0006&quot;, &quot;\\\\u0006&quot;), &quot;\\u0007&quot;, &quot;\\\\u0007&quot;), &quot;\\u0008&quot;, &quot;\\\\u0008&quot;), &quot;\\u0009&quot;, &quot;\\\\u0009&quot;), &quot;\\u000a&quot;, &quot;\\\\u000a&quot;), &quot;\\u000b&quot;, &quot;\\\\u000b&quot;), &quot;\\u000c&quot;, &quot;\\\\u000c&quot;), &quot;\\u000d&quot;, &quot;\\\\u000d&quot;), &quot;\\u000e&quot;, &quot;\\\\u000e&quot;), &quot;\\u000f&quot;, &quot;\\\\u000f&quot;), &quot;\\u0010&quot;, &quot;\\\\u0010&quot;), &quot;\\u0011&quot;, &quot;\\\\u0011&quot;), &quot;\\u0012&quot;, &quot;\\\\u0012&quot;), &quot;\\u0013&quot;, &quot;\\\\u0013&quot;), &quot;\\u0014&quot;, &quot;\\\\u0014&quot;), &quot;\\u0015&quot;, &quot;\\\\u0015&quot;), &quot;\\u0016&quot;, &quot;\\\\u0016&quot;), &quot;\\u0017&quot;, &quot;\\\\u0017&quot;), &quot;\\u0018&quot;, &quot;\\\\u0018&quot;), &quot;\\u0019&quot;, &quot;\\\\u0019&quot;), &quot;\\u001a&quot;, &quot;\\\\u001a&quot;), &quot;\\u001b&quot;, &quot;\\\\u001b&quot;), &quot;\\u001c&quot;, &quot;\\\\u001c&quot;), &quot;\\u001d&quot;, &quot;\\\\u001d&quot;), &quot;\\u001e&quot;, &quot;\\\\u001e&quot;), &quot;\\u001f&quot;, &quot;\\\\u001f&quot;) + &quot;\&quot;&quot;" resultVariable="jsonPrompt" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_NextTurn_EncodePrompt</bpmn:incoming>
+      <bpmn:outgoing>Flow_EncodePrompt_AgentTools</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_TaskReceived_NextTurn" sourceRef="TaskReceived" targetRef="NextTurn" />
+    <bpmn:sequenceFlow id="Flow_AgentTools_UpdateTask" sourceRef="AgentTools" targetRef="UpdateTask" />
+    <bpmn:sequenceFlow id="Flow_UpdateTask_InputRequired" sourceRef="UpdateTask" targetRef="InputRequired" />
+    <bpmn:sequenceFlow id="Flow_InputRequired_FollowUp" name="yes" sourceRef="InputRequired" targetRef="FollowUp">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=task.status.state = "TASK_STATE_INPUT_REQUIRED"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_InputRequired_TaskDone" name="no" sourceRef="InputRequired" targetRef="TaskDone" />
+    <bpmn:sequenceFlow id="Flow_FollowUp_NextTurn" sourceRef="FollowUp" targetRef="NextTurn" />
+    <bpmn:sequenceFlow id="Flow_AgentError_ReportFailure" sourceRef="AgentError" targetRef="ReportFailure" />
+    <bpmn:sequenceFlow id="Flow_ReportFailure_TaskFailed" sourceRef="ReportFailure" targetRef="TaskFailed" />
+    <bpmn:sequenceFlow id="Flow_NextTurn_EncodePrompt" sourceRef="NextTurn" targetRef="EncodePrompt" />
+    <bpmn:sequenceFlow id="Flow_EncodePrompt_AgentTools" sourceRef="EncodePrompt" targetRef="AgentTools" />
+    <bpmn:subProcess id="A2ACancellation" name="Cancel this A2A task" triggeredByEvent="true">
+      <bpmn:startEvent id="A2ACancelRequested" name="Cancellation requested" isInterrupting="true">
+        <bpmn:outgoing>A2ACancelToState</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="A2ACancelRequested_def" messageRef="A2ACancelMessage" />
+      </bpmn:startEvent>
+      <bpmn:scriptTask id="A2ASetCanceled" name="Commit terminal outcome">
+        <bpmn:extensionElements>
+          <zeebe:script resultVariable="task" expression="=if list contains([&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_REJECTED&quot;], task.status.state) then task else context merge([task, {rev: task.rev + 1, artifacts: [], status: {state: &quot;TASK_STATE_CANCELED&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}}])" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>A2ACancelToState</bpmn:incoming>
+        <bpmn:outgoing>A2ACancelToEnd</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:endEvent id="A2ACancelDone" name="Cancellation settled">
+        <bpmn:incoming>A2ACancelToEnd</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="A2ACancelToState" sourceRef="A2ACancelRequested" targetRef="A2ASetCanceled" />
+      <bpmn:sequenceFlow id="A2ACancelToEnd" sourceRef="A2ASetCanceled" targetRef="A2ACancelDone" />
+    </bpmn:subProcess>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-controlled-agent">
+      <bpmndi:BPMNShape id="TaskReceived_di" bpmnElement="TaskReceived">
+        <dc:Bounds x="150" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="NextTurn_di" bpmnElement="NextTurn" isMarkerVisible="true">
+        <dc:Bounds x="230" y="255" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AgentTools_di" bpmnElement="AgentTools" isExpanded="true">
+        <dc:Bounds x="530" y="120" width="400" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="review_duplicate_charge_di" bpmnElement="review_duplicate_charge">
+        <dc:Bounds x="680" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UpdateTask_di" bpmnElement="UpdateTask">
+        <dc:Bounds x="1000" y="238" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="InputRequired_di" bpmnElement="InputRequired" isMarkerVisible="true">
+        <dc:Bounds x="1150" y="253" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="FollowUp_di" bpmnElement="FollowUp">
+        <dc:Bounds x="1260" y="260" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskDone_di" bpmnElement="TaskDone">
+        <dc:Bounds x="1260" y="370" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReportFailure_di" bpmnElement="ReportFailure">
+        <dc:Bounds x="1000" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TaskFailed_di" bpmnElement="TaskFailed">
+        <dc:Bounds x="1150" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EncodePrompt_di" bpmnElement="EncodePrompt">
+        <dc:Bounds x="340" y="238" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="AgentError_di" bpmnElement="AgentError">
+        <dc:Bounds x="890" y="382" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_TaskReceived_NextTurn_di" bpmnElement="Flow_TaskReceived_NextTurn">
+        <di:waypoint x="186" y="280" />
+        <di:waypoint x="230" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentTools_UpdateTask_di" bpmnElement="Flow_AgentTools_UpdateTask">
+        <di:waypoint x="930" y="260" />
+        <di:waypoint x="965" y="260" />
+        <di:waypoint x="965" y="278" />
+        <di:waypoint x="1000" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_UpdateTask_InputRequired_di" bpmnElement="Flow_UpdateTask_InputRequired">
+        <di:waypoint x="1100" y="278" />
+        <di:waypoint x="1150" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_InputRequired_FollowUp_di" bpmnElement="Flow_InputRequired_FollowUp">
+        <di:waypoint x="1200" y="278" />
+        <di:waypoint x="1260" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_InputRequired_TaskDone_di" bpmnElement="Flow_InputRequired_TaskDone">
+        <di:waypoint x="1175" y="303" />
+        <di:waypoint x="1175" y="388" />
+        <di:waypoint x="1260" y="388" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_FollowUp_NextTurn_di" bpmnElement="Flow_FollowUp_NextTurn">
+        <di:waypoint x="1278" y="260" />
+        <di:waypoint x="1278" y="100" />
+        <di:waypoint x="255" y="100" />
+        <di:waypoint x="255" y="255" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_AgentError_ReportFailure_di" bpmnElement="Flow_AgentError_ReportFailure">
+        <di:waypoint x="908" y="418" />
+        <di:waypoint x="908" y="500" />
+        <di:waypoint x="1000" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReportFailure_TaskFailed_di" bpmnElement="Flow_ReportFailure_TaskFailed">
+        <di:waypoint x="1100" y="500" />
+        <di:waypoint x="1150" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NextTurn_EncodePrompt_di" bpmnElement="Flow_NextTurn_EncodePrompt">
+        <di:waypoint x="280" y="280" />
+        <di:waypoint x="310" y="280" />
+        <di:waypoint x="310" y="278" />
+        <di:waypoint x="340" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EncodePrompt_AgentTools_di" bpmnElement="Flow_EncodePrompt_AgentTools">
+        <di:waypoint x="440" y="278" />
+        <di:waypoint x="485" y="278" />
+        <di:waypoint x="485" y="260" />
+        <di:waypoint x="530" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
+        <dc:Bounds x="150" y="620.0" width="420" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
+        <dc:Bounds x="180" y="682.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
+        <dc:Bounds x="270" y="660.0" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
+        <dc:Bounds x="450" y="682.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
+        <di:waypoint x="216" y="700.0" />
+        <di:waypoint x="270" y="700.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
+        <di:waypoint x="370" y="700.0" />
+        <di:waypoint x="450" y="700.0" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

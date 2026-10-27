@@ -1,5 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_Echo" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_Echo" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:message id="A2ACancelMessage" name="a2a-cancel">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmn:process id="a2a-echo" name="Echo an A2A message" isExecutable="true">
     <bpmn:documentation>Deterministic example of the A2A task contract. Accepts task and req, echoes the message text, and calls a2a-task-update with the outcome. Requires no model or custom worker.</bpmn:documentation>
     <bpmn:startEvent id="TaskReceived" name="Task received">
@@ -7,7 +12,7 @@
     </bpmn:startEvent>
     <bpmn:scriptTask id="EchoMessage" name="Echo message">
       <bpmn:extensionElements>
-        <zeebe:script expression="={state: &#34;TASK_STATE_COMPLETED&#34;, text: string join(req.message.parts.text, &#34; &#34;)}" resultVariable="outcome" />
+        <zeebe:script expression="={state: &quot;TASK_STATE_COMPLETED&quot;, text: string join(req.message.parts.text, &quot; &quot;)}" resultVariable="outcome" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_Received_Echo</bpmn:incoming>
       <bpmn:outgoing>Flow_Echo_Update</bpmn:outgoing>
@@ -30,6 +35,24 @@
     <bpmn:sequenceFlow id="Flow_Received_Echo" sourceRef="TaskReceived" targetRef="EchoMessage" />
     <bpmn:sequenceFlow id="Flow_Echo_Update" sourceRef="EchoMessage" targetRef="UpdateTask" />
     <bpmn:sequenceFlow id="Flow_Update_Done" sourceRef="UpdateTask" targetRef="TaskDone" />
+    <bpmn:subProcess id="A2ACancellation" name="Cancel this A2A task" triggeredByEvent="true">
+      <bpmn:startEvent id="A2ACancelRequested" name="Cancellation requested" isInterrupting="true">
+        <bpmn:outgoing>A2ACancelToState</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="A2ACancelRequested_def" messageRef="A2ACancelMessage" />
+      </bpmn:startEvent>
+      <bpmn:scriptTask id="A2ASetCanceled" name="Commit terminal outcome">
+        <bpmn:extensionElements>
+          <zeebe:script resultVariable="task" expression="=if list contains([&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_REJECTED&quot;], task.status.state) then task else context merge([task, {rev: task.rev + 1, artifacts: [], status: {state: &quot;TASK_STATE_CANCELED&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}}])" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>A2ACancelToState</bpmn:incoming>
+        <bpmn:outgoing>A2ACancelToEnd</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:endEvent id="A2ACancelDone" name="Cancellation settled">
+        <bpmn:incoming>A2ACancelToEnd</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="A2ACancelToState" sourceRef="A2ACancelRequested" targetRef="A2ASetCanceled" />
+      <bpmn:sequenceFlow id="A2ACancelToEnd" sourceRef="A2ASetCanceled" targetRef="A2ACancelDone" />
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_Echo">
     <bpmndi:BPMNPlane id="Plane_Echo" bpmnElement="a2a-echo">
@@ -56,6 +79,26 @@
       <bpmndi:BPMNEdge id="Flow_Update_Done_di" bpmnElement="Flow_Update_Done">
         <di:waypoint x="500" y="140" />
         <di:waypoint x="560" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
+        <dc:Bounds x="150" y="260.0" width="420" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
+        <dc:Bounds x="180" y="322.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
+        <dc:Bounds x="270" y="300.0" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
+        <dc:Bounds x="450" y="322.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
+        <di:waypoint x="216" y="340.0" />
+        <di:waypoint x="270" y="340.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
+        <di:waypoint x="370" y="340.0" />
+        <di:waypoint x="450" y="340.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

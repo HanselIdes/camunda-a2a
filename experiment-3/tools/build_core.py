@@ -139,6 +139,64 @@ def response_mode(root):
                    % (fallback, feel.result(result)))
 
 
+def cancellation(root):
+    remove(root, {"MarkCanceled", "StoreCanceled", "CancelAgent", "TaskGone", "AgentGone", "CancelSent",
+                  "Flow_AwaitCanceled_BuildCanceledView"})
+    process = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
+    request = ET.SubElement(process, f"{{{B}}}callActivity", id="RequestCancellation",
+                            name="Request atomic cancellation")
+    extensions = ET.SubElement(request, f"{{{B}}}extensionElements")
+    ET.SubElement(extensions, f"{{{Z}}}calledElement", processId="a2a-correlate",
+                  propagateAllChildVariables="false", propagateAllParentVariables="false")
+    mapping = ET.SubElement(extensions, f"{{{Z}}}ioMapping")
+    for target, source in (("messageName", '="a2a-cancel"'), ("taskId", "=task.id"),
+                           ("tries", "=3"), ("payload", "={}")):
+        ET.SubElement(mapping, f"{{{Z}}}input", target=target, source=source)
+    ET.SubElement(mapping, f"{{{Z}}}output", source="=correlated", target="correlated")
+    for identifier, name in (("CancellationCorrelated", "Cancellation accepted?"),
+                              ("CancellationOutcome", "Terminal outcome visible?")):
+        ET.SubElement(process, f"{{{B}}}exclusiveGateway", id=identifier, name=name)
+    timeout = ET.SubElement(process, f"{{{B}}}scriptTask", id="CancellationTimeout",
+                            name="Report cancellation visibility failure")
+    extension = ET.SubElement(timeout, f"{{{B}}}extensionElements")
+    ET.SubElement(extension, f"{{{Z}}}script", resultVariable="rpcResponse", expression="=" + feel.resp_from(
+        feel.err(-32603, "Cancellation outcome was not visible before the deadline", "DEADLINE_EXCEEDED")))
+    ET.SubElement(process, f"{{{B}}}endEvent", id="CancellationErrorReady", name="Cancellation failed")
+    plane = root.find(f"{{{D}}}BPMNDiagram/{{{D}}}BPMNPlane")
+    for identifier, x, y, width, height in (
+            ("RequestCancellation", 2200, 1120, 100, 80),
+            ("CancellationCorrelated", 2375, 1135, 50, 50),
+            ("CancellationOutcome", 3100, 1135, 50, 50),
+            ("CancellationTimeout", 3100, 1240, 100, 80),
+            ("CancellationErrorReady", 3282, 1262, 36, 36)):
+        shape = ET.SubElement(plane, f"{{{D}}}BPMNShape", id=identifier + "_di", bpmnElement=identifier)
+        ET.SubElement(shape, f"{{{DC}}}Bounds", x=str(x), y=str(y), width=str(width), height=str(height))
+    connect(root, "a2a-rpc", "Cancelable", "RequestCancellation",
+            condition=f"=not(list contains({feel.TERMINAL}, task.status.state))", name="active")
+    connect(root, "a2a-rpc", "RequestCancellation", "CancellationCorrelated")
+    connect(root, "a2a-rpc", "CancellationCorrelated", "AwaitCanceled", condition="=correlated", name="accepted")
+    connect(root, "a2a-rpc", "CancellationCorrelated", "NotCancelableJoin", default=True, name="not accepted")
+    connect(root, "a2a-rpc", "AwaitCanceled", "CancellationOutcome")
+    connect(root, "a2a-rpc", "CancellationOutcome", "BuildCanceledView",
+            condition='=visible and seen.status.state = "TASK_STATE_CANCELED"', name="canceled")
+    connect(root, "a2a-rpc", "CancellationOutcome", "NotCancelableJoin",
+            condition=f'=visible and seen.status.state != "TASK_STATE_CANCELED" '
+                      f'and list contains({feel.TERMINAL}, seen.status.state)', name="completed first")
+    connect(root, "a2a-rpc", "CancellationOutcome", "CancellationTimeout", default=True, name="not visible")
+    connect(root, "a2a-rpc", "CancellationTimeout", "CancellationErrorReady")
+    waiter = next(e for e in process if e.get("id") == "AwaitCanceled")
+    next(e for e in waiter.iter(f"{{{Z}}}input") if e.get("target") == "until").set(
+        "source", '={kind: "task", minRev: task.rev + 1, settled: true}')
+    script = next(e for e in process if e.get("id") == "BuildCanceledView").find(
+        f"{{{B}}}extensionElements/{{{Z}}}script")
+    script.set("expression", "=" + feel.result(feel.view("null", "seen")))
+    script = next(e for e in process if e.get("id") == "BuildNotCancelable").find(
+        f"{{{B}}}extensionElements/{{{Z}}}script")
+    script.set("expression", "=" + feel.resp_from(feel.err(
+        -32002, "Task is terminal or its process did not accept the required a2a-cancel message",
+        "TASK_NOT_CANCELABLE")))
+
+
 def build(authentication):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.8.0")
@@ -163,10 +221,10 @@ def build(authentication):
                          if e.get("processRef") == "a2a-push-notify"}
     remove(root, push_ids | push_participants)
     connect(root, "a2a-task-update", "ApplyOutcome", "TaskUpdated")
-    connect(root, "a2a-rpc", "AwaitCanceled", "BuildCanceledView")
     connect(root, "a2a-rpc", "PrepareNewTask", "CreateTask")
     lookup_retry(root)
     response_mode(root)
+    cancellation(root)
     parse = next(e for e in root.iter() if e.get("id") == "ParseRequest").find(
         f"{{{B}}}extensionElements/{{{Z}}}script")
     old_version = ('versionOk: if ver instance of string then '

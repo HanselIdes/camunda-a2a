@@ -257,6 +257,44 @@ Leave the literal-input encoder and `data.userPrompt.prompt =jsonPrompt` mapping
 JSON-like, quoted, backslash, control-character and leading-equals text through the stock connector's string binding.
 System instructions and business tools are modelled in the agent, not the protocol.
 
+### Required cancellation hook
+
+Each adapted business process must include the root-level interrupting event subprocess shown as
+**Cancel this A2A task** in echo and the card-dispute example. The nonshipping conformance fixture uses the same
+hook. Copy that subprocess together with its message definition when adapting a different process:
+
+1. Use a message start event with **Interrupting** enabled, message name **`a2a-cancel`** and correlation key
+   **`=task.id`**. Do not use a message start event that creates another process instance, a non-interrupting event
+   or a correlation key based on context ID. Keep the subprocess at the business process's root level.
+2. Connect it to a FEEL script task with result variable **`task`**, then an end event. Retain the supplied script:
+   it preserves an already-terminal outcome; otherwise it writes the canceled status, empty artifacts and the
+   next revision together. Do not create a local `task` variable/input mapping in this subprocess; its script
+   updates the existing root variable.
+3. Keep business task updates serialized through `a2a-task-update`, with the explicit output mapping to root
+   `task`. End business work after a terminal outcome. Do not introduce parallel or external writers to that
+   variable, or catch cancellation and resume the interrupted business path.
+4. Deploy the adapted process and select it through `A2A_AGENT_PROCESS`. No protocol edit, generator,
+   additional connector, custom worker or HTTP server is needed.
+
+Cancellation uses synchronous `POST /v2/messages/correlation` with this fixed message name and the exact task ID.
+It does **not** publish or buffer a message, specify a TTL, or fall back to another task. The engine interrupts
+active business tokens and child calls before the hook commits cancellation; a late completion command for
+interrupted work is rejected. This stops further process work, not an external side effect already performed.
+The business process owns any compensation and side-effect protection.
+
+If cancellation wins, `CancelTask` returns the **persisted** canceled task, without artifacts or a status message.
+Subsequent `GetTask` and `ListTasks` retain that outcome. A repeated cancel returns `TaskNotCancelableError`
+(`-32002`); follow-up input is rejected with `UnsupportedOperationError` (`-32004`) and cannot revive the task.
+If the business terminal update wins first, its status/text/artifacts remain intact and cancellation returns
+`-32002`, never a canceled result. An unknown task returns `TaskNotFoundError` (`-32001`).
+
+A missing hook or no remaining matching subscription returns `-32002` after at most three correlation attempts
+with 0.3-second retry waits. It does not write canceled state. After successful correlation, the protocol waits
+up to five seconds for the indexed terminal revision; expiry returns internal error `-32603` with
+`DEADLINE_EXCEEDED`, not a fabricated canceled response. Engine API failures remain connector failures/retries
+or incidents, not successful cancellation. After an uncertain transport failure, inspect the failed execution
+and poll `GetTask` rather than assuming whether cancellation occurred.
+
 ## Operational boundary and remaining gates
 
 The API key establishes one shared trust boundary, not per-user task authorization. Possession of the key permits
@@ -336,6 +374,14 @@ then checks foreign-task lookups, paginated listing, duplicate submissions and r
 During concurrency it deploys a nonshipping 15-second timed echo variant and requires all 20 tasks to be accepted
 as working before the earliest possible completion; overlapping HTTP requests alone do not satisfy the check.
 The driver removes only its owned runtimes. This is a contributor check, not an already-passed acceptance claim.
+
+`PROOF_AGENT_PROCESS=a2a-echo PROOF_OPERATIONAL_CHECKS=1 python3 experiment-3/tests/runtime/verify.py`
+also deploys a clearly nonshipping controlled business process against the stock runtime. It checks both terminal
+orderings, rejected late business completion, 24 seeded randomized completion/cancel races, 12 follow-up/cancel
+races, four concurrent-follow-up pairs, cancellation while input-required, repeated operations, stored root state,
+task listing and missing-hook failure. `terminal-checks.json` records exact outcomes;
+`runtime-provenance.json` identifies the tested source.
+This is not evidence of a pass until that exact-source run completes.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
 using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.

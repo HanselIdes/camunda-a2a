@@ -6,6 +6,11 @@
     </bpmn:extensionElements>
   </bpmn:message>
   <bpmn:error id="AgentFailed" name="AgentFailed" errorCode="AGENT_FAILED" />
+  <bpmn:message id="A2ACancelMessage" name="a2a-cancel">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=task.id" />
+    </bpmn:extensionElements>
+  </bpmn:message>
   <bpmn:process id="a2a-card-dispute" name="Synthetic card-dispute A2A agent" isExecutable="true">
     <bpmn:startEvent id="TaskReceived" name="A2A task received">
       <bpmn:outgoing>Flow_TaskReceived_NextTurn</bpmn:outgoing>
@@ -134,6 +139,24 @@
     <bpmn:sequenceFlow id="Flow_ReportFailure_TaskFailed" sourceRef="ReportFailure" targetRef="TaskFailed" />
     <bpmn:sequenceFlow id="Flow_NextTurn_EncodePrompt" sourceRef="NextTurn" targetRef="EncodePrompt" />
     <bpmn:sequenceFlow id="Flow_EncodePrompt_AgentTools" sourceRef="EncodePrompt" targetRef="AgentTools" />
+    <bpmn:subProcess id="A2ACancellation" name="Cancel this A2A task" triggeredByEvent="true">
+      <bpmn:startEvent id="A2ACancelRequested" name="Cancellation requested" isInterrupting="true">
+        <bpmn:outgoing>A2ACancelToState</bpmn:outgoing>
+        <bpmn:messageEventDefinition id="A2ACancelRequested_def" messageRef="A2ACancelMessage" />
+      </bpmn:startEvent>
+      <bpmn:scriptTask id="A2ASetCanceled" name="Commit terminal outcome">
+        <bpmn:extensionElements>
+          <zeebe:script resultVariable="task" expression="=if list contains([&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_REJECTED&quot;], task.status.state) then task else context merge([task, {rev: task.rev + 1, artifacts: [], status: {state: &quot;TASK_STATE_CANCELED&quot;, timestamp: substring(string(now()), 1, 19) + &quot;Z&quot;}}])" />
+        </bpmn:extensionElements>
+        <bpmn:incoming>A2ACancelToState</bpmn:incoming>
+        <bpmn:outgoing>A2ACancelToEnd</bpmn:outgoing>
+      </bpmn:scriptTask>
+      <bpmn:endEvent id="A2ACancelDone" name="Cancellation settled">
+        <bpmn:incoming>A2ACancelToEnd</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="A2ACancelToState" sourceRef="A2ACancelRequested" targetRef="A2ASetCanceled" />
+      <bpmn:sequenceFlow id="A2ACancelToEnd" sourceRef="A2ASetCanceled" targetRef="A2ACancelDone" />
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-card-dispute">
@@ -222,6 +245,26 @@
         <di:waypoint x="485" y="278" />
         <di:waypoint x="485" y="260" />
         <di:waypoint x="530" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="A2ACancellation_di" bpmnElement="A2ACancellation" isExpanded="true">
+        <dc:Bounds x="150" y="620.0" width="420" height="160" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelRequested_di" bpmnElement="A2ACancelRequested">
+        <dc:Bounds x="180" y="682.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ASetCanceled_di" bpmnElement="A2ASetCanceled">
+        <dc:Bounds x="270" y="660.0" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="A2ACancelDone_di" bpmnElement="A2ACancelDone">
+        <dc:Bounds x="450" y="682.0" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="A2ACancelToState_di" bpmnElement="A2ACancelToState">
+        <di:waypoint x="216" y="700.0" />
+        <di:waypoint x="270" y="700.0" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="A2ACancelToEnd_di" bpmnElement="A2ACancelToEnd">
+        <di:waypoint x="370" y="700.0" />
+        <di:waypoint x="450" y="700.0" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
