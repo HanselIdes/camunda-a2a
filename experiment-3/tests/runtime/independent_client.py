@@ -19,6 +19,7 @@ from a2a.types.a2a_pb2 import (
     AgentCard, GetTaskRequest, ListTasksRequest, Message, Part, ROLE_USER, SendMessageRequest,
     TASK_STATE_COMPLETED, TASK_STATE_INPUT_REQUIRED, TASK_STATE_WORKING,
 )
+from confirmations import data_part
 
 
 async def main():
@@ -43,8 +44,11 @@ async def main():
         factory = ClientFactory(ClientConfig(streaming=False, polling=True, httpx_client=http))
         client = await factory.create_from_url(origin, relative_card_path="/inbound/a2a-card")
 
-        async def send(text, previous=None):
-            message = Message(role=ROLE_USER, message_id=str(uuid.uuid4()), parts=[Part(text=text)])
+        async def send(text, previous=None, confirmed=False):
+            parts = [Part(text=text)]
+            if confirmed:
+                parts.append(ParseDict(data_part(), Part()))
+            message = Message(role=ROLE_USER, message_id=str(uuid.uuid4()), parts=parts)
             if previous is not None:
                 message.task_id = previous.id
                 message.context_id = previous.context_id
@@ -62,7 +66,8 @@ async def main():
         waiting = await send("Please review a synthetic card dispute.")
         assert waiting.status.state == TASK_STATE_INPUT_REQUIRED, waiting.status
         completed = await send(
-            "49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD.", waiting)
+            "49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD.",
+            waiting, confirmed=True)
         assert completed.id == waiting.id and completed.context_id == waiting.context_id
         assert completed.status.state == TASK_STATE_COMPLETED, completed.status
         assert len(completed.history) == 4, "SDK follow-up history differs"

@@ -56,6 +56,7 @@ def run(reports, rpc, request, await_task):
         record["verbatim"] = True
         record["requiredState"] = "TASK_STATE_INPUT_REQUIRED"
         record["semanticStateMatches"] = task["status"]["state"] == record["requiredState"]
+        record["noPublishedArithmetic"] = not task.get("artifacts")
         complete = len(records) == len(CASES)
         report.write_text(json.dumps({
             "records": records,
@@ -66,5 +67,8 @@ def run(reports, rpc, request, await_task):
                        "PASS" if complete else "RUNNING",
         }, indent=2) + "\n")
         assert record["semanticStateMatches"], (label, task)
+        assert record["noPublishedArithmetic"], (label, task)
+        from confirmations import assert_no_arithmetic
+        assert_no_arithmetic(agent)
     print("Six actual model inputs preserve numeric/quote/backslash/newline/control/expression text: PASS",
           flush=True)

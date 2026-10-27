@@ -11,7 +11,7 @@ from build_core import B, Z, ROOT, REQUEST_MAPPING
 from gen_card import feel_str, json_string_expression, skills_from_bpmn, skills_feel
 from bpmn_gen import build as original
 from bpmn_gen.agent import USER_PROMPT
-from bpmn_gen.client import client
+from bpmn_gen.client import client, form
 from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
 
@@ -23,11 +23,55 @@ SAMPLE = ("Synthetic example only: Northwind Electronics charged USD 49.95 twice
           "The expected charge was USD 49.95. Reconcile the two charges with your tool.")
 SYSTEM = (
     "You help demonstrate card-dispute intake using synthetic data only. "
-    "For each review use review_duplicate_charge; never calculate a result yourself. "
-    "You need the merchant, currency, two charge amounts and expected amount. "
-    "If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. "
+    "For each review call review_duplicate_charge; never calculate or supply financial fields yourself. "
+    "The tool uses only the current request's explicit client confirmation, not values inferred from text. "
+    "If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. "
     "After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, "
     "call external financial services or claim that matching amounts alone prove fraud."
+)
+CONFIRMATION_QUESTION = (
+    "Confirm synthetic data only: supply one message data part with syntheticClaim containing "
+    "merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), "
+    "expectedAmount (a finite nonnegative number), and syntheticOnly=true. "
+    "Free text alone is context, not confirmation."
+)
+CONFIRMATION = original.one("""={
+  parts: if req.message.parts instance of list then
+    req.message.parts[item instance of context and item.data != null] else [],
+  claim: if count(parts) = 1 then
+    if parts[1].data instance of context then parts[1].data.syntheticClaim else null else null,
+  validAmount: function(amount) if amount instance of number then
+    amount >= 0 and amount - amount = 0 else false,
+  valid: if claim instance of context then
+    if claim.merchant instance of string and claim.currency instance of string then
+      if string length(trim(claim.merchant)) > 0 and string length(trim(claim.currency)) > 0
+         and claim.syntheticOnly = true then
+        if claim.chargeAmounts instance of list then
+          count(claim.chargeAmounts) = 2 and
+          (every amount in claim.chargeAmounts satisfies validAmount(amount)) and
+          validAmount(claim.expectedAmount)
+        else false
+      else false
+    else false
+  else false,
+  result: {valid: valid = true, claim: if valid = true then
+    {merchant: claim.merchant, currency: claim.currency, chargeAmounts: claim.chargeAmounts,
+     expectedAmount: claim.expectedAmount, syntheticOnly: true} else null}
+}.result""")
+RECONCILIATION = original.one("""={
+  merchant: confirmed.claim.merchant, currency: confirmed.claim.currency,
+  chargeAmounts: confirmed.claim.chargeAmounts, expectedAmount: confirmed.claim.expectedAmount,
+  paidAmount: decimal(sum(confirmed.claim.chargeAmounts), 2),
+  overchargeAmount: decimal(max([sum(confirmed.claim.chargeAmounts) - confirmed.claim.expectedAmount, 0]), 2),
+  matchingAmounts: every amount in confirmed.claim.chargeAmounts satisfies amount = confirmed.claim.expectedAmount,
+  recommendation: "REQUEST_HUMAN_REVIEW", syntheticOnly: true}""")
+CONFIRMATION_FIELDS = (
+    ("claimMerchant", "Merchant", "textfield"),
+    ("claimCurrency", "Currency", "textfield"),
+    ("claimFirstAmount", "First charge amount", "number"),
+    ("claimSecondAmount", "Second charge amount", "number"),
+    ("claimExpectedAmount", "Expected order amount", "number"),
+    ("claimSyntheticOnly", "I confirm these are synthetic demonstration values", "checkbox"),
 )
 
 
@@ -56,28 +100,20 @@ def agent(path):
         if node.x >= 330:
             node.x += 200
     p.nodes["AgentTools"].name = "Review synthetic card dispute"
-    p.script("EncodePrompt", "Join client input", 340, 238, USER_PROMPT, "promptText")
+    prompt = ('=if count(req.message.parts[item.text instance of string]) = 0 then '
+              '"Review the explicit client confirmation." else ' + USER_PROMPT[1:])
+    p.script("EncodePrompt", "Join client input", 340, 238, prompt, "promptText")
+    p.script("ValidateConfirmation", "Validate client confirmation", 340, 340, CONFIRMATION, "confirmation")
     p.remove_flow("NextTurn", "AgentTools")
     p.flow("NextTurn", "EncodePrompt")
-    p.flow("EncodePrompt", "AgentTools")
-    inputs = [
-        ("merchant", "Merchant named in the synthetic claim", "string"),
-        ("currency", "Currency code supplied by the client", "string"),
-        ("firstAmount", "First charge amount", "number"),
-        ("secondAmount", "Second charge amount", "number"),
-        ("expectedAmount", "Expected amount for the single order", "number"),
-    ]
-    io = "".join('<zeebe:input source=%s target=%s />' %
-                 (q(f"=fromAi(toolCall.{name}, {feel_str(description)}, {feel_str(kind)})"), q(name))
-                 for name, description, kind in inputs)
-    result = original.one("""={
-      merchant: merchant, currency: currency, chargeAmounts: [firstAmount, secondAmount],
-      expectedAmount: expectedAmount, paidAmount: decimal(firstAmount + secondAmount, 2),
-      overchargeAmount: decimal(max([firstAmount + secondAmount - expectedAmount, 0]), 2),
-      matchingAmounts: firstAmount = expectedAmount and secondAmount = expectedAmount,
-      recommendation: "REQUEST_HUMAN_REVIEW", syntheticOnly: true}""")
+    p.flow("EncodePrompt", "ValidateConfirmation")
+    p.flow("ValidateConfirmation", "AgentTools")
+    io = '<zeebe:input source="=confirmation" target="confirmed" />'
+    result = ("=if confirmed.valid = true then " + RECONCILIATION[1:]
+              + " else {confirmationRequired: true, instruction: " + feel_str(CONFIRMATION_QUESTION) + "}")
     p.node("scriptTask", "review_duplicate_charge", "Reconcile synthetic charges", 680, 220, parent="AgentTools",
-           doc="Reconciles two supplied synthetic charge amounts against one expected order amount. "
+           doc="Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. "
+               "Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. "
                "Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
            ext=('<zeebe:ioMapping>' + io + '</zeebe:ioMapping>'
                 '<zeebe:script expression=%s resultVariable="toolCallResult" />' % q(result)
@@ -87,13 +123,18 @@ def agent(path):
       for records in [flatten(for message in agent.context.conversation.messages[item.role = "tool_call_result"]
                       return message.results[item.name = "review_duplicate_charge"])] return
       for evidence in [if count(records) > 0 then records[count(records)].content else null] return
-      {state: if ask then "TASK_STATE_INPUT_REQUIRED" else
-              if evidence != null and evidence.syntheticOnly = true then "TASK_STATE_COMPLETED" else "TASK_STATE_FAILED",
-       text: if ask then trim(substring(trim(reply), 12)) else if evidence != null and evidence.syntheticOnly = true
+      for expected in [if confirmation.valid = true then EXPECTED else null] return
+      for grounded in [expected != null and evidence = expected] return
+      {state: if confirmation.valid != true or ask then "TASK_STATE_INPUT_REQUIRED" else
+              if grounded then "TASK_STATE_COMPLETED" else "TASK_STATE_FAILED",
+       text: if confirmation.valid != true then QUESTION else
+             if ask then trim(substring(trim(reply), 12)) else if grounded
              then "Synthetic charges reconciled for human review. No refund or financial action was performed."
              else "The agent did not produce the required reconciliation evidence.",
-       artifacts: if ask then [] else if evidence != null and evidence.syntheticOnly = true then
-         [{artifactId: uuid(), name: "reconciliation", parts: [{data: evidence}]}] else []})[1][1][1][1]""")
+       artifacts: if confirmation.valid != true or ask then [] else if grounded then
+         [{artifactId: uuid(), name: "reconciliation", parts: [{data: evidence}]}] else []})[1][1][1][1][1][1]""")
+    outcome = outcome.replace("EXPECTED", RECONCILIATION[1:].replace("confirmed.", "confirmation."))
+    outcome = outcome.replace("QUESTION", feel_str(CONFIRMATION_QUESTION))
     p.nodes["UpdateTask"].ext = p.nodes["UpdateTask"].ext.replace(q("={agent: agent}"), q("=" + outcome))
     path.write_text(p.xml())
     apply(path, AI, "AgentTools", [
@@ -209,6 +250,18 @@ def assets():
                     data["components"][0]["text"] = "### Review a synthetic card dispute\n\n" + \
                         "A BPMN client calls the remote AI agent through authenticated A2A 1.0. No real financial actions."
                     data["components"][1]["defaultValue"] = SAMPLE
+                elif data["id"] == "a2a-client-answer":
+                    components = [
+                        {"type": "text", "text": '="### Confirm synthetic claim\\n\\n" + reply.text'},
+                        {"type": "textarea", "key": "followUp", "label": "Additional context (optional)"},
+                    ]
+                    for key, label, kind in CONFIRMATION_FIELDS:
+                        field = {"type": kind, "key": key, "label": label, "validate": {"required": True}}
+                        if kind == "number":
+                            field["validate"]["min"] = 0
+                            field["decimalDigits"] = 2
+                        components.append(field)
+                    data = json.loads(form("a2a-client-answer", components))
                 output[DEMO / target.name] = (json.dumps(data, indent=2) + "\n").encode()
             else:
                 target.write_text(text)
@@ -222,7 +275,18 @@ def assets():
         client_path = directory / "a2a-client.bpmn"
         client_root = ET.parse(client_path).getroot()
         for script in client_root.iter(f"{{{Z}}}script"):
-            if script.get("resultVariable") == "reply":
+            if script.get("resultVariable") == "outgoing":
+                script.set("expression", original.one("""=context merge([
+                  {messageId: uuid(), role: "ROLE_USER", parts: concatenate(
+                    [{text: if followUp instance of string then followUp else question}],
+                    if reply != null and reply.taskId != null then
+                      [{data: {syntheticClaim: {merchant: claimMerchant, currency: claimCurrency,
+                        chargeAmounts: [claimFirstAmount, claimSecondAmount],
+                        expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}}]
+                    else [])},
+                  if reply != null and reply.taskId != null then
+                    {taskId: reply.taskId, contextId: reply.contextId} else {}])"""))
+            elif script.get("resultVariable") == "reply":
                 script.set("expression", script.get("expression").replace(
                     "toolNames:", 'reconciliation: if t != null and t.artifacts instance of list then '
                     '(for a in t.artifacts[item.name = "reconciliation"] return a.parts[1].data)[1] else null, toolNames:'))
@@ -234,6 +298,12 @@ def assets():
                        + "\\n\\nExpected: " + string(reply.reconciliation.expectedAmount) + " " + reply.reconciliation.currency
                        + "\\n\\nOvercharge: " + string(reply.reconciliation.overchargeAmount) + " " + reply.reconciliation.currency
                        + "\\n\\nNext step: " + reply.reconciliation.recommendation else "")"""))
+        answer = next(e for e in client_root.iter() if e.get("id") == "AnswerAgent")
+        extensions = answer.find(f"{{{B}}}extensionElements")
+        mapping = ET.SubElement(extensions, f"{{{Z}}}ioMapping")
+        for key in ["followUp"] + [f[0] for f in CONFIRMATION_FIELDS]:
+            ET.SubElement(mapping, f"{{{Z}}}input", source="=null", target=key)
+            ET.SubElement(mapping, f"{{{Z}}}output", source="=" + key, target=key)
         output[DEMO / client_path.name] = serialize(client_root)
         literal = Proc("a2a-literal-prompt", "Literal prompt regression fixture")
         literal.start("LiteralStart", "Input received", 150, 62)

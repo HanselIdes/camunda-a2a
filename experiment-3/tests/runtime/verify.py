@@ -286,6 +286,9 @@ try:
     message = {"jsonrpc": "2.0", "id": "proof-request", "method": "SendMessage",
                "params": {"message": {"messageId": "proof-message", "role": "ROLE_USER",
                                       "parts": [{"text": text}]}}}
+    if demo:
+        from confirmations import data_part, FORM_VALUES
+        message["params"]["message"]["parts"].append(data_part())
     deadline = time.monotonic() + 120
     while True:
         try:
@@ -343,7 +346,7 @@ try:
             "jsonrpc": "2.0", "id": "dispute-follow-up", "method": "SendMessage",
             "params": {"message": {"messageId": "dispute-complete", "role": "ROLE_USER",
                                    "taskId": waiting["id"], "contextId": waiting["contextId"],
-                                   "parts": [{"text": follow_up_text}]}}})
+                                   "parts": [{"text": follow_up_text}, data_part()]}}})
         assert status == 200 and "result" in response, (status, response)
         followed = await_task(response)
         check_reconciliation(followed)
@@ -366,10 +369,17 @@ try:
         assert status in (200, 201), (status, response)
         client_key = json.loads(response)["processInstanceKey"]
         deadline = time.monotonic() + 180
+        answered = False
         while True:
             status, response = request("/v2/user-tasks/search", {"filter": {"processInstanceKey": client_key}})
             assert status == 200, (status, response)
             tasks = json.loads(response)["items"]
+            answer = next((t for t in tasks if t["elementId"] == "AnswerAgent"), None)
+            if answer and not answered:
+                status, response = request(f"/v2/user-tasks/{answer['userTaskKey']}/completion",
+                                           {"variables": {**FORM_VALUES, "followUp": follow_up_text}})
+                assert status in (200, 204), (status, response)
+                answered = True
             review = next((t for t in tasks if t["elementId"] == "ShowResult"), None)
             if review:
                 break
@@ -377,6 +387,7 @@ try:
                 raise TimeoutError("BPMN client did not reach result review")
             time.sleep(1)
         client_rpc = read_root_variable(request, client_key, "rpc")
+        assert answered, "Supplied BPMN client bypassed explicit confirmation"
         client_task = client_rpc["result"].get("task", client_rpc["result"])
         check_reconciliation(client_task)
         assert client_task["id"] != task["id"] and client_task["contextId"] != task["contextId"], client_task
@@ -401,6 +412,8 @@ try:
         record_model_inputs()
         from prompt_inputs import run as run_prompt_inputs
         run_prompt_inputs(REPORTS, rpc, request, await_task)
+        from confirmations import run as run_confirmations
+        run_confirmations(ROOT, REPORTS, rpc, request, await_task)
     elif not conformance:
         assert task["status"]["message"]["parts"][0]["text"] == "8.8 authenticated echo", task
     status, fetched = rpc({"jsonrpc": "2.0", "id": "proof-get", "method": "GetTask",

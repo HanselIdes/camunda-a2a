@@ -35,7 +35,7 @@
     </bpmn:exclusiveGateway>
     <bpmn:scriptTask id="BuildMessage" name="Build message">
       <bpmn:extensionElements>
-        <zeebe:script expression="= context merge([{messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: [{text: if followUp != null then followUp else question}]}, if reply != null and reply.taskId != null then {taskId: reply.taskId, contextId: reply.contextId} else {}])" resultVariable="outgoing" />
+        <zeebe:script expression="=context merge([ {messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: if followUp instance of string then followUp else question}], if reply != null and reply.taskId != null then [{data: {syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}}] else [])}, if reply != null and reply.taskId != null then {taskId: reply.taskId, contextId: reply.contextId} else {}])" resultVariable="outgoing" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_MessageJoin_BuildMessage</bpmn:incoming>
       <bpmn:outgoing>Flow_BuildMessage_SendMessage</bpmn:outgoing>
@@ -86,6 +86,22 @@
       <bpmn:extensionElements>
         <zeebe:userTask />
         <zeebe:formDefinition formId="a2a-client-answer" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=null" target="followUp" />
+          <zeebe:output source="=followUp" target="followUp" />
+          <zeebe:input source="=null" target="claimMerchant" />
+          <zeebe:output source="=claimMerchant" target="claimMerchant" />
+          <zeebe:input source="=null" target="claimCurrency" />
+          <zeebe:output source="=claimCurrency" target="claimCurrency" />
+          <zeebe:input source="=null" target="claimFirstAmount" />
+          <zeebe:output source="=claimFirstAmount" target="claimFirstAmount" />
+          <zeebe:input source="=null" target="claimSecondAmount" />
+          <zeebe:output source="=claimSecondAmount" target="claimSecondAmount" />
+          <zeebe:input source="=null" target="claimExpectedAmount" />
+          <zeebe:output source="=claimExpectedAmount" target="claimExpectedAmount" />
+          <zeebe:input source="=null" target="claimSyntheticOnly" />
+          <zeebe:output source="=claimSyntheticOnly" target="claimSyntheticOnly" />
+        </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_ReplyState_AnswerAgent</bpmn:incoming>
       <bpmn:outgoing>Flow_AnswerAgent_MessageJoin</bpmn:outgoing>

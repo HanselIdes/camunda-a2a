@@ -8,14 +8,16 @@ Historical version gaps remain explicit. Marketplace import and external licensi
 are separate deferred release gates, not prototype acceptance.
 SaaS runtime support is unverified.
 
-**Current 8.9 candidate: overall FAIL.** Exact model-input preservation passes, but incomplete
+**Earlier 8.9 input-only repair: overall FAIL.** Exact model-input preservation passes, but incomplete
 leading-equals JSON input caused the real model to invent reconciliation fields and the demo to
 complete instead of asking for missing input. The existing synthetic-result guard does not validate
 that fields came from the request. This is a material missing-input/grounding limitation, not a
 formatting issue or a passed release gate. See the [versioned results and preserved failures](../verification/3634072-89/README.md).
+The current candidate adds explicit client confirmation and deterministic validation; it requires
+its own affected runtime checks before acceptance. No changed-form UI or SaaS verification is claimed.
 
 The demonstration is a BPMN client calling an A2A 1.0 JSON-RPC endpoint, which starts a server-side AI agent.
-The agent asks for missing input or calls a native BPMN tool to reconcile two synthetic charges.
+The agent asks for explicit structured confirmation or calls a native BPMN tool to reconcile two synthetic charges.
 The client receives the arithmetic evidence and displays it in a review form. No refund, real dispute decision,
 fraud determination, financial integration, document processing or unreleased prototype feature is included.
 
@@ -360,9 +362,30 @@ expected amount `49.95`, overcharge `49.95`, and recommendation `REQUEST_HUMAN_R
 The result form shows these values. Its status text is derived from actual tool evidence, rather than forwarding
 unvalidated model prose. Review and complete the final user task.
 
-For clarification, start with `Please review a synthetic card dispute.`. Answer the agent's question with
-`49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD.`.
-The same A2A task should complete with four history messages, not ask for already-supplied amounts again.
+Free text is preserved as context, not accepted as confirmed financial fields. Even a complete free-text
+example first reaches INPUT_REQUIRED. In the answer form, explicitly enter merchant `Northwind Electronics`,
+currency `USD`, first/second charge amounts `49.95`, expected order amount `49.95`, and check the synthetic-only
+confirmation. Additional free-text context is optional and is never used to overwrite those fields.
+There is no model-generated prefill. The client sends the entered fields as one `data.syntheticClaim` part
+on the same task/context. Completing that confirmation should produce the same nine-field result and
+four-message history. The changed form has schema/static validation, not an actual UI completion claim.
+
+External clients may submit this structured confirmation on the initial request for one-shot completion,
+or on a follow-up with the original `taskId` and `contextId`:
+
+```json
+{"data":{"syntheticClaim":{"merchant":"Northwind Electronics","currency":"USD","chargeAmounts":[49.95,49.95],"expectedAmount":49.95,"syntheticOnly":true}}}
+```
+
+Confirmation is validated afresh from the **current message only**: one data part, nonempty string
+merchant/currency, exactly two finite nonnegative numeric charge amounts, finite nonnegative expected
+amount, and boolean `syntheticOnly=true`. Strings, booleans or null are not coerced into amounts.
+Missing, partial, malformed or duplicate confirmation returns INPUT_REQUIRED with no reconciliation artifact.
+Nonfinite tokens such as NaN/Infinity are not valid JSON and must be rejected, not treated as amounts.
+Fields are not merged from older messages, another task or the model conversation. The no-argument
+reconciliation tool uses only this validated client object, never model-supplied financial arguments.
+The final publication guard also checks the tool result against those confirmed values.
+This confirms what the client explicitly supplied; it does not authenticate real-world financial facts.
 
 An external client can fetch the complete `A2A_AGENT_CARD_URL` and send A2A 1.0 `SendMessage` requests to the card's
 JSON-RPC interface using `X-A2A-Api-Key`. `GetTask` polls the returned task ID. Missing and invalid keys must be
@@ -397,7 +420,7 @@ curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_AGENT_CARD_URL"
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
   -H "X-A2A-Api-Key: $A2A_API_KEY" \
-  --data '{"jsonrpc":"2.0","id":"demo-send","method":"SendMessage","params":{"message":{"messageId":"demo-request-1","role":"ROLE_USER","parts":[{"text":"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."}]}}}'
+  --data '{"jsonrpc":"2.0","id":"demo-send","method":"SendMessage","params":{"message":{"messageId":"demo-request-1","role":"ROLE_USER","parts":[{"text":"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."},{"data":{"syntheticClaim":{"merchant":"Northwind Electronics","currency":"USD","chargeAmounts":[49.95,49.95],"expectedAmount":49.95,"syntheticOnly":true}}}]}}}'
 ```
 
 Read `result.task.id` from the response, set `TASK_ID` to that value and poll:

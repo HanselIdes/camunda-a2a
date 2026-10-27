@@ -29,7 +29,7 @@
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
           <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
           <zeebe:input source="=0" target="provider.openaiCompatible.model.parameters.temperature" />
-          <zeebe:input source="=&quot;You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.&quot;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=&quot;You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.&quot;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=promptText" target="data.userPrompt.prompt" />
           <zeebe:input source="=agent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
@@ -50,19 +50,15 @@
         </zeebe:taskHeaders>
         <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult&#10;}" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_EncodePrompt_AgentTools</bpmn:incoming>
+      <bpmn:incoming>Flow_ValidateConfirmation_AgentTools</bpmn:incoming>
       <bpmn:outgoing>Flow_AgentTools_UpdateTask</bpmn:outgoing>
       <bpmn:scriptTask id="review_duplicate_charge" name="Reconcile synthetic charges">
-        <bpmn:documentation>Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.</bpmn:documentation>
+        <bpmn:documentation>Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:ioMapping>
-            <zeebe:input source="=fromAi(toolCall.merchant, &quot;Merchant named in the synthetic claim&quot;, &quot;string&quot;)" target="merchant" />
-            <zeebe:input source="=fromAi(toolCall.currency, &quot;Currency code supplied by the client&quot;, &quot;string&quot;)" target="currency" />
-            <zeebe:input source="=fromAi(toolCall.firstAmount, &quot;First charge amount&quot;, &quot;number&quot;)" target="firstAmount" />
-            <zeebe:input source="=fromAi(toolCall.secondAmount, &quot;Second charge amount&quot;, &quot;number&quot;)" target="secondAmount" />
-            <zeebe:input source="=fromAi(toolCall.expectedAmount, &quot;Expected amount for the single order&quot;, &quot;number&quot;)" target="expectedAmount" />
+            <zeebe:input source="=confirmation" target="confirmed" />
           </zeebe:ioMapping>
-          <zeebe:script expression="={ merchant: merchant, currency: currency, chargeAmounts: [firstAmount, secondAmount], expectedAmount: expectedAmount, paidAmount: decimal(firstAmount + secondAmount, 2), overchargeAmount: decimal(max([firstAmount + secondAmount - expectedAmount, 0]), 2), matchingAmounts: firstAmount = expectedAmount and secondAmount = expectedAmount, recommendation: &quot;REQUEST_HUMAN_REVIEW&quot;, syntheticOnly: true}" resultVariable="toolCallResult" />
+          <zeebe:script expression="=if confirmed.valid = true then { merchant: confirmed.claim.merchant, currency: confirmed.claim.currency, chargeAmounts: confirmed.claim.chargeAmounts, expectedAmount: confirmed.claim.expectedAmount, paidAmount: decimal(sum(confirmed.claim.chargeAmounts), 2), overchargeAmount: decimal(max([sum(confirmed.claim.chargeAmounts) - confirmed.claim.expectedAmount, 0]), 2), matchingAmounts: every amount in confirmed.claim.chargeAmounts satisfies amount = confirmed.claim.expectedAmount, recommendation: &quot;REQUEST_HUMAN_REVIEW&quot;, syntheticOnly: true} else {confirmationRequired: true, instruction: &quot;Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation.&quot;}" resultVariable="toolCallResult" />
           <zeebe:properties>
             <zeebe:property name="a2a:tags" value="synthetic,card-dispute,reconciliation" />
             <zeebe:property name="a2a:examples" value="Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool." />
@@ -79,7 +75,7 @@
         <zeebe:calledElement processId="a2a-task-update" propagateAllChildVariables="false" propagateAllParentVariables="false" />
         <zeebe:ioMapping>
           <zeebe:input source="=task" target="task" />
-          <zeebe:input source="=(for reply in [agent.responseText] return for ask in [reply instance of string and starts with(trim(reply), &quot;NEED_INPUT:&quot;)] return for records in [flatten(for message in agent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;review_duplicate_charge&quot;])] return for evidence in [if count(records) &gt; 0 then records[count(records)].content else null] return {state: if ask then &quot;TASK_STATE_INPUT_REQUIRED&quot; else if evidence != null and evidence.syntheticOnly = true then &quot;TASK_STATE_COMPLETED&quot; else &quot;TASK_STATE_FAILED&quot;, text: if ask then trim(substring(trim(reply), 12)) else if evidence != null and evidence.syntheticOnly = true then &quot;Synthetic charges reconciled for human review. No refund or financial action was performed.&quot; else &quot;The agent did not produce the required reconciliation evidence.&quot;, artifacts: if ask then [] else if evidence != null and evidence.syntheticOnly = true then [{artifactId: uuid(), name: &quot;reconciliation&quot;, parts: [{data: evidence}]}] else []})[1][1][1][1]" target="outcome" />
+          <zeebe:input source="=(for reply in [agent.responseText] return for ask in [reply instance of string and starts with(trim(reply), &quot;NEED_INPUT:&quot;)] return for records in [flatten(for message in agent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;review_duplicate_charge&quot;])] return for evidence in [if count(records) &gt; 0 then records[count(records)].content else null] return for expected in [if confirmation.valid = true then { merchant: confirmation.claim.merchant, currency: confirmation.claim.currency, chargeAmounts: confirmation.claim.chargeAmounts, expectedAmount: confirmation.claim.expectedAmount, paidAmount: decimal(sum(confirmation.claim.chargeAmounts), 2), overchargeAmount: decimal(max([sum(confirmation.claim.chargeAmounts) - confirmation.claim.expectedAmount, 0]), 2), matchingAmounts: every amount in confirmation.claim.chargeAmounts satisfies amount = confirmation.claim.expectedAmount, recommendation: &quot;REQUEST_HUMAN_REVIEW&quot;, syntheticOnly: true} else null] return for grounded in [expected != null and evidence = expected] return {state: if confirmation.valid != true or ask then &quot;TASK_STATE_INPUT_REQUIRED&quot; else if grounded then &quot;TASK_STATE_COMPLETED&quot; else &quot;TASK_STATE_FAILED&quot;, text: if confirmation.valid != true then &quot;Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation.&quot; else if ask then trim(substring(trim(reply), 12)) else if grounded then &quot;Synthetic charges reconciled for human review. No refund or financial action was performed.&quot; else &quot;The agent did not produce the required reconciliation evidence.&quot;, artifacts: if confirmation.valid != true or ask then [] else if grounded then [{artifactId: uuid(), name: &quot;reconciliation&quot;, parts: [{data: evidence}]}] else []})[1][1][1][1][1][1]" target="outcome" />
           <zeebe:output source="=task" target="task" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
@@ -122,10 +118,17 @@
     </bpmn:endEvent>
     <bpmn:scriptTask id="EncodePrompt" name="Join client input">
       <bpmn:extensionElements>
-        <zeebe:script expression="=string join(for part in req.message.parts return if part.text != null then part.text else &quot;&quot;, &quot; &quot;)" resultVariable="promptText" />
+        <zeebe:script expression="=if count(req.message.parts[item.text instance of string]) = 0 then &quot;Review the explicit client confirmation.&quot; else string join(for part in req.message.parts return if part.text != null then part.text else &quot;&quot;, &quot; &quot;)" resultVariable="promptText" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_NextTurn_EncodePrompt</bpmn:incoming>
-      <bpmn:outgoing>Flow_EncodePrompt_AgentTools</bpmn:outgoing>
+      <bpmn:outgoing>Flow_EncodePrompt_ValidateConfirmation</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="ValidateConfirmation" name="Validate client confirmation">
+      <bpmn:extensionElements>
+        <zeebe:script expression="={ parts: if req.message.parts instance of list then req.message.parts[item instance of context and item.data != null] else [], claim: if count(parts) = 1 then if parts[1].data instance of context then parts[1].data.syntheticClaim else null else null, validAmount: function(amount) if amount instance of number then amount &gt;= 0 and amount - amount = 0 else false, valid: if claim instance of context then if claim.merchant instance of string and claim.currency instance of string then if string length(trim(claim.merchant)) &gt; 0 and string length(trim(claim.currency)) &gt; 0 and claim.syntheticOnly = true then if claim.chargeAmounts instance of list then count(claim.chargeAmounts) = 2 and (every amount in claim.chargeAmounts satisfies validAmount(amount)) and validAmount(claim.expectedAmount) else false else false else false else false, result: {valid: valid = true, claim: if valid = true then {merchant: claim.merchant, currency: claim.currency, chargeAmounts: claim.chargeAmounts, expectedAmount: claim.expectedAmount, syntheticOnly: true} else null} }.result" resultVariable="confirmation" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_EncodePrompt_ValidateConfirmation</bpmn:incoming>
+      <bpmn:outgoing>Flow_ValidateConfirmation_AgentTools</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_TaskReceived_NextTurn" sourceRef="TaskReceived" targetRef="NextTurn" />
     <bpmn:sequenceFlow id="Flow_AgentTools_UpdateTask" sourceRef="AgentTools" targetRef="UpdateTask" />
@@ -138,7 +141,8 @@
     <bpmn:sequenceFlow id="Flow_AgentError_ReportFailure" sourceRef="AgentError" targetRef="ReportFailure" />
     <bpmn:sequenceFlow id="Flow_ReportFailure_TaskFailed" sourceRef="ReportFailure" targetRef="TaskFailed" />
     <bpmn:sequenceFlow id="Flow_NextTurn_EncodePrompt" sourceRef="NextTurn" targetRef="EncodePrompt" />
-    <bpmn:sequenceFlow id="Flow_EncodePrompt_AgentTools" sourceRef="EncodePrompt" targetRef="AgentTools" />
+    <bpmn:sequenceFlow id="Flow_EncodePrompt_ValidateConfirmation" sourceRef="EncodePrompt" targetRef="ValidateConfirmation" />
+    <bpmn:sequenceFlow id="Flow_ValidateConfirmation_AgentTools" sourceRef="ValidateConfirmation" targetRef="AgentTools" />
     <bpmn:subProcess id="A2ACancellation" name="Cancel this A2A task" triggeredByEvent="true">
       <bpmn:startEvent id="A2ACancelRequested" name="Cancellation requested" isInterrupting="true">
         <bpmn:outgoing>A2ACancelToState</bpmn:outgoing>
@@ -193,6 +197,9 @@
       <bpmndi:BPMNShape id="EncodePrompt_di" bpmnElement="EncodePrompt">
         <dc:Bounds x="340" y="238" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ValidateConfirmation_di" bpmnElement="ValidateConfirmation">
+        <dc:Bounds x="340" y="340" width="100" height="80" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AgentError_di" bpmnElement="AgentError">
         <dc:Bounds x="890" y="382" width="36" height="36" />
       </bpmndi:BPMNShape>
@@ -240,9 +247,15 @@
         <di:waypoint x="310" y="278" />
         <di:waypoint x="340" y="278" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_EncodePrompt_AgentTools_di" bpmnElement="Flow_EncodePrompt_AgentTools">
+      <bpmndi:BPMNEdge id="Flow_EncodePrompt_ValidateConfirmation_di" bpmnElement="Flow_EncodePrompt_ValidateConfirmation">
         <di:waypoint x="440" y="278" />
-        <di:waypoint x="485" y="278" />
+        <di:waypoint x="390" y="278" />
+        <di:waypoint x="390" y="380" />
+        <di:waypoint x="340" y="380" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ValidateConfirmation_AgentTools_di" bpmnElement="Flow_ValidateConfirmation_AgentTools">
+        <di:waypoint x="440" y="380" />
+        <di:waypoint x="485" y="380" />
         <di:waypoint x="485" y="260" />
         <di:waypoint x="530" y="260" />
       </bpmndi:BPMNEdge>

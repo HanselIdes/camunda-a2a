@@ -110,12 +110,14 @@ def run(root, reports, rpc, request, deploy, env, stack):
         return response
 
     def send(text):
+        from confirmations import data_part
         identifier = str(uuid.uuid4())
         status, body = request("/v2/process-instances", {
             "processDefinitionId": "a2a-rpc", "variables": {
                 "hdr": {"content-type": "application/json", "a2a-version": "1.0"},
                 "rpc": {"jsonrpc": "2.0", "id": identifier, "method": "SendMessage", "params": {
-                    "message": {"messageId": identifier, "role": "ROLE_USER", "parts": [{"text": text}]},
+                    "message": {"messageId": identifier, "role": "ROLE_USER",
+                                "parts": [{"text": text}, data_part()]},
                     "configuration": {"returnImmediately": True}}}}})
         assert status == 200, ("model-fault handler start", status)
         response = read_root_variable(request, json.loads(body)["processInstanceKey"], "rpcResponse", seconds=45)
