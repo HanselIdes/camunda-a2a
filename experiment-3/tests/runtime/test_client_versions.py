@@ -11,14 +11,18 @@ ROOT = Path(__file__).resolve().parents[2]
 class ClientVersionProofTest(unittest.TestCase):
     def request(self, path, body=None, timeout=None):
         if path == "/v2/process-instances":
-            self.versions.append(body["variables"]["response"]["body"]["supportedInterfaces"][0]["protocolVersion"])
-            return 200, json.dumps({"processInstanceKey": "100"})
+            if body["processDefinitionId"] == "a2a-client-version-proof":
+                self.versions.append(body["variables"]["response"]["body"]["supportedInterfaces"][0]["protocolVersion"])
+                return 200, json.dumps({"processInstanceKey": "100"})
+            return 200, json.dumps({"processInstanceKey": "200"})
         name = body["filter"]["name"]
         if name == "rpcResponse":
             values = [{"processInstanceKey": str(index), "scopeKey": str(index),
                        "value": json.dumps({"result": {"id": "test-task"}})} for index in (1, 2)]
         elif name == "versionResult":
             values = [{"value": json.dumps({"agentUrl": "https://example.test/a2a"})}]
+        elif name == "rpc" and body["filter"]["processInstanceKey"] == "200":
+            values = [{"value": json.dumps({"result": {"id": "test-task"}})}]
         elif name == "hdr":
             values = [{"value": json.dumps({"a2a-version": self.header})}]
         else:

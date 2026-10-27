@@ -1,5 +1,6 @@
 """Engine-evaluated packaged-client patch handling plus native received headers."""
 import json
+from copy import deepcopy
 import time
 import xml.etree.ElementTree as ET
 
@@ -24,6 +25,16 @@ def run(root, reports, request, deploy, task_id, card):
     ET.SubElement(process, f"{{{B}}}endEvent", id="End")
     for source, target in (("Start", "EvaluatePackagedMapping"), ("EvaluatePackagedMapping", "End")):
         ET.SubElement(process, f"{{{B}}}sequenceFlow", id=source + target, sourceRef=source, targetRef=target)
+    poll = ET.SubElement(definitions, f"{{{B}}}process", id="a2a-client-poll-proof", isExecutable="true")
+    ET.SubElement(poll, f"{{{B}}}startEvent", id="PollStart")
+    connector = deepcopy(next(item for item in model.getroot().iter() if item.get("id") == "GetTask"))
+    for element in list(connector):
+        if element.tag in (f"{{{B}}}incoming", f"{{{B}}}outgoing"):
+            connector.remove(element)
+    poll.append(connector)
+    ET.SubElement(poll, f"{{{B}}}endEvent", id="PollEnd")
+    for source, target in (("PollStart", "GetTask"), ("GetTask", "PollEnd")):
+        ET.SubElement(poll, f"{{{B}}}sequenceFlow", id=source + target, sourceRef=source, targetRef=target)
     fixture = reports / "nonshipping-client-version-proof.bpmn"
     ET.ElementTree(definitions).write(fixture, encoding="utf-8", xml_declaration=True)
     deploy([fixture])
@@ -40,6 +51,12 @@ def run(root, reports, request, deploy, task_id, card):
             baseline = result
         assert result == baseline and result["agentUrl"] == card["supportedInterfaces"][0]["url"], result
         cases.append({"advertisedVersion": version, "sameSelectedInterfaceAndContext": True})
+    status, body = request("/v2/process-instances", {
+        "processDefinitionId": "a2a-client-poll-proof", "variables": {
+            "agentUrl": card["supportedInterfaces"][0]["url"], "reply": {"taskId": task_id}}})
+    assert status == 200, ("packaged polling connector proof start", status)
+    polled = read_root_variable(request, json.loads(body)["processInstanceKey"], "rpc")
+    assert polled["result"]["id"] == task_id, polled
     received = []
     deadline = time.monotonic() + 15
     while True:
@@ -69,5 +86,6 @@ def run(root, reports, request, deploy, task_id, card):
     (reports / "bpmn-client-versions.json").write_text(json.dumps({
         "verdict": "PASS", "patchNegotiation": cases, "receivedRequestVersions": received,
         "patchProofScope": "Packaged discovery expression evaluated by the actual engine with patch-varied cards.",
-        "headerProofScope": "Actual protocol root headers from supplied BPMN client requests, matched by result task ID.",
+        "headerProofScope": "Actual protocol root headers from supplied BPMN client SendMessage and its exact "
+                            "GetTask connector in an isolated stock-BPMN fixture, matched by result task ID.",
     }, indent=2) + "\n")
