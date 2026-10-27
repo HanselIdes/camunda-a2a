@@ -22,7 +22,7 @@ fraud determination, financial integration, document processing or unreleased pr
 | Client HTTP template | `io.camunda.connectors.HttpJson.v2`, version 12                                                                      |
 | Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
 | Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
-| Engine exporter      | Self-Managed 8.8.21 only: explicit CamundaExporter class and `bulk.delay=1`; see below                                 |
+| Engine exporter      | Self-Managed 8.8.21 only: explicit CamundaExporter class and `bulk.delay=1`; see below                               |
 
 This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 proof. Other combinations and model
 providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
@@ -42,10 +42,15 @@ exact real-model outcome checks; the complete Maven suite finished with 172 test
 
 The TCK does not test 16 MUST requirements here: card signing (`CARD-SIGN-001` through `004`), TLS
 (`AUTH-TLS-001`), server authentication (`AUTH-SERVER-002`), in-task authorization (`AUTH-INTASK-001` through
-`004`), authorization scopes (`AUTH-SCOPE-001` through `003`), version semantics (`VER-SERVER-001`) and two
-client version requirements (`VER-CLIENT-001`, `VER-CLIENT-002`). Native verification separately checks
+`004`), authorization scopes (`AUTH-SCOPE-001` through `003`), version semantics (`VER-SERVER-001`), client
+headers (`VER-CLIENT-001`) and client/server patch negotiation (`VER-CLIENT-002`). Native verification separately checks
 certificate validation and missing/invalid API-key rejection; those are not TCK passes.
 The card is unsigned. One shared key supplies no per-caller task scoping.
+The [individual dispositions](../verification/96357f5/requirement-dispositions.json) distinguish inactive signing
+and in-task credential-acquisition features from applicable server and shipped-client obligations.
+Several applicable rows remain open, including Major.Minor version matching; the scoped TCK result does not
+close the requirement that every applicable mandatory requirement passes. The historical gate's client-side
+label for `VER-CLIENT-002` does not remove its server-side obligation.
 
 Across the three runs, raw Extensions-call latency was **1.630 / 1.764 / 2.221 seconds**
 (min/median/max), against its unchanged five-second read timeout. Normal RPC latency across 195 requests

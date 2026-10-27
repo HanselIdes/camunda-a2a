@@ -1,0 +1,173 @@
+{
+  "testedSource": "96357f562b36774d573c1b51187a86101bd72c14",
+  "scope": "The 16 MUST requirements not executed by the pinned TCK; supplemental evidence and open gates, not additional TCK passes.",
+  "overallStatus": "OPEN",
+  "registrySource": "https://github.com/a2aproject/a2a-tck/tree/263b9cfaf16a554bdfb166a7ba5b67716e946349/tck/requirements",
+  "historicalAudit": "gate.json is preserved unchanged. Its client-side classification of VER-CLIENT-002 does not establish inapplicability to the server.",
+  "evidence": {
+    "native": {
+      "record": "summary.json",
+      "pointers": ["/sourceObservation", "/versions", "/deploymentSettings", "/securityScope"],
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/tests/runtime/verify.py",
+      "boundary": "Direct Connectors HTTPS with a trusted isolated certificate; engine HTTP is confined to the local proof deployment. No production-use permission or public-CA deployment is established."
+    },
+    "sdk": {
+      "record": "summary.json",
+      "pointer": "/sdk",
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/tests/runtime/independent_client.py"
+    },
+    "engineCore": {
+      "record": "summary.json",
+      "pointer": "/fullSuiteReports/dev.hansel.a2a.three.CoreProtocolTest",
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/tests/src/test/java/dev/hansel/a2a/three/CoreProtocolTest.java",
+      "boundary": "Actual process-test engine with the Harness HTTP-connector adapter, not native stock-Connectors evidence."
+    },
+    "engineLegacyValidation": {
+      "record": "summary.json",
+      "pointer": "/fullSuiteReports/dev.hansel.a2a.three.ValidationTest",
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/tests/src/test/java/dev/hansel/a2a/three/ValidationTest.java",
+      "boundary": "Tests the original nonshipping protocol, not the packaged Basic profile; cannot close a packaged-profile gate."
+    },
+    "card": {
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/blueprint/demo/a2a-card.bpmn"
+    },
+    "bpmnClient": {
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/blueprint/demo/a2a-client.bpmn"
+    },
+    "protocol": {
+      "source": "https://github.com/HanselIdes/camunda-a2a/blob/96357f562b36774d573c1b51187a86101bd72c14/experiment-3/blueprint/profiles/basic/a2a-protocol.bpmn"
+    }
+  },
+  "requirements": [
+    {
+      "id": "CARD-SIGN-001",
+      "obligation": "Canonicalize a card with JCS before signing.",
+      "disposition": "not-applicable-conditional",
+      "reason": "The shipped card is unsigned; there is no signing operation or signed-card claim.",
+      "evidence": ["card"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "CARD-SIGN-002",
+      "obligation": "Exclude signatures from the content being signed.",
+      "disposition": "not-applicable-conditional",
+      "reason": "No card content is signed. This is not a tested signature-payload implementation.",
+      "evidence": ["card"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "CARD-SIGN-003",
+      "obligation": "Include alg and kid in a JWS protected header.",
+      "disposition": "not-applicable-conditional",
+      "reason": "No JWS or signed card is produced.",
+      "evidence": ["card"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "CARD-SIGN-004",
+      "obligation": "Do not use expired or revoked keys for signature verification.",
+      "disposition": "not-applicable-conditional",
+      "reason": "The supplied client consumes the unsigned card without a signature verifier or signing-key trust claim. It is not a signed-card verification client.",
+      "evidence": ["card", "bpmnClient"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-TLS-001",
+      "obligation": "Encrypt production A2A transport.",
+      "disposition": "verified-native-configuration",
+      "reason": "Native discovery/RPC and official SDK calls use HTTPS with certificate and hostname verification. This establishes the transport property only for the recorded non-production configuration, not production eligibility or every adopter deployment.",
+      "evidence": ["native", "sdk"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-SERVER-002",
+      "obligation": "Authenticate every request according to the declared requirements.",
+      "disposition": "partial-open",
+      "reason": "The native run rejects missing and invalid keys for SendMessage and accepts the declared key; SDK task operations succeed with the key. Negative key checks across all task operations, including attempted mutation, are still required.",
+      "evidence": ["native", "sdk", "protocol", "card"],
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-INTASK-001",
+      "obligation": "Track an operation requesting client authorization with a Task.",
+      "disposition": "not-applicable-conditional",
+      "reason": "Neither shipped business example requests additional client authorization. Model/provider and engine credentials are configured out of band before execution; clarification requests are business input, not authorization requests.",
+      "evidence": ["native", "sdk"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-INTASK-002",
+      "obligation": "Use TASK_STATE_AUTH_REQUIRED when requesting client authorization.",
+      "disposition": "not-applicable-conditional",
+      "reason": "There is no in-task authorization-acquisition flow in the shipped examples. INPUT_REQUIRED clarification is not evidence for AUTH_REQUIRED.",
+      "evidence": ["native", "sdk"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-INTASK-003",
+      "obligation": "Explain requested authorization in a task status message unless negotiated otherwise.",
+      "disposition": "not-applicable-conditional",
+      "reason": "No client-authorization request is made. Ordinary status messages do not establish this conditional behavior.",
+      "evidence": ["native", "sdk"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-INTASK-004",
+      "obligation": "Arrange out-of-band receipt of in-task credentials unless otherwise negotiated.",
+      "disposition": "not-applicable-conditional",
+      "reason": "No in-task credentials are requested or accepted. Static deployment secrets and the no-persisted-credentials check are not an implementation of delegated credential acquisition.",
+      "evidence": ["native"],
+      "blocksFinalAcceptance": false
+    },
+    {
+      "id": "AUTH-SCOPE-001",
+      "obligation": "Authorize every protocol operation.",
+      "disposition": "partial-open",
+      "reason": "The declared model is one shared-key principal authorized for this agent's tasks, not per-caller isolation. The common webhook enforces that key, but the native negative-operation matrix is incomplete; this is not N/A.",
+      "evidence": ["native", "protocol", "card"],
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-SCOPE-002",
+      "obligation": "Scope results to the caller's authorized boundary.",
+      "disposition": "partial-open",
+      "reason": "Native/SDK evidence checks distinct task/context/history results and context-filtered listing. CoreProtocolTest#anotherAgentsTaskCannotBeReadOrChanged checks the selected-process boundary with the Harness adapter. Native two-agent boundary/load evidence remains open; a shared key does not make this server obligation inapplicable.",
+      "evidence": ["native", "sdk", "engineCore", "protocol"],
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "AUTH-SCOPE-003",
+      "obligation": "Do not disclose unauthorized resource existence.",
+      "disposition": "partial-open",
+      "reason": "The engine-backed core test returns TASK_NOT_FOUND for another agent's task, cancel and follow-up. Native comparisons for known/unknown tasks with missing/invalid keys and foreign-agent IDs remain required.",
+      "evidence": ["engineCore", "native", "protocol"],
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "VER-SERVER-001",
+      "obligation": "Apply the requested Major.Minor version semantics.",
+      "disposition": "unmet",
+      "reason": "The packaged Parse script accepts any version starting with 1., although the card advertises only 1.0. Successful 1.0 native/SDK flows do not prove rejection of unsupported 1.x minors. Correct version matching and exact-profile evidence are required.",
+      "evidence": ["protocol", "card", "native", "sdk"],
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "VER-CLIENT-001",
+      "obligation": "Send A2A-Version on each client request.",
+      "disposition": "client-evidence-partial",
+      "reason": "This is a client obligation, not a server N/A for the entire release: the supplied BPMN client ships too. Its task-request header mappings explicitly send 1.0 and its native flow passed. Per-request wire-header evidence, including the independent SDK, has not been recorded.",
+      "evidence": ["bpmnClient", "native", "sdk"],
+      "blocksFinalAcceptance": true
+    },
+    {
+      "id": "VER-CLIENT-002",
+      "obligation": "Ignore patch numbers in client and server version negotiation.",
+      "disposition": "shared-client-server-evidence-open",
+      "reason": "Despite its ID, the pinned registry explicitly applies this requirement to clients and servers. The legacy ValidationTest accepts 1.0.2, but does not test the packaged profile. Exact-profile patch-equivalence and applicable client negotiation checks are outstanding.",
+      "evidence": ["engineLegacyValidation", "protocol", "bpmnClient", "sdk"],
+      "blocksFinalAcceptance": true
+    }
+  ],
+  "applicabilityChanges": "Signing or client-authorization acquisition added by an adopter activates the corresponding conditional obligations and requires separate evidence.",
+  "acceptanceConclusion": "The scoped TCK MUST gate passed. Every applicable mandatory requirement has not yet been established; the open rows still block final acceptance."
+}
