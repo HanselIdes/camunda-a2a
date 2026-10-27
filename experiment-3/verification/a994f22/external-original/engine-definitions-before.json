@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "name": "Synthetic card-dispute A2A agent",
+      "resourceName": "a2a-card-dispute.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-card-dispute",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686101",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A Agent Card",
+      "resourceName": "a2a-card.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-card",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686102",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A client: ask the agent",
+      "resourceName": "a2a-client.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-client",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686106",
+      "hasStartForm": true
+    },
+    {
+      "name": "A2A JSON-RPC handler",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-rpc",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686107",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A task update",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-task-update",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686108",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A await visible state",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-await",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686109",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A correlate message to task",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-correlate",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686110",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A collect indexed task pages",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 1,
+      "processDefinitionId": "a2a-list-collect",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686111",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A client: ask the agent",
+      "resourceName": "a2a-client.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-client",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686199",
+      "hasStartForm": true
+    },
+    {
+      "name": "A2A Agent Card",
+      "resourceName": "a2a-card.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-card",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686201",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A JSON-RPC handler",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-rpc",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686202",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A task update",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-task-update",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686203",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A await visible state",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-await",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686204",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A correlate message to task",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-correlate",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686205",
+      "hasStartForm": false
+    },
+    {
+      "name": "A2A collect indexed task pages",
+      "resourceName": "a2a-protocol.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-list-collect",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686206",
+      "hasStartForm": false
+    },
+    {
+      "name": "Synthetic card-dispute A2A agent",
+      "resourceName": "a2a-card-dispute.bpmn",
+      "version": 2,
+      "processDefinitionId": "a2a-card-dispute",
+      "tenantId": "<default>",
+      "processDefinitionKey": "2251799813686209",
+      "hasStartForm": false
+    }
+  ],
+  "page": {
+    "totalItems": 16,
+    "hasMoreTotalItems": false,
+    "startCursor": "WyIyMjUxNzk5ODEzNjg2MTAxIl0=",
+    "endCursor": "WyIyMjUxNzk5ODEzNjg2MjA5Il0="
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "verdict": "PASS_EXACT_UPDATED_GUIDE_COMMANDS",
+  "source": "a994f22f03ae5e6a90155607ebadbf8ce97338bb",
+  "sourceClean": true,
+  "guideSha256": "4464644594c747967b984e1fb06b802bc3399027bcd8a6b2864c4d9a21f1c311",
+  "timestamp": "2026-10-27T12:50:48.910328+00:00",
+  "taskId": "01a17d69-baa4-7503-ba92-4ac14fc2c9f1",
+  "contextId": "01a17d69-baa3-749d-a35a-d7a5a8ddfef3",
+  "expected": {
+    "merchant": "Northwind Electronics",
+    "currency": "USD",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "expectedAmount": 49.95,
+    "paidAmount": 99.9,
+    "overchargeAmount": 49.95,
+    "matchingAmounts": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "syntheticOnly": true
+  },
+  "observed": {
+    "currency": "USD",
+    "matchingAmounts": true,
+    "merchant": "Northwind Electronics",
+    "overchargeAmount": 49.95,
+    "syntheticOnly": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "paidAmount": 99.9,
+    "expectedAmount": 49.95
+  },
+  "initialState": "TASK_STATE_COMPLETED",
+  "pollRequests": 1,
+  "labConfiguration": "Exact documented Bash CA/--resolve array; valid CA/hostname checks",
+  "mutations": "Only the documented external task submission; no config/deploy/recovery/form actions",
+  "scope": "External setup check only; no form-UI or human-usability acceptance"
+}

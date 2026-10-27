@@ -1,0 +1,7 @@
+{
+  "source": "owned runtime docker compose logs --no-color --since35m connectors",
+  "completeCapturedLogSha256": "5d6c87898e4dc439598e10df1b2b9963f85bac205c442ad1581b95421e04ae03",
+  "firstLine": 489,
+  "lastLine": 574,
+  "transformation": "contiguous excerpt; generated credentials redacted before capture; full log retained in private session artifacts"
+}

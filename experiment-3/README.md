@@ -121,7 +121,8 @@ three scoped TCK MUST-gate repeats, native failures/recovery, independent client
 The [timed AI-agent execution report](verification/597b152/adoption.md) records 139 seconds by a review
 session with prior repository knowledge, not a fresh human adopter or usability study.
 Neither establishes full A2A conformance or support for unverified version combinations.
-Editor deployment and runtime form completion remain incomplete. The
+Desktop deployment and exact external calls have [updated evidence](verification/a994f22/README.md);
+the combined editor/runtime-form criterion remains incomplete. The
 [prototype evidence matrix](verification/32f8d4e/prototype-evidence.md) records relevant-runtime gaps and
 partial Desktop checks. Fresh-adopter timing and human usability are not prototype criteria;
 actual Marketplace-to-Modeler import and external legal/eligibility approval remain deferred release gates.

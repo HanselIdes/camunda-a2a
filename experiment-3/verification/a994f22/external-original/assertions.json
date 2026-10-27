@@ -1,0 +1,41 @@
+{
+  "verdict": "PASS_EXTERNAL_SETUP_ONLY",
+  "source": "841468ecc2ff40e6fb7bf0fea381978833812ce9",
+  "startedAt": "2026-10-27T12:46:59.385369+00:00",
+  "completedAt": "2026-10-27T12:47:05.875654+00:00",
+  "taskId": "01a17d66-513e-7a39-8081-3aafefb73f59",
+  "contextId": "01a17d66-513e-7c6d-b517-85ab32da9e54",
+  "expectedReconciliation": {
+    "merchant": "Northwind Electronics",
+    "currency": "USD",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "expectedAmount": 49.95,
+    "paidAmount": 99.9,
+    "overchargeAmount": 49.95,
+    "matchingAmounts": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "syntheticOnly": true
+  },
+  "observedReconciliation": {
+    "currency": "USD",
+    "matchingAmounts": true,
+    "merchant": "Northwind Electronics",
+    "overchargeAmount": 49.95,
+    "syntheticOnly": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "paidAmount": 99.9,
+    "expectedAmount": 49.95
+  },
+  "forms": "not touched; Hub owns visual runtime checks",
+  "deployment": "none by this verifier; original resources deployed through actual editors",
+  "dnsAdaptation": "client-only curl --resolve; no global DNS/hosts mutation",
+  "tls": "certificate and hostname verification enabled with validation CA",
+  "noTimingClaim": true
+}

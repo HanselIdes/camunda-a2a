@@ -3,7 +3,7 @@
 **Non-production only; not release-ready.** This unmaintained community blueprint is subject to the
 [license and licensing limitations](../../README.md#license-and-support). This is a functional prototype:
 informed-agent checks are allowed; no adoption-time threshold or human-usability claim applies.
-Editor deployment and runtime form checks remain incomplete. Marketplace import and external
+Runtime form checks and the combined editor criterion remain incomplete. Marketplace import and external
 licensing/eligibility approval are separate deferred release gates, not prototype acceptance.
 SaaS runtime support is unverified.
 
@@ -30,8 +30,9 @@ This is an **8.8 engine with 8.9 Connectors** configuration, not matched-8.8 pro
 providers are not established by this result. The local check uses an isolated, disposable cluster and synthetic data.
 The [cross-surface evidence matrix](../verification/32f8d4e/prototype-evidence.md) records exact known
 versions, unknowns, included assets and per-outcome evidence gaps. Desktop Modeler 5.51.1 import/render,
-template configuration, form preview and save/reopen have partial evidence; editor deployment,
-runtime form-UI completion and the supported Self-Managed Hub workflow remain separate checks.
+template configuration, form preview, save/reopen and actual eight-resource deployment have
+[updated evidence](../verification/a994f22/README.md). External exact guide commands also passed.
+Runtime form-UI completion and the complete supported Self-Managed Hub workflow remain separate checks.
 
 The execution-thread setting matters when client and server use the same Connectors runtime: a synchronous
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
@@ -288,7 +289,9 @@ at its root (or use **File > New Process Application**). Open a diagram from thi
 **Open process application deployment**. Confirm that the dialog says **8 files will be deployed**.
 Deploying a standalone diagram does not automatically include the other seven resources.
 Do not include roundtrip copies, archived resources or both profiles in this group.
-Desktop 5.51.1 grouping and the eight-file dialog have been observed; submission/runtime verification is pending.
+Desktop 5.51.1 submitted this eight-file deployment on the declared runtime. Engine readback matches seven
+process XMLs and the validation DMN exactly; the client XML differs only by an omitted final newline.
+Runtime form-UI completion remains a separate check.
 
 Deploy all eight BPMN/DMN/form resources together, so the forms and decision are available to the processes.
 No generator execution, protocol editing, custom worker, nginx route or standard-path ingress is required.
@@ -475,9 +478,13 @@ The supplied client uses 1.0. Shipped examples do not request additional client 
 business-input clarification is not an in-task authorization flow.
 Repeating a new-task submission with the same `messageId` creates independent tasks. There is no message-ID
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
+If `SendMessage` fails with a transport error or HTTP 409 `ABORTED`, business work may already have started.
+Inspect the original incident/request and persisted task state before retrying the job or submitting again.
+Do not blindly retry financial work: one observed internal connection closure left the client failed while
+its agent task had reached input-required. A later successful request does not recover that original client.
 
 The source-specific checkpoints above distinguish functional prototype evidence from deferred release approval.
-Editor deployment and runtime form completion remain incomplete; human usability and fresh-adopter timing
+The combined editor/form criterion remains incomplete; human usability and fresh-adopter timing
 are not prototype criteria. Actual Marketplace import and external legal/eligibility approval remain deferred.
 The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
 subsequent changes. Do not infer exactly-once
