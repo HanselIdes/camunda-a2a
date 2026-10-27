@@ -35,7 +35,6 @@ def run(reports, rpc, request, await_task):
         status, response = rpc(message)
         assert status == 200 and "result" in response, (label, status, response)
         task = await_task(response)
-        assert task["status"]["state"] == "TASK_STATE_INPUT_REQUIRED", (label, task)
         deadline = time.monotonic() + 30
         while True:
             status, body = request("/v2/process-instances/search",
@@ -55,6 +54,17 @@ def run(reports, rpc, request, await_task):
         report.write_text(json.dumps({"records": records, "verdict": "RUNNING"}, indent=2) + "\n")
         record["modelUserText"] = assert_literal_input(text, req, agent)
         record["verbatim"] = True
-    report.write_text(json.dumps({"records": records, "verdict": "PASS"}, indent=2) + "\n")
+        record["requiredState"] = "TASK_STATE_INPUT_REQUIRED"
+        record["semanticStateMatches"] = task["status"]["state"] == record["requiredState"]
+        complete = len(records) == len(CASES)
+        report.write_text(json.dumps({
+            "records": records,
+            "literalInputVerdict": "PASS" if complete else "RUNNING",
+            "semanticVerdict": "FAIL" if not record["semanticStateMatches"] else
+                               "PASS" if complete else "RUNNING",
+            "verdict": "FAIL" if not record["semanticStateMatches"] else
+                       "PASS" if complete else "RUNNING",
+        }, indent=2) + "\n")
+        assert record["semanticStateMatches"], (label, task)
     print("Six actual model inputs preserve numeric/quote/backslash/newline/control/expression text: PASS",
           flush=True)
