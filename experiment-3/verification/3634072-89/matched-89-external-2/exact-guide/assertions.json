@@ -1,0 +1,37 @@
+{
+  "verdict": "PASS",
+  "guideSha256": "19a700789c0edaf66688b6fdf9adcba9f6ff5b82022748c7ad9b50307b02cb43",
+  "source": "de16278b8f5cc401404a524e910055ae545f6768",
+  "expected": {
+    "merchant": "Northwind Electronics",
+    "currency": "USD",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "expectedAmount": 49.95,
+    "paidAmount": 99.9,
+    "overchargeAmount": 49.95,
+    "matchingAmounts": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "syntheticOnly": true
+  },
+  "observed": {
+    "currency": "USD",
+    "matchingAmounts": true,
+    "merchant": "Northwind Electronics",
+    "overchargeAmount": 49.95,
+    "syntheticOnly": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "paidAmount": 99.9,
+    "expectedAmount": 49.95
+  },
+  "initialState": "TASK_STATE_WORKING",
+  "pollRequests": 1,
+  "tls": "Verified validation CA and hostname; exact documented lab-only --resolve",
+  "scope": "External commands only, not UI or human usability"
+}

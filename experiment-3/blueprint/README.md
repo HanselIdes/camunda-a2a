@@ -8,6 +8,12 @@ Historical version gaps remain explicit. Marketplace import and external licensi
 are separate deferred release gates, not prototype acceptance.
 SaaS runtime support is unverified.
 
+**Current 8.9 candidate: overall FAIL.** Exact model-input preservation passes, but incomplete
+leading-equals JSON input caused the real model to invent reconciliation fields and the demo to
+complete instead of asking for missing input. The existing synthetic-result guard does not validate
+that fields came from the request. This is a material missing-input/grounding limitation, not a
+formatting issue or a passed release gate. See the [versioned results and preserved failures](../verification/3634072-89/README.md).
+
 The demonstration is a BPMN client calling an A2A 1.0 JSON-RPC endpoint, which starts a server-side AI agent.
 The agent asks for missing input or calls a native BPMN tool to reconcile two synthetic charges.
 The client receives the arithmetic evidence and displays it in a review form. No refund, real dispute decision,
@@ -19,6 +25,7 @@ The minimum release line is **8.9 for both engine and stock Connectors**. Use on
 combination, not an arbitrary pair of 8.9+ images. Engine 8.8.44 with Connectors 8.8.24 fails the
 required synchronous webhook result, so 8.8 is not supported. The current candidate targets the
 same-minor versions below; affected runtime checks must pass on its own clean source.
+The exact-source runs below preserve both the input-preservation pass and the remaining semantic failure.
 
 | Component            | Version or setting                                                                                                   |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -288,6 +295,20 @@ Import the three JSON files in [templates/](templates/) and the
 [upstream AI Agent version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
 as element templates, using the Modeler's template-import workflow. The stock templates are pinned; the two blueprint templates configure the authenticated RPC endpoint
 and public discovery card. Do not use the archived experiment's unauthenticated RPC template.
+
+For a SaaS/Web Modeler URL import, the proposed set is **10 resources**: the eight executable
+resources above and the two custom A2A templates. Omit only the stock REST and AI Agent JSON URLs,
+not the custom A2A templates. After import, check that the BPMN references resolve to
+`io.camunda.connectors.HttpJson.v2` version **12** and
+`io.camunda.connectors.agenticai.aiagent.jobworker.v1` version **5**.
+An "Existing resource" or "Already available" notice does not establish exact-version equivalence.
+This current SaaS import/resolution and runtime path is unverified; no replacement link is published here.
+
+The **12-resource full install closure** remains necessary for a clean Self-Managed Modeler Hub
+or an exact-version Desktop fallback: eight executable resources and all four template files.
+If the exact stock template version is absent from the target registry, install/publish it before
+relying on the BPMN reference. A newer-only template version is not sufficient. Keep the pinned
+source files and upstream provenance; this distinction does not delete standard template dependencies.
 
 The AI template remains an upstream dependency with its own proprietary module terms; its JSON is imported from
 upstream rather than copied into this repository. See [third-party notices](../../THIRD_PARTY_NOTICES.md).

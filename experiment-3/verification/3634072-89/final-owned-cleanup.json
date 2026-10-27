@@ -1,0 +1,140 @@
+{
+  "verdict": "PASS",
+  "attempts": [
+    {
+      "run": "matched-88-real-1",
+      "project": "a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5",
+      "ownedPortsClosed": {
+        "54883": true,
+        "54884": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "matched-89-real-1",
+      "project": "a2a-proof-89e870bb16ee753eff4a8bef4391d99c",
+      "ownedPortsClosed": {
+        "55146": true,
+        "55147": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "matched-89-core-1",
+      "project": "a2a-proof-f953623f5b8e04ae787917d2cd8842a3",
+      "ownedPortsClosed": {
+        "55565": true,
+        "55566": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "matched-89-external-1",
+      "project": "a2a-proof-226bcbee4409967c3cff4757d2ab21da",
+      "ownedPortsClosed": {
+        "57266": true,
+        "57267": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "matched-89-external-2",
+      "project": "a2a-proof-40295827c3c7e81fa2293610ee7b547b",
+      "ownedPortsClosed": {
+        "57429": true,
+        "57430": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "matched-89-tck-1",
+      "project": "a2a-proof-0827e54e6b154132e284e46fe5fe42da",
+      "ownedPortsClosed": {
+        "57688": true,
+        "57689": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "matched-89-quoting-1",
+      "project": "a2a-proof-8d1fdf655de9e99841db7d900ca608df",
+      "ownedPortsClosed": {
+        "58123": true,
+        "58124": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "repaired89-real-1",
+      "project": "a2a-proof-67418228f34899d63f1adcb9a94bfb66",
+      "ownedPortsClosed": {
+        "58960": true,
+        "58961": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "repaired89-tck-1",
+      "project": "a2a-proof-6a0d54e0eab1295144cf80712b228953",
+      "ownedPortsClosed": {
+        "59444": true,
+        "59445": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    },
+    {
+      "run": "repaired89-real-2",
+      "project": "a2a-proof-0539bc3bd9e01967d2bde7b1a4b1df36",
+      "ownedPortsClosed": {
+        "59885": true,
+        "59886": true
+      },
+      "remainingOwnedResources": {
+        "container": "",
+        "network": "",
+        "volume": ""
+      }
+    }
+  ],
+  "preexistingSecondaryContainers": [
+    "bcfe7ea81c469e31bfe4071bf892c5caddcc9daff6e73e836e587eac1972a441 true",
+    "2c22a7d37d892d9e8485f2db81b6c4cc7065227da398f66a0eaff13943dc201c true"
+  ],
+  "scope": "Owned projects only; no shared kills, pruning, profile or DNS changes"
+}

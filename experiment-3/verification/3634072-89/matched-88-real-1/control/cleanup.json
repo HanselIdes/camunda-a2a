@@ -1,0 +1,10 @@
+{
+  "verdict": "PASS",
+  "project": "a2a-proof-ddb8bb4f1c07e6805e6ef2e3cc434bd5",
+  "remainingOwnedResources": {
+    "container": "",
+    "network": "",
+    "volume": ""
+  },
+  "completedAt": "2026-10-27T14:45:14.264796+00:00"
+}

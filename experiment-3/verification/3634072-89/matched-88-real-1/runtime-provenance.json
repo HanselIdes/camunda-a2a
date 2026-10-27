@@ -1,0 +1,20 @@
+{
+  "targetCommit": "de16278b8f5cc401404a524e910055ae545f6768",
+  "targetWorktreeDirty": false,
+  "sourceBefore": {
+    "targetCommit": "de16278b8f5cc401404a524e910055ae545f6768",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "FAIL",
+  "engineImage": "camunda/camunda:8.8.44",
+  "connectorsImage": "camunda/connectors-bundle:8.8.24",
+  "exporterProfile": "low-latency",
+  "exporterBulkDelaySeconds": 1,
+  "clientExecutionThreads": 4,
+  "activeVersionPolling": false,
+  "operationalChecks": false,
+  "listingChecks": false,
+  "failureChecks": false,
+  "failureGapChecks": false,
+  "failureType": "TypeError"
+}

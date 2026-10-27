@@ -1,0 +1,23 @@
+{
+  "targetCommit": "91cf7a57e2adfa6e522756319c6381a6c8798de4",
+  "targetWorktreeDirty": false,
+  "sourceBefore": {
+    "targetCommit": "91cf7a57e2adfa6e522756319c6381a6c8798de4",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "FAIL",
+  "engineImage": "camunda/camunda:8.9.26",
+  "connectorsImage": "camunda/connectors-bundle:8.9.17",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "modelerVersion": "N/A: no editor used",
+  "deployment": "Engine REST API /v2/deployments at the recorded engine version",
+  "exporterProfile": "low-latency",
+  "exporterBulkDelaySeconds": 1,
+  "clientExecutionThreads": 4,
+  "activeVersionPolling": false,
+  "operationalChecks": false,
+  "listingChecks": false,
+  "failureChecks": false,
+  "failureGapChecks": false,
+  "failureType": "AssertionError"
+}

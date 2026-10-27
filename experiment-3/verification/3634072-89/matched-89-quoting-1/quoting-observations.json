@@ -1,0 +1,1370 @@
+[
+  {
+    "case": "quotes",
+    "inputText": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details.",
+    "requestRootText": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details.",
+    "jsonPrompt": "\"Synthetic diagnostic only: a merchant label says \\\"example\\\". Please ask for missing details.\"",
+    "storedModelUserText": "\"Synthetic diagnostic only: a merchant label says \\\"example\\\". Please ask for missing details.\"",
+    "task": {
+      "history": [
+        {
+          "role": "ROLE_USER",
+          "messageId": "f895b896-eec3-4ad9-8c6d-c43c10a94dbf",
+          "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+          "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+            }
+          ]
+        },
+        {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de4-fa38-76de-ac6c-409dc5078de2",
+          "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+          "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+          "parts": [
+            {
+              "text": "Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+            }
+          ]
+        }
+      ],
+      "id": "01a17de4-e528-7447-b07c-835c820897dc",
+      "status": {
+        "state": "TASK_STATE_INPUT_REQUIRED",
+        "message": {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de4-fa38-76de-ac6c-409dc5078de2",
+          "taskId": "01a17de4-e528-7447-b07c-835c820897dc",
+          "contextId": "01a17de4-e526-7400-9583-7228519e1fec",
+          "parts": [
+            {
+              "text": "Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+            }
+          ]
+        },
+        "timestamp": "2026-10-27T15:05:20Z"
+      },
+      "contextId": "01a17de4-e526-7400-9583-7228519e1fec"
+    },
+    "agent": {
+      "context": {
+        "state": "READY",
+        "metadata": {
+          "processDefinitionKey": 2251799813685326,
+          "processInstanceKey": 2251799813685404
+        },
+        "metrics": {
+          "modelCalls": 1,
+          "tokenUsage": {
+            "inputTokenCount": 541,
+            "outputTokenCount": 26
+          }
+        },
+        "toolDefinitions": [
+          {
+            "name": "review_duplicate_charge",
+            "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "merchant": {
+                  "type": "string",
+                  "description": "Merchant named in the synthetic claim"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency code supplied by the client"
+                },
+                "firstAmount": {
+                  "type": "number",
+                  "description": "First charge amount"
+                },
+                "secondAmount": {
+                  "type": "number",
+                  "description": "Second charge amount"
+                },
+                "expectedAmount": {
+                  "type": "number",
+                  "description": "Expected amount for the single order"
+                }
+              },
+              "required": [
+                "merchant",
+                "currency",
+                "firstAmount",
+                "secondAmount",
+                "expectedAmount"
+              ]
+            }
+          }
+        ],
+        "conversation": {
+          "type": "in-process",
+          "conversationId": "cc51cb9c-1f4f-4d7d-9fc2-96e21acc4153",
+          "messages": [
+            {
+              "role": "system",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "\"Synthetic diagnostic only: a merchant label says \\\"example\\\". Please ask for missing details.\""
+                }
+              ],
+              "metadata": {
+                "timestamp": "2026-10-27T15:05:15.896688799Z"
+              }
+            },
+            {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "NEED_INPUT: Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+                }
+              ],
+              "metadata": {
+                "framework": {
+                  "id": "chatcmpl-937",
+                  "finishReason": "STOP",
+                  "tokenUsage": {
+                    "inputTokenCount": 541,
+                    "outputTokenCount": 26,
+                    "totalTokenCount": 567,
+                    "inputTokensDetails": {
+                      "cachedTokens": 517,
+                      "cacheWriteTokens": null
+                    },
+                    "outputTokensDetails": null
+                  }
+                },
+                "timestamp": "2026-10-27T15:05:20.363978676Z"
+              }
+            }
+          ]
+        }
+      },
+      "responseText": "NEED_INPUT: Please provide the currency, first charge amount, second charge amount, and expected amount for the synthetic diagnostic."
+    },
+    "verbatim": false,
+    "jsonDecodedEqualsOriginal": true,
+    "inputCodepoints": [
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      32,
+      97,
+      32,
+      109,
+      101,
+      114,
+      99,
+      104,
+      97,
+      110,
+      116,
+      32,
+      108,
+      97,
+      98,
+      101,
+      108,
+      32,
+      115,
+      97,
+      121,
+      115,
+      32,
+      34,
+      101,
+      120,
+      97,
+      109,
+      112,
+      108,
+      101,
+      34,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46
+    ],
+    "storedCodepoints": [
+      34,
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      32,
+      97,
+      32,
+      109,
+      101,
+      114,
+      99,
+      104,
+      97,
+      110,
+      116,
+      32,
+      108,
+      97,
+      98,
+      101,
+      108,
+      32,
+      115,
+      97,
+      121,
+      115,
+      32,
+      92,
+      34,
+      101,
+      120,
+      97,
+      109,
+      112,
+      108,
+      101,
+      92,
+      34,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46,
+      34
+    ]
+  },
+  {
+    "case": "backslashes",
+    "inputText": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details.",
+    "requestRootText": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details.",
+    "jsonPrompt": "\"Synthetic diagnostic only: reference C:\\\\lab\\\\order\\\\n.txt. Please ask for missing details.\"",
+    "storedModelUserText": "\"Synthetic diagnostic only: reference C:\\\\lab\\\\order\\\\n.txt. Please ask for missing details.\"",
+    "task": {
+      "history": [
+        {
+          "role": "ROLE_USER",
+          "messageId": "4badebd5-4aa2-41a0-97c4-9bc23f4175b0",
+          "taskId": "01a17de5-03d2-7717-8b09-035614607970",
+          "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da",
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only: reference C:\\lab\\order\\n.txt. Please ask for missing details."
+            }
+          ]
+        },
+        {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de5-0c2d-74b3-baf4-b329c9d8869a",
+          "taskId": "01a17de5-03d2-7717-8b09-035614607970",
+          "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da",
+          "parts": [
+            {
+              "text": "Please provide the merchant name, currency code, the two charge amounts, and the expected amount for the single order from the synthetic data in the file C:\\lab\\order\\n.txt."
+            }
+          ]
+        }
+      ],
+      "id": "01a17de5-03d2-7717-8b09-035614607970",
+      "status": {
+        "state": "TASK_STATE_INPUT_REQUIRED",
+        "message": {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de5-0c2d-74b3-baf4-b329c9d8869a",
+          "taskId": "01a17de5-03d2-7717-8b09-035614607970",
+          "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da",
+          "parts": [
+            {
+              "text": "Please provide the merchant name, currency code, the two charge amounts, and the expected amount for the single order from the synthetic data in the file C:\\lab\\order\\n.txt."
+            }
+          ]
+        },
+        "timestamp": "2026-10-27T15:05:25Z"
+      },
+      "contextId": "01a17de5-03d2-7a30-bc61-20e610f699da"
+    },
+    "agent": {
+      "context": {
+        "state": "READY",
+        "metadata": {
+          "processDefinitionKey": 2251799813685326,
+          "processInstanceKey": 2251799813685760
+        },
+        "metrics": {
+          "modelCalls": 1,
+          "tokenUsage": {
+            "inputTokenCount": 543,
+            "outputTokenCount": 42
+          }
+        },
+        "toolDefinitions": [
+          {
+            "name": "review_duplicate_charge",
+            "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "merchant": {
+                  "type": "string",
+                  "description": "Merchant named in the synthetic claim"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency code supplied by the client"
+                },
+                "firstAmount": {
+                  "type": "number",
+                  "description": "First charge amount"
+                },
+                "secondAmount": {
+                  "type": "number",
+                  "description": "Second charge amount"
+                },
+                "expectedAmount": {
+                  "type": "number",
+                  "description": "Expected amount for the single order"
+                }
+              },
+              "required": [
+                "merchant",
+                "currency",
+                "firstAmount",
+                "secondAmount",
+                "expectedAmount"
+              ]
+            }
+          }
+        ],
+        "conversation": {
+          "type": "in-process",
+          "conversationId": "53065f6c-7bad-411a-b9d6-304d990d51ec",
+          "messages": [
+            {
+              "role": "system",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "\"Synthetic diagnostic only: reference C:\\\\lab\\\\order\\\\n.txt. Please ask for missing details.\""
+                }
+              ],
+              "metadata": {
+                "timestamp": "2026-10-27T15:05:23.306958761Z"
+              }
+            },
+            {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "NEED_INPUT: Please provide the merchant name, currency code, the two charge amounts, and the expected amount for the single order from the synthetic data in the file C:\\lab\\order\\n.txt."
+                }
+              ],
+              "metadata": {
+                "framework": {
+                  "id": "chatcmpl-174",
+                  "finishReason": "STOP",
+                  "tokenUsage": {
+                    "inputTokenCount": 543,
+                    "outputTokenCount": 42,
+                    "totalTokenCount": 585,
+                    "inputTokensDetails": {
+                      "cachedTokens": 522,
+                      "cacheWriteTokens": null
+                    },
+                    "outputTokensDetails": null
+                  }
+                },
+                "timestamp": "2026-10-27T15:05:25.03530922Z"
+              }
+            }
+          ]
+        }
+      },
+      "responseText": "NEED_INPUT: Please provide the merchant name, currency code, the two charge amounts, and the expected amount for the single order from the synthetic data in the file C:\\lab\\order\\n.txt."
+    },
+    "verbatim": false,
+    "jsonDecodedEqualsOriginal": true,
+    "inputCodepoints": [
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      32,
+      114,
+      101,
+      102,
+      101,
+      114,
+      101,
+      110,
+      99,
+      101,
+      32,
+      67,
+      58,
+      92,
+      108,
+      97,
+      98,
+      92,
+      111,
+      114,
+      100,
+      101,
+      114,
+      92,
+      110,
+      46,
+      116,
+      120,
+      116,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46
+    ],
+    "storedCodepoints": [
+      34,
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      32,
+      114,
+      101,
+      102,
+      101,
+      114,
+      101,
+      110,
+      99,
+      101,
+      32,
+      67,
+      58,
+      92,
+      92,
+      108,
+      97,
+      98,
+      92,
+      92,
+      111,
+      114,
+      100,
+      101,
+      114,
+      92,
+      92,
+      110,
+      46,
+      116,
+      120,
+      116,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46,
+      34
+    ]
+  },
+  {
+    "case": "newlines",
+    "inputText": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details.",
+    "requestRootText": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details.",
+    "jsonPrompt": "\"Synthetic diagnostic only:\\u000afirst line\\u000asecond line. Please ask for missing details.\"",
+    "storedModelUserText": "\"Synthetic diagnostic only:\\u000afirst line\\u000asecond line. Please ask for missing details.\"",
+    "task": {
+      "history": [
+        {
+          "role": "ROLE_USER",
+          "messageId": "1b4d2d3b-ab5c-41af-adec-dbd4d59435f7",
+          "taskId": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+          "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c",
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+            }
+          ]
+        },
+        {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de5-1930-7814-afb8-66d9c19e2167",
+          "taskId": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+          "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c",
+          "parts": [
+            {
+              "text": "Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+            }
+          ]
+        }
+      ],
+      "id": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+      "status": {
+        "state": "TASK_STATE_INPUT_REQUIRED",
+        "message": {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de5-1930-7814-afb8-66d9c19e2167",
+          "taskId": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+          "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c",
+          "parts": [
+            {
+              "text": "Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+            }
+          ]
+        },
+        "timestamp": "2026-10-27T15:05:28Z"
+      },
+      "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c"
+    },
+    "agent": {
+      "context": {
+        "state": "READY",
+        "metadata": {
+          "processDefinitionKey": 2251799813685326,
+          "processInstanceKey": 2251799813685968
+        },
+        "metrics": {
+          "modelCalls": 1,
+          "tokenUsage": {
+            "inputTokenCount": 548,
+            "outputTokenCount": 33
+          }
+        },
+        "toolDefinitions": [
+          {
+            "name": "review_duplicate_charge",
+            "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "merchant": {
+                  "type": "string",
+                  "description": "Merchant named in the synthetic claim"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency code supplied by the client"
+                },
+                "firstAmount": {
+                  "type": "number",
+                  "description": "First charge amount"
+                },
+                "secondAmount": {
+                  "type": "number",
+                  "description": "Second charge amount"
+                },
+                "expectedAmount": {
+                  "type": "number",
+                  "description": "Expected amount for the single order"
+                }
+              },
+              "required": [
+                "merchant",
+                "currency",
+                "firstAmount",
+                "secondAmount",
+                "expectedAmount"
+              ]
+            }
+          }
+        ],
+        "conversation": {
+          "type": "in-process",
+          "conversationId": "08866f83-7c09-4731-8962-444af8fd9e6b",
+          "messages": [
+            {
+              "role": "system",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "\"Synthetic diagnostic only:\\u000afirst line\\u000asecond line. Please ask for missing details.\""
+                }
+              ],
+              "metadata": {
+                "timestamp": "2026-10-27T15:05:27.628685929Z"
+              }
+            },
+            {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "NEED_INPUT: Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+                }
+              ],
+              "metadata": {
+                "framework": {
+                  "id": "chatcmpl-227",
+                  "finishReason": "STOP",
+                  "tokenUsage": {
+                    "inputTokenCount": 548,
+                    "outputTokenCount": 33,
+                    "totalTokenCount": 581,
+                    "inputTokensDetails": {
+                      "cachedTokens": 521,
+                      "cacheWriteTokens": null
+                    },
+                    "outputTokensDetails": null
+                  }
+                },
+                "timestamp": "2026-10-27T15:05:28.460772138Z"
+              }
+            }
+          ]
+        }
+      },
+      "responseText": "NEED_INPUT: Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+    },
+    "verbatim": false,
+    "jsonDecodedEqualsOriginal": true,
+    "inputCodepoints": [
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      10,
+      102,
+      105,
+      114,
+      115,
+      116,
+      32,
+      108,
+      105,
+      110,
+      101,
+      10,
+      115,
+      101,
+      99,
+      111,
+      110,
+      100,
+      32,
+      108,
+      105,
+      110,
+      101,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46
+    ],
+    "storedCodepoints": [
+      34,
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      92,
+      117,
+      48,
+      48,
+      48,
+      97,
+      102,
+      105,
+      114,
+      115,
+      116,
+      32,
+      108,
+      105,
+      110,
+      101,
+      92,
+      117,
+      48,
+      48,
+      48,
+      97,
+      115,
+      101,
+      99,
+      111,
+      110,
+      100,
+      32,
+      108,
+      105,
+      110,
+      101,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46,
+      34
+    ]
+  },
+  {
+    "case": "controls",
+    "inputText": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details.",
+    "requestRootText": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details.",
+    "jsonPrompt": "\"Synthetic diagnostic only: A\\u0009B\\u000dC\\u0008D\\u000cE\\u0001F. Please ask for missing details.\"",
+    "storedModelUserText": "\"Synthetic diagnostic only: A\\u0009B\\u000dC\\u0008D\\u000cE\\u0001F. Please ask for missing details.\"",
+    "task": {
+      "history": [
+        {
+          "role": "ROLE_USER",
+          "messageId": "253c2b35-69c7-4c57-9c74-995e3fa7879e",
+          "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+          "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+          "parts": [
+            {
+              "text": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details."
+            }
+          ]
+        },
+        {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de5-23a2-72e0-97fe-6fa0847618a2",
+          "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+          "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+          "parts": [
+            {
+              "text": "Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+            }
+          ]
+        }
+      ],
+      "id": "01a17de5-203c-7efb-8eb7-f9417e502346",
+      "status": {
+        "state": "TASK_STATE_INPUT_REQUIRED",
+        "message": {
+          "role": "ROLE_AGENT",
+          "messageId": "01a17de5-23a2-72e0-97fe-6fa0847618a2",
+          "taskId": "01a17de5-203c-7efb-8eb7-f9417e502346",
+          "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da",
+          "parts": [
+            {
+              "text": "Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+            }
+          ]
+        },
+        "timestamp": "2026-10-27T15:05:31Z"
+      },
+      "contextId": "01a17de5-203c-7848-8ad1-802db48bf8da"
+    },
+    "agent": {
+      "context": {
+        "state": "READY",
+        "metadata": {
+          "processDefinitionKey": 2251799813685326,
+          "processInstanceKey": 2251799813686176
+        },
+        "metrics": {
+          "modelCalls": 1,
+          "tokenUsage": {
+            "inputTokenCount": 565,
+            "outputTokenCount": 29
+          }
+        },
+        "toolDefinitions": [
+          {
+            "name": "review_duplicate_charge",
+            "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "merchant": {
+                  "type": "string",
+                  "description": "Merchant named in the synthetic claim"
+                },
+                "currency": {
+                  "type": "string",
+                  "description": "Currency code supplied by the client"
+                },
+                "firstAmount": {
+                  "type": "number",
+                  "description": "First charge amount"
+                },
+                "secondAmount": {
+                  "type": "number",
+                  "description": "Second charge amount"
+                },
+                "expectedAmount": {
+                  "type": "number",
+                  "description": "Expected amount for the single order"
+                }
+              },
+              "required": [
+                "merchant",
+                "currency",
+                "firstAmount",
+                "secondAmount",
+                "expectedAmount"
+              ]
+            }
+          }
+        ],
+        "conversation": {
+          "type": "in-process",
+          "conversationId": "f69c8fcd-a06a-43c7-9ce5-e6f2154d5e7e",
+          "messages": [
+            {
+              "role": "system",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+                }
+              ]
+            },
+            {
+              "role": "user",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "\"Synthetic diagnostic only: A\\u0009B\\u000dC\\u0008D\\u000cE\\u0001F. Please ask for missing details.\""
+                }
+              ],
+              "metadata": {
+                "timestamp": "2026-10-27T15:05:30.5355975Z"
+              }
+            },
+            {
+              "role": "assistant",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "NEED_INPUT: Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+                }
+              ],
+              "metadata": {
+                "framework": {
+                  "id": "chatcmpl-442",
+                  "finishReason": "STOP",
+                  "tokenUsage": {
+                    "inputTokenCount": 565,
+                    "outputTokenCount": 29,
+                    "totalTokenCount": 594,
+                    "inputTokensDetails": {
+                      "cachedTokens": 521,
+                      "cacheWriteTokens": null
+                    },
+                    "outputTokensDetails": null
+                  }
+                },
+                "timestamp": "2026-10-27T15:05:31.127253917Z"
+              }
+            }
+          ]
+        }
+      },
+      "responseText": "NEED_INPUT: Could you please provide the merchant name, currency code, the two charge amounts, and the expected amount for the order?"
+    },
+    "verbatim": false,
+    "jsonDecodedEqualsOriginal": true,
+    "inputCodepoints": [
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      32,
+      65,
+      9,
+      66,
+      13,
+      67,
+      8,
+      68,
+      12,
+      69,
+      1,
+      70,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46
+    ],
+    "storedCodepoints": [
+      34,
+      83,
+      121,
+      110,
+      116,
+      104,
+      101,
+      116,
+      105,
+      99,
+      32,
+      100,
+      105,
+      97,
+      103,
+      110,
+      111,
+      115,
+      116,
+      105,
+      99,
+      32,
+      111,
+      110,
+      108,
+      121,
+      58,
+      32,
+      65,
+      92,
+      117,
+      48,
+      48,
+      48,
+      57,
+      66,
+      92,
+      117,
+      48,
+      48,
+      48,
+      100,
+      67,
+      92,
+      117,
+      48,
+      48,
+      48,
+      56,
+      68,
+      92,
+      117,
+      48,
+      48,
+      48,
+      99,
+      69,
+      92,
+      117,
+      48,
+      48,
+      48,
+      49,
+      70,
+      46,
+      32,
+      80,
+      108,
+      101,
+      97,
+      115,
+      101,
+      32,
+      97,
+      115,
+      107,
+      32,
+      102,
+      111,
+      114,
+      32,
+      109,
+      105,
+      115,
+      115,
+      105,
+      110,
+      103,
+      32,
+      100,
+      101,
+      116,
+      97,
+      105,
+      108,
+      115,
+      46,
+      34
+    ]
+  }
+]

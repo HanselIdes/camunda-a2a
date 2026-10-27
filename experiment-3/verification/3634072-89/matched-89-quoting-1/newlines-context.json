@@ -1,0 +1,167 @@
+{
+  "input": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details.",
+  "requestRoot": {
+    "message": {
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+        }
+      ],
+      "messageId": "1b4d2d3b-ab5c-41af-adec-dbd4d59435f7",
+      "role": "ROLE_USER"
+    },
+    "blocking": true
+  },
+  "jsonPrompt": "\"Synthetic diagnostic only:\\u000afirst line\\u000asecond line. Please ask for missing details.\"",
+  "agent": {
+    "context": {
+      "state": "READY",
+      "metadata": {
+        "processDefinitionKey": 2251799813685326,
+        "processInstanceKey": 2251799813685968
+      },
+      "metrics": {
+        "modelCalls": 1,
+        "tokenUsage": {
+          "inputTokenCount": 548,
+          "outputTokenCount": 33
+        }
+      },
+      "toolDefinitions": [
+        {
+          "name": "review_duplicate_charge",
+          "description": "Reconciles two supplied synthetic charge amounts against one expected order amount. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "merchant": {
+                "type": "string",
+                "description": "Merchant named in the synthetic claim"
+              },
+              "currency": {
+                "type": "string",
+                "description": "Currency code supplied by the client"
+              },
+              "firstAmount": {
+                "type": "number",
+                "description": "First charge amount"
+              },
+              "secondAmount": {
+                "type": "number",
+                "description": "Second charge amount"
+              },
+              "expectedAmount": {
+                "type": "number",
+                "description": "Expected amount for the single order"
+              }
+            },
+            "required": [
+              "merchant",
+              "currency",
+              "firstAmount",
+              "secondAmount",
+              "expectedAmount"
+            ]
+          }
+        }
+      ],
+      "conversation": {
+        "type": "in-process",
+        "conversationId": "08866f83-7c09-4731-8962-444af8fd9e6b",
+        "messages": [
+          {
+            "role": "system",
+            "content": [
+              {
+                "type": "text",
+                "text": "You help demonstrate card-dispute intake using synthetic data only. For each review use review_duplicate_charge; never calculate a result yourself. You need the merchant, currency, two charge amounts and expected amount. If any are missing, call no tool and reply NEED_INPUT: followed by a clarification question. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud."
+              }
+            ]
+          },
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "\"Synthetic diagnostic only:\\u000afirst line\\u000asecond line. Please ask for missing details.\""
+              }
+            ],
+            "metadata": {
+              "timestamp": "2026-10-27T15:05:27.628685929Z"
+            }
+          },
+          {
+            "role": "assistant",
+            "content": [
+              {
+                "type": "text",
+                "text": "NEED_INPUT: Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+              }
+            ],
+            "metadata": {
+              "framework": {
+                "id": "chatcmpl-227",
+                "finishReason": "STOP",
+                "tokenUsage": {
+                  "inputTokenCount": 548,
+                  "outputTokenCount": 33,
+                  "totalTokenCount": 581,
+                  "inputTokensDetails": {
+                    "cachedTokens": 521,
+                    "cacheWriteTokens": null
+                  },
+                  "outputTokensDetails": null
+                }
+              },
+              "timestamp": "2026-10-27T15:05:28.460772138Z"
+            }
+          }
+        ]
+      }
+    },
+    "responseText": "NEED_INPUT: Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+  },
+  "task": {
+    "history": [
+      {
+        "role": "ROLE_USER",
+        "messageId": "1b4d2d3b-ab5c-41af-adec-dbd4d59435f7",
+        "taskId": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+        "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c",
+        "parts": [
+          {
+            "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+          }
+        ]
+      },
+      {
+        "role": "ROLE_AGENT",
+        "messageId": "01a17de5-1930-7814-afb8-66d9c19e2167",
+        "taskId": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+        "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c",
+        "parts": [
+          {
+            "text": "Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+          }
+        ]
+      }
+    ],
+    "id": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+    "status": {
+      "state": "TASK_STATE_INPUT_REQUIRED",
+      "message": {
+        "role": "ROLE_AGENT",
+        "messageId": "01a17de5-1930-7814-afb8-66d9c19e2167",
+        "taskId": "01a17de5-14dd-7c03-811d-e5614d47ab71",
+        "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c",
+        "parts": [
+          {
+            "text": "Please provide the merchant name, currency code, the first charge amount, the second charge amount, and the expected amount for the single order."
+          }
+        ]
+      },
+      "timestamp": "2026-10-27T15:05:28Z"
+    },
+    "contextId": "01a17de5-14dc-74bd-8935-7a3857afe04c"
+  }
+}

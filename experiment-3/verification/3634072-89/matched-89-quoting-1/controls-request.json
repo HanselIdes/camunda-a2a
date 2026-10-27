@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "id": "quoting-controls",
+  "method": "SendMessage",
+  "params": {
+    "message": {
+      "messageId": "253c2b35-69c7-4c57-9c74-995e3fa7879e",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only: A\tB\rC\bD\fE\u0001F. Please ask for missing details."
+        }
+      ]
+    }
+  }
+}

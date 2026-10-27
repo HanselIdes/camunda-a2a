@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "id": "quoting-quotes",
+  "method": "SendMessage",
+  "params": {
+    "message": {
+      "messageId": "f895b896-eec3-4ad9-8c6d-c43c10a94dbf",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only: a merchant label says \"example\". Please ask for missing details."
+        }
+      ]
+    }
+  }
+}

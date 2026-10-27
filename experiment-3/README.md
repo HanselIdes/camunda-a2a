@@ -99,7 +99,12 @@ process/tag searches every 250 ms and uses the remaining window to read the task
 by `SendMessage` before its process is visible in search; unknown and cross-agent task IDs still expire with
 `TASK_NOT_FOUND`. It does not extend task retention or turn engine API failures into missing-task responses.
 
-A fresh, isolated Self-Managed check of the exact Basic profile passed on **engine 8.8.21, stock Connectors 8.9.0,
+The current candidate minimum is **8.9 for both engine and Connectors**. Exact 8.9.26 / 8.9.17 checks
+preserve original model input but **fail overall** on incomplete-input grounding; see the
+[current evidence](verification/3634072-89/README.md). Engine 8.8 is unsupported.
+The following results are historical, source-pinned evidence, not current candidate acceptance.
+
+A fresh, isolated historical Self-Managed check of the exact Basic profile passed on **engine 8.8.21, stock Connectors 8.9.0,
 and Elasticsearch 8.17.0**, with engine authentication and platform authorizations enabled. Missing and invalid task API
 keys returned 401; valid keys returned the exact completed echo and completed-task polling. This check used loopback HTTP,
 not HTTPS, and required `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`. It is mixed-version feasibility evidence,

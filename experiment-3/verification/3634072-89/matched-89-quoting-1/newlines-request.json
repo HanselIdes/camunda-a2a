@@ -1,0 +1,16 @@
+{
+  "jsonrpc": "2.0",
+  "id": "quoting-newlines",
+  "method": "SendMessage",
+  "params": {
+    "message": {
+      "messageId": "1b4d2d3b-ab5c-41af-adec-dbd4d59435f7",
+      "role": "ROLE_USER",
+      "parts": [
+        {
+          "text": "Synthetic diagnostic only:\nfirst line\nsecond line. Please ask for missing details."
+        }
+      ]
+    }
+  }
+}

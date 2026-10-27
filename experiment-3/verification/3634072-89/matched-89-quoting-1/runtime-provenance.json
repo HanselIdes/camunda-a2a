@@ -1,0 +1,42 @@
+{
+  "targetCommit": "de16278b8f5cc401404a524e910055ae545f6768",
+  "targetWorktreeDirty": false,
+  "sourceBefore": {
+    "targetCommit": "de16278b8f5cc401404a524e910055ae545f6768",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "DIAGNOSTIC_COMPLETE_VERBATIM_FAIL",
+  "engineImage": "camunda/camunda:8.9.26",
+  "connectorsImage": "camunda/connectors-bundle:8.9.17",
+  "exporterProfile": "low-latency",
+  "exporterBulkDelaySeconds": 1,
+  "clientExecutionThreads": 4,
+  "activeVersionPolling": false,
+  "operationalChecks": false,
+  "listingChecks": false,
+  "failureChecks": false,
+  "failureGapChecks": false,
+  "cases": [
+    {
+      "case": "quotes",
+      "verbatim": false,
+      "jsonDecodedEqualsOriginal": true
+    },
+    {
+      "case": "backslashes",
+      "verbatim": false,
+      "jsonDecodedEqualsOriginal": true
+    },
+    {
+      "case": "newlines",
+      "verbatim": false,
+      "jsonDecodedEqualsOriginal": true
+    },
+    {
+      "case": "controls",
+      "verbatim": false,
+      "jsonDecodedEqualsOriginal": true
+    }
+  ],
+  "scope": "Stored connector model-input strings, not intercepted provider HTTP bytes; no behavior edits"
+}

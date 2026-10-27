@@ -1,0 +1,65 @@
+{
+  "observedAt": "2026-10-27T14:55:28.914565+00:00",
+  "images": [
+    {
+      "tag": "camunda/camunda:8.8.44",
+      "indexDigest": "sha256:4d3fdc54b7792734e2cd0752e73f07e4d0dea324df00aa4c75452b92a6e084da",
+      "linuxArm64Manifest": "sha256:e9952610c9f5e5ae40772f700d3e489ca5521085c61c9c05b023c916f6f13b52",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      "linuxArm64ConfigDigest": "sha256:1b36643a585ab42ca023c8f5e12d98ee3929a9bbcb0c7d7a75afee1cbff9d8cc"
+    },
+    {
+      "tag": "camunda/connectors-bundle:8.8.24",
+      "indexDigest": "sha256:0080587ef18a7ef2ae8c91ebd31f3fd961694c1333cc8aa1965a59c064e10f35",
+      "linuxArm64Manifest": "sha256:8cab7f91be4023f343fd58a89f818f6c3489535de177408d654314a69f3dfbd4",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      "linuxArm64ConfigDigest": "sha256:59347c5557bd184c77a2bac72b1c2efe829ea38e6ac793a611a260ba463ce7e6"
+    },
+    {
+      "tag": "camunda/camunda:8.9.26",
+      "indexDigest": "sha256:cf6c42ee0eb64837bf04fd414b22c3761cf4db67e9e71b9294788bcc617d22e7",
+      "linuxArm64Manifest": "sha256:37c4caa49b7e18d35dfd869fa33c515556c888303734849372c4caeac2dc404f",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      "linuxArm64ConfigDigest": "sha256:fcd1cdbefeaebebd5ae440fe574a4b29d3bd40502ea61463288437c3babfb10a"
+    },
+    {
+      "tag": "camunda/connectors-bundle:8.9.17",
+      "indexDigest": "sha256:819ddf39ff43b1bd779873160a228b59b6cfa4e3e17ded648ed6b299f66eef41",
+      "linuxArm64Manifest": "sha256:1dbf575eef3fa8bc689d55d50010c6391770c9176f84096135989b843d872bd6",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      "linuxArm64ConfigDigest": "sha256:3a5ca6fe08be4a73ecfe589204989a7326c272fdbba82db2c40dc32f5aef40b8"
+    },
+    {
+      "tag": "docker.elastic.co/elasticsearch/elasticsearch:8.17.0",
+      "indexDigest": "sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2",
+      "linuxArm64Manifest": "sha256:076ffdc200a51895a220a3c5f4692c73bd6d192ad6bd8db641ded4d2114c7e7b",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      "linuxArm64ConfigDigest": "sha256:b119fdac2479dcccf923f54943a355e743d3d5dd068baa4757772055cf9f3b32"
+    },
+    {
+      "tag": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+      "indexDigest": "sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1",
+      "linuxArm64Manifest": "sha256:2252de4d078fd8275a109b60a52e8919b5910815d881295fb083277ee9670571",
+      "platform": {
+        "architecture": "arm64",
+        "os": "linux"
+      },
+      "linuxArm64ConfigDigest": "sha256:170698130d665f610f1b64e5a43d9974e1fed420e83d51f79bac0e7bc7ccc1d5"
+    }
+  ]
+}

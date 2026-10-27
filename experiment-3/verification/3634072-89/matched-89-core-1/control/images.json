@@ -1,0 +1,35 @@
+{
+  "/a2a-proof-f953623f5b8e04ae787917d2cd8842a3-camunda-1": {
+    "Id": "sha256:cf6c42ee0eb64837bf04fd414b22c3761cf4db67e9e71b9294788bcc617d22e7",
+    "RepoTags": [
+      "camunda/camunda:8.9.26"
+    ],
+    "RepoDigests": [
+      "camunda/camunda@sha256:cf6c42ee0eb64837bf04fd414b22c3761cf4db67e9e71b9294788bcc617d22e7"
+    ],
+    "Architecture": "arm64",
+    "Os": "linux"
+  },
+  "/a2a-proof-f953623f5b8e04ae787917d2cd8842a3-connectors-1": {
+    "Id": "sha256:819ddf39ff43b1bd779873160a228b59b6cfa4e3e17ded648ed6b299f66eef41",
+    "RepoTags": [
+      "camunda/connectors-bundle:8.9.17"
+    ],
+    "RepoDigests": [
+      "camunda/connectors-bundle@sha256:819ddf39ff43b1bd779873160a228b59b6cfa4e3e17ded648ed6b299f66eef41"
+    ],
+    "Architecture": "arm64",
+    "Os": "linux"
+  },
+  "/a2a-proof-f953623f5b8e04ae787917d2cd8842a3-elasticsearch-1": {
+    "Id": "sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1",
+    "RepoTags": [
+      "docker.elastic.co/elasticsearch/elasticsearch:8.19.23"
+    ],
+    "RepoDigests": [
+      "docker.elastic.co/elasticsearch/elasticsearch@sha256:4d0724bb8d78d7a2330693623e26ca4d621079d062ecc8a30b3e1fc180ec14c1"
+    ],
+    "Architecture": "arm64",
+    "Os": "linux"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "verdict": "PASS",
+  "submitted": 125,
+  "submissionConcurrency": 8,
+  "pageSize": 37,
+  "records": [
+    {
+      "case": "page",
+      "count": 37,
+      "totalSize": 125
+    },
+    {
+      "case": "page",
+      "count": 37,
+      "totalSize": 125
+    },
+    {
+      "case": "page",
+      "count": 37,
+      "totalSize": 125
+    },
+    {
+      "case": "page",
+      "count": 14,
+      "totalSize": 125
+    },
+    {
+      "case": "exact-complete-collection",
+      "count": 125,
+      "uniqueIds": 125,
+      "pages": 4,
+      "filtersPassed": true
+    }
+  ]
+}
