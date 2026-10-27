@@ -1,0 +1,16 @@
+{
+  "targetCommit": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+  "targetWorktreeDirty": false,
+  "sourceBefore": {
+    "targetCommit": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "FAIL",
+  "engineImage": "camunda/camunda:8.10.2",
+  "connectorsImage": "camunda/connectors-bundle:8.10.0",
+  "exporterProfile": "low-latency",
+  "exporterBulkDelaySeconds": 1,
+  "clientExecutionThreads": 4,
+  "activeVersionPolling": false,
+  "failureType": "AssertionError"
+}

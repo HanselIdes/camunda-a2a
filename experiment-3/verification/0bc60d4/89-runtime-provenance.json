@@ -1,0 +1,39 @@
+{
+  "targetCommit": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+  "targetWorktreeDirty": false,
+  "sourceBefore": {
+    "targetCommit": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+    "targetWorktreeDirty": false
+  },
+  "verdict": "PASS",
+  "engineImage": "camunda/camunda:8.9.5",
+  "connectorsImage": "camunda/connectors-bundle:8.9.0",
+  "exporterProfile": "low-latency",
+  "exporterBulkDelaySeconds": 1,
+  "clientExecutionThreads": 4,
+  "activeVersionPolling": false,
+  "sourceAfter": {
+    "targetCommit": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+    "targetWorktreeDirty": false
+  },
+  "images": {
+    "camunda": {
+      "imageId": "sha256:0fae3b9568e99214d609c4e170a5e97896c775038bbb06af0097f2bec4f7b3cb",
+      "repositoryDigests": [
+        "camunda/camunda@sha256:0fae3b9568e99214d609c4e170a5e97896c775038bbb06af0097f2bec4f7b3cb"
+      ]
+    },
+    "connectors": {
+      "imageId": "sha256:64a98d8cb1226dc3bd392aaa19f1a6a39d017376ff6829bb7a1f67ee09c03aca",
+      "repositoryDigests": [
+        "camunda/connectors-bundle@sha256:64a98d8cb1226dc3bd392aaa19f1a6a39d017376ff6829bb7a1f67ee09c03aca"
+      ]
+    },
+    "elasticsearch": {
+      "imageId": "sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2",
+      "repositoryDigests": [
+        "docker.elastic.co/elasticsearch/elasticsearch@sha256:2f602552550869fb29b6fd5848c5118d3ef3a2e1d5d45802e3ab9088cb2de8e2"
+      ]
+    }
+  }
+}

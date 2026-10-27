@@ -48,8 +48,9 @@ certificate validation and missing/invalid API-key rejection; those are not TCK 
 The card is unsigned. One shared key supplies no per-caller task scoping.
 The [individual dispositions](../verification/96357f5/requirement-dispositions.json) distinguish inactive signing
 and in-task credential-acquisition features from applicable server and shipped-client obligations.
-Several applicable rows remain open, including Major.Minor version matching; the scoped TCK result does not
-close the requirement that every applicable mandatory requirement passes. The historical gate's client-side
+The 96357f5 dispositions describe that historical source. Major.Minor matching is implemented at 0bc60d4;
+its native evidence is separate from the older reports. Applicable open gates still prevent final acceptance:
+the scoped TCK result alone cannot close them. The historical gate's client-side
 label for `VER-CLIENT-002` does not remove its server-side obligation.
 
 Across the three runs, raw Extensions-call latency was **1.630 / 1.764 / 2.221 seconds**
@@ -267,6 +268,8 @@ semantics; other Major.Minor versions are rejected with `VERSION_NOT_SUPPORTED`.
 Missing or empty version headers default to unsupported 0.3 and receive that error rather than silently selecting 1.0.
 The supplied client uses 1.0. Shipped examples do not request additional client credentials during a task;
 business-input clarification is not an in-task authorization flow.
+Repeating a new-task submission with the same `messageId` creates independent tasks. There is no message-ID
+side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
 Terminal-state races, bulk concurrency across two agents, duplicate-request behavior, pagination/retention,
 restart recovery, expired/insufficient credentials, the full version matrix,

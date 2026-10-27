@@ -1,5 +1,10 @@
 # Experiment 3: two diagrams, and a server that passes the TCK
 
+This is the **nonshipping historical experiment**, not the release blueprint. Use the
+[blueprint guide](blueprint/README.md) for installation, exact-source evidence and remaining gates.
+Results below describe the experiment diagrams, not the packaged profiles. In particular, the original
+protocol's lenient missing/empty-version behavior does not satisfy `VER-SERVER-003`.
+
 Experiment 2 put two AI agents in one diagram that talk Agent-to-Agent (A2A) 1.0 over real HTTP. That server could not
 pass the [a2a-tck](https://github.com/a2aproject/a2a-tck), and its README listed seven steps to get there. This
 experiment takes those steps, and then takes the protocol out of the diagram a customer would model.
@@ -166,7 +171,8 @@ cannot drift from them (`python3 tools/gen_card.py --check`).
 | Tests                     | `cd tests && mvn verify` | 160 tests, zero failures; 100% of sequence flows and 100% of rules of both decisions; every element of every process except two in `a2a-rpc` (`BuildDirectMessage`, `DirectMessageReady`), whose entering flow is recorded and whose result the tests assert (`python3 scripts/coverage.py`) |
 
 Push is off in the gated run because the TCK requires CORE-CAP-001 (the error for an unsupported capability) to pass.
-The client agent needs push, so the default `.env` turns it on. The two runs together cover every MUST requirement.
+The experimental client agent needs push, so its default `.env` turns it on. These historical runs do not
+establish every applicable MUST: excluded and untested requirements need separate dispositions.
 
 ## Quickstart
 
@@ -236,9 +242,12 @@ The client diagram has no generator: edit it in Modeler.
 
 ## Requirement matrix
 
-Every MUST requirement of the pinned TCK, with the elements that implement it and the tests that prove it, or an N/A
-reason. `python3 scripts/trace.py` fails when a requirement is missing or a named test does not exist, and
-`--update` regenerates the table.
+This coverage inventory is not a conformance verdict. Most entries refer to the legacy experiment;
+rows naming `CoreProtocolTest` refer to the packaged Basic profile. A named test or a historical N/A
+label does not establish that a requirement passes. Client/server patch negotiation still needs client evidence
+in addition to the server checks. See the blueprint guide's individual requirement dispositions and
+`native-checks.json` in exact-source runtime reports.
+`python3 scripts/trace.py` checks that IDs and named tests exist; `--update` regenerates the table.
 
 <!-- trace:begin -->
 | Requirement             | Element                                                                                       | Test                                                                                                                                                                   | N/A reason              |
@@ -323,10 +332,10 @@ reason. `python3 scripts/trace.py` fails when a requirement is missing or a name
 | AUTH-SCOPE-002          |                                                                                               |                                                                                                                                                                        | not-exercised           |
 | AUTH-SCOPE-003          |                                                                                               |                                                                                                                                                                        | not-exercised           |
 | VER-CLIENT-001          |                                                                                               |                                                                                                                                                                        | client-side             |
-| VER-SERVER-001          |                                                                                               |                                                                                                                                                                        | not-exercised           |
+| VER-SERVER-001          | Packaged ParseRequest: advertised Major.Minor matching                                         | `CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics`                                                                                  |                         |
 | VER-SERVER-002          | a2a-validate rule 1                                                                           | `ValidationTest#unsupportedVersionIsRejected`; `DmnTest#validatesRequests`                                                                                             |                         |
-| VER-SERVER-003          | a2a-validate: empty or missing A2A-Version is accepted                                        | `ValidationTest#patchVersionAndMissingVersionAreAccepted`                                                                                                              |                         |
-| VER-CLIENT-002          |                                                                                               |                                                                                                                                                                        | not-exercised           |
+| VER-SERVER-003          | Packaged ParseRequest: missing/empty defaults to unsupported 0.3                                | `CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics`                                                                                  |                         |
+| VER-CLIENT-002          | Packaged ParseRequest: numeric patch ignored (server evidence only)                             | `CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics`                                                                                  |                         |
 | BIND-EQUIV-001          |                                                                                               |                                                                                                                                                                        | other-binding           |
 | BIND-EQUIV-002          |                                                                                               |                                                                                                                                                                        | other-binding           |
 | BIND-EQUIV-003          |                                                                                               |                                                                                                                                                                        | other-binding           |

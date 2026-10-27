@@ -76,7 +76,9 @@ IMPLEMENTED = {
     "CARD-STRUCT-001": ("a2a-card: response expression of the card start event", ["TemplatesIntegrationTest#agentCardIsServedOnGetWithTheConfiguredEndpointAndCapabilities", "CardTest#committedCardMatchesTheCardGeneratedFromTheAgentTools"]),
     "BIND-FIELD-001": ("a2a-card: supportedInterfaces", ["WebhookIntegrationTest#agentCardIsServedWithThePublicUrlAndTheToolSkills"]),
     "VER-SERVER-002": ("a2a-validate rule 1", ["ValidationTest#unsupportedVersionIsRejected", "DmnTest#validatesRequests"]),
-    "VER-SERVER-003": ("a2a-validate: empty or missing A2A-Version is accepted", ["ValidationTest#patchVersionAndMissingVersionAreAccepted"]),
+    "VER-SERVER-001": ("Packaged ParseRequest: advertised Major.Minor matching", ["CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics"]),
+    "VER-SERVER-003": ("Packaged ParseRequest: missing/empty defaults to unsupported 0.3", ["CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics"]),
+    "VER-CLIENT-002": ("Packaged ParseRequest: numeric patch ignored (server evidence only)", ["CoreProtocolTest#onlyAdvertisedMajorMinorIsAcceptedAndPatchDoesNotChangeTaskSemantics"]),
     "JSONRPC-FMT-001": ("a2a-rpc: Parse request, response builders", ["ValidationTest#unknownMethodAndInvalidRequest", "ValidationTest#idIsEchoedAndListTasksReturnsEmptyPage"]),
     "JSONRPC-FMT-002": ("a2a-rpc webhook response expression", ["WebhookIntegrationTest#sendMessageGetTaskAndCancelRoundTripThroughTheRealConnectors"]),
     "JSONRPC-SVC-001": ("a2a-validate: PascalCase method names", ["DmnTest#validatesRequests"]),
@@ -112,7 +114,7 @@ NA = {
     "not-exercised": [
         "CARD-SIGN-001", "CARD-SIGN-002", "CARD-SIGN-003", "CARD-SIGN-004", "AUTH-TLS-001", "AUTH-SERVER-002",
         "AUTH-INTASK-001", "AUTH-INTASK-002", "AUTH-INTASK-003", "AUTH-INTASK-004", "AUTH-SCOPE-001", "AUTH-SCOPE-002",
-        "AUTH-SCOPE-003", "VER-SERVER-001", "VER-CLIENT-002"],
+        "AUTH-SCOPE-003"],
 }
 NA_BY_ID = {i: r for r, ids in NA.items() for i in ids}
 

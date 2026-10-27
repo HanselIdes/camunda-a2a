@@ -22,7 +22,8 @@ import org.junit.jupiter.api.Test;
 
 @CamundaProcessTest
 @TestDeployment(resources = {"core/a2a-protocol.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn",
-    "tck/fixture/a2a-tck-fixture.bpmn", "tck/fixture/a2a-classify.dmn", "bpmn/a2a-literal-prompt.bpmn"})
+    "tck/fixture/a2a-tck-fixture.bpmn", "tck/fixture/a2a-classify.dmn", "bpmn/a2a-literal-prompt.bpmn",
+    "bpmn/a2a-agent.bpmn"})
 class CoreProtocolTest {
   CamundaClient client;
   CamundaProcessTestContext context;
@@ -69,6 +70,36 @@ class CoreProtocolTest {
     headers.remove("a2a-version");
     assertThat(ValidationTest.error(h.rpc(headers, Harness.request("ListTasks", "{}"))).get("code"))
         .as("missing version defaults to unsupported 0.3").isEqualTo(-32009);
+  }
+
+  @Test
+  void cancellationResponseCannotContradictConcurrentBusinessCompletion() {
+    h.agentProcess = "a2a-agent";
+    final var working = task(h.sendWith("cancel-completion-race", "{\"returnImmediately\":true}"));
+    assertThat(state(working)).isEqualTo("TASK_STATE_WORKING");
+    h.beforeEngineCall = call -> {
+      if (call.endsWith("/cancellation")) {
+        context.completeJobOfAdHocSubProcess(
+            io.camunda.process.test.api.assertions.JobSelectors.byJobType("io.camunda.agenticai:aiagent:subprocess:2"),
+            Map.of("agent", Map.of("responseText", "Completed concurrently")),
+            result -> result.completionConditionFulfilled(true).cancelRemainingInstances(true));
+        org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(20)).untilAsserted(() ->
+            assertThat(client.newProcessInstanceSearchRequest()
+                .filter(filter -> filter.processDefinitionId("a2a-agent")).send().join().items())
+                .hasSize(1).allSatisfy(instance ->
+                    assertThat(instance.getState().toString()).isEqualTo("COMPLETED")));
+      }
+    };
+    final var response = h.cancel((String) working.get("id"));
+    h.beforeEngineCall = call -> {};
+    final var persisted = Harness.bareTask(h.get((String) working.get("id")));
+    if (response.containsKey("result")) {
+      assertThat(Harness.bareTask(response)).isEqualTo(persisted);
+      assertThat(state(persisted)).isEqualTo("TASK_STATE_CANCELED");
+    } else {
+      assertThat(Harness.errorCode(response)).isEqualTo(-32002);
+      assertThat(state(persisted)).isEqualTo("TASK_STATE_COMPLETED");
+    }
   }
 
   @Test

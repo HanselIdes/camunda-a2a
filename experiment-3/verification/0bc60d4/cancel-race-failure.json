@@ -1,0 +1,16 @@
+{
+  "productionAssetsSource": "0bc60d4b57697284f0ef8bbf4c039db65bf4b118",
+  "executionState": "Production assets unchanged; dirty checkout with an added deterministic test and documentation overlay. Not clean-candidate acceptance evidence.",
+  "testSource": "experiment-3/tests/src/test/java/dev/hansel/a2a/three/CoreProtocolTest.java",
+  "testSourceSha256": "027a7eb287bc34997288fb5d257b5f1366719207349239f18d75f4abc221dc73",
+  "command": "mvn -q -f experiment-3/tests/pom.xml -Dtest=CoreProtocolTest#cancellationResponseCannotContradictConcurrentBusinessCompletion test",
+  "testLibrary": "camunda-process-test 8.10.4",
+  "runtime": "Actual process-test engine with Harness HTTP adapter; not native stock-Connectors reproduction.",
+  "tests": 1,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "observed": "CancelTask returns CANCELED; later GetTask returns COMPLETED with business artifacts.",
+  "verdict": "FAIL",
+  "acceptanceEvidence": false
+}
