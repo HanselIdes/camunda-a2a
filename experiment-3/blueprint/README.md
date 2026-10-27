@@ -58,6 +58,20 @@ Across the three runs, raw Extensions-call latency was **1.630 / 1.764 / 2.221 s
 was **0.097 / 1.657 / 4.532 seconds**, against the pinned transport's unchanged 30-second read timeout.
 These measurements describe this local configuration, not a latency guarantee.
 
+The [0bc60d4 checkpoint](../verification/0bc60d4/summary.json) records later exact-source TCK/native/SDK
+successes, two-agent load/restart results, the 8.9 native/SDK attempt and the 8.10 real-agent failure.
+It also preserves the cancellation/completion defect; those successful checks did not close that defect.
+
+The [f09fe52 cancellation checkpoint](../verification/f09fe52/summary.json) verifies the required interrupting
+hook on authenticated **8.8.21 / Connectors 8.9.0**. Its 44 native cases include both terminal orderings,
+24 seeded randomized completion/cancel races (17 canceled, seven completed), 12 follow-up/cancel races,
+four concurrent-follow-up pairs, cancellation while input-required, missing-hook failure and terminal reads/listing.
+Late business user-task completion returned 404. Separately, all 18 core process tests passed on clean f09fe52
+source, including rejected late completion of an activated AI-worker job, 24 randomized orderings and bounded
+index-visibility failure. These process tests use the configured 8.10.2 engine and Harness HTTP adapter;
+they are not the native 8.8 runtime proof. Final-source full-suite, TCK, SDK/real-model and two-agent repeats
+remain pending; no earlier result is silently carried to a changed protocol.
+
 ## Prepare the cluster
 
 Start timing an adoption attempt only after the cluster, Modeler, runtime, model and credentials are ready.
@@ -309,10 +323,11 @@ business-input clarification is not an in-task authorization flow.
 Repeating a new-task submission with the same `messageId` creates independent tasks. There is no message-ID
 side-effect deduplication or idempotency guarantee; the business process owns any required side-effect protection.
 
-Terminal-state races, bulk concurrency across two agents, duplicate-request behavior, pagination/retention,
-restart recovery, expired/insufficient credentials, the full version matrix,
-Modeler/form usability and a timed fresh adoption remain unverified. The recorded MUST-gate and SDK results
-apply only to their exact source and deployment settings, not subsequent changes. Do not infer exactly-once
+The source-specific checkpoints above distinguish demonstrated cancellation, load/restart, duplicate and matrix
+checks from final-candidate acceptance. Pagination beyond 100 tasks, expired/insufficient credentials and other
+error injection/recovery, final-source runtime repeats, Modeler/form usability and a timed fresh adoption remain
+open. The recorded MUST-gate and SDK results apply only to their exact source and deployment settings, not
+subsequent changes. Do not infer exactly-once
 side effects or a retention guarantee. Engine/connector incidents are operator-visible failures, not successful
 business outcomes.
 
