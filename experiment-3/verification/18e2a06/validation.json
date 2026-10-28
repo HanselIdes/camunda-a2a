@@ -7,7 +7,7 @@
     "secretFileMode": "0444",
     "permissionRegression": "PASS",
     "stockEngine8102Uid1001ReadOnlyChildMount": "PASS",
-    "selectedPythonTestsWithPermissionAndIsolationRegressions": 20,
+    "selectedPythonTestsWithPermissionAndIsolationRegressions": 21,
     "modelJourneyRepeated": false
   },
   "baseCommit": "58091bffe2a078d3f72b98fdb7c8d6b40b254d18",
