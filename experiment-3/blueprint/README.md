@@ -86,7 +86,7 @@ journeys used local Ollama; neither verifies Camunda-provided SaaS model executi
 
 Use `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `CAMUNDA_PROVIDED_LLM_API_KEY`, and
 `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` in the shipped BPMN. An isolated local verification may override
-those environment-supplied secrets with Ollama; that proves only the actual client/server calls against
+those model settings with Ollama; that proves only the actual client/server calls against
 that override, not SaaS model availability. Other engine, Connector, and model-provider combinations are
 unverified. The local cluster is disposable and uses synthetic data.
 The [cross-surface evidence matrix](../verification/32f8d4e/prototype-evidence.md) records exact known

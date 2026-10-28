@@ -10,7 +10,7 @@
   </bpmn:collaboration>
   <bpmn:error id="NotFound" name="NotFound" errorCode="NOT_FOUND" />
   <bpmn:process id="a2a-rpc" name="02 A2A Server - Protocol and Discovery" isExecutable="true">
-    <bpmn:startEvent id="RpcReceived" name="A2A request received" zeebe:modelerTemplate="dev.hansel.a2a.core.rpc.v1" zeebe:modelerTemplateVersion="1">
+    <bpmn:startEvent id="RpcReceived" name="A2A request received" zeebe:modelerTemplate="dev.hansel.a2a.core.rpc.v1" zeebe:modelerTemplateVersion="2">
       <bpmn:extensionElements>
         <zeebe:properties>
           <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
@@ -516,7 +516,7 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_ListCollected_BuildListFailure" sourceRef="ListCollected" targetRef="BuildListFailure" name="incomplete" />
     <bpmn:sequenceFlow id="Flow_BuildListFailure_ListFailureReady" sourceRef="BuildListFailure" targetRef="ListFailureReady" />
-    <bpmn:startEvent id="CardRequested" name="Agent Card requested" zeebe:modelerTemplate="dev.hansel.a2a.core.card.v1" zeebe:modelerTemplateVersion="1">
+    <bpmn:startEvent id="CardRequested" name="Agent Card requested" zeebe:modelerTemplate="dev.hansel.a2a.core.card.v1" zeebe:modelerTemplateVersion="2">
       <bpmn:extensionElements>
         <zeebe:properties>
           <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />

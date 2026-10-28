@@ -66,6 +66,28 @@ class ResourceClosureTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             current_secret_expression('="prefix-{{secrets.TOKEN}}"')
 
+    def test_card_public_url_is_explicit_required_and_not_a_secret_callback(self):
+        template = json.loads((ROOT / "blueprint/templates/09-server-agent-card-endpoint.json").read_text())
+        field = next(p for p in template["properties"] if p.get("id") == "inbound.publicRpcUrl")
+        self.assertEqual(field["value"], "")
+        self.assertEqual(field["type"], "String")
+        self.assertTrue(field["constraints"]["notEmpty"])
+        pattern = field["constraints"]["pattern"]["value"]
+        self.assertIsNotNone(re.fullmatch(pattern, "https://example.test/cluster/inbound/a2a"))
+        for invalid in ("", "http://example.test/inbound/a2a", "https://example.test/has space"):
+            self.assertIsNone(re.fullmatch(pattern, invalid))
+        for profile in ("basic", "oauth"):
+            root = ET.parse(ROOT / f"blueprint/profiles/{profile}/02-a2a-server.bpmn").getroot()
+            properties = root.find(
+                f".//{{{B}}}startEvent[@id='CardRequested']/{{{B}}}extensionElements/{{{Z}}}properties"
+            )
+            field = properties.find(f"{{{Z}}}property[@name='inbound.publicRpcUrl']")
+            self.assertEqual(field.get("value"), "")
+            response = properties.find(f"{{{Z}}}property[@name='inbound.responseExpression']").get("value")
+            self.assertNotIn("camunda.secrets", response)
+            self.assertIn("inbound.publicRpcUrl", response)
+            self.assertIn("statusCode: 500", response)
+
     def test_template_version_mismatch_is_rejected(self):
         path = "blueprint/profiles/basic/02-a2a-server.bpmn"
         self.resources[path] = self.resources[path].replace(

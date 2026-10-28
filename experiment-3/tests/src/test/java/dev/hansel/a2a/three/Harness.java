@@ -52,8 +52,22 @@ final class Harness {
     context.mockJobWorker(HTTP_JSON).withHandler(this::handle);
   }
 
+  /** This HTTP stub supplies placeholders itself; real secret resolution has a separate stock-runtime check. */
+  void mockCoreSecretResolution() {
+    final var model = io.camunda.zeebe.model.bpmn.Bpmn.readModelFromStream(
+        Harness.class.getResourceAsStream("/core/02-a2a-server.bpmn"));
+    for (final var input : model.getModelElementsByType(
+        io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeInput.class)) {
+      input.setSource(input.getSource().replaceAll(
+          "camunda\\.secrets\\.([A-Z0-9_]+)", "\"{{secrets.$1}}\""));
+    }
+    client.newDeployResourceCommand().addProcessModel(model, "mocked-core-secrets.bpmn").send().join();
+  }
+
   private String secrets(final String s) {
-    return s.replace("{{secrets.ENGINE_URL}}", rest)
+    return s.replace("camunda.secrets.ENGINE_URL", rest)
+        .replace("camunda.secrets.A2A_AGENT_PROCESS", agentProcess)
+        .replace("{{secrets.ENGINE_URL}}", rest)
         .replace("{{secrets.A2A_AGENT_PROCESS}}", agentProcess)
         .replace("{{secrets.A2A_PUSH_ENABLED}}", String.valueOf(pushEnabled));
   }

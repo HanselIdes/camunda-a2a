@@ -4,7 +4,7 @@
   "id": "dev.hansel.a2a.core.card.v1",
   "description": "Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. Requires stock Connectors and Camunda engine 8.10 or later; only combinations documented in the setup guide are verified.",
   "documentationRef": "https://a2a-protocol.org/latest/specification/",
-  "version": 1,
+  "version": 2,
   "category": {
     "id": "connectors",
     "name": "Connectors"

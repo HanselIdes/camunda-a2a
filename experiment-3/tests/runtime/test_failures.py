@@ -13,8 +13,8 @@ class FailureFixtureTest(unittest.TestCase):
         original = SOURCE.read_bytes()
         for mode, target, expected in (
                 ("invalid-credentials", "authentication.password", "deliberately-invalid-noncredential"),
-                ("insufficient-permissions", "authentication.password", "{{secrets.PROOF_RESTRICTED_PASSWORD}}"),
-                ("revoked-credentials", "authentication.password", "{{secrets.PROOF_RESTRICTED_PASSWORD}}"),
+                ("insufficient-permissions", "authentication.password", "=camunda.secrets.PROOF_RESTRICTED_PASSWORD"),
+                ("revoked-credentials", "authentication.password", "=camunda.secrets.PROOF_RESTRICTED_PASSWORD"),
                 ("unreachable-engine-endpoint", "url", '="http://127.0.0.1:1/v2/process-instances"')):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
                 output = Path(directory) / "fault.bpmn"
@@ -29,5 +29,5 @@ class FailureFixtureTest(unittest.TestCase):
                 other = next(item for item in tree.getroot().iter() if item.get("id") == "CorrelateMessage")
                 password = next(item.get("source") for item in other.iter(f"{{{Z}}}input")
                                 if item.get("target") == "authentication.password")
-                self.assertEqual(password, "{{secrets.ENGINE_PASSWORD}}")
+                self.assertEqual(password, "=camunda.secrets.ENGINE_PASSWORD")
         self.assertEqual(SOURCE.read_bytes(), original)

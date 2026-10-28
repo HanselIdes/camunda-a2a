@@ -44,6 +44,7 @@ class CoreProtocolTest {
   @BeforeEach
   void setUp() {
     h = new Harness(client, context);
+    h.mockCoreSecretResolution();
     h.agentProcess = "a2a-echo";
   }
 

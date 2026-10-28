@@ -22,6 +22,9 @@ CARD_RPC_URL_PATTERN = "^https://[^ /]+/[^ ]*$"
 
 
 def configure_card(root):
+    for node in root.iter():
+        if node.get(f"{{{Z}}}modelerTemplate", "").startswith("dev.hansel.a2a.core."):
+            node.set(f"{{{Z}}}modelerTemplateVersion", "2")
     start = root.find(f".//{{{B}}}startEvent[@id='CardRequested']")
     properties = start.find(f"{{{B}}}extensionElements/{{{Z}}}properties")
     ET.SubElement(properties, f"{{{Z}}}property", name=CARD_RPC_URL_PROPERTY, value="")
@@ -202,6 +205,9 @@ def assets():
         controlled_agent.find(
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNDiagram/"
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane").set("bpmnElement", "a2a-controlled-agent")
+        for field in controlled_agent.iter(f"{{{Z}}}input"):
+            if field.get("target", "").startswith("provider."):
+                field.set("source", "nonshipping-mocked-provider")
         output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent, "8.10.0")
         for authentication in ("basic", "oauth"):
             profile = configure_card(current_secret_mappings(
@@ -227,7 +233,7 @@ def assets():
             data.pop("icon", None)
             data["name"] = ("Server - A2A RPC Endpoint" if kind == "rpc"
                             else "Server - Agent Card Endpoint")
-            data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=1)
+            data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=2)
             data["engines"]["camunda"] = "^8.10"
             data["description"] = ("Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. "
                                    "Requires stock Connectors and Camunda engine 8.10 or later; "
