@@ -84,6 +84,30 @@ Earlier 8.9.26 / Connectors 8.9.17 evidence applies only to its pinned earlier s
 or the server's revised result mapping. The server still uses the v5 connector and accepts both legacy
 object results and 8.10 structured content blocks. Camunda-provided model execution and other version pairs remain unverified.
 
+### Why 8.10, and what can I use on 8.9?
+
+This is a requirement of the **selected client connector**, not of A2A or BPMN in general.
+The [pinned Sub-process v2 template, version 1](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json)
+declares engine constraint `^8.10` and worker type `io.camunda.agenticai:aiagent:subprocess:2`.
+That worker handles tool activation and feedback inside the ad-hoc subprocess. The verified
+Connectors 8.9.17 runtime instead contains the older `io.camunda.agenticai:aiagent-job-worker:1`
+implementation; it is not the selected v2 worker. This does **not** mean that 8.9 lacks AI agents
+or ad-hoc subprocesses generally.
+
+| Package / runtime | What you can and cannot do | Evidence |
+| --- | --- | --- |
+| Current compact client / engine and Connectors 8.10.2 | Run the supplied client, confirmation, server, polling, and result-review journey. | [Focused authenticated run](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/verification/9c43104/README.md), with local Ollama rather than a SaaS model. |
+| Current package / 8.9 | Cannot deploy and execute the compact client or complete demo as supplied. The revised server result mapping has no fresh 8.9 runtime validation. | Selected template requires `^8.10`; current runtime evidence is 8.10.2 only. |
+| [Pinned Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Use discovery, send/poll, explicit confirmation, and result review with the older client AI Agent Task and external feedback loop, not the current compact Sub-process v2 client. | [Source-pinned `69e77df` run](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); local Ollama, not a blanket 8.9 compatibility claim. |
+
+If staying on 8.9, use that **whole immutable package and its own README/dependencies**, rather than
+combining it with current files. No fallback variant is maintained here. A template being visible or
+importable in Modeler does not establish runtime compatibility. Lowering BPMN version metadata or
+mixing engine and Connectors minor versions is not a supported workaround.
+
+Version compatibility is separate from the [profile limitations](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/demo/README.md#limits-and-troubleshooting):
+8.10 does not add push, streaming, OAuth, or per-user authorization to this Basic demo.
+
 You need an authenticated engine, stock Connectors, trusted HTTPS endpoints, and a reachable OpenAI-compatible language model.
 Keep local validation overrides separate from the public secret defaults below.
 

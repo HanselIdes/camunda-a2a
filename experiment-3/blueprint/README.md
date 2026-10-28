@@ -43,6 +43,35 @@ complete current demo on 8.9.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
 
+### Why the current client requires 8.10
+
+The requirement comes from the selected
+[`io.camunda.connectors.agenticai.ai-agent-subprocess.v2@1` template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json),
+which declares engine constraint `^8.10`. Its worker type is
+`io.camunda.agenticai:aiagent:subprocess:2`. The pinned
+[v2 runtime implementation](https://github.com/camunda/connectors/blob/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/src/main/java/io/camunda/connector/agenticai/aiagent/AgentSubProcessV2Function.java)
+handles the ad-hoc subprocess through this worker; tool activation and feedback stay inside the host.
+The verified Connectors 8.9.17 source instead has the older
+[`io.camunda.agenticai:aiagent-job-worker:1` implementation](https://github.com/camunda/connectors/blob/81f90be6ba9c35d1cac14427761434393042c53b/connectors/agentic-ai/src/main/java/io/camunda/connector/agenticai/aiagent/AiAgentJobWorker.java).
+These are different connector contracts. The 8.10 minimum is not a generic requirement of A2A,
+BPMN, AI agents, or all ad-hoc subprocess implementations.
+
+| Package / runtime | What works or is unavailable | Evidence |
+| --- | --- | --- |
+| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/9c43104/README.md). |
+| Current package / 8.9 | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only. |
+| [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client. | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
+
+For an 8.9 cluster, use the whole pinned Task-based package with its own README and dependencies.
+Its deployed model bytes match the source-pinned run. Do not mix those resources with current files;
+no fallback variant is maintained. Importing or resolving the v2 template in Modeler does not make
+an 8.9 runtime compatible. Lowering model version metadata or mixing engine/Connectors minor
+versions is not a supported workaround.
+
+These are version-specific limits, separate from the selected Basic profile: upgrading to 8.10
+does not enable push, streaming, OAuth, or per-user authorization in that demo. Both recorded
+journeys used local Ollama; neither verifies Camunda-provided SaaS model execution.
+
 | Component            | Version or setting                                                                                                   |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Self-Managed engine  | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                             |
