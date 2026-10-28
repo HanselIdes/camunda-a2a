@@ -1,0 +1,51 @@
+{
+  "targetCommit": "9c4310491609edf8ffcaf66672c4e9f9c1f38237",
+  "targetWorktreeDirty": false,
+  "verdict": "PASS",
+  "engineImage": "camunda/camunda:8.10.2",
+  "connectorsImage": "camunda/connectors-bundle:8.10.2",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
+  "checks": [
+    "authenticated 8.10 deployment of the seven BPMN/DMN/form resources",
+    "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, response-derived task/context identity, final result preparation and legacy/current server evidence",
+    "integrated direct HTTPS Agent Card and authenticated endpoint rejection",
+    "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, followed up, polled the same task and reviewed the exact server-agent artifact"
+  ],
+  "serverTaskState": "TASK_STATE_COMPLETED",
+  "artifact": {
+    "merchant": "Northwind Electronics",
+    "currency": "USD",
+    "chargeAmounts": [49.95, 49.95],
+    "expectedAmount": 49.95,
+    "paidAmount": 99.9,
+    "overchargeAmount": 49.95,
+    "matchingAmounts": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "syntheticOnly": true
+  },
+  "clientProcessState": "COMPLETED",
+  "clientToolCalls": [
+    "DiscoverAgentCard",
+    "SendA2AMessage",
+    "GetA2ATask",
+    "AskClientForInput",
+    "SendA2AMessage",
+    "GetA2ATask"
+  ],
+  "assertedBehavior": {
+    "clientRequestedExplicitConfirmation": true,
+    "initialUserMessageContainsStructuredClaim": false,
+    "confirmedFollowUpStructuredClaimParts": 1,
+    "followUpReusedInitialTaskAndContext": true,
+    "pollObservedSameTaskCompleted": true
+  },
+  "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
+  "sourceAfter": {
+    "targetCommit": "9c4310491609edf8ffcaf66672c4e9f9c1f38237",
+    "targetWorktreeDirty": false
+  },
+  "sanitization": {
+    "removedFields": ["serverTaskId", "evidenceLocation"]
+  }
+}

@@ -23,7 +23,7 @@ send, poll, and user-input root tools in a compact two-by-two grid. Its stock co
 The protocol and
 discovery webhooks share process `a2a-rpc`; a new A2A task starts the separate server-side AI agent
 `a2a-card-dispute`. Its deterministic BPMN tool validates explicit synthetic inputs and returns arithmetic
-evidence for the client to review. The shipped agent tasks reference the `CAMUNDA_PROVIDED_LLM_*` secrets;
+evidence for the client to review. Both shipped agents reference the `CAMUNDA_PROVIDED_LLM_*` secrets;
 the local validation override does not verify SaaS model access. No refund, real dispute decision, fraud
 determination, financial integration, or custom HTTP server is included.
 
@@ -32,6 +32,8 @@ determination, financial integration, or custom HTTP server is included.
 The complete demo now requires **Camunda 8.10 and Connectors 8.10 or later** because the selected client
 Sub-process template has engine constraint `^8.10`. The focused verification profile is engine 8.10.2,
 stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
+The [focused authenticated 8.10.2 run](../verification/9c43104/README.md) passed on clean
+source `9c43104`, including actual-model confirmation, same-task follow-up, and result review.
 The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
 [`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
 The protocol is unchanged. The server's result mapping accepts both legacy object results and 8.10

@@ -1,0 +1,124 @@
+{
+  "targetCommit": "9c4310491609edf8ffcaf66672c4e9f9c1f38237",
+  "baseCommit": "565adf7e740aa472cb0cc3f813ca43ff861e73b5",
+  "localModel": {
+    "name": "qwen3-coder-30b-64k:latest",
+    "ollamaDigest": "13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253"
+  },
+  "checks": {
+    "buildBlueprintCheck": "PASS",
+    "resourceTests": 14,
+    "importResources": 13,
+    "automatedLayoutChecks": 18,
+    "shippingProfileBpmnLintErrors": 0,
+    "clientBpmnLintWarnings": 8,
+    "clientBpmnLintWarningReason": "Retained deprecated {{secrets.NAME}} references under the 8.10 ruleset",
+    "otherShippingProfileBpmnLintZeroIssues": 3,
+    "shippingProfileBpmnOfficialXsdValid": 4,
+    "formsSchemaValid": 3,
+    "confirmationPythonTests": 5,
+    "nativeEngineHistoryRegressions": "PASS",
+    "mavenClean": true,
+    "mavenTests": 38,
+    "mavenFailures": 0,
+    "mavenErrors": 0,
+    "mavenSkipped": 0,
+    "mavenSuites": ["CoreProtocolTest", "CoreListingTest", "TemplateShapeTest"],
+    "diffWhitespaceCheck": "PASS"
+  },
+  "clientTemplate": {
+    "id": "io.camunda.connectors.agenticai.ai-agent-subprocess.v2",
+    "version": 1,
+    "engineConstraint": "^8.10",
+    "taskType": "io.camunda.agenticai:aiagent:subprocess:2",
+    "upstreamCommit": "b490d065b59ffe4788319609dbe41deb25e68e3f",
+    "upstreamPath": "connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json",
+    "appliedWith": "c8ctl element-template apply",
+    "hostElementType": "bpmn:adHocSubProcess",
+    "hostElementId": "ClientAgent",
+    "outputSource": "=agent",
+    "outputTarget": "clientAgent",
+    "internalContextVariable": "agentContext",
+    "toolResultObjectPath": "content[item.type = \"object\"][1].content",
+    "maxModelCalls": 8,
+    "contextWindowSize": 20
+  },
+  "serverTemplate": {
+    "id": "io.camunda.connectors.agenticai.aiagent.jobworker.v1",
+    "version": 5,
+    "upstreamCommit": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+    "evidenceMappingAcceptsLegacyObjectAndStructuredObjectBlock": true,
+    "bothEvidenceShapesEvaluatedOnNative810Engine": true,
+    "fresh89Runtime": false
+  },
+  "restTemplate": {
+    "id": "io.camunda.connectors.HttpJson.v2",
+    "version": 13,
+    "upstreamCommit": "b490d065b59ffe4788319609dbe41deb25e68e3f",
+    "unchangedFromBaseline": true
+  },
+  "clientModeler": {
+    "version": "5.51.1",
+    "isolatedProfile": true,
+    "exactPinnedClientAndRestTemplatesInstalled": true,
+    "errors": 0,
+    "warnings": 0,
+    "topLevelNodes": 5,
+    "straightForwardTopLevelFlows": 4,
+    "toolGridRows": 2,
+    "toolGridColumns": 2,
+    "personallyInspectedNoNodeOrLabelCrossings": true,
+    "iconAttribute": "zeebe:modelerTemplateIcon",
+    "iconDataUrlLength": 3690,
+    "iconDataUrlSha256": "c177d29e3dc40e7e311d50d1431699809ee948e7cdce003d19a8333aed5104c8",
+    "renderedIconEqualsPinnedUpstream": true,
+    "renderedIconWidth": 18,
+    "renderedIconHeight": 18,
+    "savePreservesIconMetadata": true,
+    "screenshot": "client-subprocess.png"
+  },
+  "sourceSha256": {
+    "blueprint/demo/01-client-agent.bpmn": "962be5c3208a11ab5319ae261d920493e39baf864e3f8ec316fcdb6089feafe9",
+    "blueprint/demo/03-server-agent-card-dispute.bpmn": "418bec363125ff1726d94630c2f0171b93632e87ea94ec414fd2184838577eef",
+    "blueprint/profiles/basic/02-a2a-server.bpmn": "56af6f4f5eeb07fc60e80292565a4b126596a2e048638544a7c3f78270e9942a"
+  },
+  "precedingAttempts": [
+    {
+      "source": "2e86ead8e0b798088ca1b867fd07d1c6d574475a",
+      "verdict": "FAIL",
+      "reason": "Legacy-shaped client history readers omitted persisted object blocks; client reached the bounded model-call limit."
+    },
+    {
+      "source": "233700fd8b4a4ea027fecc917a20aba5eac878dd",
+      "verdict": "FAIL",
+      "reason": "Native expression regression rejected missing-key warnings from optional response-wrapper lookups."
+    },
+    {
+      "source": "8622bfd110bfb9487554e02317c380d82fa6ea18",
+      "verdict": "FAIL",
+      "reason": "Client confirmation and identity passed, but the server's legacy evidence reader did not recognize the structured result; task correctly failed rather than fabricating an artifact."
+    }
+  ],
+  "qualification": {
+    "fullPythonDiscovery": "NOT_PASSING: unchanged baseline missing client_versions module and reliability.timed_echo int() conversion of floating-point DI coordinates",
+    "saasModelExecution": "UNVERIFIED",
+    "otherVersionPairs": "UNVERIFIED",
+    "fullA2AConformance": "NOT_RUN",
+    "marketplaceEligibility": "NOT_ESTABLISHED"
+  },
+  "manifest": [
+    "blueprint/demo/01-client-agent.bpmn",
+    "blueprint/profiles/basic/02-a2a-server.bpmn",
+    "blueprint/demo/03-server-agent-card-dispute.bpmn",
+    "blueprint/demo/04-client-agent-ask.form",
+    "blueprint/demo/05-client-agent-confirm.form",
+    "blueprint/demo/06-client-agent-result.form",
+    "blueprint/demo/07-server-request-validation.dmn",
+    "blueprint/templates/08-server-a2a-rpc-endpoint.json",
+    "blueprint/templates/09-server-agent-card-endpoint.json",
+    "blueprint/templates/10-server-http-json-v13.json",
+    "blueprint/demo/README.md",
+    "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+    "https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json"
+  ]
+}
