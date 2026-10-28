@@ -104,6 +104,10 @@ AI Agent Sub-process connector on the client. Source-pinned 8.9.26 / 8.9.17 evid
 protocol and server, including the [earlier client Task variant](verification/69e77df/README.md),
 does not verify the current client's or server's revised result mappings on 8.9.
 See the [current setup](blueprint/README.md).
+Current blueprint resources use native `camunda.secrets` FEEL references from an 8.10 cluster secret
+store, not Connector-only environment secrets. Configure the public RPC URL in the Card template
+to exactly match the client's existing `A2A_RPC_URL` secret; webhook response callbacks use local FEEL.
+See [cluster secret store setup](blueprint/README.md#cluster-secret-store).
 The selected Sub-process v2 template requires 8.10; this is not a generic A2A or AI-agent limit.
 For what cannot run as supplied on 8.9 and the immutable, verified Task-based alternative, see the
 [compatibility table](blueprint/README.md#why-the-current-client-requires-810).
@@ -224,7 +228,9 @@ deploys the diagrams and prints the Tasklist URL of "A2A client agent". c8run ha
 | `A2A_PUSH_TOKEN`                                                  | the push token the client sends and its webhook checks                                                                  |
 | `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `_API_KEY`, `_DEFAULT_MODEL` | the model both agents use                                                                                               |
 
-The diagrams use `{{secrets.X}}`, which the connectors runtime resolves from its `SECRET_X` environment variables.
+These archived experimental diagrams use legacy secret interpolation resolved from Connector `SECRET_X`
+environment variables. This is **not** setup for the current numbered blueprint; use its
+[cluster secret store instructions](blueprint/README.md#cluster-secret-store) instead.
 
 ## Tests
 

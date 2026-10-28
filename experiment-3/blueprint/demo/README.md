@@ -131,9 +131,9 @@ in BPMN files. Connector-only `SECRET_*` environment variables are not a substit
 The client references the Camunda-provided LLM secret names through these connector inputs:
 
 ```text
-provider.openai.backend.custom.endpoint==camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT
-provider.openai.backend.custom.authentication.apiKey==camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY
-provider.openai.model.model==camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL
+Input provider.openai.backend.custom.endpoint: =camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT
+Input provider.openai.backend.custom.authentication.apiKey: =camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY
+Input provider.openai.model.model: =camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL
 ```
 
 The client selects provider `openai`, API `completions`, custom backend and API-key authentication.
@@ -146,9 +146,15 @@ Inside an existing FEEL context, use an unquoted reference, for example
 `={"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}`; do not quote it as text.
 URL composition uses `=camunda.secrets.ENGINE_URL + "/v2/..."`.
 The engine persists references rather than credentials and injects resolved values for jobs;
-Connectors also resolves references when evaluating inbound properties.
+Connectors also resolves references when binding inbound credentials. This does **not** apply to every
+expression: webhook response callbacks use local FEEL and cannot resolve cluster secret references.
+Select **Agent Card requested** in `02 A2A Server`, then fill its required **Public RPC URL** field
+with the complete HTTPS RPC webhook URL. It must **exactly match** the client's `A2A_RPC_URL` secret,
+including any cluster prefix and path. This endpoint URL is public in the Agent Card, not a credential.
+The supplied field is empty until configured; discovery returns an explicit setup error if it is missing or not HTTPS.
 The [runtime setup guide](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md#cluster-secret-store)
 explains store setup and permissions. Missing secrets or resolution permissions prevent execution.
+Use Modeler **5.52.0 or later** for native-secret linting; 5.51.1 misidentifies `camunda.secrets` as the older deprecated syntax.
 
 The demonstrated same-runtime client/server flow requires `CAMUNDA_CLIENT_EXECUTION_THREADS=4`.
 The recorded profile also sets `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`.

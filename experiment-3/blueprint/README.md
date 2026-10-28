@@ -308,10 +308,21 @@ Whole-value mappings use `=camunda.secrets.ENGINE_PASSWORD`. In a FEEL context o
 use the reference unquoted: `={"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}` or
 `=camunda.secrets.ENGINE_URL + "/v2/topology"`. Quoting the reference makes it literal text.
 The engine keeps placeholders in persisted variables and injects values into job activation;
-the 8.10 Connectors runtime resolves references in inbound property evaluation as well.
+the 8.10 Connectors runtime resolves references when binding inbound credentials as well.
+This is not support for secret references in every expression: stock webhook response callbacks use
+**local FEEL**, so they cannot resolve `camunda.secrets` in `inbound.responseExpression`.
 The pinned [input-mapping tests](https://github.com/camunda/camunda/blob/8.10.2/zeebe/engine/src/test/java/io/camunda/zeebe/engine/processing/expression/SecretReferenceInputMappingTest.java)
 and [inbound-binding tests](https://github.com/camunda/connectors/blob/b490d065b59ffe4788319609dbe41deb25e68e3f/connector-runtime/connector-runtime-core/src/test/java/io/camunda/connector/runtime/core/inbound/InboundSecretReferenceBindingTest.java)
 cover these mechanisms. Historical 8.9 packages retain their own secret setup; do not mix the two.
+
+In Modeler, select **Agent Card requested** in `02 A2A Server` and configure the required
+**Public RPC URL** field. Enter the complete HTTPS RPC webhook URL, including any cluster prefix
+and `/inbound/a2a`, exactly matching the client's `A2A_RPC_URL` secret. The URL is already public in
+discovery and contains no credential. These two explicit settings are necessary because the card's
+local response expression cannot read the cluster secret store. The field has no default:
+missing or non-HTTPS configuration returns a clear HTTP 500 setup error, not a plausible wrong endpoint.
+Never put an API key in this field. Use Modeler **5.52.0 or later** for native-secret linting;
+5.51.1 misidentifies the new reference as the older deprecated syntax.
 
 | Connector secret                     | Required value                                                                     |
 | ------------------------------------ | ---------------------------------------------------------------------------------- |

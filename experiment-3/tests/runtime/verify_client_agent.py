@@ -212,6 +212,8 @@ try:
     for path in resources:
         contents = path.read_bytes()
         if path.name == "02-a2a-server.bpmn":
+            for _, namespace in ET.iterparse(path, events=("start-ns",)):
+                ET.register_namespace(*namespace)
             model = ET.fromstring(contents)
             field = model.find(
                 ".//{http://camunda.org/schema/zeebe/1.0}property[@name='inbound.publicRpcUrl']"
