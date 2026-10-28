@@ -10,20 +10,20 @@ Camunda does not support or certify it.
 
 | File | Modeler name or role | Purpose |
 | --- | --- | --- |
-| `profiles/basic/01-a2a-server.bpmn` | 01 A2A Server - Protocol and Discovery | Expose discovery and task webhooks, manage task state, and handle follow-up, cancellation, and queries. |
-| `demo/02-server-agent-card-dispute.bpmn` | 02 Server Agent - Synthetic Card Dispute | Run the server-side AI agent and its deterministic reconciliation tool. |
-| `demo/03-client-agent.bpmn` | 03 Client Agent - Ask the Server | Run a client AI agent that selects A2A tools and requests human input. |
+| `demo/01-client-agent.bpmn` | 01 Client Agent - Ask the Server | Run a client AI agent that selects A2A tools and requests human input. |
+| `profiles/basic/02-a2a-server.bpmn` | 02 A2A Server - Protocol and Discovery | Expose discovery and task webhooks, manage task state, and handle follow-up, cancellation, and queries. |
+| `demo/03-server-agent-card-dispute.bpmn` | 03 Server Agent - Synthetic Card Dispute | Run the server-side AI agent and its deterministic reconciliation tool. |
 | `demo/04-client-agent-ask.form` | Client request form | Collect the initial free-text request. |
 | `demo/05-client-agent-confirm.form` | Client confirmation form | Collect explicit confirmation of synthetic financial inputs. |
 | `demo/06-client-agent-result.form` | Client result form | Display the result and arithmetic evidence for review. |
 | `demo/07-server-request-validation.dmn` | 07 Server - Validate A2A Request | Validate protocol requests. |
 | `templates/08-server-a2a-rpc-endpoint.json` | Server - A2A RPC Endpoint | Configure the authenticated task webhook. |
 | `templates/09-server-agent-card-endpoint.json` | Server - Agent Card Endpoint | Configure the discovery webhook. |
-| `templates/10-server-http-json-v12.json` | HTTP JSON Connector, version 12 | Pinned stock outbound HTTP template. |
+| `templates/10-server-http-json-v13.json` | HTTP JSON Connector, version 13 | Pinned stock outbound HTTP template. |
 | Camunda template catalog | Client AI Agent Task, version 8 | Required catalog template for the client agent; not redistributed here. |
 | `demo/README.md` | Project instructions | Explain this imported project and how to run it. |
 
-The numeric prefixes order the project by role: server protocol, server agent, client agent, forms, validation, then templates.
+The numeric prefixes order the project by role: client agent, server protocol, server agent, forms, validation, then templates.
 Runtime process IDs remain `a2a-rpc`, `a2a-card-dispute`, and `a2a-client`.
 
 The 11 repository resources plus the pinned [AI Agent Job Worker version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
@@ -121,14 +121,14 @@ Follow the [runtime setup guide](https://github.com/HanselIdes/camunda-a2a/blob/
 
 For this revised import, start with a fresh Modeler project when possible. Importing or renaming resources
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
-`profiles/basic/01-a2a-server.bpmn`, which now contains discovery.
+`profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
 1. Import the 11 repository resources and the pinned server AI Agent template. Confirm that each BPMN template assignment resolves to the stated version, including catalog AI Agent Task v8.
 2. Configure secrets and the runtime requirements above.
 3. Deploy the selected BPMN, DMN, and form resources together.
 4. Wait for healthy `CardRequested` and `RpcReceived` inbound Connectors in process `a2a-rpc`.
 5. Confirm that the discovery URL returns an Agent Card and unauthenticated task requests return HTTP 401, not 404.
-6. Start **03 Client Agent - Ask the Server** (`a2a-client`) using its start form.
+6. Start **01 Client Agent - Ask the Server** (`a2a-client`) using its start form.
 7. Enter the synthetic request below.
 
 > Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.

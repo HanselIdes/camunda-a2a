@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @CamundaProcessTest
-@TestDeployment(resources = {"core/a2a-protocol.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn"})
+@TestDeployment(resources = {"core/02-a2a-server.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn"})
 class CoreListingTest {
   CamundaClient client;
   CamundaProcessTestContext context;

@@ -30,7 +30,8 @@ determination, financial integration, or custom HTTP server is included.
 
 The candidate targets **Camunda 8.9.26 with stock Connectors 8.9.17** and Elasticsearch 8.19.23.
 The focused client-agent E2E passed on clean source commit
-[`d4f92c1`](../verification/d4f92c1/README.md). This is a specific validation profile, not a blanket
+[`69e77df`](../verification/69e77df/README.md), with the current numbering and REST v13 mappings.
+That record also includes server-agent icon checks in Modeler. This is a specific validation profile, not a blanket
 claim for every 8.9+ combination.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
@@ -42,7 +43,7 @@ protocol was unavailable; it does not establish support for 8.8.
 | Secondary storage    | Elasticsearch 8.19.23                                                                                                |
 | Client AI Agent Task | `io.camunda.connectors.agenticai.aiagent.v1`, version 8; engine constraint `^8.9`                                    |
 | Server AI Agent      | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                                    |
-| HTTP template        | `io.camunda.connectors.HttpJson.v2`, version 12                                                                      |
+| HTTP template        | `io.camunda.connectors.HttpJson.v2`, version 13                                                                      |
 | Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
 | Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
 | Engine exporter      | Explicit CamundaExporter class and `bulk.delay=1`; see below                                                      |
@@ -287,22 +288,22 @@ resource and contains the ordered manifest, exact labels, setup, and example req
 
 For this revised import, start with a fresh Modeler project when possible. Importing or renaming resources
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
-`profiles/basic/01-a2a-server.bpmn`, which now contains discovery.
+`profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
 The complete import closure is 11 repository resources plus the pinned upstream server AI Agent Job Worker v5
 template (12 import resources total): seven BPMN/DMN/form resources, three local element-template JSON files,
 and the README. The client also requires Camunda AI Agent Task template
 `io.camunda.connectors.agenticai.aiagent.v1@8`; `c8ctl element-template info` confirmed it in the configured
 template catalog, so its JSON is not redistributed. Confirm that the target Modeler resolves this exact ID
-and version before import. The local HTTP JSON v12 snapshot may be omitted only after confirming that the
+and version before import. The local HTTP JSON v13 snapshot may be omitted only after confirming that the
 target already provides that exact ID and version. Keep both custom server templates and the pinned upstream
 AI Agent Job Worker v5 template. An "Already available" notice alone does not establish version equivalence.
 Use the Modeler's element-template import workflow for the three local JSON files and the
 [pinned upstream template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json).
 The upstream template remains subject to its own terms; see [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
-Deploy these seven resources together: `profiles/basic/01-a2a-server.bpmn`,
-`demo/02-server-agent-card-dispute.bpmn`, `demo/03-client-agent.bpmn`, the three forms under
+Deploy these seven resources together: `profiles/basic/02-a2a-server.bpmn`,
+`demo/03-server-agent-card-dispute.bpmn`, `demo/01-client-agent.bpmn`, the three forms under
 `demo/04-client-agent-ask.form`, `demo/05-client-agent-confirm.form`, and
 `demo/06-client-agent-result.form`, plus `demo/07-server-request-validation.dmn`. Do not deploy the README
 or the template JSON files. The process IDs remain `a2a-rpc`, `a2a-card-dispute`, and `a2a-client`;
@@ -431,7 +432,7 @@ Connectors after changing the value so the runtime loads it.
 To try echo, download/import that linked BPMN separately, deploy it alongside the unchanged Basic protocol and
 validation DMN, and set connector secret `A2A_AGENT_PROCESS=a2a-echo`. Echo uses only the shared `a2a-task-update`
 process from the protocol: it needs no model, form or classification DMN. It is not in the default import manifest.
-In `profiles/basic/01-a2a-server.bpmn`, select start event `CardRequested` and edit the
+In `profiles/basic/02-a2a-server.bpmn`, select start event `CardRequested` and edit the
 `inbound.responseExpression` property to update `body.name`, `body.description` and `body.skills`
 (IDs, names, descriptions, tags and examples). Keep the complete endpoint URL, API-key scheme and
 disabled-capability declarations. Discovery is part of process `a2a-rpc`; there is no separate card process.

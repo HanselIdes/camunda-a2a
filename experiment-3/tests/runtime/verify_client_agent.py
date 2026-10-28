@@ -171,9 +171,9 @@ try:
         time.sleep(1)
 
     resources = [
-        ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn",
-        ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn",
-        ROOT / "blueprint/demo/03-client-agent.bpmn",
+        ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn",
+        ROOT / "blueprint/demo/03-server-agent-card-dispute.bpmn",
+        ROOT / "blueprint/demo/01-client-agent.bpmn",
         ROOT / "blueprint/demo/04-client-agent-ask.form",
         ROOT / "blueprint/demo/05-client-agent-confirm.form",
         ROOT / "blueprint/demo/06-client-agent-result.form",

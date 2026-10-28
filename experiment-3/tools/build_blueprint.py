@@ -19,7 +19,9 @@ from bpmn_gen.lib import Proc, q
 UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
 AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
 AI_TASK = "io.camunda.connectors.agenticai.aiagent.v1@8"
-HTTP = UPSTREAM + "connectors/http/rest/element-templates/versioned/http-json-connector-12.json"
+HTTP = ("https://raw.githubusercontent.com/camunda/connectors/"
+        "b490d065b59ffe4788319609dbe41deb25e68e3f/"
+        "connectors/http/rest/element-templates/versioned/http-json-connector-13.json")
 DEMO = ROOT / "blueprint/demo"
 SAMPLE = ("Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. "
           "The expected charge was USD 49.95. Reconcile the two charges with your tool.")
@@ -89,14 +91,15 @@ def apply(path, template, element, settings):
 def serialize(root):
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
     for node in root.iter():
-        node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
+        if node.get(f"{{{Z}}}modelerTemplate") != "io.camunda.connectors.agenticai.aiagent.jobworker.v1":
+            node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     ET.indent(root, space="  ")
     return layout_xml(ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n")
 
 
 def agent(path):
     p = original.agent_proc()
-    p.pid, p.name = "a2a-card-dispute", "02 Server Agent - Synthetic Card Dispute"
+    p.pid, p.name = "a2a-card-dispute", "03 Server Agent - Synthetic Card Dispute"
     for node_id in ("convert_temperature", "list_tech_devices"):
         p.nodes.pop(node_id)
         p.order.remove(node_id)
@@ -166,7 +169,7 @@ def assets():
         output[path] = serialize(add_hook(ET.parse(path).getroot()))
     with tempfile.TemporaryDirectory(prefix="a2a-blueprint-") as directory:
         directory = Path(directory)
-        agent_path = directory / "02-server-agent-card-dispute.bpmn"
+        agent_path = directory / "03-server-agent-card-dispute.bpmn"
         agent_content = agent(agent_path)
         output[DEMO / agent_path.name] = agent_content
         controlled_agent = ET.fromstring(agent_content)
@@ -176,7 +179,7 @@ def assets():
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane").set("bpmnElement", "a2a-controlled-agent")
         output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent)
         for authentication in ("basic", "oauth"):
-            output[ROOT / "blueprint/profiles" / authentication / "01-a2a-server.bpmn"] = (
+            output[ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"] = (
                 build_core.build(authentication, agent_path))
         decision = ET.parse(ROOT / "dmn/a2a-validate.dmn").getroot()
         decision.set("name", "07 Server - Validate A2A Request")
@@ -186,11 +189,11 @@ def assets():
         output[DEMO / "07-server-request-validation.dmn"] = (
             ET.tostring(decision, encoding="UTF-8", xml_declaration=True) + b"\n")
         templates = ROOT / "blueprint/templates"
-        for template, filename in ((HTTP, "10-server-http-json-v12.json"),):
+        for template, filename in ((HTTP, "10-server-http-json-v13.json"),):
             fetched = subprocess.run(["c8ctl", "element-template", "get", template, "--no-icon"],
                                      check=True, capture_output=True, text=True)
             data = json.loads(fetched.stdout)
-            assert data["id"] == "io.camunda.connectors.HttpJson.v2" and data["version"] == 12
+            assert data["id"] == "io.camunda.connectors.HttpJson.v2" and data["version"] == 13
             output[templates / filename] = (json.dumps(data, indent=2) + "\n").encode()
         for kind in ("rpc", "card"):
             data = json.loads((ROOT / f"element-templates/a2a-1.0-server-{kind}.json").read_text())
@@ -215,7 +218,7 @@ def assets():
                     data["properties"].append({"type": "Hidden", "id": name, "value": value,
                                                "binding": {"type": "zeebe:property", "name": name}})
             else:
-                root = ET.fromstring(output[ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn"])
+                root = ET.fromstring(output[ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn"])
                 response = next(p.get("value") for p in root.iter(f"{{{Z}}}property")
                                 if p.get("name") == "inbound.responseExpression")
                 field = next(p for p in data["properties"] if p.get("id") == "inbound.responseExpression")
@@ -226,14 +229,14 @@ def assets():
                         else "09-server-agent-card-endpoint.json")
             output[templates / filename] = (json.dumps(data, indent=2) + "\n").encode()
         client_xml, client_forms, client_http, client_ai_settings = build_client_agent()
-        client_path = directory / "03-client-agent.bpmn"
+        client_path = directory / "01-client-agent.bpmn"
         client_path.write_text(client_xml)
         apply(client_path, AI_TASK, "ClientAgent", client_ai_settings)
         for element, settings in client_http.items():
             apply(client_path, HTTP, element, settings)
         for filename, text in client_forms.items():
             output[DEMO / filename] = text.encode()
-        output[DEMO / "03-client-agent.bpmn"] = serialize(ET.parse(client_path).getroot())
+        output[DEMO / "01-client-agent.bpmn"] = serialize(ET.parse(client_path).getroot())
         literal = Proc("a2a-literal-prompt", "Literal prompt regression fixture")
         literal.start("LiteralStart", "Input received", 150, 62)
         literal.script("LiteralEncode", "Encode input", 230, 40, json_string_expression("=text"), "encoded")

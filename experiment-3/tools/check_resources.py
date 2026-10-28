@@ -8,16 +8,16 @@ import xml.etree.ElementTree as ET
 from build_core import B, Z, ROOT
 
 PATHS = (
-    "blueprint/profiles/basic/01-a2a-server.bpmn",
-    "blueprint/demo/02-server-agent-card-dispute.bpmn",
-    "blueprint/demo/03-client-agent.bpmn",
+    "blueprint/demo/01-client-agent.bpmn",
+    "blueprint/profiles/basic/02-a2a-server.bpmn",
+    "blueprint/demo/03-server-agent-card-dispute.bpmn",
     "blueprint/demo/04-client-agent-ask.form",
     "blueprint/demo/05-client-agent-confirm.form",
     "blueprint/demo/06-client-agent-result.form",
     "blueprint/demo/07-server-request-validation.dmn",
     "blueprint/templates/08-server-a2a-rpc-endpoint.json",
     "blueprint/templates/09-server-agent-card-endpoint.json",
-    "blueprint/templates/10-server-http-json-v12.json",
+    "blueprint/templates/10-server-http-json-v13.json",
     "blueprint/demo/README.md",
 )
 AI_URL = ("https://raw.githubusercontent.com/camunda/connectors/"

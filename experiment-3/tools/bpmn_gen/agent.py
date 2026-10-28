@@ -16,7 +16,7 @@ AGENT_PROMPT = (
     '3. Your own knowledge, as a best-effort answer that you mark as such.\n\n'
     'Reply in plain text."')
 USER_PROMPT = ('=string join(for part in req.message.parts return if part.text != null then part.text else "", " ")')
-HTTP = "io.camunda.connectors.HttpJson.v2"
+HTTP = "io.camunda.connectors.HttpJson.v2@13"
 
 
 def tool_ext(tags, examples, io="", script=""):
