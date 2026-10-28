@@ -135,7 +135,7 @@ def engine_request(path, body=None, timeout=30):
 def rpc(body, api_key=True, timeout=60):
     headers = {"Content-Type": "application/json"}
     if api_key:
-        headers["X-A2A-Api-Key"] = env["PROOF_A2A_API_KEY"] if api_key is True else api_key
+        headers["X-Api-Key"] = env["PROOF_A2A_API_KEY"] if api_key is True else api_key
     request = urllib.request.Request(
         connectors_url + "/inbound/a2a",
         data=json.dumps(body).encode(),

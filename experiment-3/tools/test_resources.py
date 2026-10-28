@@ -42,6 +42,8 @@ class ResourceClosureTest(unittest.TestCase):
                 continue
             text = path.read_text()
             self.assertNotIn("{{secrets.", text, path)
+            self.assertNotIn("X-A2A-Api-Key", text, path)
+            self.assertNotIn("x-a2a-api-key", text, path)
             self.assertNotRegex(text, r'["\']camunda\.secrets\.', path)
             names.update(re.findall(r"camunda\.secrets\.([A-Za-z_][A-Za-z0-9_]*)", text))
         self.assertEqual(names, {
@@ -86,6 +88,7 @@ class ResourceClosureTest(unittest.TestCase):
             response = properties.find(f"{{{Z}}}property[@name='inbound.responseExpression']").get("value")
             self.assertNotIn("camunda.secrets", response)
             self.assertIn("inbound.publicRpcUrl", response)
+            self.assertIn('name: "X-Api-Key"', response)
             self.assertIn("statusCode: 500", response)
             template_response = next(p["value"] for p in template["properties"]
                                      if p.get("id") == "inbound.responseExpression")

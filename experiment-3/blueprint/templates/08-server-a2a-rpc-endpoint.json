@@ -163,7 +163,7 @@
     {
       "type": "Hidden",
       "id": "inbound.auth.apiKeyLocator",
-      "value": "=request.headers.`x-a2a-api-key`",
+      "value": "=request.headers.`x-api-key`",
       "binding": {
         "type": "zeebe:property",
         "name": "inbound.auth.apiKeyLocator"

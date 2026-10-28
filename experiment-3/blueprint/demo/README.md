@@ -113,6 +113,11 @@ Keep local validation overrides separate from the public secret defaults below.
 
 ## Configure secrets and endpoints
 
+**Caller migration:** send `X-Api-Key` instead of `X-A2A-Api-Key`; the secret name remains
+`A2A_API_KEY`. The current card advertises this header and accepts no old-header fallback.
+Stock Connectors 8.10.2 masks `x-api-key`, but logs the old custom header before authentication.
+Do not send credentials in the old header. Immutable older packages retain their own contract.
+
 Configure these names in the **8.10 cluster's default secret store**. Never put credentials or keys
 in BPMN files. Connector-only `SECRET_*` environment variables are not a substitute for this store.
 
@@ -143,7 +148,7 @@ Camunda SaaS provider; verify the endpoint and model through your authorized env
 Both A2A URLs must resolve from external clients and the Connectors runtime. Use matching certificate names and configure trusted issuers.
 Do not disable certificate checks. Each whole-value input uses FEEL `=camunda.secrets.NAME`.
 Inside an existing FEEL context, use an unquoted reference, for example
-`={"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}`; do not quote it as text.
+`={"X-Api-Key": camunda.secrets.A2A_API_KEY}`; do not quote it as text.
 URL composition uses `=camunda.secrets.ENGINE_URL + "/v2/..."`.
 The engine persists references rather than credentials and injects resolved values for jobs;
 Connectors also resolves references when binding inbound credentials. This does **not** apply to every
@@ -211,7 +216,7 @@ fraud determination, or financial integration.
 
 ## Use an external A2A client
 
-Read `A2A_AGENT_CARD_URL`, then send A2A 1.0 JSON-RPC requests to `A2A_RPC_URL` with the `X-A2A-Api-Key` header.
+Read `A2A_AGENT_CARD_URL`, then send A2A 1.0 JSON-RPC requests to `A2A_RPC_URL` with the `X-Api-Key` header.
 The supplied BPMN client uses these explicit URLs, not the stock A2A 0.3 client connector.
 
 An external client can include one structured data part in the initial message for one-shot execution:

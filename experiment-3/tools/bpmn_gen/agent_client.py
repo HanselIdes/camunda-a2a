@@ -189,7 +189,7 @@ def build():
             ("method", "POST"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
             ("headers", '={"A2A-Version": "1.0", "Content-Type": "application/json", '
-                        '"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}'),
+                        '"X-Api-Key": camunda.secrets.A2A_API_KEY}'),
             ("body", one("""={
               jsonrpc: "2.0", id: uuid(), method: "SendMessage",
               params: {
@@ -215,7 +215,7 @@ def build():
             ("method", "POST"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
             ("headers", '={"A2A-Version": "1.0", "Content-Type": "application/json", '
-                        '"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}'),
+                        '"X-Api-Key": camunda.secrets.A2A_API_KEY}'),
             ("body", one("""={
               jsonrpc: "2.0", id: uuid(), method: "GetTask",
               params: {id: get value(PREVIOUS_A2A_TASK_PARAMS, "taskId")}

@@ -76,7 +76,7 @@
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="POST" target="method" />
             <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
+            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
@@ -100,7 +100,7 @@
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="POST" target="method" />
             <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
+            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />

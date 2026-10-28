@@ -23,6 +23,9 @@ CARD_RPC_URL_PATTERN = "^https://[^ /]+/[^ ]*$"
 
 def configure_card(root):
     for node in root.iter():
+        for key, value in node.attrib.items():
+            node.set(key, value.replace("X-A2A-Api-Key", "X-Api-Key")
+                     .replace("x-a2a-api-key", "x-api-key"))
         if node.get(f"{{{Z}}}modelerTemplate", "").startswith("dev.hansel.a2a.core."):
             node.set(f"{{{Z}}}modelerTemplateVersion", "2")
     start = root.find(f".//{{{B}}}startEvent[@id='CardRequested']")
@@ -246,7 +249,7 @@ def assets():
                                           "Never persist authorization, API keys or arbitrary request headers.")
                 for name, value in {
                     "inbound.auth.apiKey": "=camunda.secrets.A2A_API_KEY",
-                    "inbound.auth.apiKeyLocator": '=request.headers.`x-a2a-api-key`',
+                    "inbound.auth.apiKeyLocator": '=request.headers.`x-api-key`',
                 }.items():
                     data["properties"].append({"type": "Hidden", "id": name, "value": value,
                                                "binding": {"type": "zeebe:property", "name": name}})

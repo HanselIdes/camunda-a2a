@@ -524,6 +524,7 @@ class CoreProtocolTest {
     }
     final var headers = Map.of("content-type", "application/a2a+json", "a2a-version", "1.0",
         "x-a2a-api-key", "MUST-NOT-PERSIST", "authorization", "Bearer MUST-NOT-PERSIST",
+        "x-api-key", "MUST-NOT-PERSIST",
         "cookie", "session=MUST-NOT-PERSIST", "unexpected", "MUST-NOT-PERSIST");
     final var body = Map.of("jsonrpc", "2.0", "id", "header-check", "method", "GetTask");
     final var result = client.newCreateInstanceCommand().bpmnProcessId("a2a-literal-prompt").latestVersion()

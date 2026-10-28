@@ -290,6 +290,13 @@ keystore passwords and API keys out of BPMN, repository files, screenshots and r
 
 ### Cluster secret store
 
+**Caller migration:** current endpoints require `X-Api-Key`, replacing `X-A2A-Api-Key`.
+The secret name remains `A2A_API_KEY`; the current Agent Card advertises the new header.
+Stock Connectors 8.10.2 redacts `x-api-key` in webhook activity logs but not the old custom header.
+Update external callers; there is no dual-header fallback. Immutable older packages keep their old
+contract. Never send the old header to the current endpoint: stock request logging occurs before
+authentication, so an unrecognized credential header can still be logged.
+
 The current 8.10 blueprint uses FEEL `=camunda.secrets.NAME`, not legacy interpolation.
 Configure the names below in the **cluster's default secret store**. Connector-only `SECRET_*`
 environment variables do not populate that store. Do not copy secret values into BPMN or process variables.
@@ -305,7 +312,7 @@ the isolated test uses its existing non-production admin identity, not a least-p
 Missing stores, names, or resolution permissions block execution. SaaS provisioning and model access remain unverified.
 
 Whole-value mappings use `=camunda.secrets.ENGINE_PASSWORD`. In a FEEL context or concatenation,
-use the reference unquoted: `={"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}` or
+use the reference unquoted: `={"X-Api-Key": camunda.secrets.A2A_API_KEY}` or
 `=camunda.secrets.ENGINE_URL + "/v2/topology"`. Quoting the reference makes it literal text.
 The engine keeps placeholders in persisted variables and injects values into job activation;
 the 8.10 Connectors runtime resolves references when binding inbound credentials as well.
@@ -440,7 +447,7 @@ The final publication guard also checks the tool result against those confirmed 
 This confirms what the client explicitly supplied; it does not authenticate real-world financial facts.
 
 An external client can fetch the complete `A2A_AGENT_CARD_URL` and send A2A 1.0 `SendMessage` requests to the card's
-JSON-RPC interface using `X-A2A-Api-Key`. `GetTask` polls the returned task ID. Missing and invalid keys must be
+JSON-RPC interface using `X-Api-Key`. `GetTask` polls the returned task ID. Missing and invalid keys must be
 rejected without business work. Standard `/.well-known/agent-card.json` discovery requires an optional route to the
 direct discovery webhook; it has not been independently verified for this candidate.
 
@@ -471,7 +478,7 @@ for remote clusters or production: supply real DNS and an appropriately trusted 
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_AGENT_CARD_URL"
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
-  -H "X-A2A-Api-Key: $A2A_API_KEY" \
+  -H "X-Api-Key: $A2A_API_KEY" \
   --data '{"jsonrpc":"2.0","id":"demo-send","method":"SendMessage","params":{"message":{"messageId":"demo-request-1","role":"ROLE_USER","parts":[{"text":"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."},{"data":{"syntheticClaim":{"merchant":"Northwind Electronics","currency":"USD","chargeAmounts":[49.95,49.95],"expectedAmount":49.95,"syntheticOnly":true}}}]}}}'
 ```
 
@@ -480,7 +487,7 @@ Read `result.task.id` from the response, set `TASK_ID` to that value and poll:
 ```bash
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
-  -H "X-A2A-Api-Key: $A2A_API_KEY" \
+  -H "X-Api-Key: $A2A_API_KEY" \
   --data "{\"jsonrpc\":\"2.0\",\"id\":\"demo-poll\",\"method\":\"GetTask\",\"params\":{\"id\":\"$TASK_ID\"}}"
 ```
 

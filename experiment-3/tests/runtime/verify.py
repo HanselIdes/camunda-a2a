@@ -157,7 +157,7 @@ def rpc(body, key=True, timeout=60, version="1.0"):
     if version is not None:
         headers["A2A-Version"] = version
     if key:
-        headers["X-A2A-Api-Key"] = env["PROOF_A2A_API_KEY"] if key is True else key
+        headers["X-Api-Key"] = env["PROOF_A2A_API_KEY"] if key is True else key
     req = urllib.request.Request(connectors_url + "/inbound/a2a",
                                  data=json.dumps(body).encode(), headers=headers)
     try:
@@ -273,7 +273,7 @@ try:
           supportedInterfaces: [{url: "{{secrets.A2A_RPC_URL}}", protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
           capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
           defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain", "application/json"],
-          securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-A2A-Api-Key"}}},
+          securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-Api-Key"}}},
           securityRequirements: [{schemes: {a2aApiKey: {}}}],
           skills: [{id: "exercise_task_lifecycle", name: "Exercise task lifecycle",
           description: "Simulates deterministic lifecycle and artifact scenarios for conformance checks.",
@@ -363,7 +363,7 @@ try:
         assert card["supportedInterfaces"][0]["url"] == env.get(
             "EXPECTED_RPC_URL", "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a"), card
         assert card["capabilities"]["pushNotifications"] is False, card
-        assert card["securitySchemes"]["a2aApiKey"]["apiKeySecurityScheme"]["name"] == "X-A2A-Api-Key", card
+        assert card["securitySchemes"]["a2aApiKey"]["apiKeySecurityScheme"]["name"] == "X-Api-Key", card
         assert [s["id"] for s in card["skills"]] == ["review_duplicate_charge"], card
         print("direct HTTPS discovery, truthful endpoint/skill and API-key schema: PASS", flush=True)
         record_model_inputs()
