@@ -11,6 +11,7 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 
 from conformance import source_snapshot
 from confirmations import agent_history_checks
@@ -209,9 +210,18 @@ try:
     boundary = secrets.token_hex(16)
     body = bytearray()
     for path in resources:
+        contents = path.read_bytes()
+        if path.name == "02-a2a-server.bpmn":
+            model = ET.fromstring(contents)
+            field = model.find(
+                ".//{http://camunda.org/schema/zeebe/1.0}property[@name='inbound.publicRpcUrl']"
+            )
+            assert field is not None and field.get("value") == "", "Expected required public URL field"
+            field.set("value", secret_values["A2A_RPC_URL"])
+            contents = ET.tostring(model, encoding="utf-8", xml_declaration=True)
         body.extend((f"--{boundary}\r\nContent-Disposition: form-data; name=\"resources\"; "
                      f"filename=\"{path.name}\"\r\nContent-Type: application/octet-stream\r\n\r\n").encode())
-        body.extend(path.read_bytes())
+        body.extend(contents)
         body.extend(b"\r\n")
     body.extend(f"--{boundary}--\r\n".encode())
     authorization = base64.b64encode(

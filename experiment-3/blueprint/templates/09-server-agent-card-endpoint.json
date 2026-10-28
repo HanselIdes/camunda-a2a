@@ -122,9 +122,28 @@
       "type": "String"
     },
     {
+      "id": "inbound.publicRpcUrl",
+      "type": "String",
+      "label": "Public RPC URL",
+      "group": "card",
+      "value": "",
+      "description": "Required complete HTTPS A2A RPC webhook URL, including any cluster prefix. Must exactly match the client's A2A_RPC_URL secret. This URL is public, not a credential; webhook response expressions use local FEEL.",
+      "constraints": {
+        "notEmpty": true,
+        "pattern": {
+          "value": "^https://[^ /]+/[^ ]*$",
+          "message": "Enter the complete HTTPS public RPC URL, including the webhook path"
+        }
+      },
+      "binding": {
+        "type": "zeebe:property",
+        "name": "inbound.publicRpcUrl"
+      }
+    },
+    {
       "id": "inbound.responseExpression",
       "label": "Agent Card",
-      "description": "Describe the selected BPMN process truthfully. Keep the complete A2A_RPC_URL secret, API-key security scheme and disabled capabilities.",
+      "description": "Describe the selected BPMN process truthfully. Keep the complete public RPC URL field, API-key security scheme and disabled capabilities.",
       "value": "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: correlation.variables.rpcResponse}",
       "feel": "required",
       "group": "card",

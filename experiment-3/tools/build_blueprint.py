@@ -17,6 +17,24 @@ from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
 from bpmn_gen.secrets import current_secret_expression, current_secret_mappings
 
+CARD_RPC_URL_PROPERTY = "inbound.publicRpcUrl"
+CARD_RPC_URL_PATTERN = "^https://[^ /]+/[^ ]*$"
+
+
+def configure_card(root):
+    start = root.find(f".//{{{B}}}startEvent[@id='CardRequested']")
+    properties = start.find(f"{{{B}}}extensionElements/{{{Z}}}properties")
+    ET.SubElement(properties, f"{{{Z}}}property", name=CARD_RPC_URL_PROPERTY, value="")
+    response = properties.find(f"{{{Z}}}property[@name='inbound.responseExpression']")
+    card = response.get("value").replace("camunda.secrets.A2A_RPC_URL", "rpcUrl")
+    response.set("value", (
+        '={rpcUrl: get value(correlation.activatedElement.delegate.properties, '
+        f'"{CARD_RPC_URL_PROPERTY}"), response: if rpcUrl instance of string '
+        f'and matches(rpcUrl, "{CARD_RPC_URL_PATTERN}") then {card[1:]} '
+        'else {statusCode: 500, body: {error: "Configure the Agent Card HTTPS public RPC URL"}}}.response'
+    ))
+    return root
+
 UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
 AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
 AI_CLIENT = ("https://raw.githubusercontent.com/camunda/connectors/"
@@ -186,7 +204,8 @@ def assets():
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane").set("bpmnElement", "a2a-controlled-agent")
         output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent, "8.10.0")
         for authentication in ("basic", "oauth"):
-            profile = current_secret_mappings(ET.fromstring(build_core.build(authentication, agent_path)))
+            profile = configure_card(current_secret_mappings(
+                ET.fromstring(build_core.build(authentication, agent_path))))
             output[ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"] = serialize(
                 profile, "8.10.0")
         decision = ET.parse(ROOT / "dmn/a2a-validate.dmn").getroot()
@@ -232,7 +251,19 @@ def assets():
                 field = next(p for p in data["properties"] if p.get("id") == "inbound.responseExpression")
                 field["value"] = response
                 field["description"] = ("Describe the selected BPMN process truthfully. Keep the complete "
-                                        "A2A_RPC_URL secret, API-key security scheme and disabled capabilities.")
+                                        "public RPC URL field, API-key security scheme and disabled capabilities.")
+                data["properties"].insert(data["properties"].index(field), {
+                    "id": CARD_RPC_URL_PROPERTY,
+                    "type": "String", "label": "Public RPC URL", "group": "card", "value": "",
+                    "description": ("Required complete HTTPS A2A RPC webhook URL, including any cluster prefix. "
+                                    "Must exactly match the client's A2A_RPC_URL secret. This URL is public, "
+                                    "not a credential; webhook response expressions use local FEEL."),
+                    "constraints": {"notEmpty": True, "pattern": {
+                        "value": CARD_RPC_URL_PATTERN,
+                        "message": "Enter the complete HTTPS public RPC URL, including the webhook path",
+                    }},
+                    "binding": {"type": "zeebe:property", "name": CARD_RPC_URL_PROPERTY},
+                })
             filename = ("08-server-a2a-rpc-endpoint.json" if kind == "rpc"
                         else "09-server-agent-card-endpoint.json")
             for prop in data["properties"]:
