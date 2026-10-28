@@ -15,7 +15,7 @@ import xml.etree.ElementTree as ET
 
 from conformance import source_snapshot
 from confirmations import agent_history_checks
-from isolation import IsolatedCompose
+from isolation import IsolatedCompose, write_secret_store
 from observations import read_root_variable
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,7 +57,6 @@ stack = IsolatedCompose(COMPOSE, env)
 stack.command.extend(["-f", str(Path(__file__).with_name("exporter-low-latency.yml"))])
 stack.command.extend(["-f", str(Path(__file__).with_name("secrets-810.yml"))])
 secret_directory = tempfile.TemporaryDirectory(prefix="a2a-client-secret-proof-")
-env["PROOF_SECRET_DIR"] = secret_directory.name
 secret_values = {
     "ENGINE_URL": "http://camunda:8080",
     "ENGINE_USERNAME": "proof",
@@ -70,11 +69,7 @@ secret_values = {
     "CAMUNDA_PROVIDED_LLM_API_KEY": "ollama",
     "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL": "qwen3-coder-30b-64k:latest",
 }
-for name, value in secret_values.items():
-    path = Path(secret_directory.name) / name
-    path.write_text(value)
-    path.chmod(0o444)
-Path(secret_directory.name).chmod(0o755)
+env["PROOF_SECRET_DIR"] = str(write_secret_store(secret_directory.name, secret_values))
 tls_directory = tempfile.TemporaryDirectory(prefix="a2a-client-agent-proof-tls-")
 env["PROOF_CERTIFICATE_DIR"] = tls_directory.name
 tls_path = Path(tls_directory.name)

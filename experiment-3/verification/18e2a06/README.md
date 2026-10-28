@@ -46,6 +46,12 @@ credential. None appeared. This is a bounded check of those surfaces/values, not
 internal engine history record, external proxy or future logging configuration. No logging suppression
 was added. Raw runtime logs and secret values are not published.
 
+The recorded run preceded a host-permission correction: the verifier now keeps its temporary root
+at `0700` and mounts only a `0755` child containing `0444` secret files. Other host users cannot
+traverse the private parent. A permission regression and a network-disabled, read-only
+`camunda/camunda:8.10.2` container check confirm that the engine's UID 1001 can read the mounted child.
+The model journey was not repeated for this mount-path-only correction.
+
 Both agents used the authorized local Ollama override `qwen3-coder-30b-64k:latest`, not a SaaS model.
 The eight-model-call and 20-message limits were not relaxed. One run at this same source failed because
 the client model returned while the task still required input; the unchanged repeat passed.

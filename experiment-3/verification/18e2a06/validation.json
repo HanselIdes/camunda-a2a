@@ -1,6 +1,15 @@
 {
   "runtimeSourceCommit": "18e2a06652172c000245f489ed7d1c1ecb18c5b3",
   "sourceWithHistoricalVerifierGuard": "a534328b64d20c6f065f455ad5697d4bb53bb226",
+  "postRuntimeSecretStorePermissionCorrection": {
+    "hostTemporaryRootMode": "0700",
+    "mountedChildMode": "0755",
+    "secretFileMode": "0444",
+    "permissionRegression": "PASS",
+    "stockEngine8102Uid1001ReadOnlyChildMount": "PASS",
+    "selectedPythonTestsWithPermissionAndIsolationRegressions": 20,
+    "modelJourneyRepeated": false
+  },
   "baseCommit": "58091bffe2a078d3f72b98fdb7c8d6b40b254d18",
   "sourceAssetsUnchangedSinceRuntime": true,
   "localModel": {
