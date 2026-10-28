@@ -31,7 +31,7 @@ class ResourceClosureTest(unittest.TestCase):
         self.resources = {path: (ROOT / path).read_bytes() for path in PATHS}
 
     def test_selected_import_set_is_closed(self):
-        self.assertEqual(check(self.resources), 12)
+        self.assertEqual(check(self.resources), 13)
 
     def test_template_version_mismatch_is_rejected(self):
         path = "blueprint/profiles/basic/02-a2a-server.bpmn"
@@ -80,17 +80,33 @@ class ResourceClosureTest(unittest.TestCase):
         client_process = client.find(f"{{{B}}}process")
         self.assertEqual(client_process.get("id"), "a2a-client")
         self.assertEqual(client_process.get("name"), "01 Client Agent - Ask the Server")
-        client_agent = client.find(f".//{{{B}}}serviceTask[@id='ClientAgent']")
+        client_agent = client.find(f".//{{{B}}}adHocSubProcess[@id='ClientAgent']")
         self.assertEqual(client_agent.get(f"{{{Z}}}modelerTemplate"),
-                         "io.camunda.connectors.agenticai.aiagent.v1")
-        self.assertEqual(client_agent.get(f"{{{Z}}}modelerTemplateVersion"), "8")
-        tools = client.find(f".//{{{B}}}adHocSubProcess[@id='ClientTools']")
-        loop = tools.find(f"{{{B}}}multiInstanceLoopCharacteristics")
-        loop_mapping = loop.find(f"{{{B}}}extensionElements/{{{Z}}}loopCharacteristics")
-        self.assertEqual(loop_mapping.get("inputCollection"), "=clientAgent.toolCalls")
-        tool_ids = {node.get("id") for node in tools}
+                         "io.camunda.connectors.agenticai.ai-agent-subprocess.v2")
+        self.assertEqual(client_agent.get(f"{{{Z}}}modelerTemplateVersion"), "1")
+        self.assertIsNone(client_agent.find(f"{{{B}}}multiInstanceLoopCharacteristics"))
+        self.assertIsNone(client.find(f".//*[@id='ClientTools']"))
+        self.assertIsNone(client.find(f".//*[@id='ClientHasTools']"))
+        definition = client_agent.find(f"{{{B}}}extensionElements/{{{Z}}}taskDefinition")
+        self.assertEqual(definition.get("type"), "io.camunda.agenticai:aiagent:subprocess:2")
+        inputs = {e.get("target"): e.get("source") for e in client_agent.findall(
+            f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
+        self.assertEqual(inputs["agentContext"], "=clientAgent.context")
+        self.assertEqual(inputs["data.limits.maxModelCalls"], "=8")
+        self.assertEqual(inputs["data.response.includeAgentContext"], "true")
+        self.assertEqual(client.get("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion"),
+                         "8.10.0")
+        output = client_agent.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output")
+        self.assertEqual((output.get("source"), output.get("target")), ("=agent", "clientAgent"))
+        tool_ids = {node.get("id") for node in client_agent}
         self.assertTrue({"DiscoverAgentCard", "SendA2AMessage", "GetA2ATask", "AskClientForInput"}
                         .issubset(tool_ids))
+        for node in client_agent:
+            if node.get("id") in tool_ids & {
+                    "DiscoverAgentCard", "SendA2AMessage", "GetA2ATask", "AskClientForInput"}:
+                self.assertIsNone(node.find(f"{{{B}}}incoming"))
+                self.assertIsNotNone(node.find(f"{{{B}}}documentation"))
+                self.assertIn("toolCallResult", ET.tostring(node).decode())
 
     def test_agent_card_event_definition_follows_extensions_and_flow_references(self):
         protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
@@ -129,27 +145,24 @@ class ResourceClosureTest(unittest.TestCase):
 
         client = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
         client_plane = client.find(f".//{{{D}}}BPMNPlane")
-        gateway = next(shape for shape in client_plane if shape.get("bpmnElement") == "ClientHasTools")
-        label_bounds = gateway.find(
-            f"{{{D}}}BPMNLabel/{{{DC}}}Bounds")
-        gateway_bounds = gateway.find(f"{{{DC}}}Bounds")
         client_agent = next(shape for shape in client_plane
                             if shape.get("bpmnElement") == "ClientAgent")
         client_agent_bounds = client_agent.find(f"{{{DC}}}Bounds")
-        self.assertLess(float(label_bounds.get("y")) + float(label_bounds.get("height")),
-                        float(gateway_bounds.get("y")))
-        self.assertGreaterEqual(
-            float(label_bounds.get("x")),
-            float(client_agent_bounds.get("x")) + float(client_agent_bounds.get("width")),
-        )
-        final_response = next(edge for edge in client_plane
-                              if edge.get("bpmnElement") ==
-                              "Flow_ClientHasTools_PrepareClientResult")
-        final_response_bounds = final_response.find(
-            f"{{{D}}}BPMNLabel/{{{DC}}}Bounds")
-        final_response_x = float(final_response.find(f"{{{DI}}}waypoint").get("x"))
-        self.assertLess(float(final_response_bounds.get("x"))
-                        + float(final_response_bounds.get("width")), final_response_x)
+        self.assertLessEqual(float(client_agent_bounds.get("height")), 300)
+        rows, columns = set(), set()
+        for tool in ("DiscoverAgentCard", "SendA2AMessage", "GetA2ATask", "AskClientForInput"):
+            box = next(shape for shape in client_plane
+                       if shape.get("bpmnElement") == tool).find(f"{{{DC}}}Bounds")
+            rows.add(float(box.get("y")))
+            columns.add(float(box.get("x")))
+        self.assertEqual((len(rows), len(columns)), (2, 2))
+        edges = list(client_plane.findall(f"{{{D}}}BPMNEdge"))
+        self.assertEqual(len(edges), 4)
+        for edge in edges:
+            points = edge.findall(f"{{{DI}}}waypoint")
+            self.assertEqual(len(points), 2)
+            self.assertEqual(points[0].get("y"), points[1].get("y"))
+            self.assertLess(float(points[0].get("x")), float(points[1].get("x")))
 
     def test_protocol_drops_orphaned_auto_layout_labels(self):
         protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
@@ -248,6 +261,9 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertEqual(host.get(f"{{{Z}}}modelerTemplateVersion"), "5")
         icon = host.get(f"{{{Z}}}modelerTemplateIcon")
         self.assertIsNotNone(icon)
+        client = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        client_host = client.find(f".//{{{B}}}adHocSubProcess[@id='ClientAgent']")
+        self.assertEqual(client_host.get(f"{{{Z}}}modelerTemplateIcon"), icon)
         prefix = "data:image/svg+xml;base64,"
         self.assertTrue(icon.startswith(prefix))
         svg = ET.fromstring(base64.b64decode(icon[len(prefix):], validate=True))

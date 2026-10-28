@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the 8.9+ candidate demo; never rewrite the archived experiments."""
+"""Generate the candidate demo; never rewrite the archived experiments."""
 import argparse
 import json
 import subprocess
@@ -18,7 +18,9 @@ from bpmn_gen.lib import Proc, q
 
 UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
 AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
-AI_TASK = "io.camunda.connectors.agenticai.aiagent.v1@8"
+AI_CLIENT = ("https://raw.githubusercontent.com/camunda/connectors/"
+             "b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/"
+             "connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json")
 HTTP = ("https://raw.githubusercontent.com/camunda/connectors/"
         "b490d065b59ffe4788319609dbe41deb25e68e3f/"
         "connectors/http/rest/element-templates/versioned/http-json-connector-13.json")
@@ -88,10 +90,12 @@ def apply(path, template, element, settings):
         raise RuntimeError(f"Failed to apply {template} to {element}: {result.stderr.strip()}")
 
 
-def serialize(root):
-    root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
+def serialize(root, version="8.9.0"):
+    root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", version)
     for node in root.iter():
-        if node.get(f"{{{Z}}}modelerTemplate") != "io.camunda.connectors.agenticai.aiagent.jobworker.v1":
+        if node.get(f"{{{Z}}}modelerTemplate") not in (
+                "io.camunda.connectors.agenticai.aiagent.jobworker.v1",
+                "io.camunda.connectors.agenticai.ai-agent-subprocess.v2"):
             node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     ET.indent(root, space="  ")
     return layout_xml(ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n")
@@ -130,7 +134,9 @@ def agent(path):
       for ask in [reply instance of string and starts with(trim(reply), "NEED_INPUT:")] return
       for records in [flatten(for message in agent.context.conversation.messages[item.role = "tool_call_result"]
                       return message.results[item.name = "review_duplicate_charge"])] return
-      for evidence in [if count(records) > 0 then records[count(records)].content else null] return
+      for content in [if count(records) > 0 then records[count(records)].content else null] return
+      for evidence in [if content instance of list
+                       then content[item.type = "object"][1].content else content] return
       for expected in [if confirmation.valid = true then EXPECTED else null] return
       for grounded in [expected != null and evidence = expected] return
       {state: if confirmation.valid != true or ask then "TASK_STATE_INPUT_REQUIRED" else
@@ -140,7 +146,7 @@ def agent(path):
              then "Synthetic charges reconciled for human review. No refund or financial action was performed."
              else "The agent did not produce the required reconciliation evidence.",
        artifacts: if confirmation.valid != true or ask then [] else if grounded then
-         [{artifactId: uuid(), name: "reconciliation", parts: [{data: evidence}]}] else []})[1][1][1][1][1][1]""")
+         [{artifactId: uuid(), name: "reconciliation", parts: [{data: evidence}]}] else []})[1][1][1][1][1][1][1]""")
     outcome = outcome.replace("EXPECTED", RECONCILIATION[1:].replace("confirmed.", "confirmation."))
     outcome = outcome.replace("QUESTION", feel_str(CONFIRMATION_QUESTION))
     p.nodes["UpdateTask"].ext = p.nodes["UpdateTask"].ext.replace(q("={agent: agent}"), q("=" + outcome))
@@ -231,12 +237,19 @@ def assets():
         client_xml, client_forms, client_http, client_ai_settings = build_client_agent()
         client_path = directory / "01-client-agent.bpmn"
         client_path.write_text(client_xml)
-        apply(client_path, AI_TASK, "ClientAgent", client_ai_settings)
+        apply(client_path, AI_CLIENT, "ClientAgent", client_ai_settings)
+        client_root = ET.parse(client_path).getroot()
+        client_host = client_root.find(f".//{{{B}}}adHocSubProcess[@id='ClientAgent']")
+        response = client_host.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output")
+        if response is None or response.get("source") != "=agent":
+            raise ValueError("Client Sub-process template changed its response output contract")
+        response.set("target", "clientAgent")
+        client_path.write_bytes(ET.tostring(client_root, encoding="UTF-8", xml_declaration=True))
         for element, settings in client_http.items():
             apply(client_path, HTTP, element, settings)
         for filename, text in client_forms.items():
             output[DEMO / filename] = text.encode()
-        output[DEMO / "01-client-agent.bpmn"] = serialize(ET.parse(client_path).getroot())
+        output[DEMO / "01-client-agent.bpmn"] = serialize(ET.parse(client_path).getroot(), "8.10.0")
         literal = Proc("a2a-literal-prompt", "Literal prompt regression fixture")
         literal.start("LiteralStart", "Input received", 150, 62)
         literal.script("LiteralEncode", "Encode input", 230, 40, json_string_expression("=text"), "encoded")

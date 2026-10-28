@@ -42,15 +42,16 @@ Edition terms. The root repository license does not replace those terms or estab
 redistribution authority for that module. Existing authorized non-production runtime
 access is not a blanket redistribution permission.
 
-The client also references AI Agent Task template
-`io.camunda.connectors.agenticai.aiagent.v1@8`. Its exact metadata was available through
-the configured `c8ctl` element-template catalog during validation, but its JSON is not
-copied into this repository. Adopters must resolve that exact version from their
-authorized Camunda template catalog; this repository grants no redistribution or
-additional licensing rights for it.
+The client references AI Agent Sub-process template
+`io.camunda.connectors.agenticai.ai-agent-subprocess.v2@1`, pinned to Connectors 8.10.2
+commit `b490d065b59ffe4788319609dbe41deb25e68e3f` at
+`connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json`.
+Its JSON remains an external upstream dependency, not copied into this repository.
+That module's proprietary license notice remains applicable; this repository grants
+no additional licensing or redistribution rights.
 
-The server-agent BPMN retains the embedded icon supplied by the pinned upstream AI Agent Job Worker
-v5 template as Modeler metadata. The template and icon remain subject to that module's terms above;
+The client- and server-agent BPMNs retain the embedded icons supplied by their pinned upstream
+templates as Modeler metadata. The templates and icons remain subject to their module terms above;
 no additional licensing or redistribution rights are granted here.
 
 The bundled HTTP JSON template omits its embedded icon. AI Agent templates remain

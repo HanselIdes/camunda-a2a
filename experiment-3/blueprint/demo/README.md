@@ -20,16 +20,15 @@ Camunda does not support or certify it.
 | `templates/08-server-a2a-rpc-endpoint.json` | Server - A2A RPC Endpoint | Configure the authenticated task webhook. |
 | `templates/09-server-agent-card-endpoint.json` | Server - Agent Card Endpoint | Configure the discovery webhook. |
 | `templates/10-server-http-json-v13.json` | HTTP JSON Connector, version 13 | Pinned stock outbound HTTP template. |
-| Camunda template catalog | Client AI Agent Task, version 8 | Required catalog template for the client agent; not redistributed here. |
+| Pinned upstream template | Client AI Agent Sub-process v2, version 1 | Required external template for the client agent; not redistributed here. |
 | `demo/README.md` | Project instructions | Explain this imported project and how to run it. |
 
 The numeric prefixes order the project by role: client agent, server protocol, server agent, forms, validation, then templates.
 Runtime process IDs remain `a2a-rpc`, `a2a-card-dispute`, and `a2a-client`.
 
 The 11 repository resources plus the pinned [AI Agent Job Worker version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
-form the 12-resource import list. The client also requires Camunda AI Agent Task template
-`io.camunda.connectors.agenticai.aiagent.v1@8`, which `c8ctl element-template info` confirmed available
-in the configured template catalog. Its JSON is not redistributed here. Before import, confirm that the
+and [client AI Agent Sub-process v2 version 1 template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json)
+form the 13-resource import list. Both AI templates remain external dependencies. Before import, confirm that the
 target Modeler resolves this exact ID and version; do not substitute another version. An “already available”
 notice alone does not prove a version match.
 
@@ -42,9 +41,9 @@ Camunda process instances and variables hold task state, messages, and artifacts
 The `a2a-rpc` process has independent webhook starts: `CardRequested` for discovery and `RpcReceived` for task requests.
 Their contexts remain `a2a-card` and `a2a`. The discovery endpoint uses the custom card template.
 
-The client uses AI Agent Task template `io.camunda.connectors.agenticai.aiagent.v1`, version 8, on service task `ClientAgent`.
-It drives `ClientTools`, a parallel multi-instance ad-hoc subprocess, through an explicit tool-feedback loop.
-This is the 8.9-compatible Task variant, not the newer AI Agent Sub-process connector.
+The client uses AI Agent Sub-process template `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`,
+version 1, on ad-hoc subprocess `ClientAgent`. Its four selectable root tools are arranged in a two-by-two grid.
+The stock connector owns tool activation and the model feedback loop; no external agent task or loop gateways are needed.
 
 | Client tool | Role |
 | --- | --- |
@@ -61,7 +60,11 @@ The client language model selects tools; the following is an intended journey, n
 4. If the server requests explicit confirmation, collect it through `AskClientForInput` and send it on the same task and context.
 5. Use `GetA2ATask` to inspect work and report the observed result.
 
-The ad-hoc subprocess executes `clientAgent.toolCalls` in parallel and returns each result's `id`, `name`, and `content` to the next agent invocation.
+Every root tool returns a meaningful `toolCallResult`. During execution the connector maintains
+`agentContext`; the completed response maps from the connector's local `agent` variable to `clientAgent`,
+including its conversation context for result preparation. The model-call limit remains eight.
+The 8.10 conversation stores each tool result as structured content blocks; the client reads the
+`object` block's `content` for confirmation, task identity, and final task-state review.
 The bundled `SendA2AMessage` tool has no model-supplied claim parameter: it adds a structured data part only from the
 `AskClientForInput` form result. Follow-ups also reuse the task and context IDs returned by the first send instead
 of accepting IDs from the model. `GetA2ATask` likewise polls the ID returned by that send. Values in the initial
@@ -74,9 +77,12 @@ including the interrupting `a2a-cancel` hook correlated by `task.id`. See the [e
 
 ## Prerequisites
 
-The minimum release line is **8.9 for both engine and Connectors**. Earlier confirmed-input checks used engine 8.9.26,
-stock Connectors 8.9.17, and Elasticsearch 8.19.23. Those checks do not establish this revised client-agent flow,
-Camunda-provided model execution, or support for every 8.9 patch and later version.
+The complete client/server demo now requires **8.10 for both engine and Connectors**:
+the client Sub-process template has engine constraint `^8.10`. The focused verification profile is
+engine 8.10.2, stock Connectors 8.10.2, and Elasticsearch 8.19.23.
+Earlier 8.9.26 / Connectors 8.9.17 evidence applies only to its pinned earlier source, not this client
+or the server's revised result mapping. The server still uses the v5 connector and accepts both legacy
+object results and 8.10 structured content blocks. Camunda-provided model execution and other version pairs remain unverified.
 
 You need an authenticated engine, stock Connectors, trusted HTTPS endpoints, and a reachable OpenAI-compatible language model.
 Keep local validation overrides separate from the public secret defaults below.
@@ -100,13 +106,13 @@ Use your deployment's secret provider. Never put credentials or keys in BPMN fil
 The client references the Camunda-provided LLM secret names through these connector inputs:
 
 ```text
-provider.openaiCompatible.endpoint={{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}
-provider.openaiCompatible.authentication.apiKey={{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}
-provider.openaiCompatible.model.model={{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}
+provider.openai.backend.custom.endpoint={{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}
+provider.openai.backend.custom.authentication.apiKey={{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}
+provider.openai.model.model={{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}
 ```
 
-AI Agent Task version 8 uses the `openaiCompatible` provider and endpoint setting. It does not use the tutorial's newer
-`openai` Responses API and custom-backend fields. These secret references do not establish compatibility with a particular
+The client selects provider `openai`, API `completions`, custom backend and API-key authentication.
+The server's pinned v5 template retains its `openaiCompatible` fields. These secret references do not establish compatibility with a particular
 Camunda SaaS provider; verify the endpoint and model through your authorized environment.
 
 Both A2A URLs must resolve from external clients and the Connectors runtime. Use matching certificate names and configure trusted issuers.
@@ -123,7 +129,7 @@ For this revised import, start with a fresh Modeler project when possible. Impor
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
-1. Import the 11 repository resources and the pinned server AI Agent template. Confirm that each BPMN template assignment resolves to the stated version, including catalog AI Agent Task v8.
+1. Import the 11 repository resources and both pinned upstream AI Agent templates. Confirm that each BPMN template assignment resolves to its exact stated version.
 2. Configure secrets and the runtime requirements above.
 3. Deploy the selected BPMN, DMN, and form resources together.
 4. Wait for healthy `CardRequested` and `RpcReceived` inbound Connectors in process `a2a-rpc`.
