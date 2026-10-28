@@ -87,6 +87,9 @@ class ResourceClosureTest(unittest.TestCase):
             self.assertNotIn("camunda.secrets", response)
             self.assertIn("inbound.publicRpcUrl", response)
             self.assertIn("statusCode: 500", response)
+            template_response = next(p["value"] for p in template["properties"]
+                                     if p.get("id") == "inbound.responseExpression")
+            self.assertEqual(template_response, response)
 
     def test_template_version_mismatch_is_rejected(self):
         path = "blueprint/profiles/basic/02-a2a-server.bpmn"

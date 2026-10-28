@@ -258,7 +258,8 @@ try:
     agent_history_checks(ROOT, engine_request)
     report["checks"].append(
         "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
-        "response-derived task/context identity, final result preparation and legacy/current server evidence"
+        "response-derived task/context identity, final result preparation, legacy/current server evidence "
+        "and explicit card URL configuration errors"
     )
 
     expected_card_url = (

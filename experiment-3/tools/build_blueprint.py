@@ -252,8 +252,10 @@ def assets():
                                                "binding": {"type": "zeebe:property", "name": name}})
             else:
                 root = ET.fromstring(output[ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn"])
-                response = next(p.get("value") for p in root.iter(f"{{{Z}}}property")
-                                if p.get("name") == "inbound.responseExpression")
+                card_start = root.find(f".//{{{B}}}startEvent[@id='CardRequested']")
+                response = card_start.find(
+                    f"{{{B}}}extensionElements/{{{Z}}}properties/"
+                    f"{{{Z}}}property[@name='inbound.responseExpression']").get("value")
                 field = next(p for p in data["properties"] if p.get("id") == "inbound.responseExpression")
                 field["value"] = response
                 field["description"] = ("Describe the selected BPMN process truthfully. Keep the complete "
