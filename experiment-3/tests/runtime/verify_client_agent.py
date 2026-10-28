@@ -432,23 +432,25 @@ try:
     }
     assert artifact["parts"][0]["data"] == expected_artifact, artifact
     assert "TASK_STATE_COMPLETED" in result_text, result_text
+    credentials = (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], authorization)
     cursor = None
     while True:
         page = {"limit": 100}
         if cursor:
             page["after"] = cursor
         status, response = engine_request(
-            "/v2/variables/search", {"filter": {}, "page": page}
+            "/v2/variables/search?truncateValues=false", {"filter": {}, "page": page}
         )
         assert status == 200, (status, response)
-        assert env["PROOF_ENGINE_PASSWORD"] not in response, "Engine password persisted in variables"
-        assert env["PROOF_A2A_API_KEY"] not in response, "A2A API key persisted in variables"
+        assert not any(value in response for value in credentials), "Credential persisted in variables"
         variables = json.loads(response)
         cursor = variables.get("page", {}).get("endCursor")
         if not variables["items"] or len(variables["items"]) < 100:
             break
         assert cursor, "Variable search did not return a continuation cursor"
-    report["checks"].append("random engine password and A2A API key absent from persisted process variables")
+    report["checks"].append(
+        "random engine password, A2A API key and Basic credential absent from untruncated persisted variables"
+    )
     status, response = engine_request(
         f"/v2/user-tasks/{review_task['userTaskKey']}/completion", {"variables": {}}
     )
@@ -465,6 +467,16 @@ try:
         if time.monotonic() >= deadline:
             raise TimeoutError("Client process did not complete after result review")
         time.sleep(0.25)
+
+    logs = subprocess.run(
+        stack.command + ["logs", "--no-color", "camunda", "connectors"],
+        env=env, capture_output=True, text=True, check=True, timeout=30,
+    )
+    assert not any(value in logs.stdout + logs.stderr for value in credentials), \
+        "Credential found in owned engine/Connectors runtime logs"
+    report["checks"].append(
+        "random engine password, A2A API key and Basic credential absent from owned engine/Connectors logs"
+    )
 
     report["checks"].append(
         "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, "
@@ -490,6 +502,7 @@ try:
             "store": "disposable engine default file store",
             "secretNames": sorted(secret_values),
             "persistedCredentialLeakCheck": "PASS",
+            "runtimeLogCredentialLeakCheck": "PASS",
         },
         "sourceAfter": source_snapshot(ROOT),
         "evidenceLocation": str(report_file),
