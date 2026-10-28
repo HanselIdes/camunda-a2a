@@ -134,7 +134,9 @@ def agent(path):
       for ask in [reply instance of string and starts with(trim(reply), "NEED_INPUT:")] return
       for records in [flatten(for message in agent.context.conversation.messages[item.role = "tool_call_result"]
                       return message.results[item.name = "review_duplicate_charge"])] return
-      for evidence in [if count(records) > 0 then records[count(records)].content else null] return
+      for content in [if count(records) > 0 then records[count(records)].content else null] return
+      for evidence in [if content instance of list
+                       then content[item.type = "object"][1].content else content] return
       for expected in [if confirmation.valid = true then EXPECTED else null] return
       for grounded in [expected != null and evidence = expected] return
       {state: if confirmation.valid != true or ask then "TASK_STATE_INPUT_REQUIRED" else
@@ -144,7 +146,7 @@ def agent(path):
              then "Synthetic charges reconciled for human review. No refund or financial action was performed."
              else "The agent did not produce the required reconciliation evidence.",
        artifacts: if confirmation.valid != true or ask then [] else if grounded then
-         [{artifactId: uuid(), name: "reconciliation", parts: [{data: evidence}]}] else []})[1][1][1][1][1][1]""")
+         [{artifactId: uuid(), name: "reconciliation", parts: [{data: evidence}]}] else []})[1][1][1][1][1][1][1]""")
     outcome = outcome.replace("EXPECTED", RECONCILIATION[1:].replace("confirmed.", "confirmation."))
     outcome = outcome.replace("QUESTION", feel_str(CONFIRMATION_QUESTION))
     p.nodes["UpdateTask"].ext = p.nodes["UpdateTask"].ext.replace(q("={agent: agent}"), q("=" + outcome))

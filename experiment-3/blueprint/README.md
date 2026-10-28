@@ -34,8 +34,10 @@ Sub-process template has engine constraint `^8.10`. The focused verification pro
 stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
 The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
 [`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
-The protocol and server-agent resources are unchanged by this replacement; their earlier source-pinned
-8.9 evidence remains server-only evidence, not support for the complete current demo on 8.9.
+The protocol is unchanged. The server's result mapping accepts both legacy object results and 8.10
+structured content blocks without changing its v5 connector variant. Earlier source-pinned
+8.9 evidence remains historical server evidence, not a fresh run of these mappings or support for the
+complete current demo on 8.9.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
 

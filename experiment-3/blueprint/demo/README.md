@@ -80,8 +80,9 @@ including the interrupting `a2a-cancel` hook correlated by `task.id`. See the [e
 The complete client/server demo now requires **8.10 for both engine and Connectors**:
 the client Sub-process template has engine constraint `^8.10`. The focused verification profile is
 engine 8.10.2, stock Connectors 8.10.2, and Elasticsearch 8.19.23.
-Earlier 8.9.26 / Connectors 8.9.17 evidence applies only to its pinned earlier source and the unchanged
-server resources, not this client. Camunda-provided model execution and other version pairs remain unverified.
+Earlier 8.9.26 / Connectors 8.9.17 evidence applies only to its pinned earlier source, not this client
+or the server's revised result mapping. The server still uses the v5 connector and accepts both legacy
+object results and 8.10 structured content blocks. Camunda-provided model execution and other version pairs remain unverified.
 
 You need an authenticated engine, stock Connectors, trusted HTTPS endpoints, and a reachable OpenAI-compatible language model.
 Keep local validation overrides separate from the public secret defaults below.

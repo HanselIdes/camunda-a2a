@@ -66,7 +66,7 @@ def assert_no_arithmetic(agent):
                                    ("paidAmount", "overchargeAmount", "chargeAmounts")), result
 
 
-def client_history_checks(root, request):
+def agent_history_checks(root, request):
     model = ET.parse(root / "blueprint/demo/01-client-agent.bpmn").getroot()
     namespace = "{http://camunda.org/schema/zeebe/1.0}"
 
@@ -118,6 +118,20 @@ def client_history_checks(root, request):
     expression = next(prepare.iter(namespace + "script")).get("expression")
     text = evaluate(expression, {"clientAgent": {"context": context, "responseText": "Reviewed"}})
     assert "Reviewed" in text and "TASK_STATE_COMPLETED" in text, text
+
+    server = ET.parse(root / "blueprint/demo/03-server-agent-card-dispute.bpmn").getroot()
+    update = next(node for node in server.iter() if node.get("id") == "UpdateTask")
+    outcome = next(node.get("source") for node in update.iter(namespace + "input")
+                   if node.get("target") == "outcome")
+    for content in (EXPECTED, [{"type": "object", "content": EXPECTED}]):
+        context = {"conversation": {"messages": [{
+            "role": "tool_call_result",
+            "results": [{"name": "review_duplicate_charge", "content": content}],
+        }]}}
+        result = evaluate(outcome, {"agent": {"responseText": "Reviewed", "context": context},
+                                    "confirmation": {"valid": True, "claim": CLAIM}})
+        assert result["state"] == "TASK_STATE_COMPLETED", result
+        assert result["artifacts"][0]["parts"][0]["data"] == EXPECTED, result
 
 
 def run(root, reports, rpc, request, await_task):

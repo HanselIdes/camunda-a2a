@@ -13,7 +13,7 @@ import urllib.error
 import urllib.request
 
 from conformance import source_snapshot
-from confirmations import client_history_checks
+from confirmations import agent_history_checks
 from isolation import IsolatedCompose
 from observations import read_root_variable
 
@@ -210,10 +210,10 @@ try:
         detail = error.read().decode()
         raise RuntimeError(f"Authenticated deployment failed with HTTP {error.code}: {detail}") from error
     report["checks"].append("authenticated 8.10 deployment of the seven BPMN/DMN/form resources")
-    client_history_checks(ROOT, engine_request)
+    agent_history_checks(ROOT, engine_request)
     report["checks"].append(
         "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
-        "response-derived task/context identity and final result preparation"
+        "response-derived task/context identity, final result preparation and legacy/current server evidence"
     )
 
     expected_card_url = (
