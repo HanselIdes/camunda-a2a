@@ -5,7 +5,7 @@ from pathlib import Path
 
 from failures import B, Z, fault_model
 
-SOURCE = Path(__file__).resolve().parents[2] / "blueprint/profiles/basic/01-a2a-server.bpmn"
+SOURCE = Path(__file__).resolve().parents[2] / "blueprint/profiles/basic/02-a2a-server.bpmn"
 
 
 class FailureFixtureTest(unittest.TestCase):

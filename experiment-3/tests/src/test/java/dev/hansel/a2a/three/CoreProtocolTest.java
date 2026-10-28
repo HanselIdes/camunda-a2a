@@ -33,7 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @CamundaProcessTest
-@TestDeployment(resources = {"core/a2a-protocol.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn",
+@TestDeployment(resources = {"core/02-a2a-server.bpmn", "bpmn/a2a-echo.bpmn", "dmn/a2a-validate.dmn",
     "tck/fixture/a2a-tck-fixture.bpmn", "tck/fixture/a2a-classify.dmn", "bpmn/a2a-literal-prompt.bpmn",
     "bpmn/a2a-controlled-business.bpmn", "bpmn/a2a-controlled-agent.bpmn"})
 class CoreProtocolTest {
@@ -481,7 +481,7 @@ class CoreProtocolTest {
     final var factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
     final var expressions = new java.util.ArrayList<String>();
-    for (final String resource : List.of("core/a2a-protocol.bpmn", "core-oauth/a2a-protocol.bpmn")) {
+    for (final String resource : List.of("core/02-a2a-server.bpmn", "core-oauth/02-a2a-server.bpmn")) {
       try (var input = getClass().getClassLoader().getResourceAsStream(resource)) {
         final var document = factory.newDocumentBuilder().parse(input);
         final var services = document.getElementsByTagNameNS(
@@ -506,7 +506,7 @@ class CoreProtocolTest {
         }
       }
     }
-    try (var input = getClass().getClassLoader().getResourceAsStream("core-templates/a2a-core-rpc.json")) {
+    try (var input = getClass().getClassLoader().getResourceAsStream("core-templates/08-server-a2a-rpc-endpoint.json")) {
       for (final var property : Harness.JSON.readTree(input).get("properties")) {
         if (property.path("id").asText().equals("resultExpression")) {
           expressions.add(property.get("value").asText());

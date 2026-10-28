@@ -3,11 +3,22 @@
   "name": "REST Outbound Connector",
   "id": "io.camunda.connectors.HttpJson.v2",
   "description": "Invoke REST API",
-  "metadata": {
-    "keywords": []
-  },
+  "keywords": [
+    "HTTP",
+    "REST",
+    "API call",
+    "web request",
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "fetch data",
+    "send request",
+    "invoke API"
+  ],
   "documentationRef": "https://docs.camunda.io/docs/components/connectors/protocol/rest/",
-  "version": 12,
+  "version": 13,
   "category": {
     "id": "connectors",
     "name": "Connectors"
@@ -19,7 +30,7 @@
     "value": "bpmn:ServiceTask"
   },
   "engines": {
-    "camunda": "^8.3"
+    "camunda": "^8.9"
   },
   "groups": [
     {
@@ -471,6 +482,20 @@
       "type": "Hidden"
     },
     {
+      "id": "followRedirects",
+      "label": "Follow redirects",
+      "description": "If enabled, HTTP 3xx redirects will be followed automatically. Disabled by default.",
+      "optional": false,
+      "value": false,
+      "feel": "static",
+      "group": "endpoint",
+      "binding": {
+        "name": "followRedirects",
+        "type": "zeebe:input"
+      },
+      "type": "Boolean"
+    },
+    {
       "id": "connectionTimeoutInSeconds",
       "label": "Connection timeout in seconds",
       "description": "Defines the connection timeout in seconds, or 0 for an infinite timeout",
@@ -561,7 +586,7 @@
       "id": "version",
       "label": "Version",
       "description": "Version of the element template",
-      "value": "12",
+      "value": "13",
       "group": "connector",
       "binding": {
         "key": "elementTemplateVersion",
@@ -584,7 +609,7 @@
     {
       "id": "resultVariable",
       "label": "Result variable",
-      "description": "Name of variable to store the response in",
+      "description": "Name of variable to store the response in. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#result-variable\" target=\"_blank\">documentation</a>.",
       "group": "output",
       "binding": {
         "key": "resultVariable",
@@ -595,7 +620,8 @@
     {
       "id": "resultExpression",
       "label": "Result expression",
-      "description": "Expression to map the response into process variables",
+      "description": "Expression to map the response into process variables. Details in the <a href=\"https://docs.camunda.io/docs/components/connectors/use-connectors/#result-expression\" target=\"_blank\">documentation</a>.",
+      "value": "{\n  myResponseBody: response.body\n  // Use FEEL to extract values, e.g.,:\n  // myUserId: response.body.post.userId\n}",
       "feel": "required",
       "group": "output",
       "binding": {

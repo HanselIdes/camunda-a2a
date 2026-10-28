@@ -416,16 +416,16 @@ def build(authentication, agent_path=None):
     root = ET.parse(ROOT / "bpmn/a2a-protocol.bpmn").getroot()
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", "8.9.0")
     if agent_path is None:
-        agent_path = ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn"
+        agent_path = ROOT / "blueprint/demo/03-server-agent-card-dispute.bpmn"
         if not agent_path.exists():
-            agent_path = ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn"
+            agent_path = ROOT / "blueprint/demo/03-server-agent-card-dispute.bpmn"
     for node in root.iter():
         node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
         if node.get(f"{{{Z}}}modelerTemplate") == "io.camunda.connectors.HttpJson.v2":
-            node.set(f"{{{Z}}}modelerTemplateVersion", "12")
+            node.set(f"{{{Z}}}modelerTemplateVersion", "13")
             for header in node.findall(f"{{{B}}}extensionElements/{{{Z}}}taskHeaders/{{{Z}}}header"):
                 if header.get("key") == "elementTemplateVersion":
-                    header.set("value", "12")
+                    header.set("value", "13")
     remove(root, {
         "BuildDirectMessage", "DirectMessageReady", "FindPushConfigs", "AnyPushConfigs",
         "StartPushDelivery", "PushHandled", "FindCancelPush", "AnyCancelPush", "StartCancelPush",
@@ -509,10 +509,10 @@ def build(authentication, agent_path=None):
     rpc.set(f"{{{Z}}}modelerTemplate", "dev.hansel.a2a.core.rpc.v1")
     rpc.set(f"{{{Z}}}modelerTemplateVersion", "1")
     server = next(p for p in root.findall(f"{{{B}}}process") if p.get("id") == "a2a-rpc")
-    server.set("name", "01 A2A Server - Protocol and Discovery")
+    server.set("name", "02 A2A Server - Protocol and Discovery")
     for participant in root.iter(f"{{{B}}}participant"):
         if participant.get("processRef") == "a2a-rpc":
-            participant.set("name", "01 A2A Server - Protocol and Discovery")
+            participant.set("name", "02 A2A Server - Protocol and Discovery")
     add_card_endpoint(root, agent_path)
     order_definitions(root)
     ET.indent(root, space="  ")
@@ -530,7 +530,7 @@ if __name__ == "__main__":
             parser.error("--check cannot be combined with --authentication or --output")
         stale = []
         for authentication in ("basic", "oauth"):
-            path = ROOT / "blueprint/profiles" / authentication / "01-a2a-server.bpmn"
+            path = ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"
             if not path.exists() or path.read_bytes() != build(authentication):
                 stale.append(authentication)
         if stale:

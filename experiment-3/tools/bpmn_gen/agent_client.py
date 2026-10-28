@@ -74,7 +74,7 @@ else {})[1]
 
 
 def build():
-    p = Proc("a2a-client", "03 Client Agent - Ask the Server")
+    p = Proc("a2a-client", "01 Client Agent - Ask the Server")
     p.start("QuestionAsked", "Client request received", 150, 210,
             ext='<zeebe:formDefinition formId="a2a-client-ask" />')
     p.xor("ClientAgentInputJoin", "Start or continue agent turn?", 245, 203)

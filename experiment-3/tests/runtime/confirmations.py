@@ -73,7 +73,7 @@ def run(root, reports, rpc, request, await_task):
     def save():
         report.write_text(json.dumps({"verdict": "RUNNING", "records": records}, indent=2) + "\n")
 
-    model = ET.parse(root / "blueprint/demo/02-server-agent-card-dispute.bpmn")
+    model = ET.parse(root / "blueprint/demo/03-server-agent-card-dispute.bpmn")
     validate = next(script.get("expression") for script in model.getroot().iter()
                     if script.get("resultVariable") == "confirmation")
     scalar_cases = [("valid", CLAIM, True), ("zero", {**CLAIM, "chargeAmounts": [0, 0],

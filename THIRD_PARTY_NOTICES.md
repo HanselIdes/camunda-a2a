@@ -27,9 +27,9 @@ own distribution licenses; they are not redistributed as binaries in the bluepri
 Calling a stock connector's task type or recording its element-template identifier
 does not change that dependency's license.
 
-The included HTTP JSON template version 12 comes from Camunda Connectors commit
-`844cb028a43e2a15d31f5a49e6cb0a9961c0f208`, under
-`connectors/http/rest/element-templates/versioned/http-json-connector-12.json`.
+The included HTTP JSON template version 13 comes from Camunda Connectors 8.10.2 commit
+`b490d065b59ffe4788319609dbe41deb25e68e3f`, under
+`connectors/http/rest/element-templates/versioned/http-json-connector-13.json`.
 That module's license is Apache 2.0, identical to the retained license above.
 The template's embedded icon is omitted; the other fields retain the upstream configuration.
 The upstream attribution is retained in
@@ -48,6 +48,10 @@ the configured `c8ctl` element-template catalog during validation, but its JSON 
 copied into this repository. Adopters must resolve that exact version from their
 authorized Camunda template catalog; this repository grants no redistribution or
 additional licensing rights for it.
+
+The server-agent BPMN retains the embedded icon supplied by the pinned upstream AI Agent Job Worker
+v5 template as Modeler metadata. The template and icon remain subject to that module's terms above;
+no additional licensing or redistribution rights are granted here.
 
 The bundled HTTP JSON template omits its embedded icon. AI Agent templates remain
 external dependencies and are not part of the repository's import bundle.

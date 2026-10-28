@@ -1,3 +1,5 @@
+import base64
+import json
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -5,16 +7,16 @@ from check_resources import PATHS, ROOT, check
 
 
 RESOURCE_PATHS = (
-    "blueprint/profiles/basic/01-a2a-server.bpmn",
-    "blueprint/demo/02-server-agent-card-dispute.bpmn",
-    "blueprint/demo/03-client-agent.bpmn",
+    "blueprint/demo/01-client-agent.bpmn",
+    "blueprint/profiles/basic/02-a2a-server.bpmn",
+    "blueprint/demo/03-server-agent-card-dispute.bpmn",
     "blueprint/demo/04-client-agent-ask.form",
     "blueprint/demo/05-client-agent-confirm.form",
     "blueprint/demo/06-client-agent-result.form",
     "blueprint/demo/07-server-request-validation.dmn",
     "blueprint/templates/08-server-a2a-rpc-endpoint.json",
     "blueprint/templates/09-server-agent-card-endpoint.json",
-    "blueprint/templates/10-server-http-json-v12.json",
+    "blueprint/templates/10-server-http-json-v13.json",
     "blueprint/demo/README.md",
 )
 B = "http://www.omg.org/spec/BPMN/20100524/MODEL"
@@ -32,9 +34,9 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertEqual(check(self.resources), 12)
 
     def test_template_version_mismatch_is_rejected(self):
-        path = "blueprint/profiles/basic/01-a2a-server.bpmn"
+        path = "blueprint/profiles/basic/02-a2a-server.bpmn"
         self.resources[path] = self.resources[path].replace(
-            b'zeebe:modelerTemplateVersion="12"', b'zeebe:modelerTemplateVersion="18"', 1)
+            b'zeebe:modelerTemplateVersion="13"', b'zeebe:modelerTemplateVersion="18"', 1)
         with self.assertRaisesRegex(ValueError, "missing template .*@18"):
             check(self.resources)
 
@@ -45,14 +47,14 @@ class ResourceClosureTest(unittest.TestCase):
             check(self.resources)
 
     def test_connector_task_header_version_mismatch_is_rejected(self):
-        path = "blueprint/profiles/basic/01-a2a-server.bpmn"
+        path = "blueprint/profiles/basic/02-a2a-server.bpmn"
         self.resources[path] = self.resources[path].replace(
-            b'key="elementTemplateVersion" value="12"', b'key="elementTemplateVersion" value="18"', 1)
+            b'key="elementTemplateVersion" value="13"', b'key="elementTemplateVersion" value="18"', 1)
         with self.assertRaisesRegex(ValueError, "task-header template version 18 differs"):
             check(self.resources)
 
     def test_missing_called_process_is_rejected(self):
-        path = "blueprint/demo/02-server-agent-card-dispute.bpmn"
+        path = "blueprint/demo/03-server-agent-card-dispute.bpmn"
         self.resources[path] = self.resources[path].replace(b'processId="a2a-task-update"',
                                                            b'processId="missing-process"')
         with self.assertRaisesRegex(ValueError, "unresolved processId missing-process"):
@@ -60,24 +62,24 @@ class ResourceClosureTest(unittest.TestCase):
 
     def test_ordered_import_manifest_and_display_names(self):
         self.assertEqual(PATHS, RESOURCE_PATHS)
-        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
         processes = {node.get("id"): node for node in protocol.iter(f"{{{B}}}process")}
-        self.assertEqual(processes["a2a-rpc"].get("name"), "01 A2A Server - Protocol and Discovery")
+        self.assertEqual(processes["a2a-rpc"].get("name"), "02 A2A Server - Protocol and Discovery")
         self.assertIsNone(processes.get("a2a-card"))
         self.assertIsNotNone(protocol.find(
             f".//{{{B}}}process[@id='a2a-rpc']/{{{B}}}startEvent[@id='CardRequested']"))
         self.assertIsNotNone(protocol.find(
             f".//{{{B}}}process[@id='a2a-rpc']/{{{B}}}startEvent[@id='RpcReceived']"))
 
-        server = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
+        server = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
         server_process = server.find(f"{{{B}}}process")
         self.assertEqual(server_process.get("id"), "a2a-card-dispute")
-        self.assertEqual(server_process.get("name"), "02 Server Agent - Synthetic Card Dispute")
+        self.assertEqual(server_process.get("name"), "03 Server Agent - Synthetic Card Dispute")
 
-        client = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
+        client = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
         client_process = client.find(f"{{{B}}}process")
         self.assertEqual(client_process.get("id"), "a2a-client")
-        self.assertEqual(client_process.get("name"), "03 Client Agent - Ask the Server")
+        self.assertEqual(client_process.get("name"), "01 Client Agent - Ask the Server")
         client_agent = client.find(f".//{{{B}}}serviceTask[@id='ClientAgent']")
         self.assertEqual(client_agent.get(f"{{{Z}}}modelerTemplate"),
                          "io.camunda.connectors.agenticai.aiagent.v1")
@@ -91,7 +93,7 @@ class ResourceClosureTest(unittest.TestCase):
                         .issubset(tool_ids))
 
     def test_agent_card_event_definition_follows_extensions_and_flow_references(self):
-        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
         start = protocol.find(
             f".//{{{B}}}process[@id='a2a-rpc']/{{{B}}}startEvent[@id='CardRequested']")
         tags = [child.tag for child in start]
@@ -99,7 +101,7 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertLess(tags.index(f"{{{B}}}outgoing"), tags.index(f"{{{B}}}messageEventDefinition"))
 
     def test_definitions_root_elements_precede_bpmn_diagrams(self):
-        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
         children = list(protocol)
         diagrams = [index for index, element in enumerate(children)
                     if element.tag == f"{{{D}}}BPMNDiagram"]
@@ -114,7 +116,7 @@ class ResourceClosureTest(unittest.TestCase):
             self.assertLess(max(diagrams), min(relationships))
 
     def test_shipping_agent_loops_avoid_host_and_gateway_label(self):
-        server = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
+        server = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
         server_plane = server.find(f".//{{{D}}}BPMNPlane")
         route = next(edge for edge in server_plane
                      if edge.get("bpmnElement") == "Flow_FollowUp_NextTurn")
@@ -125,7 +127,7 @@ class ResourceClosureTest(unittest.TestCase):
         host_bounds = host.find(f"{{{DC}}}Bounds")
         self.assertLess(points[1][1], float(host_bounds.get("y")))
 
-        client = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
+        client = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
         client_plane = client.find(f".//{{{D}}}BPMNPlane")
         gateway = next(shape for shape in client_plane if shape.get("bpmnElement") == "ClientHasTools")
         label_bounds = gateway.find(
@@ -150,7 +152,7 @@ class ResourceClosureTest(unittest.TestCase):
                         + float(final_response_bounds.get("width")), final_response_x)
 
     def test_protocol_drops_orphaned_auto_layout_labels(self):
-        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
         plane = protocol.find(f".//{{{D}}}BPMNPlane")
         for element_id in ("RpcReceived", "NewTaskReady", "NoSubscription"):
             shape = next(shape for shape in plane if shape.get("bpmnElement") == element_id)
@@ -164,7 +166,7 @@ class ResourceClosureTest(unittest.TestCase):
                             float(bounds.get("y")))
 
     def test_list_scan_retry_and_failure_routes_avoid_nodes(self):
-        protocol = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()
+        protocol = ET.parse(ROOT / RESOURCE_PATHS[1]).getroot()
         plane = protocol.find(f".//{{{D}}}BPMNPlane")
         route_points = {}
         for edge_id in ("Flow_ListScanDecision_WaitListVariables",
@@ -198,6 +200,11 @@ class ResourceClosureTest(unittest.TestCase):
 
     def test_obsolete_shipping_copies_are_absent(self):
         obsolete = (
+            "blueprint/demo/03-client-agent.bpmn",
+            "blueprint/profiles/basic/01-a2a-server.bpmn",
+            "blueprint/profiles/oauth/01-a2a-server.bpmn",
+            "blueprint/demo/02-server-agent-card-dispute.bpmn",
+            "blueprint/templates/10-server-http-json-v12.json",
             "blueprint/profiles/basic/a2a-protocol.bpmn",
             "blueprint/profiles/oauth/a2a-protocol.bpmn",
             "blueprint/demo/a2a-card.bpmn",
@@ -214,6 +221,37 @@ class ResourceClosureTest(unittest.TestCase):
         for path in obsolete:
             with self.subTest(path=path):
                 self.assertFalse((ROOT / path).exists())
+
+    def test_all_current_rest_assignments_use_version_13(self):
+        template = json.loads((ROOT / "blueprint/templates/10-server-http-json-v13.json").read_text())
+        self.assertEqual(template["id"], "io.camunda.connectors.HttpJson.v2")
+        self.assertEqual(template["version"], 13)
+        self.assertEqual(template["engines"]["camunda"], "^8.9")
+        count = 0
+        for directory in ("blueprint", "bpmn", "tck/fixture", "tests/src/test/resources"):
+            for path in (ROOT / directory).rglob("*.bpmn"):
+                for node in ET.parse(path).getroot().iter():
+                    if node.get(f"{{{Z}}}modelerTemplate") != template["id"]:
+                        continue
+                    count += 1
+                    with self.subTest(path=path, element=node.get("id")):
+                        self.assertEqual(node.get(f"{{{Z}}}modelerTemplateVersion"), "13")
+                        headers = {h.get("key"): h.get("value") for h in node.iter(f"{{{Z}}}header")}
+                        self.assertEqual(headers["elementTemplateVersion"], "13")
+        self.assertGreater(count, 0)
+
+    def test_server_agent_preserves_template_icon(self):
+        root = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
+        host = root.find(f".//{{{B}}}adHocSubProcess[@id='AgentTools']")
+        self.assertEqual(host.get(f"{{{Z}}}modelerTemplate"),
+                         "io.camunda.connectors.agenticai.aiagent.jobworker.v1")
+        self.assertEqual(host.get(f"{{{Z}}}modelerTemplateVersion"), "5")
+        icon = host.get(f"{{{Z}}}modelerTemplateIcon")
+        self.assertIsNotNone(icon)
+        prefix = "data:image/svg+xml;base64,"
+        self.assertTrue(icon.startswith(prefix))
+        svg = ET.fromstring(base64.b64decode(icon[len(prefix):], validate=True))
+        self.assertEqual(svg.tag, "{http://www.w3.org/2000/svg}svg")
 
 
 if __name__ == "__main__":

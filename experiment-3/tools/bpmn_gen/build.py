@@ -33,7 +33,7 @@ from agent import AGENT, TECH_PROPS, add_tools, agent_outcome, agent_settings, t
 from feel import one, nn, TS, TERMINAL, SETTLED, push_name, push_prefix  # noqa: E402
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-HTTP = "io.camunda.connectors.HttpJson.v2"
+HTTP = "io.camunda.connectors.HttpJson.v2@13"
 AGENT_BPMN = "bpmn/a2a-agent.bpmn"
 PROTOCOL_BPMN = "bpmn/a2a-protocol.bpmn"
 FIXTURE_BPMN = "tck/fixture/a2a-tck-fixture.bpmn"

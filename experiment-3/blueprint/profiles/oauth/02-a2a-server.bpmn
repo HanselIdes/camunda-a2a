@@ -2,14 +2,14 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_Collaboration_a2a_protocol" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
   <bpmn:collaboration id="Collaboration_a2a_protocol">
     <bpmn:documentation>The A2A 1.0 JSON-RPC binding, deployed unchanged next to an agent diagram. The endpoint starts the process named by the secret A2A_AGENT_PROCESS for each new task and answers every other method from engine state. Not meant to be edited.</bpmn:documentation>
-    <bpmn:participant id="Pool_a2a-rpc" name="01 A2A Server - Protocol and Discovery" processRef="a2a-rpc" />
+    <bpmn:participant id="Pool_a2a-rpc" name="02 A2A Server - Protocol and Discovery" processRef="a2a-rpc" />
     <bpmn:participant id="Pool_a2a-task-update" name="Update A2A task (called by the agent)" processRef="a2a-task-update" />
     <bpmn:participant id="Pool_a2a-await" name="Wait until engine state is visible" processRef="a2a-await" />
     <bpmn:participant id="Pool_a2a-correlate" name="Hand a follow-up to a task" processRef="a2a-correlate" />
     <bpmn:participant id="Pool_a2a-list-collect" name="Collect all indexed task pages" processRef="a2a-list-collect" />
   </bpmn:collaboration>
   <bpmn:error id="NotFound" name="NotFound" errorCode="NOT_FOUND" />
-  <bpmn:process id="a2a-rpc" name="01 A2A Server - Protocol and Discovery" isExecutable="true">
+  <bpmn:process id="a2a-rpc" name="02 A2A Server - Protocol and Discovery" isExecutable="true">
     <bpmn:startEvent id="RpcReceived" name="A2A request received" zeebe:modelerTemplate="dev.hansel.a2a.core.rpc.v1" zeebe:modelerTemplateVersion="1">
       <bpmn:extensionElements>
         <zeebe:properties>
@@ -103,11 +103,11 @@
       <bpmn:incoming>Flow_RouteRequest_PrepareNewTask</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareNewTask_CreateTask</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="CreateTask" name="Start agent process" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+    <bpmn:serviceTask id="CreateTask" name="Start agent process" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -116,11 +116,14 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, variables: {task: lookup.task, req: {message: ctx.m, blocking: ctx.blocking, hl: ctx.hl}}, tags: [&quot;a2a&quot;, &quot;task-&quot; + lookup.taskId, lookup.ctxTag]}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
+          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
+          <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateVersion" value="13" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={created: response.body.processInstanceKey}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -161,11 +164,11 @@
       <bpmn:incoming>Flow_RouteRequest_PrepareLookup</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareLookup_LookupJoin</bpmn:outgoing>
     </bpmn:scriptTask>
-    <bpmn:serviceTask id="FindTask" name="Find task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+    <bpmn:serviceTask id="FindTask" name="Find task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances/search&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -174,11 +177,14 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, tags: [&quot;task-&quot; + lookup.taskId]}, page: {limit: 1}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
+          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
+          <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateVersion" value="13" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={found: if count(response.body.items) &gt; 0 then response.body.items[1].processInstanceKey else null}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -560,11 +566,11 @@
       <bpmn:incoming>Flow_WaitAMoment_LookAgain</bpmn:incoming>
       <bpmn:outgoing>Flow_LookAgain_ReadState</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="ReadState" name="Read engine state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+    <bpmn:serviceTask id="ReadState" name="Read engine state" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + probe.path" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -573,11 +579,14 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="=probe.body" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
+          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
+          <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateVersion" value="13" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={items: for i in response.body.items return context merge([i, {value: from json(i.value)}])}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -647,11 +656,11 @@
       <bpmn:incoming>Flow_WaitBeforeRetry_TryJoin</bpmn:incoming>
       <bpmn:outgoing>Flow_TryJoin_CorrelateMessage</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="CorrelateMessage" name="Correlate message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+    <bpmn:serviceTask id="CorrelateMessage" name="Correlate message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
         <zeebe:ioMapping>
-          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/messages/correlation&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -660,11 +669,14 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={name: messageName, correlationKey: taskId, variables: payload}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
+          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
+          <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateVersion" value="13" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -746,11 +758,11 @@
       <bpmn:incoming>Flow_ListScanDecision_ListProcessPageJoin</bpmn:incoming>
       <bpmn:outgoing>Flow_ListProcessPageJoin_SearchTasks</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="SearchTasks" name="Search next process page" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+    <bpmn:serviceTask id="SearchTasks" name="Search next process page" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances/search&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -759,11 +771,14 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, tags: if listReq.ctxTag != null then [&quot;a2a&quot;, listReq.ctxTag] else [&quot;a2a&quot;]}, sort: [{field: &quot;startDate&quot;, order: &quot;DESC&quot;}, {field: &quot;processInstanceKey&quot;, order: &quot;DESC&quot;}], page: {limit: 100, after: listScan.cursor}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
+          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
+          <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateVersion" value="13" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={taskKeys: for i in response.body.items return i.processInstanceKey, listPage: {count: count(response.body.items), cursor: response.body.page.endCursor}}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />
@@ -783,11 +798,11 @@
       <bpmn:incoming>Flow_WaitListVariables_ListVariablesJoin</bpmn:incoming>
       <bpmn:outgoing>Flow_ListVariablesJoin_ReadTasks</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="ReadTasks" name="Read complete root-state batch" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+    <bpmn:serviceTask id="ReadTasks" name="Read complete root-state batch" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
         <zeebe:ioMapping>
-          <zeebe:input source="basic" target="authentication.type" />
+          <zeebe:input source="oauth-client-credentials-flow" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/variables/search?truncateValues=false&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
@@ -796,11 +811,14 @@
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {name: &quot;task&quot;, processInstanceKey: {&quot;$in&quot;: taskKeys}, scopeKey: {&quot;$in&quot;: taskKeys}}, page: {limit: 100}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="{{secrets.ENGINE_OAUTH_TOKEN_ENDPOINT}}" target="authentication.oauthTokenEndpoint" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_ID}}" target="authentication.clientId" />
+          <zeebe:input source="{{secrets.ENGINE_CLIENT_SECRET}}" target="authentication.clientSecret" />
+          <zeebe:input source="{{secrets.ENGINE_AUDIENCE}}" target="authentication.audience" />
+          <zeebe:input source="body" target="authentication.clientAuthentication" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="12" />
+          <zeebe:header key="elementTemplateVersion" value="13" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
           <zeebe:header key="resultExpression" value="={taskBatch: for i in response.body.items return context merge([i, {value: from json(i.value)}])}" />
           <zeebe:header key="errorExpression" value="=if string(error.code) = &quot;404&quot; then bpmnError(&quot;NOT_FOUND&quot;, &quot;not found&quot;) else if string(error.code) = &quot;409&quot; then bpmnError(&quot;CONFLICT&quot;, &quot;already exists&quot;) else null" />

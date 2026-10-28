@@ -39,7 +39,7 @@ def fault_model(source, target, mode):
 
 def run(root, reports, rpc, request, deploy, env, stack):
     records = []
-    protocol = root / "blueprint/profiles/basic/01-a2a-server.bpmn"
+    protocol = root / "blueprint/profiles/basic/02-a2a-server.bpmn"
     echo = root / "bpmn/a2a-echo.bpmn"
     user = "a2a-restricted-proof"
 
@@ -268,7 +268,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
         restart_connectors()
         for mode in ("unavailable-model-endpoint", "unknown-model"):
             derived = reports / f"nonshipping-{mode}.bpmn"
-            controlled_model(root / "blueprint/demo/02-server-agent-card-dispute.bpmn", derived, "a2a-echo")
+            controlled_model(root / "blueprint/demo/03-server-agent-card-dispute.bpmn", derived, "a2a-echo")
             model = ET.parse(derived)
             target = ("provider.openaiCompatible.endpoint" if mode == "unavailable-model-endpoint"
                       else "provider.openaiCompatible.model.model")
@@ -286,7 +286,7 @@ def run(root, reports, rpc, request, deploy, env, stack):
             records.append({"case": mode, "state": "TASK_STATE_FAILED", "noArtifacts": True,
                             "notOrdinaryUncertainty": True})
         repaired = reports / "nonshipping-repaired-agent.bpmn"
-        controlled_model(root / "blueprint/demo/02-server-agent-card-dispute.bpmn", repaired, "a2a-echo")
+        controlled_model(root / "blueprint/demo/03-server-agent-card-dispute.bpmn", repaired, "a2a-echo")
         deploy([repaired])
         completed = send("49.95 USD was charged twice by Northwind Electronics for one order costing 49.95 USD.")
         assert completed["status"]["state"] == "TASK_STATE_COMPLETED", completed

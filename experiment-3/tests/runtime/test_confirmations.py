@@ -18,7 +18,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertEqual(len(EXPECTED), 9)
 
     def test_confirmation_tool_does_not_accept_model_financial_fields(self):
-        root = ET.parse(ROOT / "blueprint/demo/02-server-agent-card-dispute.bpmn").getroot()
+        root = ET.parse(ROOT / "blueprint/demo/03-server-agent-card-dispute.bpmn").getroot()
         tool = next(e for e in root.iter() if e.get("id") == "review_duplicate_charge")
         self.assertNotIn("fromAi(", ET.tostring(tool).decode())
         self.assertEqual([(e.get("source"), e.get("target")) for e in tool.iter(Z + "input")],
@@ -30,7 +30,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("history", validation.get("expression"))
 
     def test_client_confirmation_and_task_identity_come_from_process_results(self):
-        root = ET.parse(ROOT / "blueprint/demo/03-client-agent.bpmn").getroot()
+        root = ET.parse(ROOT / "blueprint/demo/01-client-agent.bpmn").getroot()
         send = next(e for e in root.iter() if e.get("id") == "SendA2AMessage")
         send_body = next(e for e in send.iter(Z + "input") if e.get("target") == "body").get("source")
         self.assertNotIn("toolCall.claim", send_body)
@@ -65,7 +65,7 @@ class ConfirmationContractTest(unittest.TestCase):
             self.assertNotIn("defaultValue", fields[key])
             if fields[key]["type"] == "number":
                 self.assertEqual(fields[key]["validate"]["min"], 0)
-        root = ET.parse(ROOT / "blueprint/demo/03-client-agent.bpmn").getroot()
+        root = ET.parse(ROOT / "blueprint/demo/01-client-agent.bpmn").getroot()
         task = next(e for e in root.iter() if e.get("id") == "AskClientForInput")
         inputs = {e.get("target"): e.get("source") for e in task.iter(Z + "input")}
         outputs = {e.get("target"): e.get("source") for e in task.iter(Z + "output")}

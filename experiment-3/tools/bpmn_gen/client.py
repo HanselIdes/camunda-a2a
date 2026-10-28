@@ -9,7 +9,7 @@ import os
 
 from lib import Proc
 
-HTTP = "io.camunda.connectors.HttpJson.v2"
+HTTP = "io.camunda.connectors.HttpJson.v2@13"
 HEADERS = '={"A2A-Version": "1.0", "Content-Type": "application/json"}'
 MAX_REPLIES = 100  # about three minutes of polling at two seconds
 

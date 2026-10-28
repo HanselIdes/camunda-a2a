@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_client" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
-  <bpmn:process id="a2a-client" name="03 Client Agent - Ask the Server" isExecutable="true">
+  <bpmn:process id="a2a-client" name="01 Client Agent - Ask the Server" isExecutable="true">
     <bpmn:startEvent id="QuestionAsked" name="Client request received">
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="a2a-client-ask" />
@@ -64,7 +64,7 @@
           <zeebe:loopCharacteristics inputCollection="=clientAgent.toolCalls" inputElement="toolCall" outputCollection="toolCallResults" outputElement="={id: toolCall._meta.id, name: toolCall._meta.name, content: toolCallResult}" />
         </bpmn:extensionElements>
       </bpmn:multiInstanceLoopCharacteristics>
-      <bpmn:serviceTask id="DiscoverAgentCard" name="Discover server agent" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+      <bpmn:serviceTask id="DiscoverAgentCard" name="Discover server agent" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
         <bpmn:documentation>Read the public Agent Card before contacting the remote server. Use this tool first to inspect its name, JSON-RPC endpoint and advertised capabilities. Returns the card; does not send a task or expose credentials.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
@@ -74,18 +74,19 @@
             <zeebe:input source="{{secrets.A2A_AGENT_CARD_URL}}" target="url" />
             <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
+            <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
             <zeebe:input source="20" target="readTimeoutInSeconds" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
-            <zeebe:header key="elementTemplateVersion" value="12" />
+            <zeebe:header key="elementTemplateVersion" value="13" />
             <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
             <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
             <zeebe:header key="retryBackoff" value="PT0S" />
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:serviceTask>
-      <bpmn:serviceTask id="SendA2AMessage" name="Send A2A message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+      <bpmn:serviceTask id="SendA2AMessage" name="Send A2A message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
         <bpmn:documentation>Send a new A2A 1.0 message or a follow-up to the same task. Use the user's request as text. Follow-ups use task and context IDs from the prior send result. A structured syntheticClaim is added only from the AskClientForInput form result; neither can be supplied as an AI tool argument. Returns the JSON-RPC response and task.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
@@ -95,20 +96,21 @@
             <zeebe:input source="{{secrets.A2A_RPC_URL}}" target="url" />
             <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: &quot;{{secrets.A2A_API_KEY}}&quot;}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
+            <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
             <zeebe:input source="60" target="readTimeoutInSeconds" />
             <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: { message: context merge([ { messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: fromAi(toolCall.text, &quot;The user's request or follow-up text&quot;, &quot;string&quot;)}], flatten( for records in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;AskClientForInput&quot;] )] return if count(records) &gt; 0 then if records[count(records)].content instance of context then if records[count(records)].content.toolCallResult instance of context then if records[count(records)].content.toolCallResult.syntheticClaim instance of context then [{data: {syntheticClaim: records[count(records)].content.toolCallResult.syntheticClaim}}] else [] else if records[count(records)].content.syntheticClaim instance of context then [{data: {syntheticClaim: records[count(records)].content.syntheticClaim}}] else [] else [] else [] ) ) }, (for records in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content] return for response in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if result.task instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] ]), configuration: {returnImmediately: true} } }" target="body" />
             <zeebe:input source="=false" target="ignoreNullValues" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
-            <zeebe:header key="elementTemplateVersion" value="12" />
+            <zeebe:header key="elementTemplateVersion" value="13" />
             <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
             <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
             <zeebe:header key="retryBackoff" value="PT0S" />
           </zeebe:taskHeaders>
         </bpmn:extensionElements>
       </bpmn:serviceTask>
-      <bpmn:serviceTask id="GetA2ATask" name="Poll A2A task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="12">
+      <bpmn:serviceTask id="GetA2ATask" name="Poll A2A task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
         <bpmn:documentation>Read the current state of the task returned by the prior SendA2AMessage call. The task ID comes from that response, not an AI tool argument. Poll while work continues and use the returned state and message to decide whether to request input or report a terminal result.</bpmn:documentation>
         <bpmn:extensionElements>
           <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
@@ -118,13 +120,14 @@
             <zeebe:input source="{{secrets.A2A_RPC_URL}}" target="url" />
             <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: &quot;{{secrets.A2A_API_KEY}}&quot;}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
+            <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
             <zeebe:input source="30" target="readTimeoutInSeconds" />
             <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: get value( (for records in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content] return for response in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if result.task instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] , &quot;taskId&quot;)} }" target="body" />
             <zeebe:input source="=false" target="ignoreNullValues" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
-            <zeebe:header key="elementTemplateVersion" value="12" />
+            <zeebe:header key="elementTemplateVersion" value="13" />
             <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
             <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
             <zeebe:header key="retryBackoff" value="PT0S" />

@@ -255,16 +255,16 @@ try:
         elif name == "authenticated topology":
             assert status == 200, "Authenticated engine API access failed"
     agent_file = ROOT / ("tck/fixture/a2a-tck-fixture.bpmn" if conformance else
-                         "blueprint/demo/02-server-agent-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
+                         "blueprint/demo/03-server-agent-card-dispute.bpmn" if demo else "bpmn/a2a-echo.bpmn")
     decision_file = ROOT / ("blueprint/demo/07-server-request-validation.dmn" if demo
                             else "dmn/a2a-validate.dmn")
-    files = [ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn", agent_file, decision_file]
+    files = [ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn", agent_file, decision_file]
     if demo:
         files += list((ROOT / "blueprint/demo").glob("*.form"))
-        files += [ROOT / "blueprint/demo/03-client-agent.bpmn",
+        files += [ROOT / "blueprint/demo/01-client-agent.bpmn",
                   ROOT / "blueprint/demo/07-server-request-validation.dmn"]
     elif conformance:
-        card = ET.parse(ROOT / "blueprint/profiles/basic/01-a2a-server.bpmn")
+        card = ET.parse(ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn")
         expression = next(p for p in card.getroot().iter()
                           if p.get("name") == "inbound.responseExpression")
         expression.set("value", """={statusCode: 200, headers: {"Content-Type": "application/json"},
