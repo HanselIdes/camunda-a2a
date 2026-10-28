@@ -146,10 +146,12 @@ actual Marketplace-to-Modeler import and external legal/eligibility approval rem
 Do not use the archived experimental card or client as companions to these candidate profiles.
 
 For contributors, `bpmn/a2a-protocol.bpmn` is the input to the profile builder. The builder preserves surviving diagram
-layout; it does not regenerate the source diagram. Regenerate a selected profile with
-`python3 tools/build_core.py --authentication basic --output blueprint/profiles/basic/a2a-protocol.bpmn`
-(substitute `oauth` for the other profile). Run `python3 tools/build_core.py --check` to check both committed outputs
-without modifying files. Adopters must not need to run this generator.
+layout; it does not regenerate the source diagram. From `experiment-3`, run
+`python3 tools/build_blueprint.py` to regenerate the complete current assets, including both profiles.
+Run `python3 tools/build_blueprint.py --check` to check committed outputs without modifying files.
+`build_core.py` is an intermediate Python API; its retired CLI exits with this guidance rather than
+overwriting final native-secret, header, template and public-URL configuration.
+Adopters must not need to run this generator.
 
 ### Deterministic task-contract example
 

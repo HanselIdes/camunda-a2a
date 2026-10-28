@@ -765,7 +765,9 @@ It does not inject native response loss after commit, OAuth expiry, optional ing
 No other deployment is stopped or reconfigured. These checks are not passes until the exact-source run completes.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
-using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.
+using immutable upstream template URLs, including both final protocol profiles. Omit `--check` to regenerate.
+`build_core.py` remains an intermediate Python API; its retired CLI refuses writes and directs contributors
+to the complete builder so final native-secret, header, template and public-URL configuration is preserved.
 `python3 experiment-3/tools/check_resources.py` checks the selected import set for template-version, form, decision
 and process reference closure. Add `--ref <full-public-commit-SHA>` to print the 12 immutable resource URLs.
 None of these commands changes an adopter's deployment. A successful runtime check is not a conformance or Modeler-import pass.

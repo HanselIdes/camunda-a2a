@@ -1,8 +1,12 @@
 import base64
 import json
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from check_resources import PATHS, ROOT, check
 from bpmn_gen.secrets import current_secret_expression
@@ -34,6 +38,22 @@ class ResourceClosureTest(unittest.TestCase):
 
     def test_selected_import_set_is_closed(self):
         self.assertEqual(check(self.resources), 13)
+
+    def test_intermediate_builder_cli_cannot_overwrite_current_resources(self):
+        before = {path: (ROOT / path).read_bytes() for path in PATHS}
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "protocol.bpmn"
+            output.write_text("must remain untouched")
+            for arguments in (["--check"], ["--authentication", "basic", "--output", str(output)]):
+                result = subprocess.run(
+                    [sys.executable, str(ROOT / "tools/build_core.py"), *arguments],
+                    capture_output=True, text=True, timeout=10,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("build_blueprint.py", result.stderr)
+                self.assertIn("--check", result.stderr)
+                self.assertEqual(output.read_text(), "must remain untouched")
+        self.assertEqual(before, {path: (ROOT / path).read_bytes() for path in PATHS})
 
     def test_current_secret_references_are_feel_and_keep_names(self):
         names = set()

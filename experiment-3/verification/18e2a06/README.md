@@ -81,5 +81,9 @@ The historical `verify.py` matrix modes now fail before provisioning on current 
 contributors to `verify_client_agent.py` or a whole pinned historical package. Their default 8.9
 environment does not configure the native store/public URL and is not current-package verification.
 The preflight is tested; no fresh broad matrix or TCK pass is claimed.
+The intermediate `build_core.py` API remains available to the complete builder, but its CLI now
+fails before writing and directs contributors to `build_blueprint.py` or its `--check` mode.
+The complete builder reproduces both final profiles; the resource suite now passes 18 tests,
+including check/write CLI refusal and unchanged-output assertions. No deployed assets changed.
 Earlier failed discovery, namespace and credential-log checks are retained as sanitized failure reports
 alongside the passing run. Existing historical evidence is untouched.

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Build the push-disabled protocol from the authoritative experiment diagram.
 
-Preserves the layout of surviving elements. Adopters deploy the committed output;
-this command is only for contributors changing the protocol.
+Preserves the layout of surviving elements. This module is an intermediate builder;
+use build_blueprint.py for current resources and validation.
 """
-import argparse
 from copy import deepcopy
 from pathlib import Path
 import xml.etree.ElementTree as ET
@@ -520,23 +519,8 @@ def build(authentication, agent_path=None):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--authentication", choices=("basic", "oauth"))
-    parser.add_argument("--output", type=Path)
-    parser.add_argument("--check", action="store_true", help="Check both committed profiles without changing files")
-    args = parser.parse_args()
-    if args.check:
-        if args.authentication or args.output:
-            parser.error("--check cannot be combined with --authentication or --output")
-        stale = []
-        for authentication in ("basic", "oauth"):
-            path = ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"
-            if not path.exists() or path.read_bytes() != build(authentication):
-                stale.append(authentication)
-        if stale:
-            parser.exit(1, "Regenerate stale core profiles: " + ", ".join(stale) + "\n")
-        print("Both core profiles match the authoritative experiment diagram")
-    else:
-        if not args.authentication or not args.output:
-            parser.error("--authentication and --output are required when not checking")
-        args.output.write_bytes(build(args.authentication))
+    raise SystemExit(
+        "build_core.py is an intermediate builder, not the current-resource CLI. "
+        "Use python3 experiment-3/tools/build_blueprint.py to regenerate all current assets, "
+        "or add --check to validate them without writing files."
+    )

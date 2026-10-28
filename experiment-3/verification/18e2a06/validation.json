@@ -10,6 +10,13 @@
     "selectedPythonTestsWithPermissionAndIsolationRegressions": 21,
     "modelJourneyRepeated": false
   },
+  "postRuntimeIntermediateBuilderCliCorrection": {
+    "rawBuildApiPreserved": true,
+    "cliCheckAndWriteRefuseBeforeMutation": "PASS",
+    "completeBlueprintCheck": "PASS",
+    "resourceTests": 18,
+    "shippingExecutionAssetsUnchanged": true
+  },
   "baseCommit": "58091bffe2a078d3f72b98fdb7c8d6b40b254d18",
   "sourceAssetsUnchangedSinceRuntime": true,
   "localModel": {
