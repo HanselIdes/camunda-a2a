@@ -1,4 +1,4 @@
-"""Run the authenticated client-agent-to-server-agent flow on the isolated 8.9 profile."""
+"""Run the authenticated Sub-process client journey on the isolated 8.10 profile."""
 import base64
 import http.client
 import json
@@ -31,8 +31,8 @@ report_file = report_dir / "client-agent-e2e.json"
 report = {
     **source_before,
     "verdict": "RUNNING",
-    "engineImage": os.environ.get("PROOF_ENGINE_IMAGE", "camunda/camunda:8.9.26"),
-    "connectorsImage": os.environ.get("PROOF_CONNECTORS_IMAGE", "camunda/connectors-bundle:8.9.17"),
+    "engineImage": os.environ.get("PROOF_ENGINE_IMAGE", "camunda/camunda:8.10.2"),
+    "connectorsImage": os.environ.get("PROOF_CONNECTORS_IMAGE", "camunda/connectors-bundle:8.10.2"),
     "elasticsearchImage": os.environ.get(
         "PROOF_ELASTICSEARCH_IMAGE", "docker.elastic.co/elasticsearch/elasticsearch:8.19.23"),
     "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
@@ -42,6 +42,8 @@ report_file.write_text(json.dumps(report, indent=2) + "\n")
 
 env = dict(
     os.environ,
+    PROOF_ENGINE_IMAGE=report["engineImage"],
+    PROOF_CONNECTORS_IMAGE=report["connectorsImage"],
     PROOF_ENGINE_PASSWORD=secrets.token_urlsafe(32),
     PROOF_A2A_API_KEY=secrets.token_urlsafe(32),
     PROOF_TLS_PASSWORD=secrets.token_urlsafe(32),
@@ -202,7 +204,7 @@ try:
     except urllib.error.HTTPError as error:
         detail = error.read().decode()
         raise RuntimeError(f"Authenticated deployment failed with HTTP {error.code}: {detail}") from error
-    report["checks"].append("authenticated 8.9 deployment of the seven BPMN/DMN/form resources")
+    report["checks"].append("authenticated 8.10 deployment of the seven BPMN/DMN/form resources")
 
     expected_card_url = (
         "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a"
@@ -395,13 +397,20 @@ try:
         "artifact": expected_artifact,
         "clientProcessState": "COMPLETED",
         "clientToolCalls": tool_names,
-        "providerValidation": "Local Ollama override completed the actual task-v8 client and task-v5 server calls.",
+        "assertedBehavior": {
+            "clientRequestedExplicitConfirmation": ask_seen and ask_completed,
+            "initialUserMessageContainsStructuredClaim": bool(initial_data_parts),
+            "confirmedFollowUpStructuredClaimParts": len(confirmed_parts),
+            "followUpReusedInitialTaskAndContext": True,
+            "pollObservedSameTaskCompleted": True,
+        },
+        "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
         "sourceAfter": source_snapshot(ROOT),
         "evidenceLocation": str(report_file),
     })
     assert report["sourceAfter"] == source_before, "Source changed during runtime verification"
     report_file.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Client-agent 8.9 end-to-end verification PASS: {report_file}", flush=True)
+    print(f"Client-agent 8.10 end-to-end verification PASS: {report_file}", flush=True)
 except Exception as failure:
     report.update({"verdict": "FAIL", "failureType": type(failure).__name__,
                    "failureMessage": redact(str(failure))})

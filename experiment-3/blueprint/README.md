@@ -18,30 +18,33 @@ The [earlier confirmed-input prototype](../verification/fb158a5-89/README.md) pa
 checks on engine 8.9.26 / Connectors 8.9.17 / Elasticsearch 8.19.23. Those results do not verify
 the current numbered candidate.
 
-The demonstration has a client-side AI Agent Task (template version 8) that chooses among A2A discovery,
-send, poll, and user-input tools inside a parallel multi-instance ad-hoc subprocess. The protocol and
+The demonstration has a client-side AI Agent Sub-process (v2 template version 1) that chooses among A2A discovery,
+send, poll, and user-input root tools in a compact two-by-two grid. Its stock connector owns the feedback loop.
+The protocol and
 discovery webhooks share process `a2a-rpc`; a new A2A task starts the separate server-side AI agent
 `a2a-card-dispute`. Its deterministic BPMN tool validates explicit synthetic inputs and returns arithmetic
 evidence for the client to review. The shipped agent tasks reference the `CAMUNDA_PROVIDED_LLM_*` secrets;
 the local validation override does not verify SaaS model access. No refund, real dispute decision, fraud
 determination, financial integration, or custom HTTP server is included.
 
-## 8.9+ candidate configuration
+## 8.10+ client/server demo configuration
 
-The candidate targets **Camunda 8.9.26 with stock Connectors 8.9.17** and Elasticsearch 8.19.23.
-The focused client-agent E2E passed on clean source commit
-[`69e77df`](../verification/69e77df/README.md), with the current numbering and REST v13 mappings.
-That record also includes server-agent icon checks in Modeler. This is a specific validation profile, not a blanket
-claim for every 8.9+ combination.
+The complete demo now requires **Camunda 8.10 and Connectors 8.10 or later** because the selected client
+Sub-process template has engine constraint `^8.10`. The focused verification profile is engine 8.10.2,
+stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
+The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
+[`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
+The protocol and server-agent resources are unchanged by this replacement; their earlier source-pinned
+8.9 evidence remains server-only evidence, not support for the complete current demo on 8.9.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
 
 | Component            | Version or setting                                                                                                   |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Self-Managed engine  | Camunda 8.9.26, Basic authentication and platform authorizations enabled                                             |
-| Stock Connectors     | 8.9.17; no custom worker or custom HTTP server                                                                       |
+| Self-Managed engine  | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                             |
+| Stock Connectors     | 8.10.2; no custom worker or custom HTTP server                                                                       |
 | Secondary storage    | Elasticsearch 8.19.23                                                                                                |
-| Client AI Agent Task | `io.camunda.connectors.agenticai.aiagent.v1`, version 8; engine constraint `^8.9`                                    |
+| Client AI Agent Sub-process | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10`                     |
 | Server AI Agent      | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                                    |
 | HTTP template        | `io.camunda.connectors.HttpJson.v2`, version 13                                                                      |
 | Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
@@ -117,7 +120,7 @@ transport. The outage returned HTTP 503 with UNAVAILABLE; after restoration, the
 and fresh work completed exactly. Refused correlation created operator-visible incidents without a fabricated
 RPC response or business-state change. Repair recovered the original requests and exact terminal outcomes.
 These are functional checks on engine 8.8.21 / stock Connectors 8.9.0, not adoption or editor evidence.
-Those source-pinned assets were byte-identical to d4e6273; the current 8.9 candidate has a separate prompt mapping.
+Those source-pinned assets were byte-identical to d4e6273; later candidates have separate prompt mappings.
 The first, failed harness observation is preserved separately.
 Native response loss after a committed correlation was not injected; existing Core evidence retains that scope.
 
@@ -214,7 +217,7 @@ ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_CLASSNAME=io.camunda.exporter.CamundaExpo
 ZEEBE_BROKER_EXPORTERS_CAMUNDAEXPORTER_ARGS_BULK_DELAY=1
 ```
 
-Historical exporter diagnostics below use **Self-Managed 8.8.21**; current 8.9 checks record their own effective settings.
+Historical exporter diagnostics below use **Self-Managed 8.8.21**; later checks record their own effective settings.
 The class name is necessary when explicitly configuring the exporter through these environment variables:
 omitting it caused engine startup to fail with "Expected to find a 'className' configured for the exporter."
 The [8.8.21 exporter source](https://github.com/camunda/camunda/blob/8.8.21/zeebe/exporters/camunda-exporter/src/main/java/io/camunda/exporter/config/ExporterConfiguration.java)
@@ -276,8 +279,10 @@ certificate's Subject Alternative Names and configure trust on both clients.
 The `CAMUNDA_PROVIDED_LLM_*` names are configuration names, not a claim that this check used Camunda's SaaS model.
 For Docker Desktop, a host-local Ollama service can be reached through `host.docker.internal`; do not assume
 that hostname works on a remote cluster. Model inference needs sufficient local resources.
-The client task `ClientAgent` and server activity `AgentTools` reference these three secrets through their
-`provider.openaiCompatible.*` inputs. Changing secret values does not require editing those activities.
+The client subprocess `ClientAgent` references these secrets through the v2 template's
+`provider.openai.backend.custom.*` and `provider.openai.model.model` inputs, selecting Chat Completions
+and API-key authentication. Server activity `AgentTools` retains its `provider.openaiCompatible.*` inputs.
+Changing secret values does not require editing those activities.
 Changing provider type, business tools, or system instructions requires configuring the corresponding BPMN.
 
 ## Import and deploy
@@ -291,16 +296,16 @@ does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongsi
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
 The complete import closure is 11 repository resources plus the pinned upstream server AI Agent Job Worker v5
-template (12 import resources total): seven BPMN/DMN/form resources, three local element-template JSON files,
-and the README. The client also requires Camunda AI Agent Task template
-`io.camunda.connectors.agenticai.aiagent.v1@8`; `c8ctl element-template info` confirmed it in the configured
-template catalog, so its JSON is not redistributed. Confirm that the target Modeler resolves this exact ID
-and version before import. The local HTTP JSON v13 snapshot may be omitted only after confirming that the
+and client AI Agent Sub-process v2 version 1 templates (13 import resources total):
+seven BPMN/DMN/form resources, three local element-template JSON files, the README, and two external templates.
+Confirm that the target Modeler resolves both exact AI template IDs and versions before import.
+The local HTTP JSON v13 snapshot may be omitted only after confirming that the
 target already provides that exact ID and version. Keep both custom server templates and the pinned upstream
 AI Agent Job Worker v5 template. An "Already available" notice alone does not establish version equivalence.
 Use the Modeler's element-template import workflow for the three local JSON files and the
-[pinned upstream template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json).
-The upstream template remains subject to its own terms; see [third-party notices](../../THIRD_PARTY_NOTICES.md).
+[pinned server template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
+and [pinned client template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json).
+The upstream templates remain subject to their own terms; see [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
 Deploy these seven resources together: `profiles/basic/02-a2a-server.bpmn`,
 `demo/03-server-agent-card-dispute.bpmn`, `demo/01-client-agent.bpmn`, the three forms under
@@ -310,8 +315,8 @@ or the template JSON files. The process IDs remain `a2a-rpc`, `a2a-card-dispute`
 the protocol and discovery webhook starts are both in `a2a-rpc`.
 
 For Desktop Modeler or Self-Managed Hub, keep the seven deployable resources together and install the
-three local templates at their exact versions. Confirm that AI Agent Task v8 is available in the target
-template catalog. Do not include archived diagrams, old copies, or both
+three local templates and both pinned upstream AI templates at their exact versions.
+Do not include archived diagrams, old copies, or both
 authentication profiles in the deployment. Historical Desktop/Hub deployment reports below refer to
 earlier resource sets; they do not prove this revised candidate's import or runtime.
 
@@ -331,9 +336,9 @@ Start process `a2a-client` through its start form, or with a `question` variable
 }
 ```
 
-The `ClientAgent` task uses AI Agent Task v8 and chooses its own calls to `DiscoverAgentCard`,
-`SendA2AMessage`, `GetA2ATask`, and, when needed, `AskClientForInput`. The parallel multi-instance
-`ClientTools` ad-hoc subprocess executes tool requests and returns their results to the next model turn.
+The `ClientAgent` AI Agent Sub-process chooses its own calls to `DiscoverAgentCard`,
+`SendA2AMessage`, `GetA2ATask`, and, when needed, `AskClientForInput`. The connector handles tool
+activation and feedback internally, with an eight-call model limit and meaningful `toolCallResult` values.
 The client sends credentials only to the configured `A2A_RPC_URL`, not to an arbitrary URL returned by a card.
 Discovery and A2A 1.0 JSON-RPC are explicit BPMN/HTTP behavior, not the stock A2A 0.3 client connector.
 
@@ -533,7 +538,7 @@ Do not blindly retry financial work: one observed internal connection closure le
 its agent task had reached input-required. A later successful request does not recover that original client.
 
 The source-specific checkpoints above distinguish functional prototype evidence from deferred release approval.
-The selected editor/form flows have functional evidence on that historical runtime, not the current 8.9 pair; human usability and
+The selected editor/form flows have functional evidence on that historical runtime, not the current complete demo; human usability and
 fresh-adopter timing are not prototype criteria. The actual8.8.21 clarification heading displayed readable
 literal backslash-n separators, not a polished-layout pass. Unknown historical tool versions remain unknown.
 Actual Marketplace import and external legal/eligibility approval remain deferred.

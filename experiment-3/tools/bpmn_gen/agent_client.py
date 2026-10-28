@@ -1,4 +1,4 @@
-"""Generate the client-side AI Agent Task and its A2A tool loop."""
+"""Generate the client-side AI Agent Sub-process and its root A2A tools."""
 from bpmn_gen.client import form
 from bpmn_gen.feel import one
 from bpmn_gen.lib import Proc, q
@@ -35,7 +35,7 @@ SYSTEM_PROMPT = (
 CONFIRMED_CLIENT_DATA_PARTS = """
 flatten(
   for records in [flatten(
-    for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
+    for message in agentContext.conversation.messages[item.role = "tool_call_result"]
     return message.results[item.name = "AskClientForInput"]
   )]
   return if count(records) > 0 then
@@ -54,7 +54,7 @@ flatten(
 
 PREVIOUS_A2A_TASK_PARAMS = """
 (for records in [flatten(
-  for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
+  for message in agentContext.conversation.messages[item.role = "tool_call_result"]
   return message.results[item.name = "SendA2AMessage"]
 )] return if count(records) > 0 then
   (for content in [records[count(records)].content] return
@@ -77,37 +77,18 @@ def build():
     p = Proc("a2a-client", "01 Client Agent - Ask the Server")
     p.start("QuestionAsked", "Client request received", 150, 210,
             ext='<zeebe:formDefinition formId="a2a-client-ask" />')
-    p.xor("ClientAgentInputJoin", "Start or continue agent turn?", 245, 203)
-    p.node("serviceTask", "ClientAgent", "Plan and coordinate with the server", 300, 188)
-    p.xor("ClientHasTools", "Client agent requested tools?", 470, 203)
-
-    tools_ext = (
-        '<zeebe:adHoc activeElementsCollection="=[toolCall._meta.name]" />'
-        '<zeebe:ioMapping><zeebe:input target="toolCallResult" /></zeebe:ioMapping>'
-        '<zeebe:properties><zeebe:property name="io.camunda.agenticai.toolContainer" '
-        'value="true" /></zeebe:properties>'
-    )
-    tools_inner = (
-        '<bpmn:multiInstanceLoopCharacteristics isSequential="false">'
-        '<bpmn:extensionElements><zeebe:loopCharacteristics '
-        'inputCollection="=clientAgent.toolCalls" inputElement="toolCall" '
-        'outputCollection="toolCallResults" '
-        'outputElement="={id: toolCall._meta.id, name: toolCall._meta.name, '
-        'content: toolCallResult}" /></bpmn:extensionElements>'
-        '</bpmn:multiInstanceLoopCharacteristics>'
-    )
-    p.sub("ClientTools", "Client Agent - A2A Tools", 620, 72, 680, 330,
-          kind="adHocSubProcess", ext=tools_ext, inner=tools_inner)
+    p.sub("ClientAgent", "Coordinate with the A2A server", 250, 80, 400, 290,
+          kind="adHocSubProcess")
     p.node(
         "serviceTask", "DiscoverAgentCard", "Discover server agent",
-        675, 125, parent="ClientTools",
+        290, 135, parent="ClientAgent",
         doc=("Read the public Agent Card before contacting the remote server. Use this tool first "
              "to inspect its name, JSON-RPC endpoint and advertised capabilities. Returns the card; "
              "does not send a task or expose credentials."),
     )
     p.node(
         "serviceTask", "SendA2AMessage", "Send A2A message",
-        830, 125, parent="ClientTools",
+        495, 135, parent="ClientAgent",
         doc=("Send a new A2A 1.0 message or a follow-up to the same task. Use the user's request "
              "as text. Follow-ups use task and context IDs from the prior send result. A structured "
              "syntheticClaim is added only from the AskClientForInput form result; neither can be "
@@ -115,7 +96,7 @@ def build():
     )
     p.node(
         "serviceTask", "GetA2ATask", "Poll A2A task",
-        985, 125, parent="ClientTools",
+        290, 255, parent="ClientAgent",
         doc=("Read the current state of the task returned by the prior SendA2AMessage call. "
              "The task ID comes from that response, not an AI tool argument. Poll while work "
              "continues and use the returned state and message to decide whether to request input "
@@ -123,7 +104,7 @@ def build():
     )
     p.node(
         "userTask", "AskClientForInput", "Ask client for missing input",
-        1140, 125, parent="ClientTools",
+        495, 255, parent="ClientAgent",
         ext=('<zeebe:userTask /><zeebe:formDefinition formId="a2a-client-answer" />'
              '<zeebe:ioMapping>'
              '<zeebe:input source=%s target="question" />'
@@ -140,7 +121,7 @@ def build():
     )
 
     p.script(
-        "PrepareClientResult", "Prepare client result", 640, 200,
+        "PrepareClientResult", "Prepare client result", 720, 185,
         one("""=(for polls in [flatten(
           for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
           return message.results[item.name = "GetA2ATask"]
@@ -159,17 +140,12 @@ def build():
           (if state instance of string then state else "No GetTask status was observed."))[1][1][1][1][1][1]"""),
         "resultText",
     )
-    p.node("userTask", "ReviewClientResult", "Review client agent result", 810, 188,
+    p.node("userTask", "ReviewClientResult", "Review client agent result", 900, 185,
            ext='<zeebe:userTask /><zeebe:formDefinition formId="a2a-client-result" />')
-    p.end("ClientConversationFinished", "Client conversation finished", 990, 210)
+    p.end("ClientConversationFinished", "Client conversation finished", 1080, 207)
 
-    p.flow("QuestionAsked", "ClientAgentInputJoin")
-    p.flow("ClientAgentInputJoin", "ClientAgent")
-    p.flow("ClientAgent", "ClientHasTools")
-    p.flow("ClientHasTools", "ClientTools", "tools requested",
-           cond="=not(is empty(clientAgent.toolCalls))")
-    p.flow("ClientHasTools", "PrepareClientResult", "final response", default=True)
-    p.flow("ClientTools", "ClientAgentInputJoin", route="over:150")
+    p.flow("QuestionAsked", "ClientAgent")
+    p.flow("ClientAgent", "PrepareClientResult")
     p.flow("PrepareClientResult", "ReviewClientResult")
     p.flow("ReviewClientResult", "ClientConversationFinished")
 
@@ -251,20 +227,22 @@ def build():
             ("resultExpression", "={toolCallResult: response.body}"),
         ],
     }
-    ai_task = [
-        ("provider.type", "openaiCompatible"),
-        ("provider.openaiCompatible.endpoint", "{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}"),
-        ("provider.openaiCompatible.authentication.apiKey", "{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}"),
-        ("provider.openaiCompatible.model.model", "{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}"),
+    ai_subprocess = [
+        ("provider.type", "openai"),
+        ("provider.openai.api.type", "completions"),
+        ("provider.openai.backend.type", "custom"),
+        ("provider.openai.backend.custom.endpoint", "{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}"),
+        ("provider.openai.backend.custom.authentication.type", "apiKey"),
+        ("provider.openai.backend.custom.authentication.apiKey", "{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}"),
+        ("provider.openai.model.model", "{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM_PROMPT)),
         ("data.userPrompt.prompt", "=question"),
-        ("data.tools.containerElementId", "ClientTools"),
-        ("data.tools.toolCallResults", "=toolCallResults"),
-        ("data.context", "=clientAgent.context"),
+        ("agentContext", "=clientAgent.context"),
         ("data.memory.storage.type", "in-process"),
         ("data.memory.contextWindowSize", "=20"),
         ("data.limits.maxModelCalls", "=8"),
-        ("resultVariable", "clientAgent"),
+        ("data.response.format.type", "text"),
+        ("data.response.includeAgentContext", "true"),
         ("retries", "1"),
     ]
-    return p.xml(), forms, http, ai_task
+    return p.xml(), forms, http, ai_subprocess

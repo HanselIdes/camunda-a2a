@@ -1,69 +1,51 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_client" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_client" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:process id="a2a-client" name="01 Client Agent - Ask the Server" isExecutable="true">
     <bpmn:startEvent id="QuestionAsked" name="Client request received">
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="a2a-client-ask" />
       </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_QuestionAsked_ClientAgentInputJoin</bpmn:outgoing>
+      <bpmn:outgoing>Flow_QuestionAsked_ClientAgent</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="ClientAgentInputJoin" name="Start or continue agent turn?">
-      <bpmn:incoming>Flow_QuestionAsked_ClientAgentInputJoin</bpmn:incoming>
-      <bpmn:incoming>Flow_ClientTools_ClientAgentInputJoin</bpmn:incoming>
-      <bpmn:outgoing>Flow_ClientAgentInputJoin_ClientAgent</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="ClientAgent" name="Plan and coordinate with the server" zeebe:modelerTemplate="io.camunda.connectors.agenticai.aiagent.v1" zeebe:modelerTemplateVersion="8">
+    <bpmn:adHocSubProcess id="ClientAgent" name="Coordinate with the A2A server" zeebe:modelerTemplate="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="io.camunda.agenticai:aiagent:1" retries="1" />
+        <zeebe:taskDefinition type="io.camunda.agenticai:aiagent:subprocess:2" retries="1" />
         <zeebe:ioMapping>
-          <zeebe:input source="openaiCompatible" target="provider.type" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
+          <zeebe:input source="openai" target="provider.type" />
+          <zeebe:input source="completions" target="provider.openai.api.type" />
+          <zeebe:input source="custom" target="provider.openai.backend.type" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openai.backend.custom.endpoint" />
+          <zeebe:input source="apiKey" target="provider.openai.backend.custom.authentication.type" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openai.backend.custom.authentication.apiKey" />
+          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openai.model.model" />
+          <zeebe:input source="modelDefault" target="provider.openai.api.completions.effort" />
           <zeebe:input source="=&quot;You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. GetA2ATask polls the task returned by the prior send. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.&quot;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=question" target="data.userPrompt.prompt" />
-          <zeebe:input source="ClientTools" target="data.tools.containerElementId" />
-          <zeebe:input source="=toolCallResults" target="data.tools.toolCallResults" />
-          <zeebe:input source="=clientAgent.context" target="data.context" />
+          <zeebe:input source="=clientAgent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
           <zeebe:input source="=8" target="data.limits.maxModelCalls" />
+          <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />
           <zeebe:input source="text" target="data.response.format.type" />
           <zeebe:input source="=false" target="data.response.format.parseJson" />
           <zeebe:input source="=false" target="data.response.includeAssistantMessage" />
+          <zeebe:input source="true" target="data.response.includeAgentContext" />
+          <zeebe:input target="agent" />
+          <zeebe:output source="=agent" target="clientAgent" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
-          <zeebe:header key="elementTemplateVersion" value="8" />
-          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.aiagent.v1" />
-          <zeebe:header key="resultVariable" value="clientAgent" />
-          <zeebe:header key="retryBackoff" value="PT0S" />
+          <zeebe:header key="elementTemplateVersion" value="1" />
+          <zeebe:header key="elementTemplateId" value="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" />
+          <zeebe:header key="retryBackoff" value="PT30S" />
         </zeebe:taskHeaders>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_ClientAgentInputJoin_ClientAgent</bpmn:incoming>
-      <bpmn:outgoing>Flow_ClientAgent_ClientHasTools</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:exclusiveGateway id="ClientHasTools" name="Client agent requested tools?" default="Flow_ClientHasTools_PrepareClientResult">
-      <bpmn:incoming>Flow_ClientAgent_ClientHasTools</bpmn:incoming>
-      <bpmn:outgoing>Flow_ClientHasTools_ClientTools</bpmn:outgoing>
-      <bpmn:outgoing>Flow_ClientHasTools_PrepareClientResult</bpmn:outgoing>
-    </bpmn:exclusiveGateway>
-    <bpmn:adHocSubProcess id="ClientTools" name="Client Agent - A2A Tools">
-      <bpmn:extensionElements>
-        <zeebe:adHoc activeElementsCollection="=[toolCall._meta.name]" />
-        <zeebe:ioMapping>
-          <zeebe:input target="toolCallResult" />
-        </zeebe:ioMapping>
         <zeebe:properties>
           <zeebe:property name="io.camunda.agenticai.toolContainer" value="true" />
         </zeebe:properties>
+        <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult,&#10;  completedAt: now()&#10;}" />
+        <zeebe:agentDefinition agentType="aiAgentSubProcess" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_ClientHasTools_ClientTools</bpmn:incoming>
-      <bpmn:outgoing>Flow_ClientTools_ClientAgentInputJoin</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics>
-        <bpmn:extensionElements>
-          <zeebe:loopCharacteristics inputCollection="=clientAgent.toolCalls" inputElement="toolCall" outputCollection="toolCallResults" outputElement="={id: toolCall._meta.id, name: toolCall._meta.name, content: toolCallResult}" />
-        </bpmn:extensionElements>
-      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:incoming>Flow_QuestionAsked_ClientAgent</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClientAgent_PrepareClientResult</bpmn:outgoing>
       <bpmn:serviceTask id="DiscoverAgentCard" name="Discover server agent" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
         <bpmn:documentation>Read the public Agent Card before contacting the remote server. Use this tool first to inspect its name, JSON-RPC endpoint and advertised capabilities. Returns the card; does not send a task or expose credentials.</bpmn:documentation>
         <bpmn:extensionElements>
@@ -99,7 +81,7 @@
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
             <zeebe:input source="60" target="readTimeoutInSeconds" />
-            <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: { message: context merge([ { messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: fromAi(toolCall.text, &quot;The user's request or follow-up text&quot;, &quot;string&quot;)}], flatten( for records in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;AskClientForInput&quot;] )] return if count(records) &gt; 0 then if records[count(records)].content instance of context then if records[count(records)].content.toolCallResult instance of context then if records[count(records)].content.toolCallResult.syntheticClaim instance of context then [{data: {syntheticClaim: records[count(records)].content.toolCallResult.syntheticClaim}}] else [] else if records[count(records)].content.syntheticClaim instance of context then [{data: {syntheticClaim: records[count(records)].content.syntheticClaim}}] else [] else [] else [] ) ) }, (for records in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content] return for response in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if result.task instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] ]), configuration: {returnImmediately: true} } }" target="body" />
+            <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: { message: context merge([ { messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: fromAi(toolCall.text, &quot;The user's request or follow-up text&quot;, &quot;string&quot;)}], flatten( for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;AskClientForInput&quot;] )] return if count(records) &gt; 0 then if records[count(records)].content instance of context then if records[count(records)].content.toolCallResult instance of context then if records[count(records)].content.toolCallResult.syntheticClaim instance of context then [{data: {syntheticClaim: records[count(records)].content.toolCallResult.syntheticClaim}}] else [] else if records[count(records)].content.syntheticClaim instance of context then [{data: {syntheticClaim: records[count(records)].content.syntheticClaim}}] else [] else [] else [] ) ) }, (for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content] return for response in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if result.task instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] ]), configuration: {returnImmediately: true} } }" target="body" />
             <zeebe:input source="=false" target="ignoreNullValues" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -123,7 +105,7 @@
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
             <zeebe:input source="30" target="readTimeoutInSeconds" />
-            <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: get value( (for records in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content] return for response in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if result.task instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] , &quot;taskId&quot;)} }" target="body" />
+            <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: get value( (for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content] return for response in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if result.task instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] , &quot;taskId&quot;)} }" target="body" />
             <zeebe:input source="=false" target="ignoreNullValues" />
           </zeebe:ioMapping>
           <zeebe:taskHeaders>
@@ -150,7 +132,7 @@
       <bpmn:extensionElements>
         <zeebe:script expression="=(for polls in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;GetA2ATask&quot;] )] return for content in [if count(polls) &gt; 0 then polls[count(polls)].content else null] return for body in [if content instance of context and content.toolCallResult instance of context then content.toolCallResult else content] return for response in [if body instance of context then body.result else null] return for task in [if response instance of context then if response.task instance of context then response.task else response else null] return for state in [if task.status.state instance of string then task.status.state else null] return &quot;### Client agent response\n\n&quot; + (if clientAgent.responseText instance of string then clientAgent.responseText else &quot;The client agent returned no text.&quot;) + &quot;\n\n**Last observed server task state:** &quot; + (if state instance of string then state else &quot;No GetTask status was observed.&quot;))[1][1][1][1][1][1]" resultVariable="resultText" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_ClientHasTools_PrepareClientResult</bpmn:incoming>
+      <bpmn:incoming>Flow_ClientAgent_PrepareClientResult</bpmn:incoming>
       <bpmn:outgoing>Flow_PrepareClientResult_ReviewClientResult</bpmn:outgoing>
     </bpmn:scriptTask>
     <bpmn:userTask id="ReviewClientResult" name="Review client agent result">
@@ -164,98 +146,61 @@
     <bpmn:endEvent id="ClientConversationFinished" name="Client conversation finished">
       <bpmn:incoming>Flow_ReviewClientResult_ClientConversationFinished</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_QuestionAsked_ClientAgentInputJoin" sourceRef="QuestionAsked" targetRef="ClientAgentInputJoin" />
-    <bpmn:sequenceFlow id="Flow_ClientAgentInputJoin_ClientAgent" sourceRef="ClientAgentInputJoin" targetRef="ClientAgent" />
-    <bpmn:sequenceFlow id="Flow_ClientAgent_ClientHasTools" sourceRef="ClientAgent" targetRef="ClientHasTools" />
-    <bpmn:sequenceFlow id="Flow_ClientHasTools_ClientTools" name="tools requested" sourceRef="ClientHasTools" targetRef="ClientTools">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=not(is empty(clientAgent.toolCalls))</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_ClientHasTools_PrepareClientResult" name="final response" sourceRef="ClientHasTools" targetRef="PrepareClientResult" />
-    <bpmn:sequenceFlow id="Flow_ClientTools_ClientAgentInputJoin" sourceRef="ClientTools" targetRef="ClientAgentInputJoin" />
+    <bpmn:sequenceFlow id="Flow_QuestionAsked_ClientAgent" sourceRef="QuestionAsked" targetRef="ClientAgent" />
+    <bpmn:sequenceFlow id="Flow_ClientAgent_PrepareClientResult" sourceRef="ClientAgent" targetRef="PrepareClientResult" />
     <bpmn:sequenceFlow id="Flow_PrepareClientResult_ReviewClientResult" sourceRef="PrepareClientResult" targetRef="ReviewClientResult" />
     <bpmn:sequenceFlow id="Flow_ReviewClientResult_ClientConversationFinished" sourceRef="ReviewClientResult" targetRef="ClientConversationFinished" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-client">
       <bpmndi:BPMNShape id="QuestionAsked_di" bpmnElement="QuestionAsked">
-        <dc:Bounds x="57.0" y="52.0" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClientAgentInputJoin_di" bpmnElement="ClientAgentInputJoin" isMarkerVisible="true">
-        <dc:Bounds x="200.0" y="45.0" width="50" height="50" />
+        <dc:Bounds x="70" y="192" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="135.0" y="9.0" width="180" height="28" />
+          <dc:Bounds x="33" y="236" width="110" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClientAgent_di" bpmnElement="ClientAgent">
-        <dc:Bounds x="325.0" y="30.0" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClientHasTools_di" bpmnElement="ClientHasTools" isMarkerVisible="true">
-        <dc:Bounds x="500.0" y="45.0" width="50" height="50" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="455.0" y="10.0" width="140" height="30" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClientTools_di" bpmnElement="ClientTools" isExpanded="true">
-        <dc:Bounds x="625.0" y="30.0" width="250" height="640" />
+      <bpmndi:BPMNShape id="ClientAgent_di" bpmnElement="ClientAgent" isExpanded="true">
+        <dc:Bounds x="180" y="60" width="400" height="300" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DiscoverAgentCard_di" bpmnElement="DiscoverAgentCard">
-        <dc:Bounds x="700.0" y="100.0" width="100" height="80" />
+        <dc:Bounds x="220" y="110" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SendA2AMessage_di" bpmnElement="SendA2AMessage">
-        <dc:Bounds x="700.0" y="240.0" width="100" height="80" />
+        <dc:Bounds x="420" y="110" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="GetA2ATask_di" bpmnElement="GetA2ATask">
-        <dc:Bounds x="700.0" y="380.0" width="100" height="80" />
+        <dc:Bounds x="220" y="240" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="AskClientForInput_di" bpmnElement="AskClientForInput">
-        <dc:Bounds x="700.0" y="520.0" width="100" height="80" />
+        <dc:Bounds x="420" y="240" width="120" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="PrepareClientResult_di" bpmnElement="PrepareClientResult">
-        <dc:Bounds x="625.0" y="730.0" width="100" height="80" />
+        <dc:Bounds x="650" y="170" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ReviewClientResult_di" bpmnElement="ReviewClientResult">
-        <dc:Bounds x="925.0" y="730.0" width="100" height="80" />
+        <dc:Bounds x="820" y="170" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ClientConversationFinished_di" bpmnElement="ClientConversationFinished">
-        <dc:Bounds x="1107.0" y="752.0" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_QuestionAsked_ClientAgentInputJoin_di" bpmnElement="Flow_QuestionAsked_ClientAgentInputJoin">
-        <di:waypoint x="93.0" y="70.0" />
-        <di:waypoint x="200.0" y="70.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClientAgentInputJoin_ClientAgent_di" bpmnElement="Flow_ClientAgentInputJoin_ClientAgent">
-        <di:waypoint x="250.0" y="70.0" />
-        <di:waypoint x="325.0" y="70.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClientAgent_ClientHasTools_di" bpmnElement="Flow_ClientAgent_ClientHasTools">
-        <di:waypoint x="425.0" y="70.0" />
-        <di:waypoint x="500.0" y="70.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClientHasTools_ClientTools_di" bpmnElement="Flow_ClientHasTools_ClientTools">
-        <di:waypoint x="550.0" y="70.0" />
-        <di:waypoint x="625.0" y="70.0" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClientHasTools_PrepareClientResult_di" bpmnElement="Flow_ClientHasTools_PrepareClientResult">
-        <di:waypoint x="525.0" y="95.0" />
-        <di:waypoint x="525.0" y="770.0" />
-        <di:waypoint x="625.0" y="770.0" />
+        <dc:Bounds x="1000" y="192" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="425" y="420" width="90" height="14" />
+          <dc:Bounds x="963" y="236" width="110" height="28" />
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_QuestionAsked_ClientAgent_di" bpmnElement="Flow_QuestionAsked_ClientAgent">
+        <di:waypoint x="106" y="210" />
+        <di:waypoint x="180" y="210" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClientTools_ClientAgentInputJoin_di" bpmnElement="Flow_ClientTools_ClientAgentInputJoin">
-        <di:waypoint x="750.0" y="670.0" />
-        <di:waypoint x="750.0" y="700.0" />
-        <di:waypoint x="225.0" y="700.0" />
-        <di:waypoint x="225.0" y="95.0" />
+      <bpmndi:BPMNEdge id="Flow_ClientAgent_PrepareClientResult_di" bpmnElement="Flow_ClientAgent_PrepareClientResult">
+        <di:waypoint x="580" y="210" />
+        <di:waypoint x="650" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_PrepareClientResult_ReviewClientResult_di" bpmnElement="Flow_PrepareClientResult_ReviewClientResult">
-        <di:waypoint x="725.0" y="770.0" />
-        <di:waypoint x="925.0" y="770.0" />
+        <di:waypoint x="750" y="210" />
+        <di:waypoint x="820" y="210" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_ReviewClientResult_ClientConversationFinished_di" bpmnElement="Flow_ReviewClientResult_ClientConversationFinished">
-        <di:waypoint x="1025.0" y="770.0" />
-        <di:waypoint x="1107.0" y="770.0" />
+        <di:waypoint x="920" y="210" />
+        <di:waypoint x="1000" y="210" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

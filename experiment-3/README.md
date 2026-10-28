@@ -99,8 +99,10 @@ process/tag searches every 250 ms and uses the remaining window to read the task
 by `SendMessage` before its process is visible in search; unknown and cross-agent task IDs still expire with
 `TASK_NOT_FOUND`. It does not extend task retention or turn engine API failures into missing-task responses.
 
-The current candidate minimum is **8.9 for both engine and Connectors**. Exact 8.9.26 / 8.9.17 checks
-now pass the [bounded confirmed-input prototype checks](verification/fb158a5-89/README.md).
+The complete current client/server demo requires **8.10 for both engine and Connectors**, using the
+AI Agent Sub-process connector on the client. The unchanged server resources retain source-pinned
+8.9.26 / 8.9.17 evidence, including the [earlier client Task variant](verification/69e77df/README.md);
+that evidence does not verify the current client on 8.9. See the [current setup](blueprint/README.md).
 The [earlier input-only repair failure](verification/3634072-89/README.md) remains preserved.
 Engine 8.8 is unsupported. Changed-form UI and SaaS runtime are unverified.
 The following results are historical, source-pinned evidence, not current candidate acceptance.

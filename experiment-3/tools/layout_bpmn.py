@@ -285,24 +285,46 @@ def _route_list_scan_decision(plane):
                     (source_right_x + fail_route_x) / 2 - 40, fail_route_y - 20, 80)
 
 
-def _place_client_gateway_label(plane):
-    shape = next((element for element in plane.findall(BPMN_SHAPE)
-                  if element.get("bpmnElement") == "ClientHasTools"), None)
-    bounds = shape.find(DC_BOUNDS) if shape is not None else None
-    if bounds is None:
+def _place_client_agent(plane, process):
+    host = process.find(
+        "{http://www.omg.org/spec/BPMN/20100524/MODEL}adHocSubProcess[@id='ClientAgent']")
+    if host is None:
         return
-    label = shape.find(BPMN_LABEL)
-    if label is None:
-        label = ET.SubElement(shape, BPMN_LABEL)
-    else:
-        for child in list(label):
-            label.remove(child)
-    ET.SubElement(label, DC_BOUNDS, {
-        "x": str(float(bounds.get("x")) + float(bounds.get("width")) / 2 - 70),
-        "y": str(float(bounds.get("y")) - 35),
-        "width": "140",
-        "height": "30",
-    })
+    boxes = {
+        "QuestionAsked": (70, 192, 36, 36),
+        "ClientAgent": (180, 60, 400, 300),
+        "DiscoverAgentCard": (220, 110, 120, 80),
+        "SendA2AMessage": (420, 110, 120, 80),
+        "GetA2ATask": (220, 240, 120, 80),
+        "AskClientForInput": (420, 240, 120, 80),
+        "PrepareClientResult": (650, 170, 100, 80),
+        "ReviewClientResult": (820, 170, 100, 80),
+        "ClientConversationFinished": (1000, 192, 36, 36),
+    }
+    for element_id, (x, y, width, height) in boxes.items():
+        bounds = _shape_bounds(plane, element_id)
+        if bounds is None:
+            raise ValueError(f"missing client-agent shape {element_id}")
+        bounds.attrib.update(x=str(x), y=str(y), width=str(width), height=str(height))
+        shape = next(shape for shape in plane.findall(BPMN_SHAPE)
+                     if shape.get("bpmnElement") == element_id)
+        if element_id in ("QuestionAsked", "ClientConversationFinished"):
+            label = shape.find(BPMN_LABEL)
+            if label is None:
+                label = ET.SubElement(shape, BPMN_LABEL)
+            for child in list(label):
+                label.remove(child)
+            ET.SubElement(label, DC_BOUNDS, {
+                "x": str(x - 37), "y": str(y + height + 8),
+                "width": "110", "height": "28",
+            })
+    for source, target in (
+            ("QuestionAsked", "ClientAgent"), ("ClientAgent", "PrepareClientResult"),
+            ("PrepareClientResult", "ReviewClientResult"),
+            ("ReviewClientResult", "ClientConversationFinished")):
+        x, _, width, _ = boxes[source]
+        _set_edge_route(plane, f"Flow_{source}_{target}", (
+            (x + width, 210), (boxes[target][0], 210)))
 
 
 def _place_gateway_labels(plane, process):
@@ -344,9 +366,7 @@ def _apply_process_layout_fixes(plane, process_id, process):
     elif process_id == "a2a-list-collect":
         _route_list_scan_decision(plane)
     elif process_id == "a2a-client":
-        _place_client_gateway_label(plane)
-        _set_edge_label(
-            plane, "Flow_ClientHasTools_PrepareClientResult", 425, 420, 90)
+        _place_client_agent(plane, process)
 
 
 def _compact_collaboration(plane, collaboration, processes, participants):

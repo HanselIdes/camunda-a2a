@@ -37,7 +37,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("toolCall.taskId", send_body)
         self.assertNotIn("toolCall.contextId", send_body)
         self.assertIn("message: context merge([", send_body)
-        self.assertIn("clientAgent.context.conversation.messages", send_body)
+        self.assertIn("agentContext.conversation.messages", send_body)
         self.assertIn('message.results[item.name = "AskClientForInput"]', send_body)
         self.assertIn('message.results[item.name = "SendA2AMessage"]', send_body)
         self.assertIn("result.task.id", send_body)
@@ -48,6 +48,7 @@ class ConfirmationContractTest(unittest.TestCase):
         get_body = next(e for e in get_task.iter(Z + "input") if e.get("target") == "body").get("source")
         self.assertNotIn("fromAi(toolCall.taskId", get_body)
         self.assertIn('message.results[item.name = "SendA2AMessage"]', get_body)
+        self.assertIn("agentContext.conversation.messages", get_body)
         self.assertIn('get value(', get_body)
 
         prepare_result = next(e for e in root.iter() if e.get("id") == "PrepareClientResult")
