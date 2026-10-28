@@ -40,7 +40,7 @@ flatten(
   )]
   return if count(records) > 0 then
     (for content in [records[count(records)].content[item.type = "object"][1].content]
-     return for result in [if content.toolCallResult instance of context
+     return for result in [if get value(content, "toolCallResult") instance of context
                            then content.toolCallResult else content]
      return if result.syntheticClaim instance of context then
        [{data: {syntheticClaim: result.syntheticClaim}}]
@@ -55,11 +55,11 @@ PREVIOUS_A2A_TASK_PARAMS = """
   return message.results[item.name = "SendA2AMessage"]
 )] return if count(records) > 0 then
   (for content in [records[count(records)].content[item.type = "object"][1].content] return
-    for response in [if content instance of context and content.toolCallResult instance of context
+    for response in [if content instance of context and get value(content, "toolCallResult") instance of context
                      then content.toolCallResult else content] return
       for result in [if response instance of context then response.result else null] return
         if result instance of context then
-          if result.task instance of context then
+          if get value(result, "task") instance of context then
             {taskId: result.task.id, contextId: result.task.contextId}
           else if result.id instance of string and result.contextId instance of string then
             {taskId: result.id, contextId: result.contextId}
@@ -125,11 +125,11 @@ def build():
           )] return
           for content in [if count(polls) > 0 then
             polls[count(polls)].content[item.type = "object"][1].content else null] return
-          for body in [if content instance of context and content.toolCallResult instance of context
+          for body in [if content instance of context and get value(content, "toolCallResult") instance of context
                        then content.toolCallResult else content] return
           for response in [if body instance of context then body.result else null] return
           for task in [if response instance of context then
-            if response.task instance of context then response.task else response else null] return
+            if get value(response, "task") instance of context then response.task else response else null] return
           for state in [if task.status.state instance of string then task.status.state else null] return
           "### Client agent response\\n\\n" +
           (if clientAgent.responseText instance of string then clientAgent.responseText
