@@ -104,6 +104,9 @@ AI Agent Sub-process connector on the client. Source-pinned 8.9.26 / 8.9.17 evid
 protocol and server, including the [earlier client Task variant](verification/69e77df/README.md),
 does not verify the current client's or server's revised result mappings on 8.9.
 See the [current setup](blueprint/README.md).
+The selected Sub-process v2 template requires 8.10; this is not a generic A2A or AI-agent limit.
+For what cannot run as supplied on 8.9 and the immutable, verified Task-based alternative, see the
+[compatibility table](blueprint/README.md#why-the-current-client-requires-810).
 The [earlier input-only repair failure](verification/3634072-89/README.md) remains preserved.
 Engine 8.8 is unsupported. Changed-form UI and SaaS runtime are unverified.
 The following results are historical, source-pinned evidence, not current candidate acceptance.
