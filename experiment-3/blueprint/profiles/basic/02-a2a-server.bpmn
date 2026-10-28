@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_Collaboration_a2a_protocol" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_Collaboration_a2a_protocol" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.51.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:collaboration id="Collaboration_a2a_protocol">
     <bpmn:documentation>The A2A 1.0 JSON-RPC binding, deployed unchanged next to an agent diagram. The endpoint starts the process named by the secret A2A_AGENT_PROCESS for each new task and answers every other method from engine state. Not meant to be edited.</bpmn:documentation>
     <bpmn:participant id="Pool_a2a-rpc" name="02 A2A Server - Protocol and Discovery" processRef="a2a-rpc" />
@@ -10,7 +10,7 @@
   </bpmn:collaboration>
   <bpmn:error id="NotFound" name="NotFound" errorCode="NOT_FOUND" />
   <bpmn:process id="a2a-rpc" name="02 A2A Server - Protocol and Discovery" isExecutable="true">
-    <bpmn:startEvent id="RpcReceived" name="A2A request received" zeebe:modelerTemplate="dev.hansel.a2a.core.rpc.v1" zeebe:modelerTemplateVersion="1">
+    <bpmn:startEvent id="RpcReceived" name="A2A request received" zeebe:modelerTemplate="dev.hansel.a2a.core.rpc.v1" zeebe:modelerTemplateVersion="2">
       <bpmn:extensionElements>
         <zeebe:properties>
           <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
@@ -25,8 +25,8 @@
           <zeebe:property name="inbound.responseExpression" value="={statusCode: 200, headers: {&quot;Content-Type&quot;: &quot;application/json&quot;}, body: correlation.variables.rpcResponse}" />
           <zeebe:property name="resultVariable" value="" />
           <zeebe:property name="resultExpression" value="={rpc: request.body, hdr: {&quot;content-type&quot;: request.headers.`content-type`, &quot;a2a-version&quot;: request.headers.`a2a-version`}}" />
-          <zeebe:property name="inbound.auth.apiKey" value="{{secrets.A2A_API_KEY}}" />
-          <zeebe:property name="inbound.auth.apiKeyLocator" value="=request.headers.`x-a2a-api-key`" />
+          <zeebe:property name="inbound.auth.apiKey" value="=camunda.secrets.A2A_API_KEY" />
+          <zeebe:property name="inbound.auth.apiKeyLocator" value="=request.headers.`x-api-key`" />
         </zeebe:properties>
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_RpcReceived_IsPushMethod</bpmn:outgoing>
@@ -109,15 +109,15 @@
         <zeebe:ioMapping>
           <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
-          <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances&quot;" target="url" />
+          <zeebe:input source="=camunda.secrets.ENGINE_URL + &quot;/v2/process-instances&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
-          <zeebe:input source="={processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, variables: {task: lookup.task, req: {message: ctx.m, blocking: ctx.blocking, hl: ctx.hl}}, tags: [&quot;a2a&quot;, &quot;task-&quot; + lookup.taskId, lookup.ctxTag]}" target="body" />
+          <zeebe:input source="={processDefinitionId: camunda.secrets.A2A_AGENT_PROCESS, variables: {task: lookup.task, req: {message: ctx.m, blocking: ctx.blocking, hl: ctx.hl}}, tags: [&quot;a2a&quot;, &quot;task-&quot; + lookup.taskId, lookup.ctxTag]}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="=camunda.secrets.ENGINE_USERNAME" target="authentication.username" />
+          <zeebe:input source="=camunda.secrets.ENGINE_PASSWORD" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="13" />
@@ -167,15 +167,15 @@
         <zeebe:ioMapping>
           <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
-          <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances/search&quot;" target="url" />
+          <zeebe:input source="=camunda.secrets.ENGINE_URL + &quot;/v2/process-instances/search&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
-          <zeebe:input source="={filter: {processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, tags: [&quot;task-&quot; + lookup.taskId]}, page: {limit: 1}}" target="body" />
+          <zeebe:input source="={filter: {processDefinitionId: camunda.secrets.A2A_AGENT_PROCESS, tags: [&quot;task-&quot; + lookup.taskId]}, page: {limit: 1}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="=camunda.secrets.ENGINE_USERNAME" target="authentication.username" />
+          <zeebe:input source="=camunda.secrets.ENGINE_PASSWORD" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="13" />
@@ -516,14 +516,15 @@
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_ListCollected_BuildListFailure" sourceRef="ListCollected" targetRef="BuildListFailure" name="incomplete" />
     <bpmn:sequenceFlow id="Flow_BuildListFailure_ListFailureReady" sourceRef="BuildListFailure" targetRef="ListFailureReady" />
-    <bpmn:startEvent id="CardRequested" name="Agent Card requested" zeebe:modelerTemplate="dev.hansel.a2a.core.card.v1" zeebe:modelerTemplateVersion="1">
+    <bpmn:startEvent id="CardRequested" name="Agent Card requested" zeebe:modelerTemplate="dev.hansel.a2a.core.card.v1" zeebe:modelerTemplateVersion="2">
       <bpmn:extensionElements>
         <zeebe:properties>
           <zeebe:property name="inbound.type" value="io.camunda:webhook:1" />
           <zeebe:property name="inbound.context" value="a2a-card" />
           <zeebe:property name="inbound.auth.type" value="NONE" />
           <zeebe:property name="inbound.method" value="get" />
-          <zeebe:property name="inbound.responseExpression" value="={statusCode: 200, headers: {&quot;Content-Type&quot;: &quot;application/json&quot;}, body: {name: &quot;Synthetic card-dispute reviewer&quot;, version: &quot;0.1.0&quot;, description: &quot;Non-production community demonstration. Reconciles synthetic charges for human review; &quot; + &quot;performs no financial actions.&quot;, provider: {organization: &quot;HanselIdes&quot;, url: &quot;https://github.com/HanselIdes/camunda-a2a&quot;}, supportedInterfaces: [{url: &quot;{{secrets.A2A_RPC_URL}}&quot;, protocolBinding: &quot;JSONRPC&quot;, protocolVersion: &quot;1.0&quot;}], capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false}, defaultInputModes: [&quot;text/plain&quot;], defaultOutputModes: [&quot;text/plain&quot;, &quot;application/json&quot;], securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: &quot;header&quot;, name: &quot;X-A2A-Api-Key&quot;}}}, securityRequirements: [{schemes: {a2aApiKey: {}}}], skills: [{id: &quot;review_duplicate_charge&quot;, name: &quot;Reconcile synthetic charges&quot;, description: &quot;Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.&quot;, tags: [&quot;synthetic&quot;, &quot;card-dispute&quot;, &quot;reconciliation&quot;], examples: [&quot;Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.&quot;]}]}}" />
+          <zeebe:property name="inbound.responseExpression" value="={rpcUrl: get value(correlation.activatedElement.delegate.properties, &quot;inbound.publicRpcUrl&quot;), response: if rpcUrl instance of string and matches(rpcUrl, &quot;^https://[^ /]+/[^ ]*$&quot;) then {statusCode: 200, headers: {&quot;Content-Type&quot;: &quot;application/json&quot;}, body: {name: &quot;Synthetic card-dispute reviewer&quot;, version: &quot;0.1.0&quot;, description: &quot;Non-production community demonstration. Reconciles synthetic charges for human review; &quot; + &quot;performs no financial actions.&quot;, provider: {organization: &quot;HanselIdes&quot;, url: &quot;https://github.com/HanselIdes/camunda-a2a&quot;}, supportedInterfaces: [{url: rpcUrl, protocolBinding: &quot;JSONRPC&quot;, protocolVersion: &quot;1.0&quot;}], capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false}, defaultInputModes: [&quot;text/plain&quot;], defaultOutputModes: [&quot;text/plain&quot;, &quot;application/json&quot;], securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: &quot;header&quot;, name: &quot;X-Api-Key&quot;}}}, securityRequirements: [{schemes: {a2aApiKey: {}}}], skills: [{id: &quot;review_duplicate_charge&quot;, name: &quot;Reconcile synthetic charges&quot;, description: &quot;Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.&quot;, tags: [&quot;synthetic&quot;, &quot;card-dispute&quot;, &quot;reconciliation&quot;], examples: [&quot;Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.&quot;]}]}} else {statusCode: 500, body: {error: &quot;Configure the Agent Card HTTPS public RPC URL&quot;}}}.response" />
+          <zeebe:property name="inbound.publicRpcUrl" value="" />
         </zeebe:properties>
       </bpmn:extensionElements>
       <bpmn:outgoing>Flow_CardRequested_CardServed</bpmn:outgoing>
@@ -566,15 +567,15 @@
         <zeebe:ioMapping>
           <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
-          <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + probe.path" target="url" />
+          <zeebe:input source="=camunda.secrets.ENGINE_URL + probe.path" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="=probe.body" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="=camunda.secrets.ENGINE_USERNAME" target="authentication.username" />
+          <zeebe:input source="=camunda.secrets.ENGINE_PASSWORD" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="13" />
@@ -653,15 +654,15 @@
         <zeebe:ioMapping>
           <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
-          <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/messages/correlation&quot;" target="url" />
+          <zeebe:input source="=camunda.secrets.ENGINE_URL + &quot;/v2/messages/correlation&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={name: messageName, correlationKey: taskId, variables: payload}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="=camunda.secrets.ENGINE_USERNAME" target="authentication.username" />
+          <zeebe:input source="=camunda.secrets.ENGINE_PASSWORD" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="13" />
@@ -752,15 +753,15 @@
         <zeebe:ioMapping>
           <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
-          <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/process-instances/search&quot;" target="url" />
+          <zeebe:input source="=camunda.secrets.ENGINE_URL + &quot;/v2/process-instances/search&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
-          <zeebe:input source="={filter: {processDefinitionId: &quot;{{secrets.A2A_AGENT_PROCESS}}&quot;, tags: if listReq.ctxTag != null then [&quot;a2a&quot;, listReq.ctxTag] else [&quot;a2a&quot;]}, sort: [{field: &quot;startDate&quot;, order: &quot;DESC&quot;}, {field: &quot;processInstanceKey&quot;, order: &quot;DESC&quot;}], page: {limit: 100, after: listScan.cursor}}" target="body" />
+          <zeebe:input source="={filter: {processDefinitionId: camunda.secrets.A2A_AGENT_PROCESS, tags: if listReq.ctxTag != null then [&quot;a2a&quot;, listReq.ctxTag] else [&quot;a2a&quot;]}, sort: [{field: &quot;startDate&quot;, order: &quot;DESC&quot;}, {field: &quot;processInstanceKey&quot;, order: &quot;DESC&quot;}], page: {limit: 100, after: listScan.cursor}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="=camunda.secrets.ENGINE_USERNAME" target="authentication.username" />
+          <zeebe:input source="=camunda.secrets.ENGINE_PASSWORD" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="13" />
@@ -789,15 +790,15 @@
         <zeebe:ioMapping>
           <zeebe:input source="basic" target="authentication.type" />
           <zeebe:input source="POST" target="method" />
-          <zeebe:input source="=&quot;{{secrets.ENGINE_URL}}&quot; + &quot;/v2/variables/search?truncateValues=false&quot;" target="url" />
+          <zeebe:input source="=camunda.secrets.ENGINE_URL + &quot;/v2/variables/search?truncateValues=false&quot;" target="url" />
           <zeebe:input source="=false" target="followRedirects" />
           <zeebe:input source="JSON" target="documentReturnFormat.choice" />
           <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
           <zeebe:input source="=20" target="readTimeoutInSeconds" />
           <zeebe:input source="={filter: {name: &quot;task&quot;, processInstanceKey: {&quot;$in&quot;: taskKeys}, scopeKey: {&quot;$in&quot;: taskKeys}}, page: {limit: 100}}" target="body" />
           <zeebe:input source="true" target="ignoreNullValues" />
-          <zeebe:input source="{{secrets.ENGINE_USERNAME}}" target="authentication.username" />
-          <zeebe:input source="{{secrets.ENGINE_PASSWORD}}" target="authentication.password" />
+          <zeebe:input source="=camunda.secrets.ENGINE_USERNAME" target="authentication.username" />
+          <zeebe:input source="=camunda.secrets.ENGINE_PASSWORD" target="authentication.password" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="13" />

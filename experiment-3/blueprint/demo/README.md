@@ -96,7 +96,7 @@ or ad-hoc subprocesses generally.
 
 | Package / runtime | What you can and cannot do | Evidence |
 | --- | --- | --- |
-| Current compact client / engine and Connectors 8.10.2 | Run the supplied client, confirmation, server, polling, and result-review journey. | [Focused authenticated run](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/verification/9c43104/README.md), with local Ollama rather than a SaaS model. |
+| Current compact client / engine and Connectors 8.10.2 | Run the supplied client, confirmation, server, polling, and result-review journey. | [Focused authenticated run](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/verification/18e2a06/README.md), with local Ollama rather than a SaaS model. |
 | Current package / 8.9 | Cannot deploy and execute the compact client or complete demo as supplied. The revised server result mapping has no fresh 8.9 runtime validation. | Selected template requires `^8.10`; current runtime evidence is 8.10.2 only. |
 | [Pinned Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Use discovery, send/poll, explicit confirmation, and result review with the older client AI Agent Task and external feedback loop, not the current compact Sub-process v2 client. | [Source-pinned `69e77df` run](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); local Ollama, not a blanket 8.9 compatibility claim. |
 
@@ -113,7 +113,13 @@ Keep local validation overrides separate from the public secret defaults below.
 
 ## Configure secrets and endpoints
 
-Use your deployment's secret provider. Never put credentials or keys in BPMN files.
+**Caller migration:** send `X-Api-Key` instead of `X-A2A-Api-Key`; the secret name remains
+`A2A_API_KEY`. The current card advertises this header and accepts no old-header fallback.
+Stock Connectors 8.10.2 masks `x-api-key`, but logs the old custom header before authentication.
+Do not send credentials in the old header. Immutable older packages retain their own contract.
+
+Configure these names in the **8.10 cluster's default secret store**. Never put credentials or keys
+in BPMN files. Connector-only `SECRET_*` environment variables are not a substitute for this store.
 
 | Connector secret | Value |
 | --- | --- |
@@ -130,9 +136,9 @@ Use your deployment's secret provider. Never put credentials or keys in BPMN fil
 The client references the Camunda-provided LLM secret names through these connector inputs:
 
 ```text
-provider.openai.backend.custom.endpoint={{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}
-provider.openai.backend.custom.authentication.apiKey={{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}
-provider.openai.model.model={{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}
+Input provider.openai.backend.custom.endpoint: =camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT
+Input provider.openai.backend.custom.authentication.apiKey: =camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY
+Input provider.openai.model.model: =camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL
 ```
 
 The client selects provider `openai`, API `completions`, custom backend and API-key authentication.
@@ -140,7 +146,20 @@ The server's pinned v5 template retains its `openaiCompatible` fields. These sec
 Camunda SaaS provider; verify the endpoint and model through your authorized environment.
 
 Both A2A URLs must resolve from external clients and the Connectors runtime. Use matching certificate names and configure trusted issuers.
-Do not disable certificate checks. Restart or recreate Connectors after changing environment-supplied secrets.
+Do not disable certificate checks. Each whole-value input uses FEEL `=camunda.secrets.NAME`.
+Inside an existing FEEL context, use an unquoted reference, for example
+`={"X-Api-Key": camunda.secrets.A2A_API_KEY}`; do not quote it as text.
+URL composition uses `=camunda.secrets.ENGINE_URL + "/v2/..."`.
+The engine persists references rather than credentials and injects resolved values for jobs;
+Connectors also resolves references when binding inbound credentials. This does **not** apply to every
+expression: webhook response callbacks use local FEEL and cannot resolve cluster secret references.
+Select **Agent Card requested** in `02 A2A Server`, then fill its required **Public RPC URL** field
+with the complete HTTPS RPC webhook URL. It must **exactly match** the client's `A2A_RPC_URL` secret,
+including any cluster prefix and path. This endpoint URL is public in the Agent Card, not a credential.
+The supplied field is empty until configured; discovery returns an explicit setup error if it is missing or not HTTPS.
+The [runtime setup guide](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md#cluster-secret-store)
+explains store setup and permissions. Missing secrets or resolution permissions prevent execution.
+Use Modeler **5.52.0 or later** for native-secret linting; 5.51.1 misidentifies `camunda.secrets` as the older deprecated syntax.
 
 The demonstrated same-runtime client/server flow requires `CAMUNDA_CLIENT_EXECUTION_THREADS=4`.
 The recorded profile also sets `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`.
@@ -197,7 +216,7 @@ fraud determination, or financial integration.
 
 ## Use an external A2A client
 
-Read `A2A_AGENT_CARD_URL`, then send A2A 1.0 JSON-RPC requests to `A2A_RPC_URL` with the `X-A2A-Api-Key` header.
+Read `A2A_AGENT_CARD_URL`, then send A2A 1.0 JSON-RPC requests to `A2A_RPC_URL` with the `X-Api-Key` header.
 The supplied BPMN client uses these explicit URLs, not the stock A2A 0.3 client connector.
 
 An external client can include one structured data part in the initial message for one-shot execution:

@@ -18,6 +18,9 @@ evidence and outstanding limitations.
 
 The current compact client/server demo requires **engine and Connectors 8.10** because its selected
 AI Agent Sub-process v2 template declares `^8.10`, not because A2A or all AI agents require 8.10.
+Current blueprint resources also use native `camunda.secrets` references backed by an 8.10 cluster secret
+store. The public RPC URL advertised in the Agent Card is configured separately as described in the setup guide;
+credential names are unchanged.
 It cannot run as supplied on 8.9. Users staying on engine 8.9.26 / Connectors 8.9.17 can use the
 [last verified Task-based package](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint)
 with its external feedback loop. See the [compatibility table](experiment-3/blueprint/README.md#why-the-current-client-requires-810)

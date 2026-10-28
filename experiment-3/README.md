@@ -81,7 +81,7 @@ These candidates are **non-production only**, subject to the [repository license
 Licensing authority confirmation and Marketplace eligibility remain publication gates.
 
 Both profiles protect the JSON-RPC webhook with the `A2A_API_KEY` connector secret, read from the
-`X-A2A-Api-Key` header. Engine REST calls use authenticated access. Select exactly one profile: they share process IDs.
+`X-Api-Key` header. Engine REST calls use authenticated access. Select exactly one profile: they share process IDs.
 They require the deterministic example and `dmn/a2a-validate.dmn` alongside the selected protocol.
 
 | Profile | Engine connector secrets                                                                                   |
@@ -104,6 +104,10 @@ AI Agent Sub-process connector on the client. Source-pinned 8.9.26 / 8.9.17 evid
 protocol and server, including the [earlier client Task variant](verification/69e77df/README.md),
 does not verify the current client's or server's revised result mappings on 8.9.
 See the [current setup](blueprint/README.md).
+Current blueprint resources use native `camunda.secrets` FEEL references from an 8.10 cluster secret
+store, not Connector-only environment secrets. Configure the public RPC URL in the Card template
+to exactly match the client's existing `A2A_RPC_URL` secret; webhook response callbacks use local FEEL.
+See [cluster secret store setup](blueprint/README.md#cluster-secret-store).
 The selected Sub-process v2 template requires 8.10; this is not a generic A2A or AI-agent limit.
 For what cannot run as supplied on 8.9 and the immutable, verified Task-based alternative, see the
 [compatibility table](blueprint/README.md#why-the-current-client-requires-810).
@@ -142,10 +146,12 @@ actual Marketplace-to-Modeler import and external legal/eligibility approval rem
 Do not use the archived experimental card or client as companions to these candidate profiles.
 
 For contributors, `bpmn/a2a-protocol.bpmn` is the input to the profile builder. The builder preserves surviving diagram
-layout; it does not regenerate the source diagram. Regenerate a selected profile with
-`python3 tools/build_core.py --authentication basic --output blueprint/profiles/basic/a2a-protocol.bpmn`
-(substitute `oauth` for the other profile). Run `python3 tools/build_core.py --check` to check both committed outputs
-without modifying files. Adopters must not need to run this generator.
+layout; it does not regenerate the source diagram. From `experiment-3`, run
+`python3 tools/build_blueprint.py` to regenerate the complete current assets, including both profiles.
+Run `python3 tools/build_blueprint.py --check` to check committed outputs without modifying files.
+`build_core.py` is an intermediate Python API; its retired CLI exits with this guidance rather than
+overwriting final native-secret, header, template and public-URL configuration.
+Adopters must not need to run this generator.
 
 ### Deterministic task-contract example
 
@@ -224,7 +230,9 @@ deploys the diagrams and prints the Tasklist URL of "A2A client agent". c8run ha
 | `A2A_PUSH_TOKEN`                                                  | the push token the client sends and its webhook checks                                                                  |
 | `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `_API_KEY`, `_DEFAULT_MODEL` | the model both agents use                                                                                               |
 
-The diagrams use `{{secrets.X}}`, which the connectors runtime resolves from its `SECRET_X` environment variables.
+These archived experimental diagrams use legacy secret interpolation resolved from Connector `SECRET_X`
+environment variables. This is **not** setup for the current numbered blueprint; use its
+[cluster secret store instructions](blueprint/README.md#cluster-secret-store) instead.
 
 ## Tests
 

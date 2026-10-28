@@ -21,24 +21,24 @@ class TargetRoutingTest(unittest.TestCase):
                        {"path": "/other-agent"}, {"path": "/inbound/a2a/other"}):
             request = self.request(**fields)
             route_request(request, 40000, "private-key")
-            self.assertNotIn("X-A2A-Api-Key", request.headers)
+            self.assertNotIn("X-Api-Key", request.headers)
         for host in ("127.0.0.1", "host.docker.internal"):
             request = self.request(host=host)
             route_request(request, 40000, "private-key")
-            self.assertEqual(request.headers["X-A2A-Api-Key"], "private-key")
+            self.assertEqual(request.headers["X-Api-Key"], "private-key")
             self.assertEqual(request.headers["Content-Type"], "text/plain")
 
     def test_explicit_discovery_is_public(self):
         request = self.request(path="/.well-known/agent-card.json")
         route_request(request, 40000, "private-key")
         self.assertEqual(request.url.path, "/inbound/a2a-card")
-        self.assertNotIn("X-A2A-Api-Key", request.headers)
+        self.assertNotIn("X-Api-Key", request.headers)
 
     def test_runner_appended_slash_does_not_change_configured_endpoint(self):
         request = self.request(path="/inbound/a2a/")
         route_request(request, 40000, "private-key")
         self.assertEqual(request.url.path, "/inbound/a2a")
-        self.assertEqual(request.headers["X-A2A-Api-Key"], "private-key")
+        self.assertEqual(request.headers["X-Api-Key"], "private-key")
 
     def test_source_snapshot_records_commit_and_rejectable_dirty_state(self):
         for status, dirty in (("", False), (" M tracked.py\n", True), ("?? untracked.py\n", True)):

@@ -14,10 +14,10 @@
           <zeebe:input source="openai" target="provider.type" />
           <zeebe:input source="completions" target="provider.openai.api.type" />
           <zeebe:input source="custom" target="provider.openai.backend.type" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openai.backend.custom.endpoint" />
+          <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT" target="provider.openai.backend.custom.endpoint" />
           <zeebe:input source="apiKey" target="provider.openai.backend.custom.authentication.type" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openai.backend.custom.authentication.apiKey" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openai.model.model" />
+          <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY" target="provider.openai.backend.custom.authentication.apiKey" />
+          <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL" target="provider.openai.model.model" />
           <zeebe:input source="modelDefault" target="provider.openai.api.completions.effort" />
           <zeebe:input source="=&quot;You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. GetA2ATask polls the task returned by the prior send. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.&quot;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=question" target="data.userPrompt.prompt" />
@@ -53,7 +53,7 @@
           <zeebe:ioMapping>
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="GET" target="method" />
-            <zeebe:input source="{{secrets.A2A_AGENT_CARD_URL}}" target="url" />
+            <zeebe:input source="=camunda.secrets.A2A_AGENT_CARD_URL" target="url" />
             <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=false" target="followRedirects" />
@@ -75,8 +75,8 @@
           <zeebe:ioMapping>
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="POST" target="method" />
-            <zeebe:input source="{{secrets.A2A_RPC_URL}}" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: &quot;{{secrets.A2A_API_KEY}}&quot;}" target="headers" />
+            <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
+            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
@@ -99,8 +99,8 @@
           <zeebe:ioMapping>
             <zeebe:input source="noAuth" target="authentication.type" />
             <zeebe:input source="POST" target="method" />
-            <zeebe:input source="{{secrets.A2A_RPC_URL}}" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-A2A-Api-Key&quot;: &quot;{{secrets.A2A_API_KEY}}&quot;}" target="headers" />
+            <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
+            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=false" target="followRedirects" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />

@@ -33,7 +33,7 @@ def fault_model(source, target, mode):
         elif mode in ("insufficient-permissions", "revoked-credentials") and field == "authentication.username":
             element.set("source", "a2a-restricted-proof")
         elif mode in ("insufficient-permissions", "revoked-credentials") and field == "authentication.password":
-            element.set("source", "{{secrets.PROOF_RESTRICTED_PASSWORD}}")
+            element.set("source", "=camunda.secrets.PROOF_RESTRICTED_PASSWORD")
     model.write(target, encoding="utf-8", xml_declaration=True)
 
 

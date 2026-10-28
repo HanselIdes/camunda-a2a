@@ -180,16 +180,16 @@ def build():
     http = {
         "DiscoverAgentCard": [
             ("method", "GET"),
-            ("url", "{{secrets.A2A_AGENT_CARD_URL}}"),
+            ("url", "=camunda.secrets.A2A_AGENT_CARD_URL"),
             ("headers", '={"A2A-Version": "1.0"}'),
             ("readTimeoutInSeconds", "20"),
             ("resultExpression", "={toolCallResult: response.body}"),
         ],
         "SendA2AMessage": [
             ("method", "POST"),
-            ("url", "{{secrets.A2A_RPC_URL}}"),
+            ("url", "=camunda.secrets.A2A_RPC_URL"),
             ("headers", '={"A2A-Version": "1.0", "Content-Type": "application/json", '
-                        '"X-A2A-Api-Key": "{{secrets.A2A_API_KEY}}"}'),
+                        '"X-Api-Key": camunda.secrets.A2A_API_KEY}'),
             ("body", one("""={
               jsonrpc: "2.0", id: uuid(), method: "SendMessage",
               params: {
@@ -213,9 +213,9 @@ def build():
         ],
         "GetA2ATask": [
             ("method", "POST"),
-            ("url", "{{secrets.A2A_RPC_URL}}"),
+            ("url", "=camunda.secrets.A2A_RPC_URL"),
             ("headers", '={"A2A-Version": "1.0", "Content-Type": "application/json", '
-                        '"X-A2A-Api-Key": "{{secrets.A2A_API_KEY}}"}'),
+                        '"X-Api-Key": camunda.secrets.A2A_API_KEY}'),
             ("body", one("""={
               jsonrpc: "2.0", id: uuid(), method: "GetTask",
               params: {id: get value(PREVIOUS_A2A_TASK_PARAMS, "taskId")}
@@ -229,10 +229,10 @@ def build():
         ("provider.type", "openai"),
         ("provider.openai.api.type", "completions"),
         ("provider.openai.backend.type", "custom"),
-        ("provider.openai.backend.custom.endpoint", "{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}"),
+        ("provider.openai.backend.custom.endpoint", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
         ("provider.openai.backend.custom.authentication.type", "apiKey"),
-        ("provider.openai.backend.custom.authentication.apiKey", "{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}"),
-        ("provider.openai.model.model", "{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}"),
+        ("provider.openai.backend.custom.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
+        ("provider.openai.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM_PROMPT)),
         ("data.userPrompt.prompt", "=question"),
         ("agentContext", "=clientAgent.context"),

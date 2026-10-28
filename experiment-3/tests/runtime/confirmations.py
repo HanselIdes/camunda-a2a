@@ -133,6 +133,22 @@ def agent_history_checks(root, request):
         assert result["state"] == "TASK_STATE_COMPLETED", result
         assert result["artifacts"][0]["parts"][0]["data"] == EXPECTED, result
 
+    protocol = ET.parse(root / "blueprint/profiles/basic/02-a2a-server.bpmn").getroot()
+    card_start = next(node for node in protocol.iter() if node.get("id") == "CardRequested")
+    card_response = next(node.get("value") for node in card_start.iter(namespace + "property")
+                         if node.get("name") == "inbound.responseExpression")
+    for url in (None, "", "http://example.test/inbound/a2a", "https://example.test/inbound/a2a"):
+        properties = {} if url is None else {"inbound.publicRpcUrl": url}
+        response = evaluate(card_response, {"correlation": {
+            "activatedElement": {"delegate": {"properties": properties}},
+        }})
+        if url == "https://example.test/inbound/a2a":
+            assert response["statusCode"] == 200, response
+            assert response["body"]["supportedInterfaces"][0]["url"] == url, response
+        else:
+            assert response["statusCode"] == 500, response
+            assert response["body"]["error"] == "Configure the Agent Card HTTPS public RPC URL", response
+
 
 def run(root, reports, rpc, request, await_task):
     records = []

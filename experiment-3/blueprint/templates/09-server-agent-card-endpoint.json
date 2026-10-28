@@ -2,9 +2,9 @@
   "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
   "name": "Server - Agent Card Endpoint",
   "id": "dev.hansel.a2a.core.card.v1",
-  "description": "Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. Requires stock Connectors and Camunda engine 8.9 or later; only combinations documented in the setup guide are verified.",
+  "description": "Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. Requires stock Connectors and Camunda engine 8.10 or later; only combinations documented in the setup guide are verified.",
   "documentationRef": "https://a2a-protocol.org/latest/specification/",
-  "version": 1,
+  "version": 2,
   "category": {
     "id": "connectors",
     "name": "Connectors"
@@ -16,7 +16,7 @@
     "value": "bpmn:StartEvent"
   },
   "engines": {
-    "camunda": "^8.9"
+    "camunda": "^8.10"
   },
   "groups": [
     {
@@ -122,10 +122,29 @@
       "type": "String"
     },
     {
+      "id": "inbound.publicRpcUrl",
+      "type": "String",
+      "label": "Public RPC URL",
+      "group": "card",
+      "value": "",
+      "description": "Required complete HTTPS A2A RPC webhook URL, including any cluster prefix. Must exactly match the client's A2A_RPC_URL secret. This URL is public, not a credential; webhook response expressions use local FEEL.",
+      "constraints": {
+        "notEmpty": true,
+        "pattern": {
+          "value": "^https://[^ /]+/[^ ]*$",
+          "message": "Enter the complete HTTPS public RPC URL, including the webhook path"
+        }
+      },
+      "binding": {
+        "type": "zeebe:property",
+        "name": "inbound.publicRpcUrl"
+      }
+    },
+    {
       "id": "inbound.responseExpression",
       "label": "Agent Card",
-      "description": "Describe the selected BPMN process truthfully. Keep the complete A2A_RPC_URL secret, API-key security scheme and disabled capabilities.",
-      "value": "={statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: correlation.variables.rpcResponse}",
+      "description": "Describe the selected BPMN process truthfully. Keep the complete public RPC URL field, API-key security scheme and disabled capabilities.",
+      "value": "={rpcUrl: get value(correlation.activatedElement.delegate.properties, \"inbound.publicRpcUrl\"), response: if rpcUrl instance of string and matches(rpcUrl, \"^https://[^ /]+/[^ ]*$\") then {statusCode: 200, headers: {\"Content-Type\": \"application/json\"}, body: {name: \"Synthetic card-dispute reviewer\", version: \"0.1.0\", description: \"Non-production community demonstration. Reconciles synthetic charges for human review; \" + \"performs no financial actions.\", provider: {organization: \"HanselIdes\", url: \"https://github.com/HanselIdes/camunda-a2a\"}, supportedInterfaces: [{url: rpcUrl, protocolBinding: \"JSONRPC\", protocolVersion: \"1.0\"}], capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false}, defaultInputModes: [\"text/plain\"], defaultOutputModes: [\"text/plain\", \"application/json\"], securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: \"header\", name: \"X-Api-Key\"}}}, securityRequirements: [{schemes: {a2aApiKey: {}}}], skills: [{id: \"review_duplicate_charge\", name: \"Reconcile synthetic charges\", description: \"Call for every review. Checks explicit client confirmation; without it returns confirmation instructions. Reconciles only validated client-supplied synthetic amounts; accepts no model financial parameters. Returns arithmetic evidence for human review, not a refund authorization or fraud determination.\", tags: [\"synthetic\", \"card-dispute\", \"reconciliation\"], examples: [\"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.\"]}]}} else {statusCode: 500, body: {error: \"Configure the Agent Card HTTPS public RPC URL\"}}}.response",
       "feel": "required",
       "group": "card",
       "binding": {

@@ -2,6 +2,20 @@
 import secrets
 import socket
 import subprocess
+from pathlib import Path
+
+
+def write_secret_store(private_root, values):
+    root = Path(private_root)
+    root.chmod(0o700)
+    store = root / "store"
+    store.mkdir(mode=0o755)
+    store.chmod(0o755)
+    for name, value in values.items():
+        path = store / name
+        path.write_text(value)
+        path.chmod(0o444)
+    return store
 
 
 class IsolatedCompose:

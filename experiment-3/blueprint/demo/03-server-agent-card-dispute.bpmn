@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_card_dispute" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.9.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_card_dispute" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
   <bpmn:message id="Msg_followUp" name="a2a-send">
     <bpmn:extensionElements>
       <zeebe:subscription correlationKey="=task.id" />
@@ -25,9 +25,9 @@
         <zeebe:taskDefinition type="io.camunda.agenticai:aiagent-job-worker:1" retries="1" />
         <zeebe:ioMapping>
           <zeebe:input source="openaiCompatible" target="provider.type" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}" target="provider.openaiCompatible.endpoint" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}" target="provider.openaiCompatible.authentication.apiKey" />
-          <zeebe:input source="{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}" target="provider.openaiCompatible.model.model" />
+          <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT" target="provider.openaiCompatible.endpoint" />
+          <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY" target="provider.openaiCompatible.authentication.apiKey" />
+          <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL" target="provider.openaiCompatible.model.model" />
           <zeebe:input source="=0" target="provider.openaiCompatible.model.parameters.temperature" />
           <zeebe:input source="=&quot;You help demonstrate card-dispute intake using synthetic data only. For each review call review_duplicate_charge; never calculate or supply financial fields yourself. The tool uses only the current request's explicit client confirmation, not values inferred from text. If the tool requests confirmation, reply NEED_INPUT: followed by its clarification instructions. After the tool returns, briefly describe its result. Do not authorize refunds, decide a real dispute, call external financial services or claim that matching amounts alone prove fraud.&quot;" target="data.systemPrompt.prompt" />
           <zeebe:input source="=promptText" target="data.userPrompt.prompt" />

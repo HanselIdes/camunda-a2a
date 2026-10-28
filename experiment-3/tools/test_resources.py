@@ -1,9 +1,15 @@
 import base64
 import json
+import re
+import subprocess
+import sys
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
+from pathlib import Path
 
 from check_resources import PATHS, ROOT, check
+from bpmn_gen.secrets import current_secret_expression
 
 
 RESOURCE_PATHS = (
@@ -32,6 +38,81 @@ class ResourceClosureTest(unittest.TestCase):
 
     def test_selected_import_set_is_closed(self):
         self.assertEqual(check(self.resources), 13)
+
+    def test_intermediate_builder_cli_cannot_overwrite_current_resources(self):
+        before = {path: (ROOT / path).read_bytes() for path in PATHS}
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "protocol.bpmn"
+            output.write_text("must remain untouched")
+            for arguments in (["--check"], ["--authentication", "basic", "--output", str(output)]):
+                result = subprocess.run(
+                    [sys.executable, str(ROOT / "tools/build_core.py"), *arguments],
+                    capture_output=True, text=True, timeout=10,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("build_blueprint.py", result.stderr)
+                self.assertIn("--check", result.stderr)
+                self.assertEqual(output.read_text(), "must remain untouched")
+        self.assertEqual(before, {path: (ROOT / path).read_bytes() for path in PATHS})
+
+    def test_current_secret_references_are_feel_and_keep_names(self):
+        names = set()
+        for path in ROOT.joinpath("blueprint").rglob("*"):
+            if path.suffix not in (".bpmn", ".json"):
+                continue
+            text = path.read_text()
+            self.assertNotIn("{{secrets.", text, path)
+            self.assertNotIn("X-A2A-Api-Key", text, path)
+            self.assertNotIn("x-a2a-api-key", text, path)
+            self.assertNotRegex(text, r'["\']camunda\.secrets\.', path)
+            names.update(re.findall(r"camunda\.secrets\.([A-Za-z_][A-Za-z0-9_]*)", text))
+        self.assertEqual(names, {
+            "ENGINE_URL", "ENGINE_USERNAME", "ENGINE_PASSWORD", "ENGINE_OAUTH_TOKEN_ENDPOINT",
+            "ENGINE_CLIENT_ID", "ENGINE_CLIENT_SECRET", "ENGINE_AUDIENCE", "A2A_API_KEY",
+            "A2A_RPC_URL", "A2A_AGENT_CARD_URL", "A2A_AGENT_PROCESS",
+            "CAMUNDA_PROVIDED_LLM_API_ENDPOINT", "CAMUNDA_PROVIDED_LLM_API_KEY",
+            "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL",
+        })
+        for name in ("rpc", "card"):
+            filename = ("08-server-a2a-rpc-endpoint.json" if name == "rpc"
+                        else "09-server-agent-card-endpoint.json")
+            template = json.loads((ROOT / "blueprint/templates" / filename).read_text())
+            self.assertEqual(template["engines"]["camunda"], "^8.10")
+
+    def test_secret_migration_preserves_feel_composition(self):
+        self.assertEqual(current_secret_expression("{{secrets.TOKEN}}"), "=camunda.secrets.TOKEN")
+        self.assertEqual(current_secret_expression('="{{secrets.URL}}" + "/v2"'),
+                         '=camunda.secrets.URL + "/v2"')
+        self.assertEqual(current_secret_expression('={key: "{{secrets.TOKEN}}"}'),
+                         '={key: camunda.secrets.TOKEN}')
+        with self.assertRaises(ValueError):
+            current_secret_expression('="prefix-{{secrets.TOKEN}}"')
+
+    def test_card_public_url_is_explicit_required_and_not_a_secret_callback(self):
+        template = json.loads((ROOT / "blueprint/templates/09-server-agent-card-endpoint.json").read_text())
+        field = next(p for p in template["properties"] if p.get("id") == "inbound.publicRpcUrl")
+        self.assertEqual(field["value"], "")
+        self.assertEqual(field["type"], "String")
+        self.assertTrue(field["constraints"]["notEmpty"])
+        pattern = field["constraints"]["pattern"]["value"]
+        self.assertIsNotNone(re.fullmatch(pattern, "https://example.test/cluster/inbound/a2a"))
+        for invalid in ("", "http://example.test/inbound/a2a", "https://example.test/has space"):
+            self.assertIsNone(re.fullmatch(pattern, invalid))
+        for profile in ("basic", "oauth"):
+            root = ET.parse(ROOT / f"blueprint/profiles/{profile}/02-a2a-server.bpmn").getroot()
+            properties = root.find(
+                f".//{{{B}}}startEvent[@id='CardRequested']/{{{B}}}extensionElements/{{{Z}}}properties"
+            )
+            field = properties.find(f"{{{Z}}}property[@name='inbound.publicRpcUrl']")
+            self.assertEqual(field.get("value"), "")
+            response = properties.find(f"{{{Z}}}property[@name='inbound.responseExpression']").get("value")
+            self.assertNotIn("camunda.secrets", response)
+            self.assertIn("inbound.publicRpcUrl", response)
+            self.assertIn('name: "X-Api-Key"', response)
+            self.assertIn("statusCode: 500", response)
+            template_response = next(p["value"] for p in template["properties"]
+                                     if p.get("id") == "inbound.responseExpression")
+            self.assertEqual(template_response, response)
 
     def test_template_version_mismatch_is_rejected(self):
         path = "blueprint/profiles/basic/02-a2a-server.bpmn"

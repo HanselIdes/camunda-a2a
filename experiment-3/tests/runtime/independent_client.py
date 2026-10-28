@@ -34,7 +34,7 @@ async def main():
             raise ValueError("SDK attempted to leave the configured trust boundary")
         if request.url.path == "/inbound/a2a":
             assert request.headers.get("A2A-Version") == "1.0", "SDK omitted or changed the protocol version"
-            request.headers["X-A2A-Api-Key"] = key
+            request.headers["X-Api-Key"] = key
             sent.append({"method": json.loads(request.content)["method"],
                          "protocolVersion": request.headers["A2A-Version"]})
 

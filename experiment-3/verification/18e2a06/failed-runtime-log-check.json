@@ -1,0 +1,19 @@
+{
+  "targetCommit": "6daff774955523499197c685268e1b6da6979bdf",
+  "targetWorktreeDirty": false,
+  "verdict": "FAIL",
+  "engineImage": "camunda/camunda:8.10.2",
+  "connectorsImage": "camunda/connectors-bundle:8.10.2",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
+  "checks": [
+    "authenticated 8.10 deployment of the seven BPMN/DMN/form resources",
+    "native engine secret references reported for whole values, context leaves and URL concatenation",
+    "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, response-derived task/context identity, final result preparation, legacy/current server evidence and explicit card URL configuration errors",
+    "integrated direct HTTPS Agent Card and authenticated endpoint rejection",
+    "random engine password, A2A API key and Basic credential absent from untruncated persisted variables"
+  ],
+  "failureType": "AssertionError",
+  "failureMessage": "Credential found in owned engine/Connectors runtime logs",
+  "diagnosticLogExitCode": 0
+}

@@ -16,6 +16,13 @@ from isolation import IsolatedCompose
 from conformance import run as run_conformance, source_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
+if "camunda.secrets." in (ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn").read_text():
+    raise SystemExit(
+        "Historical verifier modes are unsupported for the current native-secret blueprint. "
+        "Use python3 experiment-3/tests/runtime/verify_client_agent.py for the focused authenticated "
+        "8.10.2 journey. For historical SDK/TCK/echo/operational modes, use the whole immutable "
+        "565adf7e740aa472cb0cc3f813ca43ff861e73b5 package and its own instructions; do not mix resources."
+    )
 source_before = source_snapshot(ROOT)
 if source_before["targetWorktreeDirty"]:
     raise RuntimeError("Runtime acceptance requires a clean source checkout; do not commit credentials to achieve this")
@@ -157,7 +164,7 @@ def rpc(body, key=True, timeout=60, version="1.0"):
     if version is not None:
         headers["A2A-Version"] = version
     if key:
-        headers["X-A2A-Api-Key"] = env["PROOF_A2A_API_KEY"] if key is True else key
+        headers["X-Api-Key"] = env["PROOF_A2A_API_KEY"] if key is True else key
     req = urllib.request.Request(connectors_url + "/inbound/a2a",
                                  data=json.dumps(body).encode(), headers=headers)
     try:
@@ -273,7 +280,7 @@ try:
           supportedInterfaces: [{url: "{{secrets.A2A_RPC_URL}}", protocolBinding: "JSONRPC", protocolVersion: "1.0"}],
           capabilities: {streaming: false, pushNotifications: false, extendedAgentCard: false},
           defaultInputModes: ["text/plain"], defaultOutputModes: ["text/plain", "application/json"],
-          securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-A2A-Api-Key"}}},
+          securitySchemes: {a2aApiKey: {apiKeySecurityScheme: {location: "header", name: "X-Api-Key"}}},
           securityRequirements: [{schemes: {a2aApiKey: {}}}],
           skills: [{id: "exercise_task_lifecycle", name: "Exercise task lifecycle",
           description: "Simulates deterministic lifecycle and artifact scenarios for conformance checks.",
@@ -363,7 +370,7 @@ try:
         assert card["supportedInterfaces"][0]["url"] == env.get(
             "EXPECTED_RPC_URL", "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a"), card
         assert card["capabilities"]["pushNotifications"] is False, card
-        assert card["securitySchemes"]["a2aApiKey"]["apiKeySecurityScheme"]["name"] == "X-A2A-Api-Key", card
+        assert card["securitySchemes"]["a2aApiKey"]["apiKeySecurityScheme"]["name"] == "X-Api-Key", card
         assert [s["id"] for s in card["skills"]] == ["review_duplicate_charge"], card
         print("direct HTTPS discovery, truthful endpoint/skill and API-key schema: PASS", flush=True)
         record_model_inputs()

@@ -32,11 +32,13 @@ determination, financial integration, or custom HTTP server is included.
 The complete demo now requires **Camunda 8.10 and Connectors 8.10 or later** because the selected client
 Sub-process template has engine constraint `^8.10`. The focused verification profile is engine 8.10.2,
 stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
-The [focused authenticated 8.10.2 run](../verification/9c43104/README.md) passed on clean
-source `9c43104`, including actual-model confirmation, same-task follow-up, and result review.
+The [focused authenticated 8.10.2 run](../verification/18e2a06/README.md) passed on clean
+source `18e2a06`, including native secrets, redacted-header authentication, actual-model confirmation,
+same-task follow-up, result review, and bounded credential scans.
 The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
 [`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
-The protocol is unchanged. The server's result mapping accepts both legacy object results and 8.10
+The protocol lifecycle remains, with native secret mappings and the current `X-Api-Key` contract.
+The server's result mapping accepts both legacy object results and 8.10
 structured content blocks without changing its v5 connector variant. Earlier source-pinned
 8.9 evidence remains historical server evidence, not a fresh run of these mappings or support for the
 complete current demo on 8.9.
@@ -58,7 +60,7 @@ BPMN, AI agents, or all ad-hoc subprocess implementations.
 
 | Package / runtime | What works or is unavailable | Evidence |
 | --- | --- | --- |
-| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/9c43104/README.md). |
+| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/18e2a06/README.md). |
 | Current package / 8.9 | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only. |
 | [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client. | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
 
@@ -86,7 +88,7 @@ journeys used local Ollama; neither verifies Camunda-provided SaaS model executi
 
 Use `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `CAMUNDA_PROVIDED_LLM_API_KEY`, and
 `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` in the shipped BPMN. An isolated local verification may override
-those environment-supplied secrets with Ollama; that proves only the actual client/server calls against
+those model settings with Ollama; that proves only the actual client/server calls against
 that override, not SaaS model availability. Other engine, Connector, and model-provider combinations are
 unverified. The local cluster is disposable and uses synthetic data.
 The [cross-surface evidence matrix](../verification/32f8d4e/prototype-evidence.md) records exact known
@@ -288,9 +290,48 @@ This setting alone does not establish 8.10 runtime compatibility.
 If a private issuer is used, configure the JVM truststore for outbound client calls as well. Keep private keys,
 keystore passwords and API keys out of BPMN, repository files, screenshots and reports.
 
-Use `CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX=SECRET_` if supplying local connector secrets through
-environment variables. For example, connector secret `ENGINE_URL` is then supplied as `SECRET_ENGINE_URL`.
-Use your deployment's normal secret provider instead where appropriate.
+### Cluster secret store
+
+**Caller migration:** current endpoints require `X-Api-Key`, replacing `X-A2A-Api-Key`.
+The secret name remains `A2A_API_KEY`; the current Agent Card advertises the new header.
+Stock Connectors 8.10.2 redacts `x-api-key` in webhook activity logs but not the old custom header.
+Update external callers; there is no dual-header fallback. Immutable older packages keep their old
+contract. Never send the old header to the current endpoint: stock request logging occurs before
+authentication, so an unrecognized credential header can still be logged.
+
+The current 8.10 blueprint uses FEEL `=camunda.secrets.NAME`, not legacy interpolation.
+Configure the names below in the **cluster's default secret store**. Connector-only `SECRET_*`
+environment variables do not populate that store. Do not copy secret values into BPMN or process variables.
+
+For Self-Managed 8.10.2, the focused verifier mounts a disposable, read-only directory with one UTF-8
+file per secret (filename = existing secret name), and configures the engine with
+`CAMUNDA_SECRETS_STORES_FILE_DEFAULT_PATH=/run/blueprint-secrets`.
+Use an access-controlled secret volume or your configured default cloud store in your own deployment.
+See the pinned [engine store configuration](https://github.com/camunda/camunda/blob/8.10.2/configuration/src/main/java/io/camunda/configuration/Secrets.java)
+and [file-store implementation](https://github.com/camunda/camunda/blob/8.10.2/secret-store/secret-store-file/src/main/java/io/camunda/secretstore/file/FileBasedSecretStore.java).
+The Connectors identity needs permission to resolve the named secrets through the engine API;
+the isolated test uses its existing non-production admin identity, not a least-privilege recommendation.
+Missing stores, names, or resolution permissions block execution. SaaS provisioning and model access remain unverified.
+
+Whole-value mappings use `=camunda.secrets.ENGINE_PASSWORD`. In a FEEL context or concatenation,
+use the reference unquoted: `={"X-Api-Key": camunda.secrets.A2A_API_KEY}` or
+`=camunda.secrets.ENGINE_URL + "/v2/topology"`. Quoting the reference makes it literal text.
+The engine keeps placeholders in persisted variables and injects values into job activation;
+the 8.10 Connectors runtime resolves references when binding inbound credentials as well.
+This is not support for secret references in every expression: stock webhook response callbacks use
+**local FEEL**, so they cannot resolve `camunda.secrets` in `inbound.responseExpression`.
+The pinned [input-mapping tests](https://github.com/camunda/camunda/blob/8.10.2/zeebe/engine/src/test/java/io/camunda/zeebe/engine/processing/expression/SecretReferenceInputMappingTest.java)
+and [inbound-binding tests](https://github.com/camunda/connectors/blob/b490d065b59ffe4788319609dbe41deb25e68e3f/connector-runtime/connector-runtime-core/src/test/java/io/camunda/connector/runtime/core/inbound/InboundSecretReferenceBindingTest.java)
+cover these mechanisms. Historical 8.9 packages retain their own secret setup; do not mix the two.
+
+In Modeler, select **Agent Card requested** in `02 A2A Server` and configure the required
+**Public RPC URL** field. Enter the complete HTTPS RPC webhook URL, including any cluster prefix
+and `/inbound/a2a`, exactly matching the client's `A2A_RPC_URL` secret. The URL is already public in
+discovery and contains no credential. These two explicit settings are necessary because the card's
+local response expression cannot read the cluster secret store. The field has no default:
+missing or non-HTTPS configuration returns a clear HTTP 500 setup error, not a plausible wrong endpoint.
+Never put an API key in this field. Use Modeler **5.52.0 or later** for native-secret linting;
+5.51.1 misidentifies the new reference as the older deprecated syntax.
 
 | Connector secret                     | Required value                                                                     |
 | ------------------------------------ | ---------------------------------------------------------------------------------- |
@@ -408,7 +449,7 @@ The final publication guard also checks the tool result against those confirmed 
 This confirms what the client explicitly supplied; it does not authenticate real-world financial facts.
 
 An external client can fetch the complete `A2A_AGENT_CARD_URL` and send A2A 1.0 `SendMessage` requests to the card's
-JSON-RPC interface using `X-A2A-Api-Key`. `GetTask` polls the returned task ID. Missing and invalid keys must be
+JSON-RPC interface using `X-Api-Key`. `GetTask` polls the returned task ID. Missing and invalid keys must be
 rejected without business work. Standard `/.well-known/agent-card.json` discovery requires an optional route to the
 direct discovery webhook; it has not been independently verified for this candidate.
 
@@ -439,7 +480,7 @@ for remote clusters or production: supply real DNS and an appropriately trusted 
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_AGENT_CARD_URL"
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
-  -H "X-A2A-Api-Key: $A2A_API_KEY" \
+  -H "X-Api-Key: $A2A_API_KEY" \
   --data '{"jsonrpc":"2.0","id":"demo-send","method":"SendMessage","params":{"message":{"messageId":"demo-request-1","role":"ROLE_USER","parts":[{"text":"Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool."},{"data":{"syntheticClaim":{"merchant":"Northwind Electronics","currency":"USD","chargeAmounts":[49.95,49.95],"expectedAmount":49.95,"syntheticOnly":true}}}]}}}'
 ```
 
@@ -448,7 +489,7 @@ Read `result.task.id` from the response, set `TASK_ID` to that value and poll:
 ```bash
 curl --fail "${A2A_CURL_ARGS[@]}" "$A2A_RPC_URL" \
   -H 'Content-Type: application/json' -H 'A2A-Version: 1.0' \
-  -H "X-A2A-Api-Key: $A2A_API_KEY" \
+  -H "X-Api-Key: $A2A_API_KEY" \
   --data "{\"jsonrpc\":\"2.0\",\"id\":\"demo-poll\",\"method\":\"GetTask\",\"params\":{\"id\":\"$TASK_ID\"}}"
 ```
 
@@ -635,20 +676,25 @@ Contact the [repository issue tracker](https://github.com/HanselIdes/camunda-a2a
 These are contributor commands, not installation prerequisites. With the documented Docker/model prerequisites ready:
 
 ```sh
-python3 experiment-3/tests/runtime/verify.py
-cd experiment-3/tests && mvn -q test
+python3 experiment-3/tests/runtime/verify_client_agent.py
+cd experiment-3/tests && mvn -q -Dtest=CoreProtocolTest,CoreListingTest,TemplateShapeTest test
 ```
 
 The runtime verifier reserves available loopback ports and creates a unique per-run Compose project and random temporary
 credentials. It refuses to reuse existing project resources and cleans up only its own startup, including a partial
 startup failure. Docker rejects competing port claims rather than reusing another service.
 It creates a certificate and truststore with `openssl`/`keytool`, starts the pinned stack, deploys the
-committed resources, checks authentication/discovery, expected real-model results, verbatim numeric-leading continuation
-and six actual model-input character cases,
-and final BPMN client completion, verifies persisted variables exclude runtime credentials, then removes its containers.
+committed resources, checks authentication/discovery, explicit confirmation and same-task follow-up,
+the exact reconciliation result and final BPMN client completion. It scans untruncated persisted variables
+and owned engine/Connectors logs for the random password, API key and encoded Basic credential, then removes its containers.
 It does not stop or reuse unrelated clusters.
 Docker, Python 3, OpenSSL, a JDK/keytool and the already-running local Ollama model are required.
-`PROOF_AGENT_PROCESS=a2a-echo` selects the deterministic contract check without model inference.
+The older `verify.py` modes do not configure the native engine secret store or required public Card URL,
+and fail before provisioning on current resources. They are not current-package verification.
+The SDK/TCK, echo, reliability, operational, listing and failure commands below describe **historical
+tooling only**: use the whole [immutable package](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3)
+with its own resources and instructions to reproduce those earlier profiles. No fresh matrix or conformance
+pass is claimed for the native-secret package.
 Model-input diagnostics contain synthetic prompts only and are stored under ignored `experiment-3/reports/runtime`.
 `PROOF_REPORT_DIR` can select another report directory.
 Each native acceptance run requires a clean committed checkout and a new report directory; existing evidence
@@ -719,7 +765,9 @@ It does not inject native response loss after commit, OAuth expiry, optional ing
 No other deployment is stopped or reconfigured. These checks are not passes until the exact-source run completes.
 
 `python3 experiment-3/tools/build_blueprint.py --check` checks the committed candidate assets against their builder,
-using immutable upstream template URLs. `python3 experiment-3/tools/build_core.py --check` checks both protocol profiles.
+using immutable upstream template URLs, including both final protocol profiles. Omit `--check` to regenerate.
+`build_core.py` remains an intermediate Python API; its retired CLI refuses writes and directs contributors
+to the complete builder so final native-secret, header, template and public-URL configuration is preserved.
 `python3 experiment-3/tools/check_resources.py` checks the selected import set for template-version, form, decision
 and process reference closure. Add `--ref <full-public-commit-SHA>` to print the 12 immutable resource URLs.
 None of these commands changes an adopter's deployment. A successful runtime check is not a conformance or Modeler-import pass.

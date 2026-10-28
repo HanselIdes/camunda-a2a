@@ -1,0 +1,13 @@
+{
+  "targetCommit": "0a99f8ba7af6dcecbdd2160c11c916231da78ee9",
+  "targetWorktreeDirty": false,
+  "verdict": "FAIL",
+  "engineImage": "camunda/camunda:8.10.2",
+  "connectorsImage": "camunda/connectors-bundle:8.10.2",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
+  "checks": [],
+  "failureType": "RuntimeError",
+  "failureMessage": "Authenticated deployment failed with HTTP 400: {\"type\":\"about:blank\",\"title\":\"INVALID_ARGUMENT\",\"status\":400,\"detail\":\"Command 'CREATE' rejected with code 'INVALID_ARGUMENT': Expected to deploy new resources, but encountered the following errors:\\n'02-a2a-server.bpmn': Error: URI=null Line=358: UndeclaredPrefix: Cannot resolve 'bpmn:tFormalExpression' as a QName: the prefix 'bpmn' is not declared.\",\"instance\":\"/v2/deployments\"}",
+  "diagnosticLogExitCode": 0
+}

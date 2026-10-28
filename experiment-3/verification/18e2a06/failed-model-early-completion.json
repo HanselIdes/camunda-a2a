@@ -1,0 +1,18 @@
+{
+  "targetCommit": "18e2a06652172c000245f489ed7d1c1ecb18c5b3",
+  "targetWorktreeDirty": false,
+  "verdict": "FAIL",
+  "engineImage": "camunda/camunda:8.10.2",
+  "connectorsImage": "camunda/connectors-bundle:8.10.2",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
+  "checks": [
+    "authenticated 8.10 deployment of the seven BPMN/DMN/form resources",
+    "native engine secret references reported for whole values, context leaves and URL concatenation",
+    "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, response-derived task/context identity, final result preparation, legacy/current server evidence and explicit card URL configuration errors",
+    "integrated direct HTTPS Agent Card and authenticated endpoint rejection"
+  ],
+  "failureType": "AssertionError",
+  "failureMessage": "Client agent did not observe a completed A2A task: [{'history': [{'role': 'ROLE_USER', 'messageId': '01a1841f-27bb-7e75-9c9d-2c6bfa10e077', 'taskId': '01a1841f-321b-73e9-a3e7-0cbae58021b5', 'contextId': '01a1841f-321a-7704-969d-5055d94d66a6', 'parts': [{'text': 'Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Reconcile the two charges with your tool.'}]}, {'role': 'ROLE_AGENT', 'messageId': '01a1841f-43ad-7d87-867b-a61dbf35437b', 'taskId': '01a1841f-321b-73e9-a3e7-0cbae58021b5', 'contextId': '01a1841f-321a-7704-969d-5055d94d66a6', 'parts': [{'text': 'Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation.'}]}], 'id': '01a1841f-321b-73e9-a3e7-0cbae58021b5', 'status': {'state': 'TASK_STATE_INPUT_REQUIRED', 'message': {'role': 'ROLE_AGENT', 'messageId': '01a1841f-43ad-7d87-867b-a61dbf35437b', 'taskId': '01a1841f-321b-73e9-a3e7-0cbae58021b5', 'contextId': '01a1841f-321a-7704-969d-5055d94d66a6', 'parts': [{'text': 'Confirm synthetic data only: supply one message data part with syntheticClaim containing merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), expectedAmount (a finite nonnegative number), and syntheticOnly=true. Free text alone is context, not confirmation.'}]}, 'timestamp': '2026-10-28T20:06:43Z'}, 'contextId': '01a1841f-321a-7704-969d-5055d94d66a6'}]",
+  "diagnosticLogExitCode": 0
+}

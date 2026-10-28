@@ -30,7 +30,7 @@ def route_request(request, port, key):
     if request.url.path == "/inbound/a2a/":
         request.url = request.url.copy_with(path="/inbound/a2a")
     if request.url.path == "/inbound/a2a":
-        request.headers["X-A2A-Api-Key"] = key
+        request.headers["X-Api-Key"] = key
 
 
 def source_digest(root):
@@ -87,7 +87,7 @@ def run(root, reports, env, engine_url, connectors_url, certificate):
         "target": "direct stock-Connectors HTTPS; explicit discovery URL; API-key trust boundary",
         "connectionAdaptations": [
             {"kind": "TLS", "change": "Trust the isolated runtime's CA; certificate verification stays enabled."},
-            {"kind": "API key", "change": "Inject X-A2A-Api-Key only on the configured HTTPS RPC boundary."},
+            {"kind": "API key", "change": "Inject X-Api-Key only on the configured HTTPS RPC boundary."},
             {"kind": "card", "change": "Map well-known discovery to explicit /inbound/a2a-card; no ingress claim."},
             {"kind": "path", "change": "Remove only the runner-appended slash from the exact advertised RPC path."},
             {"kind": "host", "change": "Resolve host.docker.internal to loopback only for the isolated runtime port."},

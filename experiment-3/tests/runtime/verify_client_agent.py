@@ -11,10 +11,11 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
 
 from conformance import source_snapshot
 from confirmations import agent_history_checks
-from isolation import IsolatedCompose
+from isolation import IsolatedCompose, write_secret_store
 from observations import read_root_variable
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,6 +55,21 @@ env = dict(
 )
 stack = IsolatedCompose(COMPOSE, env)
 stack.command.extend(["-f", str(Path(__file__).with_name("exporter-low-latency.yml"))])
+stack.command.extend(["-f", str(Path(__file__).with_name("secrets-810.yml"))])
+secret_directory = tempfile.TemporaryDirectory(prefix="a2a-client-secret-proof-")
+secret_values = {
+    "ENGINE_URL": "http://camunda:8080",
+    "ENGINE_USERNAME": "proof",
+    "ENGINE_PASSWORD": env["PROOF_ENGINE_PASSWORD"],
+    "A2A_API_KEY": env["PROOF_A2A_API_KEY"],
+    "A2A_AGENT_PROCESS": env["PROOF_AGENT_PROCESS"],
+    "A2A_RPC_URL": "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a",
+    "A2A_AGENT_CARD_URL": "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a-card",
+    "CAMUNDA_PROVIDED_LLM_API_ENDPOINT": "http://host.docker.internal:11434/v1",
+    "CAMUNDA_PROVIDED_LLM_API_KEY": "ollama",
+    "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL": "qwen3-coder-30b-64k:latest",
+}
+env["PROOF_SECRET_DIR"] = str(write_secret_store(secret_directory.name, secret_values))
 tls_directory = tempfile.TemporaryDirectory(prefix="a2a-client-agent-proof-tls-")
 env["PROOF_CERTIFICATE_DIR"] = tls_directory.name
 tls_path = Path(tls_directory.name)
@@ -114,7 +130,7 @@ def engine_request(path, body=None, timeout=30):
 def rpc(body, api_key=True, timeout=60):
     headers = {"Content-Type": "application/json"}
     if api_key:
-        headers["X-A2A-Api-Key"] = env["PROOF_A2A_API_KEY"] if api_key is True else api_key
+        headers["X-Api-Key"] = env["PROOF_A2A_API_KEY"] if api_key is True else api_key
     request = urllib.request.Request(
         connectors_url + "/inbound/a2a",
         data=json.dumps(body).encode(),
@@ -189,9 +205,20 @@ try:
     boundary = secrets.token_hex(16)
     body = bytearray()
     for path in resources:
+        contents = path.read_bytes()
+        if path.name == "02-a2a-server.bpmn":
+            for _, namespace in ET.iterparse(path, events=("start-ns",)):
+                ET.register_namespace(*namespace)
+            model = ET.fromstring(contents)
+            field = model.find(
+                ".//{http://camunda.org/schema/zeebe/1.0}property[@name='inbound.publicRpcUrl']"
+            )
+            assert field is not None and field.get("value") == "", "Expected required public URL field"
+            field.set("value", secret_values["A2A_RPC_URL"])
+            contents = ET.tostring(model, encoding="utf-8", xml_declaration=True)
         body.extend((f"--{boundary}\r\nContent-Disposition: form-data; name=\"resources\"; "
                      f"filename=\"{path.name}\"\r\nContent-Type: application/octet-stream\r\n\r\n").encode())
-        body.extend(path.read_bytes())
+        body.extend(contents)
         body.extend(b"\r\n")
     body.extend(f"--{boundary}--\r\n".encode())
     authorization = base64.b64encode(
@@ -210,10 +237,24 @@ try:
         detail = error.read().decode()
         raise RuntimeError(f"Authenticated deployment failed with HTTP {error.code}: {detail}") from error
     report["checks"].append("authenticated 8.10 deployment of the seven BPMN/DMN/form resources")
+    for expression, expected in (
+        ("=camunda.secrets.A2A_API_KEY", "camunda.secrets.A2A_API_KEY"),
+        ('={key: camunda.secrets.A2A_API_KEY}', {"key": "camunda.secrets.A2A_API_KEY"}),
+        ('=camunda.secrets.ENGINE_URL + "/v2/topology"', "camunda.secrets.ENGINE_URL/v2/topology"),
+    ):
+        status, response = engine_request("/v2/expression/evaluation", {"expression": expression})
+        assert status == 200, (status, response)
+        evaluated = json.loads(response)
+        assert evaluated["result"] == expected and not evaluated.get("warnings"), evaluated
+        assert evaluated.get("referencedSecrets"), evaluated
+    report["checks"].append(
+        "native engine secret references reported for whole values, context leaves and URL concatenation"
+    )
     agent_history_checks(ROOT, engine_request)
     report["checks"].append(
         "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
-        "response-derived task/context identity, final result preparation and legacy/current server evidence"
+        "response-derived task/context identity, final result preparation, legacy/current server evidence "
+        "and explicit card URL configuration errors"
     )
 
     expected_card_url = (
@@ -386,6 +427,25 @@ try:
     }
     assert artifact["parts"][0]["data"] == expected_artifact, artifact
     assert "TASK_STATE_COMPLETED" in result_text, result_text
+    credentials = (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], authorization)
+    cursor = None
+    while True:
+        page = {"limit": 100}
+        if cursor:
+            page["after"] = cursor
+        status, response = engine_request(
+            "/v2/variables/search?truncateValues=false", {"filter": {}, "page": page}
+        )
+        assert status == 200, (status, response)
+        assert not any(value in response for value in credentials), "Credential persisted in variables"
+        variables = json.loads(response)
+        cursor = variables.get("page", {}).get("endCursor")
+        if not variables["items"] or len(variables["items"]) < 100:
+            break
+        assert cursor, "Variable search did not return a continuation cursor"
+    report["checks"].append(
+        "random engine password, A2A API key and Basic credential absent from untruncated persisted variables"
+    )
     status, response = engine_request(
         f"/v2/user-tasks/{review_task['userTaskKey']}/completion", {"variables": {}}
     )
@@ -402,6 +462,16 @@ try:
         if time.monotonic() >= deadline:
             raise TimeoutError("Client process did not complete after result review")
         time.sleep(0.25)
+
+    logs = subprocess.run(
+        stack.command + ["logs", "--no-color", "camunda", "connectors"],
+        env=env, capture_output=True, text=True, check=True, timeout=30,
+    )
+    assert not any(value in logs.stdout + logs.stderr for value in credentials), \
+        "Credential found in owned engine/Connectors runtime logs"
+    report["checks"].append(
+        "random engine password, A2A API key and Basic credential absent from owned engine/Connectors logs"
+    )
 
     report["checks"].append(
         "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, "
@@ -422,6 +492,13 @@ try:
             "pollObservedSameTaskCompleted": True,
         },
         "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
+        "secretResolution": {
+            "syntax": "camunda.secrets",
+            "store": "disposable engine default file store",
+            "secretNames": sorted(secret_values),
+            "persistedCredentialLeakCheck": "PASS",
+            "runtimeLogCredentialLeakCheck": "PASS",
+        },
         "sourceAfter": source_snapshot(ROOT),
         "evidenceLocation": str(report_file),
     })
@@ -449,3 +526,4 @@ finally:
         stack.close()
     finally:
         tls_directory.cleanup()
+        secret_directory.cleanup()
