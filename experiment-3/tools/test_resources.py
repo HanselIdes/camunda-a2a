@@ -1,9 +1,11 @@
 import base64
 import json
+import re
 import unittest
 import xml.etree.ElementTree as ET
 
 from check_resources import PATHS, ROOT, check
+from bpmn_gen.secrets import current_secret_expression
 
 
 RESOURCE_PATHS = (
@@ -32,6 +34,37 @@ class ResourceClosureTest(unittest.TestCase):
 
     def test_selected_import_set_is_closed(self):
         self.assertEqual(check(self.resources), 13)
+
+    def test_current_secret_references_are_feel_and_keep_names(self):
+        names = set()
+        for path in ROOT.joinpath("blueprint").rglob("*"):
+            if path.suffix not in (".bpmn", ".json"):
+                continue
+            text = path.read_text()
+            self.assertNotIn("{{secrets.", text, path)
+            self.assertNotRegex(text, r'["\']camunda\.secrets\.', path)
+            names.update(re.findall(r"camunda\.secrets\.([A-Za-z_][A-Za-z0-9_]*)", text))
+        self.assertEqual(names, {
+            "ENGINE_URL", "ENGINE_USERNAME", "ENGINE_PASSWORD", "ENGINE_OAUTH_TOKEN_ENDPOINT",
+            "ENGINE_CLIENT_ID", "ENGINE_CLIENT_SECRET", "ENGINE_AUDIENCE", "A2A_API_KEY",
+            "A2A_RPC_URL", "A2A_AGENT_CARD_URL", "A2A_AGENT_PROCESS",
+            "CAMUNDA_PROVIDED_LLM_API_ENDPOINT", "CAMUNDA_PROVIDED_LLM_API_KEY",
+            "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL",
+        })
+        for name in ("rpc", "card"):
+            filename = ("08-server-a2a-rpc-endpoint.json" if name == "rpc"
+                        else "09-server-agent-card-endpoint.json")
+            template = json.loads((ROOT / "blueprint/templates" / filename).read_text())
+            self.assertEqual(template["engines"]["camunda"], "^8.10")
+
+    def test_secret_migration_preserves_feel_composition(self):
+        self.assertEqual(current_secret_expression("{{secrets.TOKEN}}"), "=camunda.secrets.TOKEN")
+        self.assertEqual(current_secret_expression('="{{secrets.URL}}" + "/v2"'),
+                         '=camunda.secrets.URL + "/v2"')
+        self.assertEqual(current_secret_expression('={key: "{{secrets.TOKEN}}"}'),
+                         '={key: camunda.secrets.TOKEN}')
+        with self.assertRaises(ValueError):
+            current_secret_expression('="prefix-{{secrets.TOKEN}}"')
 
     def test_template_version_mismatch_is_rejected(self):
         path = "blueprint/profiles/basic/02-a2a-server.bpmn"

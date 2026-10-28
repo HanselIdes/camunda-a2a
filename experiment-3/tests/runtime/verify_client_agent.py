@@ -54,6 +54,26 @@ env = dict(
 )
 stack = IsolatedCompose(COMPOSE, env)
 stack.command.extend(["-f", str(Path(__file__).with_name("exporter-low-latency.yml"))])
+stack.command.extend(["-f", str(Path(__file__).with_name("secrets-810.yml"))])
+secret_directory = tempfile.TemporaryDirectory(prefix="a2a-client-secret-proof-")
+env["PROOF_SECRET_DIR"] = secret_directory.name
+secret_values = {
+    "ENGINE_URL": "http://camunda:8080",
+    "ENGINE_USERNAME": "proof",
+    "ENGINE_PASSWORD": env["PROOF_ENGINE_PASSWORD"],
+    "A2A_API_KEY": env["PROOF_A2A_API_KEY"],
+    "A2A_AGENT_PROCESS": env["PROOF_AGENT_PROCESS"],
+    "A2A_RPC_URL": "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a",
+    "A2A_AGENT_CARD_URL": "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a-card",
+    "CAMUNDA_PROVIDED_LLM_API_ENDPOINT": "http://host.docker.internal:11434/v1",
+    "CAMUNDA_PROVIDED_LLM_API_KEY": "ollama",
+    "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL": "qwen3-coder-30b-64k:latest",
+}
+for name, value in secret_values.items():
+    path = Path(secret_directory.name) / name
+    path.write_text(value)
+    path.chmod(0o444)
+Path(secret_directory.name).chmod(0o755)
 tls_directory = tempfile.TemporaryDirectory(prefix="a2a-client-agent-proof-tls-")
 env["PROOF_CERTIFICATE_DIR"] = tls_directory.name
 tls_path = Path(tls_directory.name)
@@ -210,6 +230,19 @@ try:
         detail = error.read().decode()
         raise RuntimeError(f"Authenticated deployment failed with HTTP {error.code}: {detail}") from error
     report["checks"].append("authenticated 8.10 deployment of the seven BPMN/DMN/form resources")
+    for expression, expected in (
+        ("=camunda.secrets.A2A_API_KEY", "camunda.secrets.A2A_API_KEY"),
+        ('={key: camunda.secrets.A2A_API_KEY}', {"key": "camunda.secrets.A2A_API_KEY"}),
+        ('=camunda.secrets.ENGINE_URL + "/v2/topology"', "camunda.secrets.ENGINE_URL/v2/topology"),
+    ):
+        status, response = engine_request("/v2/expression/evaluation", {"expression": expression})
+        assert status == 200, (status, response)
+        evaluated = json.loads(response)
+        assert evaluated["result"] == expected and not evaluated.get("warnings"), evaluated
+        assert evaluated.get("referencedSecrets"), evaluated
+    report["checks"].append(
+        "native engine secret references reported for whole values, context leaves and URL concatenation"
+    )
     agent_history_checks(ROOT, engine_request)
     report["checks"].append(
         "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
@@ -386,6 +419,23 @@ try:
     }
     assert artifact["parts"][0]["data"] == expected_artifact, artifact
     assert "TASK_STATE_COMPLETED" in result_text, result_text
+    cursor = None
+    while True:
+        page = {"limit": 100}
+        if cursor:
+            page["after"] = cursor
+        status, response = engine_request(
+            "/v2/variables/search", {"filter": {}, "page": page}
+        )
+        assert status == 200, (status, response)
+        assert env["PROOF_ENGINE_PASSWORD"] not in response, "Engine password persisted in variables"
+        assert env["PROOF_A2A_API_KEY"] not in response, "A2A API key persisted in variables"
+        variables = json.loads(response)
+        cursor = variables.get("page", {}).get("endCursor")
+        if not variables["items"] or len(variables["items"]) < 100:
+            break
+        assert cursor, "Variable search did not return a continuation cursor"
+    report["checks"].append("random engine password and A2A API key absent from persisted process variables")
     status, response = engine_request(
         f"/v2/user-tasks/{review_task['userTaskKey']}/completion", {"variables": {}}
     )
@@ -422,6 +472,12 @@ try:
             "pollObservedSameTaskCompleted": True,
         },
         "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
+        "secretResolution": {
+            "syntax": "camunda.secrets",
+            "store": "disposable engine default file store",
+            "secretNames": sorted(secret_values),
+            "persistedCredentialLeakCheck": "PASS",
+        },
         "sourceAfter": source_snapshot(ROOT),
         "evidenceLocation": str(report_file),
     })
@@ -449,3 +505,4 @@ finally:
         stack.close()
     finally:
         tls_directory.cleanup()
+        secret_directory.cleanup()

@@ -113,7 +113,8 @@ Keep local validation overrides separate from the public secret defaults below.
 
 ## Configure secrets and endpoints
 
-Use your deployment's secret provider. Never put credentials or keys in BPMN files.
+Configure these names in the **8.10 cluster's default secret store**. Never put credentials or keys
+in BPMN files. Connector-only `SECRET_*` environment variables are not a substitute for this store.
 
 | Connector secret | Value |
 | --- | --- |
@@ -130,9 +131,9 @@ Use your deployment's secret provider. Never put credentials or keys in BPMN fil
 The client references the Camunda-provided LLM secret names through these connector inputs:
 
 ```text
-provider.openai.backend.custom.endpoint={{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}
-provider.openai.backend.custom.authentication.apiKey={{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}
-provider.openai.model.model={{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}
+provider.openai.backend.custom.endpoint==camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT
+provider.openai.backend.custom.authentication.apiKey==camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY
+provider.openai.model.model==camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL
 ```
 
 The client selects provider `openai`, API `completions`, custom backend and API-key authentication.
@@ -140,7 +141,14 @@ The server's pinned v5 template retains its `openaiCompatible` fields. These sec
 Camunda SaaS provider; verify the endpoint and model through your authorized environment.
 
 Both A2A URLs must resolve from external clients and the Connectors runtime. Use matching certificate names and configure trusted issuers.
-Do not disable certificate checks. Restart or recreate Connectors after changing environment-supplied secrets.
+Do not disable certificate checks. Each whole-value input uses FEEL `=camunda.secrets.NAME`.
+Inside an existing FEEL context, use an unquoted reference, for example
+`={"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}`; do not quote it as text.
+URL composition uses `=camunda.secrets.ENGINE_URL + "/v2/..."`.
+The engine persists references rather than credentials and injects resolved values for jobs;
+Connectors also resolves references when evaluating inbound properties.
+The [runtime setup guide](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/blueprint/README.md#cluster-secret-store)
+explains store setup and permissions. Missing secrets or resolution permissions prevent execution.
 
 The demonstrated same-runtime client/server flow requires `CAMUNDA_CLIENT_EXECUTION_THREADS=4`.
 The recorded profile also sets `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`.

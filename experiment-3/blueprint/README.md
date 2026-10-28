@@ -288,9 +288,30 @@ This setting alone does not establish 8.10 runtime compatibility.
 If a private issuer is used, configure the JVM truststore for outbound client calls as well. Keep private keys,
 keystore passwords and API keys out of BPMN, repository files, screenshots and reports.
 
-Use `CAMUNDA_CONNECTOR_SECRETPROVIDER_ENVIRONMENT_PREFIX=SECRET_` if supplying local connector secrets through
-environment variables. For example, connector secret `ENGINE_URL` is then supplied as `SECRET_ENGINE_URL`.
-Use your deployment's normal secret provider instead where appropriate.
+### Cluster secret store
+
+The current 8.10 blueprint uses FEEL `=camunda.secrets.NAME`, not legacy interpolation.
+Configure the names below in the **cluster's default secret store**. Connector-only `SECRET_*`
+environment variables do not populate that store. Do not copy secret values into BPMN or process variables.
+
+For Self-Managed 8.10.2, the focused verifier mounts a disposable, read-only directory with one UTF-8
+file per secret (filename = existing secret name), and configures the engine with
+`CAMUNDA_SECRETS_STORES_FILE_DEFAULT_PATH=/run/blueprint-secrets`.
+Use an access-controlled secret volume or your configured default cloud store in your own deployment.
+See the pinned [engine store configuration](https://github.com/camunda/camunda/blob/8.10.2/configuration/src/main/java/io/camunda/configuration/Secrets.java)
+and [file-store implementation](https://github.com/camunda/camunda/blob/8.10.2/secret-store/secret-store-file/src/main/java/io/camunda/secretstore/file/FileBasedSecretStore.java).
+The Connectors identity needs permission to resolve the named secrets through the engine API;
+the isolated test uses its existing non-production admin identity, not a least-privilege recommendation.
+Missing stores, names, or resolution permissions block execution. SaaS provisioning and model access remain unverified.
+
+Whole-value mappings use `=camunda.secrets.ENGINE_PASSWORD`. In a FEEL context or concatenation,
+use the reference unquoted: `={"X-A2A-Api-Key": camunda.secrets.A2A_API_KEY}` or
+`=camunda.secrets.ENGINE_URL + "/v2/topology"`. Quoting the reference makes it literal text.
+The engine keeps placeholders in persisted variables and injects values into job activation;
+the 8.10 Connectors runtime resolves references in inbound property evaluation as well.
+The pinned [input-mapping tests](https://github.com/camunda/camunda/blob/8.10.2/zeebe/engine/src/test/java/io/camunda/zeebe/engine/processing/expression/SecretReferenceInputMappingTest.java)
+and [inbound-binding tests](https://github.com/camunda/connectors/blob/b490d065b59ffe4788319609dbe41deb25e68e3f/connector-runtime/connector-runtime-core/src/test/java/io/camunda/connector/runtime/core/inbound/InboundSecretReferenceBindingTest.java)
+cover these mechanisms. Historical 8.9 packages retain their own secret setup; do not mix the two.
 
 | Connector secret                     | Required value                                                                     |
 | ------------------------------------ | ---------------------------------------------------------------------------------- |

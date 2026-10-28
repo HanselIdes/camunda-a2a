@@ -15,6 +15,7 @@ from bpmn_gen import build as original
 from bpmn_gen.agent_client import build as build_client_agent
 from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
+from bpmn_gen.secrets import current_secret_expression, current_secret_mappings
 
 UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
 AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
@@ -153,9 +154,9 @@ def agent(path):
     path.write_text(p.xml())
     apply(path, AI, "AgentTools", [
         ("provider.type", "openaiCompatible"),
-        ("provider.openaiCompatible.endpoint", "{{secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT}}"),
-        ("provider.openaiCompatible.authentication.apiKey", "{{secrets.CAMUNDA_PROVIDED_LLM_API_KEY}}"),
-        ("provider.openaiCompatible.model.model", "{{secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL}}"),
+        ("provider.openaiCompatible.endpoint", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
+        ("provider.openaiCompatible.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
+        ("provider.openaiCompatible.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
         ("provider.openaiCompatible.model.parameters.temperature", "=0"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM)),
         ("data.userPrompt.prompt", "=promptText"), ("agentContext", "=agent.context"),
@@ -165,7 +166,7 @@ def agent(path):
         ("errorExpression", '=if error != null then bpmnError("AGENT_FAILED", string(error.message)) else null'),
         ("retries", "1"),
     ])
-    return serialize(add_hook(ET.parse(path).getroot()))
+    return serialize(add_hook(ET.parse(path).getroot()), "8.10.0")
 
 
 def assets():
@@ -183,10 +184,11 @@ def assets():
         controlled_agent.find(
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNDiagram/"
             "{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane").set("bpmnElement", "a2a-controlled-agent")
-        output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent)
+        output[ROOT / "tests/src/test/resources/bpmn/a2a-controlled-agent.bpmn"] = serialize(controlled_agent, "8.10.0")
         for authentication in ("basic", "oauth"):
-            output[ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"] = (
-                build_core.build(authentication, agent_path))
+            profile = current_secret_mappings(ET.fromstring(build_core.build(authentication, agent_path)))
+            output[ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"] = serialize(
+                profile, "8.10.0")
         decision = ET.parse(ROOT / "dmn/a2a-validate.dmn").getroot()
         decision.set("name", "07 Server - Validate A2A Request")
         for element in decision.iter():
@@ -207,9 +209,9 @@ def assets():
             data["name"] = ("Server - A2A RPC Endpoint" if kind == "rpc"
                             else "Server - Agent Card Endpoint")
             data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=1)
-            data["engines"]["camunda"] = "^8.9"
+            data["engines"]["camunda"] = "^8.10"
             data["description"] = ("Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. "
-                                   "Requires stock Connectors and Camunda engine 8.9 or later; "
+                                   "Requires stock Connectors and Camunda engine 8.10 or later; "
                                    "only combinations documented in the setup guide are verified.")
             if kind == "rpc":
                 next(p for p in data["properties"] if p.get("id") == "inbound.auth.type")["value"] = "APIKEY"
@@ -218,7 +220,7 @@ def assets():
                 mapping["description"] = ("Persist the JSON-RPC body and only content-type/a2a-version headers. "
                                           "Never persist authorization, API keys or arbitrary request headers.")
                 for name, value in {
-                    "inbound.auth.apiKey": "{{secrets.A2A_API_KEY}}",
+                    "inbound.auth.apiKey": "=camunda.secrets.A2A_API_KEY",
                     "inbound.auth.apiKeyLocator": '=request.headers.`x-a2a-api-key`',
                 }.items():
                     data["properties"].append({"type": "Hidden", "id": name, "value": value,
@@ -233,6 +235,9 @@ def assets():
                                         "A2A_RPC_URL secret, API-key security scheme and disabled capabilities.")
             filename = ("08-server-a2a-rpc-endpoint.json" if kind == "rpc"
                         else "09-server-agent-card-endpoint.json")
+            for prop in data["properties"]:
+                if "value" in prop:
+                    prop["value"] = current_secret_expression(prop["value"])
             output[templates / filename] = (json.dumps(data, indent=2) + "\n").encode()
         client_xml, client_forms, client_http, client_ai_settings = build_client_agent()
         client_path = directory / "01-client-agent.bpmn"
