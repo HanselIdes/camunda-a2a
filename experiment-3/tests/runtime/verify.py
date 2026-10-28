@@ -16,6 +16,13 @@ from isolation import IsolatedCompose
 from conformance import run as run_conformance, source_snapshot
 
 ROOT = Path(__file__).resolve().parents[2]
+if "camunda.secrets." in (ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn").read_text():
+    raise SystemExit(
+        "Historical verifier modes are unsupported for the current native-secret blueprint. "
+        "Use python3 experiment-3/tests/runtime/verify_client_agent.py for the focused authenticated "
+        "8.10.2 journey. For historical SDK/TCK/echo/operational modes, use the whole immutable "
+        "565adf7e740aa472cb0cc3f813ca43ff861e73b5 package and its own instructions; do not mix resources."
+    )
 source_before = source_snapshot(ROOT)
 if source_before["targetWorktreeDirty"]:
     raise RuntimeError("Runtime acceptance requires a clean source checkout; do not commit credentials to achieve this")

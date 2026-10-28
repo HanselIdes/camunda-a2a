@@ -674,20 +674,25 @@ Contact the [repository issue tracker](https://github.com/HanselIdes/camunda-a2a
 These are contributor commands, not installation prerequisites. With the documented Docker/model prerequisites ready:
 
 ```sh
-python3 experiment-3/tests/runtime/verify.py
-cd experiment-3/tests && mvn -q test
+python3 experiment-3/tests/runtime/verify_client_agent.py
+cd experiment-3/tests && mvn -q -Dtest=CoreProtocolTest,CoreListingTest,TemplateShapeTest test
 ```
 
 The runtime verifier reserves available loopback ports and creates a unique per-run Compose project and random temporary
 credentials. It refuses to reuse existing project resources and cleans up only its own startup, including a partial
 startup failure. Docker rejects competing port claims rather than reusing another service.
 It creates a certificate and truststore with `openssl`/`keytool`, starts the pinned stack, deploys the
-committed resources, checks authentication/discovery, expected real-model results, verbatim numeric-leading continuation
-and six actual model-input character cases,
-and final BPMN client completion, verifies persisted variables exclude runtime credentials, then removes its containers.
+committed resources, checks authentication/discovery, explicit confirmation and same-task follow-up,
+the exact reconciliation result and final BPMN client completion. It scans untruncated persisted variables
+and owned engine/Connectors logs for the random password, API key and encoded Basic credential, then removes its containers.
 It does not stop or reuse unrelated clusters.
 Docker, Python 3, OpenSSL, a JDK/keytool and the already-running local Ollama model are required.
-`PROOF_AGENT_PROCESS=a2a-echo` selects the deterministic contract check without model inference.
+The older `verify.py` modes do not configure the native engine secret store or required public Card URL,
+and fail before provisioning on current resources. They are not current-package verification.
+The SDK/TCK, echo, reliability, operational, listing and failure commands below describe **historical
+tooling only**: use the whole [immutable package](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3)
+with its own resources and instructions to reproduce those earlier profiles. No fresh matrix or conformance
+pass is claimed for the native-secret package.
 Model-input diagnostics contain synthetic prompts only and are stored under ignored `experiment-3/reports/runtime`.
 `PROOF_REPORT_DIR` can select another report directory.
 Each native acceptance run requires a clean committed checkout and a new report directory; existing evidence
