@@ -96,7 +96,7 @@ or ad-hoc subprocesses generally.
 
 | Package / runtime | What you can and cannot do | Evidence |
 | --- | --- | --- |
-| Current compact client / engine and Connectors 8.10.2 | Run the supplied client, confirmation, server, polling, and result-review journey. | [Focused authenticated run](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/verification/9c43104/README.md), with local Ollama rather than a SaaS model. |
+| Current compact client / engine and Connectors 8.10.2 | Run the supplied client, confirmation, server, polling, and result-review journey. | [Focused authenticated run](https://github.com/HanselIdes/camunda-a2a/blob/main/experiment-3/verification/18e2a06/README.md), with local Ollama rather than a SaaS model. |
 | Current package / 8.9 | Cannot deploy and execute the compact client or complete demo as supplied. The revised server result mapping has no fresh 8.9 runtime validation. | Selected template requires `^8.10`; current runtime evidence is 8.10.2 only. |
 | [Pinned Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Use discovery, send/poll, explicit confirmation, and result review with the older client AI Agent Task and external feedback loop, not the current compact Sub-process v2 client. | [Source-pinned `69e77df` run](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); local Ollama, not a blanket 8.9 compatibility claim. |
 

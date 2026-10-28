@@ -1,0 +1,73 @@
+{
+  "targetCommit": "18e2a06652172c000245f489ed7d1c1ecb18c5b3",
+  "targetWorktreeDirty": false,
+  "verdict": "PASS",
+  "engineImage": "camunda/camunda:8.10.2",
+  "connectorsImage": "camunda/connectors-bundle:8.10.2",
+  "elasticsearchImage": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+  "llmValidationOverride": "Local Ollama; shipping Camunda-provided secret references unchanged",
+  "checks": [
+    "authenticated 8.10 deployment of the seven BPMN/DMN/form resources",
+    "native engine secret references reported for whole values, context leaves and URL concatenation",
+    "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, response-derived task/context identity, final result preparation, legacy/current server evidence and explicit card URL configuration errors",
+    "integrated direct HTTPS Agent Card and authenticated endpoint rejection",
+    "random engine password, A2A API key and Basic credential absent from untruncated persisted variables",
+    "random engine password, A2A API key and Basic credential absent from owned engine/Connectors logs",
+    "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, followed up, polled the same task and reviewed the exact server-agent artifact"
+  ],
+  "serverTaskId": "01a18420-9b31-7a59-b8ae-4a65d1ebe27b",
+  "serverTaskState": "TASK_STATE_COMPLETED",
+  "artifact": {
+    "merchant": "Northwind Electronics",
+    "currency": "USD",
+    "chargeAmounts": [
+      49.95,
+      49.95
+    ],
+    "expectedAmount": 49.95,
+    "paidAmount": 99.9,
+    "overchargeAmount": 49.95,
+    "matchingAmounts": true,
+    "recommendation": "REQUEST_HUMAN_REVIEW",
+    "syntheticOnly": true
+  },
+  "clientProcessState": "COMPLETED",
+  "clientToolCalls": [
+    "DiscoverAgentCard",
+    "SendA2AMessage",
+    "GetA2ATask",
+    "AskClientForInput",
+    "SendA2AMessage",
+    "GetA2ATask"
+  ],
+  "assertedBehavior": {
+    "clientRequestedExplicitConfirmation": true,
+    "initialUserMessageContainsStructuredClaim": false,
+    "confirmedFollowUpStructuredClaimParts": 1,
+    "followUpReusedInitialTaskAndContext": true,
+    "pollObservedSameTaskCompleted": true
+  },
+  "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
+  "secretResolution": {
+    "syntax": "camunda.secrets",
+    "store": "disposable engine default file store",
+    "secretNames": [
+      "A2A_AGENT_CARD_URL",
+      "A2A_AGENT_PROCESS",
+      "A2A_API_KEY",
+      "A2A_RPC_URL",
+      "CAMUNDA_PROVIDED_LLM_API_ENDPOINT",
+      "CAMUNDA_PROVIDED_LLM_API_KEY",
+      "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL",
+      "ENGINE_PASSWORD",
+      "ENGINE_URL",
+      "ENGINE_USERNAME"
+    ],
+    "persistedCredentialLeakCheck": "PASS",
+    "runtimeLogCredentialLeakCheck": "PASS"
+  },
+  "sourceAfter": {
+    "targetCommit": "18e2a06652172c000245f489ed7d1c1ecb18c5b3",
+    "targetWorktreeDirty": false
+  }
+}

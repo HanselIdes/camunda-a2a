@@ -1,0 +1,163 @@
+{
+  "runtimeSourceCommit": "18e2a06652172c000245f489ed7d1c1ecb18c5b3",
+  "sourceWithHistoricalVerifierGuard": "a534328b64d20c6f065f455ad5697d4bb53bb226",
+  "baseCommit": "58091bffe2a078d3f72b98fdb7c8d6b40b254d18",
+  "sourceAssetsUnchangedSinceRuntime": true,
+  "localModel": {
+    "name": "qwen3-coder-30b-64k:latest",
+    "ollamaDigest": "13cd851c8a123721a1b448f47d94733d63966757363e002dae4a0ef8a0eb9253"
+  },
+  "checks": {
+    "generation": "PASS",
+    "resourceTests": 17,
+    "importResources": 13,
+    "layoutChecks": 18,
+    "pythonTests": 15,
+    "pythonSuites": [
+      "test_verifier_preflight",
+      "test_confirmations",
+      "test_failures",
+      "test_conformance",
+      "test_observations"
+    ],
+    "formsSchemaValid": 3,
+    "bpmnOfficialXsdValid": 4,
+    "bpmnCliLintErrors": 0,
+    "bpmnCliLintWarnings": 0,
+    "legacySecretWarnings": 0,
+    "mavenSuites": [
+      {
+        "name": "dev.hansel.a2a.three.CoreListingTest",
+        "tests": "7",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.hansel.a2a.three.CoreProtocolTest",
+        "tests": "21",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "dev.hansel.a2a.three.TemplateShapeTest",
+        "tests": "10",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0"
+      }
+    ]
+  },
+  "modeler": {
+    "version": "5.52.0",
+    "isolatedProfiles": true,
+    "shippingProfileDiagramsInspected": 4,
+    "errors": 0,
+    "warnings": 0,
+    "legacySecretWarnings": 0,
+    "basicTemplateUpdateInfoMessages": 6,
+    "publicUrlEditableAndSaved": true,
+    "nonHttpsRejected": true,
+    "noLintSuppression": true,
+    "allFourFinalHeaderSourceSnapshots": true
+  },
+  "nativeSecretMechanism": {
+    "engine": "8.10.2",
+    "connectorsSource": "b490d065b59ffe4788319609dbe41deb25e68e3f",
+    "store": "default file store",
+    "wholeContextAndConcat": "PASS",
+    "localWebhookResponseSupportsSecrets": false,
+    "publicRpcUrl": "explicit required HTTPS property exactly matching client A2A_RPC_URL",
+    "credentialHeader": "X-Api-Key",
+    "secretName": "A2A_API_KEY",
+    "customEndpointTemplateVersion": 2
+  },
+  "clientTemplate": {
+    "id": "io.camunda.connectors.agenticai.ai-agent-subprocess.v2",
+    "version": 1,
+    "engineConstraint": "^8.10",
+    "taskType": "io.camunda.agenticai:aiagent:subprocess:2",
+    "upstreamCommit": "b490d065b59ffe4788319609dbe41deb25e68e3f",
+    "upstreamPath": "connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json",
+    "appliedWith": "c8ctl element-template apply",
+    "hostElementType": "bpmn:adHocSubProcess",
+    "hostElementId": "ClientAgent",
+    "outputSource": "=agent",
+    "outputTarget": "clientAgent",
+    "internalContextVariable": "agentContext",
+    "toolResultObjectPath": "content[item.type = \"object\"][1].content",
+    "maxModelCalls": 8,
+    "contextWindowSize": 20
+  },
+  "serverTemplate": {
+    "id": "io.camunda.connectors.agenticai.aiagent.jobworker.v1",
+    "version": 5,
+    "upstreamCommit": "844cb028a43e2a15d31f5a49e6cb0a9961c0f208",
+    "evidenceMappingAcceptsLegacyObjectAndStructuredObjectBlock": true,
+    "bothEvidenceShapesEvaluatedOnNative810Engine": true,
+    "fresh89Runtime": false
+  },
+  "restTemplate": {
+    "id": "io.camunda.connectors.HttpJson.v2",
+    "version": 13,
+    "upstreamCommit": "b490d065b59ffe4788319609dbe41deb25e68e3f",
+    "unchangedFromBaseline": true
+  },
+  "sourceSha256": {
+    "blueprint/demo/01-client-agent.bpmn": "a03ef8a60de5558cafbaf7cbc364878fd2b54a65ecfb45145566674e6282c192",
+    "blueprint/profiles/basic/02-a2a-server.bpmn": "ee5f7102b7ca98531b1483f4d58b087d7c99760acce1436e87597145717abbde",
+    "blueprint/demo/03-server-agent-card-dispute.bpmn": "09924aa27be9ecbd7b53cc176c7d512283e8f22e163ea8ae9c46a3098a39dea7",
+    "blueprint/demo/04-client-agent-ask.form": "188c864d4d66440089a8ebc737f495874497b61ed6331b5905aad26608869302",
+    "blueprint/demo/05-client-agent-confirm.form": "0699f71fc78aee3badd5708ecb617f854ddadf956400b5801fa387f37c965e6e",
+    "blueprint/demo/06-client-agent-result.form": "5fc2c5f2918343e988a8fdad24ef1ccb48d526bc120b7ddfd98bd31cbb4c1e69",
+    "blueprint/demo/07-server-request-validation.dmn": "af895dfbe324051e61fb8a6bf4d03fcc97ec4c9a357704bd871c89c6cd877a81",
+    "blueprint/templates/08-server-a2a-rpc-endpoint.json": "3c0ed824c7e869e0413ae47c0c90fb480747373052acc01fdd5d2cb3a6ec066e",
+    "blueprint/templates/09-server-agent-card-endpoint.json": "a8a64e6a8da01f90887db5f33cbcaf0bf7049cb5580525b8f1c1d90ad5ea4d25",
+    "blueprint/templates/10-server-http-json-v13.json": "e9cf10e73402c69ae66ded182932718ca9ef0f9ba4e6599cdb5a460f0b4510e8",
+    "blueprint/profiles/oauth/02-a2a-server.bpmn": "e6ebe720c79b020d34096a882e7e80c60c673e59f35da2bd444a00b73fe47489"
+  },
+  "manifest": [
+    "blueprint/demo/01-client-agent.bpmn",
+    "blueprint/profiles/basic/02-a2a-server.bpmn",
+    "blueprint/demo/03-server-agent-card-dispute.bpmn",
+    "blueprint/demo/04-client-agent-ask.form",
+    "blueprint/demo/05-client-agent-confirm.form",
+    "blueprint/demo/06-client-agent-result.form",
+    "blueprint/demo/07-server-request-validation.dmn",
+    "blueprint/templates/08-server-a2a-rpc-endpoint.json",
+    "blueprint/templates/09-server-agent-card-endpoint.json",
+    "blueprint/templates/10-server-http-json-v13.json",
+    "blueprint/demo/README.md",
+    "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json",
+    "https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json"
+  ],
+  "precedingAttempts": [
+    {
+      "report": "failed-native-card.json",
+      "verdict": "FAIL"
+    },
+    {
+      "report": "failed-deployment-namespace.json",
+      "verdict": "FAIL"
+    },
+    {
+      "report": "failed-runtime-log-check.json",
+      "verdict": "FAIL"
+    },
+    {
+      "report": "failed-model-early-completion.json",
+      "verdict": "FAIL"
+    }
+  ],
+  "qualification": {
+    "modelDecisions": "one same-source early completion failed; unchanged repeat passed",
+    "leakScanScope": "untruncated persisted variables and owned engine/Connectors logs through completion; random password, API key and encoded Basic credential",
+    "historicalMatrixModes": "fail early on current resources; preflight verified",
+    "saasModelExecution": "UNVERIFIED",
+    "otherVersionPairs": "UNVERIFIED",
+    "fullA2AConformance": "NOT_RUN",
+    "marketplaceEligibility": "NOT_ESTABLISHED",
+    "fullMavenAndPythonSuites": "NOT_RUN"
+  }
+}

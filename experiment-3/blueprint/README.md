@@ -32,11 +32,13 @@ determination, financial integration, or custom HTTP server is included.
 The complete demo now requires **Camunda 8.10 and Connectors 8.10 or later** because the selected client
 Sub-process template has engine constraint `^8.10`. The focused verification profile is engine 8.10.2,
 stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
-The [focused authenticated 8.10.2 run](../verification/9c43104/README.md) passed on clean
-source `9c43104`, including actual-model confirmation, same-task follow-up, and result review.
+The [focused authenticated 8.10.2 run](../verification/18e2a06/README.md) passed on clean
+source `18e2a06`, including native secrets, redacted-header authentication, actual-model confirmation,
+same-task follow-up, result review, and bounded credential scans.
 The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
 [`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
-The protocol is unchanged. The server's result mapping accepts both legacy object results and 8.10
+The protocol lifecycle remains, with native secret mappings and the current `X-Api-Key` contract.
+The server's result mapping accepts both legacy object results and 8.10
 structured content blocks without changing its v5 connector variant. Earlier source-pinned
 8.9 evidence remains historical server evidence, not a fresh run of these mappings or support for the
 complete current demo on 8.9.
@@ -58,7 +60,7 @@ BPMN, AI agents, or all ad-hoc subprocess implementations.
 
 | Package / runtime | What works or is unavailable | Evidence |
 | --- | --- | --- |
-| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/9c43104/README.md). |
+| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/18e2a06/README.md). |
 | Current package / 8.9 | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only. |
 | [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client. | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
 
