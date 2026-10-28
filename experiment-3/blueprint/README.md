@@ -30,7 +30,8 @@ determination, financial integration, or custom HTTP server is included.
 
 The candidate targets **Camunda 8.9.26 with stock Connectors 8.9.17** and Elasticsearch 8.19.23.
 The focused client-agent E2E passed on clean source commit
-[`d4f92c1`](../verification/d4f92c1/README.md). This is a specific validation profile, not a blanket
+[`69e77df`](../verification/69e77df/README.md), with the current numbering and REST v13 mappings.
+That record also includes server-agent icon checks in Modeler. This is a specific validation profile, not a blanket
 claim for every 8.9+ combination.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
