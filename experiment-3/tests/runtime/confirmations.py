@@ -66,6 +66,60 @@ def assert_no_arithmetic(agent):
                                    ("paidAmount", "overchargeAmount", "chargeAmounts")), result
 
 
+def client_history_checks(root, request):
+    model = ET.parse(root / "blueprint/demo/01-client-agent.bpmn").getroot()
+    namespace = "{http://camunda.org/schema/zeebe/1.0}"
+
+    def body(element):
+        task = next(node for node in model.iter() if node.get("id") == element)
+        return next(node.get("source") for node in task.iter(namespace + "input")
+                    if node.get("target") == "body")
+
+    def evaluate(expression, variables):
+        status, response = request("/v2/expression/evaluation",
+                                   {"expression": expression, "variables": variables})
+        assert status == 200, (status, response)
+        response = json.loads(response)
+        assert not response.get("warnings"), response
+        return response["result"]
+
+    send = body("SendA2AMessage").replace(
+        'fromAi(toolCall.text, "The user\'s request or follow-up text", "string")',
+        '"Synthetic request"',
+    )
+    assert "fromAi(" not in send
+    task = {"id": "response-task", "contextId": "response-context",
+            "status": {"state": "TASK_STATE_COMPLETED"}}
+    messages = []
+    context = {"conversation": {"messages": messages}}
+    initial = evaluate(send, {"agentContext": context})["params"]["message"]
+    assert "taskId" not in initial and "contextId" not in initial, initial
+    assert initial["parts"] == [{"text": "Synthetic request"}], initial
+
+    def record(name, content):
+        messages.append({"role": "tool_call_result", "results": [{
+            "name": name, "content": [{"type": "object", "content": content}],
+        }]})
+
+    record("SendA2AMessage", {"result": {"task": task}})
+    unconfirmed = evaluate(send, {"agentContext": context})["params"]["message"]
+    assert unconfirmed["taskId"] == task["id"], unconfirmed
+    assert unconfirmed["contextId"] == task["contextId"], unconfirmed
+    assert unconfirmed["parts"] == [{"text": "Synthetic request"}], unconfirmed
+    record("AskClientForInput", {"text": "Confirmed", "syntheticClaim": CLAIM})
+    confirmed = evaluate(send, {"agentContext": context})["params"]["message"]
+    assert confirmed["parts"] == [{"text": "Synthetic request"}, data_part()], confirmed
+    assert confirmed["taskId"] == task["id"] and confirmed["contextId"] == task["contextId"]
+    poll = evaluate(body("GetA2ATask"), {"agentContext": context})
+    assert poll["params"] == {"id": task["id"]}, poll
+
+    record("GetA2ATask", {"result": task})
+    prepare = next(node for node in model.iter() if node.get("id") == "PrepareClientResult")
+    expression = next(prepare.iter(namespace + "script")).get("expression")
+    text = evaluate(expression, {"clientAgent": {"context": context, "responseText": "Reviewed"}})
+    assert "Reviewed" in text and "TASK_STATE_COMPLETED" in text, text
+
+
 def run(root, reports, rpc, request, await_task):
     records = []
     report = reports / "confirmation-checks.json"

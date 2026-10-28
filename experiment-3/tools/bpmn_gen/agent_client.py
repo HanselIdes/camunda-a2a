@@ -39,15 +39,12 @@ flatten(
     return message.results[item.name = "AskClientForInput"]
   )]
   return if count(records) > 0 then
-    if records[count(records)].content instance of context then
-      if records[count(records)].content.toolCallResult instance of context then
-        if records[count(records)].content.toolCallResult.syntheticClaim instance of context then
-          [{data: {syntheticClaim: records[count(records)].content.toolCallResult.syntheticClaim}}]
-        else []
-      else if records[count(records)].content.syntheticClaim instance of context then
-        [{data: {syntheticClaim: records[count(records)].content.syntheticClaim}}]
-      else []
-    else []
+    (for content in [records[count(records)].content[item.type = "object"][1].content]
+     return for result in [if content.toolCallResult instance of context
+                           then content.toolCallResult else content]
+     return if result.syntheticClaim instance of context then
+       [{data: {syntheticClaim: result.syntheticClaim}}]
+     else [])[1][1]
   else []
 )
 """
@@ -57,7 +54,7 @@ PREVIOUS_A2A_TASK_PARAMS = """
   for message in agentContext.conversation.messages[item.role = "tool_call_result"]
   return message.results[item.name = "SendA2AMessage"]
 )] return if count(records) > 0 then
-  (for content in [records[count(records)].content] return
+  (for content in [records[count(records)].content[item.type = "object"][1].content] return
     for response in [if content instance of context and content.toolCallResult instance of context
                      then content.toolCallResult else content] return
       for result in [if response instance of context then response.result else null] return
@@ -126,7 +123,8 @@ def build():
           for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
           return message.results[item.name = "GetA2ATask"]
           )] return
-          for content in [if count(polls) > 0 then polls[count(polls)].content else null] return
+          for content in [if count(polls) > 0 then
+            polls[count(polls)].content[item.type = "object"][1].content else null] return
           for body in [if content instance of context and content.toolCallResult instance of context
                        then content.toolCallResult else content] return
           for response in [if body instance of context then body.result else null] return

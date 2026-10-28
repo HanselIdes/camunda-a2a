@@ -63,6 +63,8 @@ The client language model selects tools; the following is an intended journey, n
 Every root tool returns a meaningful `toolCallResult`. During execution the connector maintains
 `agentContext`; the completed response maps from the connector's local `agent` variable to `clientAgent`,
 including its conversation context for result preparation. The model-call limit remains eight.
+The 8.10 conversation stores each tool result as structured content blocks; the client reads the
+`object` block's `content` for confirmation, task identity, and final task-state review.
 The bundled `SendA2AMessage` tool has no model-supplied claim parameter: it adds a structured data part only from the
 `AskClientForInput` form result. Follow-ups also reuse the task and context IDs returned by the first send instead
 of accepting IDs from the model. `GetA2ATask` likewise polls the ID returned by that send. Values in the initial

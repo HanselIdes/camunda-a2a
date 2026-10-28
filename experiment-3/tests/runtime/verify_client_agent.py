@@ -13,6 +13,7 @@ import urllib.error
 import urllib.request
 
 from conformance import source_snapshot
+from confirmations import client_history_checks
 from isolation import IsolatedCompose
 from observations import read_root_variable
 
@@ -139,6 +140,10 @@ def client_results(agent):
 
 def result_body(result):
     content = result.get("content")
+    if not (isinstance(content, list) and len(content) == 1
+            and content[0].get("type") == "object"):
+        raise AssertionError(f"Tool {result.get('name')} did not return one object content block")
+    content = content[0]["content"]
     if isinstance(content, str):
         content = json.loads(content)
     if isinstance(content, dict) and "toolCallResult" in content:
@@ -205,6 +210,11 @@ try:
         detail = error.read().decode()
         raise RuntimeError(f"Authenticated deployment failed with HTTP {error.code}: {detail}") from error
     report["checks"].append("authenticated 8.10 deployment of the seven BPMN/DMN/form resources")
+    client_history_checks(ROOT, engine_request)
+    report["checks"].append(
+        "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
+        "response-derived task/context identity and final result preparation"
+    )
 
     expected_card_url = (
         "https://host.docker.internal:" + env["PROOF_CONNECTORS_PORT"] + "/inbound/a2a"
@@ -277,6 +287,13 @@ try:
         )
         if review_task:
             break
+        status, response = engine_request(
+            "/v2/incidents/search", {"filter": {"processInstanceKey": client_key}}
+        )
+        assert status == 200, (status, response)
+        incidents = json.loads(response)["items"]
+        if incidents:
+            raise AssertionError("Client agent incident: " + json.dumps(incidents))
         if time.monotonic() >= deadline:
             raise TimeoutError("Client agent did not reach result review within eight minutes")
         time.sleep(1)

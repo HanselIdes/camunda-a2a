@@ -38,6 +38,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("toolCall.contextId", send_body)
         self.assertIn("message: context merge([", send_body)
         self.assertIn("agentContext.conversation.messages", send_body)
+        self.assertIn('content[item.type = "object"][1].content', send_body)
         self.assertIn('message.results[item.name = "AskClientForInput"]', send_body)
         self.assertIn('message.results[item.name = "SendA2AMessage"]', send_body)
         self.assertIn("result.task.id", send_body)
@@ -49,11 +50,13 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("fromAi(toolCall.taskId", get_body)
         self.assertIn('message.results[item.name = "SendA2AMessage"]', get_body)
         self.assertIn("agentContext.conversation.messages", get_body)
+        self.assertIn('content[item.type = "object"][1].content', get_body)
         self.assertIn('get value(', get_body)
 
         prepare_result = next(e for e in root.iter() if e.get("id") == "PrepareClientResult")
         prepare_expression = next(e for e in prepare_result.iter(Z + "script")).get("expression")
         self.assertIn("clientAgent.context.conversation.messages", prepare_expression)
+        self.assertIn('content[item.type = "object"][1].content', prepare_expression)
         self.assertIn('message.results[item.name = "GetA2ATask"]', prepare_expression)
         self.assertNotIn("toolCallResults", prepare_expression)
 
