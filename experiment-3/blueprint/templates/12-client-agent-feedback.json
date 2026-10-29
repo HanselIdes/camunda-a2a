@@ -150,7 +150,7 @@
     {
       "id": "data.limits.maxModelCalls",
       "type": "Text",
-      "value": "=(if clientAgent.context.metrics.modelCalls instance of number then clientAgent.context.metrics.modelCalls else 0) + 8",
+      "value": "=(if agentContext.metrics.modelCalls instance of number then agentContext.metrics.modelCalls else 0) + 8",
       "binding": {
         "type": "zeebe:input",
         "name": "data.limits.maxModelCalls"
