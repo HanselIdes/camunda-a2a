@@ -3,8 +3,8 @@
   "processId": "a2a-client",
   "testCases": [
     {
-      "name": "Live E2E - confirm synthetic claim and review the response",
-      "description": "Runs the real client agent against the configured A2A server and reconciliation agent, supplies human confirmation, then accepts the reviewed response. Requires reachable deployed server processes and configured model/Connector secrets. Asserts client routing, not response wording, reconciliation correctness or A2A conformance.",
+      "name": "Live E2E - confirm, review and request another reconciliation",
+      "description": "Runs the real client and server agents, supplies human confirmation, requests one additional reconciliation after the first result, then accepts. Requires deployed server processes and configured model/Connector secrets. Asserts client routing, not response wording, reconciliation correctness or A2A conformance.",
       "instructions": [
         {
           "type": "CREATE_PROCESS_INSTANCE",
@@ -28,6 +28,16 @@
             "claimSecondAmount": 49.95,
             "claimExpectedAmount": 49.95,
             "claimSyntheticOnly": true
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "ReviewClientResult"
+          },
+          "variables": {
+            "clientSatisfied": "no",
+            "clientFeedback": "Please delegate one more reconciliation of the same human-confirmed synthetic claim to the remote agent. The previous task is complete, so send a new request using its returned context. Reuse my existing confirmation; do not ask for it again. Show the new remote result for review."
           }
         },
         {

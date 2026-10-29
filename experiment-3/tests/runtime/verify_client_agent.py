@@ -359,15 +359,42 @@ try:
         if isinstance(response_body.get("result"), dict):
             sent_tasks.append(task_from_rpc(response_body))
     assert sent_tasks, "Client agent did not send an A2A message that created or updated a task"
-    assert len({task["id"] for task in sent_tasks}) == 1, sent_tasks
+    assert len({task["id"] for task in sent_tasks}) == 2, sent_tasks
     assert len({task["contextId"] for task in sent_tasks}) == 1, sent_tasks
     task = next(
-        (value for value in reversed(sent_tasks)
-         if value["status"]["state"] == "TASK_STATE_COMPLETED"),
+        (value for value in sent_tasks
+         if value["id"] == sent_tasks[0]["id"]
+         and value["status"]["state"] == "TASK_STATE_COMPLETED"),
         None,
     )
     assert task is not None, f"Client subprocess did not return a completed A2A task: {sent_tasks}"
     assert task["id"] == sent_tasks[0]["id"], (task, sent_tasks)
+    feedback_task = sent_tasks[-1]
+    assert feedback_task["id"] != task["id"], (task, feedback_task)
+    assert feedback_task["status"]["state"] == "TASK_STATE_COMPLETED", feedback_task
+    reviews = [item for item in completed_tasks
+               if item["elementId"] == "ReviewClientResult" and item["state"] == "COMPLETED"]
+    assert len(reviews) == 2, reviews
+    status, response = engine_request(
+        "/v2/variables/search?truncateValues=false",
+        {"filter": {"processInstanceKey": client_key, "name": "data"}},
+    )
+    assert status == 200, (status, response)
+    budgets = sorted(json.loads(response)["items"], key=lambda item: int(item["scopeKey"]))
+    assert len(budgets) == 2, budgets
+    ceilings = [json.loads(item["value"])["limits"]["maxModelCalls"] for item in budgets]
+    first_scope = budgets[0]["scopeKey"]
+    status, response = engine_request(
+        "/v2/variables/search?truncateValues=false",
+        {"filter": {"processInstanceKey": client_key, "scopeKey": first_scope, "name": "agent"}},
+    )
+    assert status == 200, (status, response)
+    retained = json.loads(json.loads(response)["items"][0]["value"])["context"]
+    prior_calls = retained["metrics"]["modelCalls"]
+    assert retained["conversation"]["messages"], retained
+    assert ceilings == [8, prior_calls + 8] and prior_calls > 0, (ceilings, prior_calls)
+    final_calls = agent["context"]["metrics"]["modelCalls"]
+    assert prior_calls < final_calls <= ceilings[1], (prior_calls, final_calls, ceilings)
     user_messages = [
         message for message in task.get("history", [])
         if message.get("role") == "ROLE_USER"
@@ -401,6 +428,9 @@ try:
         "syntheticOnly": True,
     }
     assert artifact["parts"][0]["data"] == expected_artifact, artifact
+    feedback_artifact = next(
+        item for item in feedback_task.get("artifacts", []) if item["name"] == "reconciliation")
+    assert feedback_artifact["parts"][0]["data"] == expected_artifact, feedback_artifact
     assert "TASK_STATE_COMPLETED" in result_text, result_text
     credentials = (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], authorization)
     cursor = None
@@ -435,10 +465,18 @@ try:
         "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, "
         "continued the same task through its subprocess and reviewed the exact server-agent artifact"
     )
+    report["checks"].append(
+        "live user-feedback re-entry retained conversation and server context, created a new completed "
+        "task with the exact artifact and used a fresh eight-call allowance without resetting metrics"
+    )
     report.update({
         "verdict": "PASS",
         "serverTaskId": task["id"],
         "serverTaskState": task["status"]["state"],
+        "feedbackTaskId": feedback_task["id"],
+        "modelCallCeilings": ceilings,
+        "modelCallsBeforeFeedback": prior_calls,
+        "modelCallsAfterFeedback": final_calls,
         "artifact": expected_artifact,
         "clientProcessState": "COMPLETED",
         "clientToolCalls": tool_names,
