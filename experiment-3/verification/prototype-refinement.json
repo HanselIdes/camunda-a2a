@@ -51,6 +51,46 @@
         "Engine-evaluated poll-error mapping retains accepted task and context",
         "Conversation and cumulative metrics survive feedback re-entry"
       ]
+    },
+    {
+      "source": "0bcc1e7946030f595a24dfac00ea588586dfe95e",
+      "cleanSourceBeforeAndAfter": true,
+      "verdict": "PASS",
+      "runnerCommand": "cd experiment-3/tests && mvn -q -Dtest=BlueprintLiveScenarioIT test",
+      "verificationMode": "Repository verifier journey and postchecks executed on the existing authenticated leased runtime, without engine/model startup or cleanup",
+      "reuseAdaptations": [
+        "Excluded existing client instances using their frozen pre-run keys",
+        "Waited for the Connector to adopt the deployed Agent Card URL before verification"
+      ],
+      "scenario": "experiment-3/blueprint/demo/01-client-agent.integration.test.json",
+      "firstCompletedTask": "01a18777-46e5-7f0c-b0ff-56fc0ee646e7",
+      "feedbackCompletedTask": "01a18777-ba03-7cfb-8e7b-31cb742664fd",
+      "distinctTaskIds": true,
+      "sameServerContext": true,
+      "completedResultReviews": 2,
+      "modelCallCeilings": [8, 15],
+      "modelCallsAtFeedbackEntryDerivedFromMappedCeiling": 7,
+      "finalCumulativeModelCalls": 9,
+      "expectedArtifactForBothTasks": {
+        "merchant": "Northwind Electronics",
+        "currency": "USD",
+        "chargeAmounts": [49.95, 49.95],
+        "expectedAmount": 49.95,
+        "paidAmount": 99.9,
+        "overchargeAmount": 49.95,
+        "matchingAmounts": true,
+        "recommendation": "REQUEST_HUMAN_REVIEW",
+        "syntheticOnly": true
+      },
+      "additionalChecks": [
+        "Human confirmation precedes structured claim transmission",
+        "Missing and invalid shared API keys return HTTP 401",
+        "Native-secret engine references resolve through the existing file store",
+        "Credentials absent from untruncated persisted variables and owned runtime logs",
+        "Engine-evaluated poll-error recovery retains task identity and selects polling-only recovery",
+        "Conversation and cumulative metrics survive feedback re-entry",
+        "Final lean confirmation form and plain-language server clarification deployed"
+      ]
     }
   ],
   "otherChecks": [
@@ -73,13 +113,32 @@
       "scope": "Six server/tool JSON segments and deterministic feedback with actual mapped ceilings 8 then 16"
     },
     {
+      "sourceBasis": "3a92ab47cd279cc5a9dc06add32344f2acd7d8c2",
+      "cleanSourceBeforeAndAfter": false,
+      "command": "cd experiment-3/tests && mvn -q test",
+      "tests": 198,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Default suite including repeated polling-error recovery; ran before the optional free-text adjustment, while additive commits were being prepared"
+    },
+    {
+      "source": "0bcc1e7946030f595a24dfac00ea588586dfe95e",
+      "command": "cd experiment-3/tests && mvn -q -Dtest=BlueprintClientTest,BlueprintScenariosTest test",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Six server/tool JSON segments, feedback ceilings 8 then 16, repeated polling errors with exactly one send, and confirmation without optional free text"
+    },
+    {
       "command": "python3 -m unittest discover -s experiment-3/tools -p 'test_*.py'",
       "tests": 28,
       "verdict": "PASS"
     },
     {
       "command": "python3 -m unittest discover -s experiment-3/tests/runtime -p 'test_*.py'",
-      "tests": 44,
+      "tests": 45,
       "verdict": "PASS"
     },
     {
@@ -103,12 +162,14 @@
     {"source": "98efac0", "reason": "Null-context entry warnings"},
     {"source": "f73618b", "reason": "Journey passed, final source-freeze assertion failed on Finder metadata"},
     {"source": "c01723b", "reason": "Repeated JSON finished, verifier queried an absent scoped agent variable"},
-    {"source": "963747b", "reason": "Repeated JSON finished, but actual ceilings were [8,8] under combined input mappings"}
+    {"source": "963747b", "reason": "Repeated JSON finished, but actual ceilings were [8,8] under combined input mappings"},
+    {"source": "0bcc1e7", "reason": "Initial reuse attempt stopped before model execution because the Connector briefly served the previous placeholder Agent Card after deployment; readiness waiting corrected in the session runner"}
   ],
   "unverifiedOrExcluded": [
     "Fresh 8.9 execution: A2A templates target 8.9; full supplied AI demo requires 8.10",
     "SaaS execution and Camunda-provided model",
     "Browser-based Hub Test Studio execution",
+    "Long-conversation retention beyond the configured 20-message context window",
     "Fresh TCK conformance",
     "Optional ollama-tagged Maven profile",
     "OAuth, push, streaming, standard-path ingress and broad version matrices",

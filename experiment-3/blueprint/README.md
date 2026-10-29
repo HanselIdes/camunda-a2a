@@ -9,16 +9,18 @@ current numbered candidate. Do not use prior Desktop/Hub, TCK, or model runs as 
 assets. Marketplace import and external licensing/eligibility approval are separate deferred release
 gates, not prototype acceptance. SaaS runtime and Camunda-provided model execution are unverified.
 
-**Current focused verification:** source `6a0247a` passed the authenticated, two-review live JSON journey on
+**Current focused verification:** source `0bcc1e7` passed the authenticated, two-review live JSON journey on
 engine 8.10.2, Connectors 8.10.0 and Elasticsearch 8.19.23 using the authorized local Ollama override.
 The official CPT 8.10.4 runner executed the shipped integration scenario; additional checks verified
 confirmation provenance, same-task follow-up, exact reconciliation evidence, authentication and credential absence.
 After the first terminal task, user feedback created a new completed task in the same server context.
-The model-call ceilings were 8 then 14, with cumulative calls increasing from 6 to 8.
+The model-call ceilings were 8 then 15, with cumulative calls increasing from 7 to 9.
 The [minimal sanitized report](../verification/prototype-refinement.json) retains exact sources,
 commands, prior failures and exclusions, including the earlier single-review pass on `269a61c`.
 This is not a browser-based Hub Test Studio run, SaaS verification, or a fresh TCK run.
-The default Maven suite passed 197 tests; the seven affected client/server/tool tests also passed after regeneration.
+The default Maven suite passed 198 tests before the optional free-text adjustment; source-specific checks are listed in the report.
+The nine affected client/server/tool tests passed on `0bcc1e7`, including optional text and polling-error recovery.
+Long-conversation retention beyond the configured 20-message context window remains unverified.
 
 **Earlier 8.9 input-only repair: overall FAIL.** Exact model-input preservation passes, but incomplete
 leading-equals JSON input caused the real model to invent reconciliation fields and the demo to

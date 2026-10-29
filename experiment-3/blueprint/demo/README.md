@@ -95,15 +95,17 @@ including the interrupting `a2a-cancel` hook correlated by `task.id`. See the [e
 ## Prerequisites
 
 The complete client/server demo requires **8.10 for both engine and Connectors**:
-the client Sub-process template has engine constraint `^8.10`. Source `6a0247a` passed the revised
+the client Sub-process template has engine constraint `^8.10`. Source `0bcc1e7` passed the revised
 live JSON scenario on engine 8.10.2, stock Connectors 8.10.0 and Elasticsearch 8.19.23.
 It used local Ollama, not Camunda-provided model access. The official CPT 8.10.4 runner executed the
 scenario, not Web Modeler's browser UI. The six server/tool JSON segments and deterministic
 client feedback/context test also passed. The live scenario rejected one result, created a new
-completed task in the same server context, then accepted it. Model-call ceilings were 8 then 14;
-cumulative calls increased from 6 to 8. The full default Maven suite passed 197 tests.
+completed task in the same server context, then accepted it. Model-call ceilings were 8 then 15;
+cumulative calls increased from 7 to 9. The full default Maven suite passed 198 tests before the optional free-text adjustment.
+The nine affected client/server/tool tests passed on `0bcc1e7`, including confirmation without optional text.
 See `prototype-refinement.json` in the [verification records](https://github.com/HanselIdes/camunda-a2a/tree/main/experiment-3/verification)
 for exact command attribution, prior failures and exclusions.
+Long-conversation retention beyond the configured 20-message context window remains unverified.
 Earlier 8.9.26 / Connectors 8.9.17 evidence applies only to its pinned earlier source, not this client
 or the server's revised result mapping. The server still uses the v5 connector and accepts both legacy
 object results and 8.10 structured content blocks. Camunda-provided model execution and other version pairs remain unverified.
@@ -120,7 +122,7 @@ or ad-hoc subprocesses generally.
 
 | Package / runtime                                                                                                                                                                              | What you can and cannot do                                                                                                                                                        | Evidence                                                                                                                                                                                                                 |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Current client / engine 8.10.2 and Connectors 8.10.0                                                                                                                                           | Client host, confirmation, nested send/poll, same-task follow-up and live user-feedback re-entry passed.                                                                          | Source `6a0247a`, official CPT 8.10.4 JSON runner with local Ollama; new task in the same context and fresh per-turn model allowance verified.                                                                           |
+| Current client / engine 8.10.2 and Connectors 8.10.0                                                                                                                                           | Client host, confirmation, nested send/poll, same-task follow-up and live user-feedback re-entry passed.                                                                          | Source `0bcc1e7`, official CPT 8.10.4 JSON runner with local Ollama; new task in the same context and fresh per-turn model allowance verified.                                                                           |
 | Current package / 8.9                                                                                                                                                                          | Cannot deploy and execute the client or complete demo as supplied. Custom templates target 8.9, but their current 8.9 runtime behavior is unverified.                             | Selected AI host requires `^8.10`; a custom template's `^8.9` constraint is not execution evidence.                                                                                                                      |
 | [Pinned Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Use discovery, send/poll, explicit confirmation, and result review with the older client AI Agent Task and external feedback loop, not the current compact Sub-process v2 client. | [Source-pinned `69e77df` run](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); local Ollama, not a blanket 8.9 compatibility claim. |
 
