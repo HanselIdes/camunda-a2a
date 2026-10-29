@@ -19,6 +19,10 @@ PATHS = (
     "blueprint/templates/08-server-a2a-rpc-endpoint.json",
     "blueprint/templates/09-server-agent-card-endpoint.json",
     "blueprint/templates/10-server-http-json-v13.json",
+    "blueprint/templates/11-client-a2a.json",
+    "blueprint/demo/01-client-agent.integration.test.json",
+    "blueprint/profiles/basic/02-a2a-server.test.json",
+    "blueprint/demo/03-server-agent-card-dispute.test.json",
     "blueprint/demo/README.md",
 )
 AI_URL = ("https://raw.githubusercontent.com/camunda/connectors/"
@@ -40,6 +44,7 @@ def check(resources=None):
     if len(set(names)) != len(names):
         raise ValueError("Import resources have duplicate flattened filenames")
     models, templates, forms, processes, decisions = [], set(EXTERNAL_TEMPLATES), set(), set(), set()
+    scenarios = []
     for path, content in resources.items():
         if path.endswith(".bpmn"):
             root = ET.fromstring(content)
@@ -54,9 +59,16 @@ def check(resources=None):
             data = json.loads(content)
             if path.endswith(".form"):
                 forms.add(data["id"])
+            elif path.endswith(".test.json"):
+                scenarios.append((path, data))
             else:
                 templates.add((data["id"], str(data["version"])))
     errors = []
+    for path, data in scenarios:
+        if data.get("processId") not in processes:
+            errors.append(f"{path}: unresolved scenario processId {data.get('processId')}")
+        if not isinstance(data.get("testCases"), list) or not data["testCases"]:
+            errors.append(f"{path}: missing Web Modeler test cases")
     for path, root in models:
         for element in root.iter():
             template = element.get(f"{{{Z}}}modelerTemplate")

@@ -530,7 +530,7 @@ class CoreProtocolTest {
     final var result = client.newCreateInstanceCommand().bpmnProcessId("a2a-literal-prompt").latestVersion()
         .variables(Map.of("request", Map.of("headers", headers, "body", body)))
         .withResult().fetchVariables("mapped").send().join().getVariablesAsMap().get("mapped");
-    assertThat(result).isEqualTo(Map.of("rpc", body, "hdr",
+    assertThat(result).isEqualTo(Map.of("rpc", body, "pushEnabled", false, "hdr",
         Map.of("content-type", "application/a2a+json", "a2a-version", "1.0")));
     assertThat(result.toString()).doesNotContain("MUST-NOT-PERSIST");
   }

@@ -1,13 +1,40 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_a2a_client" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="Definitions_A2AClientConversation" targetNamespace="http://bpmn.io/schema/bpmn" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.10.0">
+  <bpmn:collaboration id="A2AClientConversation">
+    <bpmn:participant id="Pool_a2a-client" name="A2A client agent" processRef="a2a-client" />
+  </bpmn:collaboration>
   <bpmn:process id="a2a-client" name="01 Client Agent - Ask the Server" isExecutable="true">
     <bpmn:startEvent id="QuestionAsked" name="Client request received">
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="a2a-client-ask" />
       </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_QuestionAsked_ClientAgent</bpmn:outgoing>
+      <bpmn:outgoing>Flow_QuestionAsked_DiscoverAgentCard</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:adHocSubProcess id="ClientAgent" name="Coordinate with the A2A server" zeebe:modelerTemplate="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
+    <bpmn:serviceTask id="DiscoverAgentCard" name="Fetch remote agent card" zeebe:modelerTemplate="dev.hansel.a2a.client.v1" zeebe:modelerTemplateVersion="3" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMTguNSIgdmlld0JveD0iMyA5IDMwIDE4LjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTguNyAxNC43MjVDOC41MTY2NyAxNC45MDgzIDguMjgzMzMgMTUgOCAxNUM3LjcxNjY3IDE1IDcuNDc1IDE0LjkwODMgNy4yNzUgMTQuNzI1QzcuMDkxNjcgMTQuNTI1IDcgMTQuMjgzMyA3IDE0QzcgMTMuNzE2NyA3LjA5MTY3IDEzLjQ4MzMgNy4yNzUgMTMuM0M3LjQ3NSAxMy4xIDcuNzE2NjcgMTMgOCAxM0M4LjI4MzMzIDEzIDguNTE2NjcgMTMuMSA4LjcgMTMuM0M4LjkgMTMuNDgzMyA5IDEzLjcxNjcgOSAxNEM5IDE0LjI4MzMgOC45IDE0LjUyNSA4LjcgMTQuNzI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBkPSJNMTQuNyAxNC43MjVDMTQuNTE2NyAxNC45MDgzIDE0LjI4MzMgMTUgMTQgMTVDMTMuNzE2NyAxNSAxMy40NzUgMTQuOTA4MyAxMy4yNzUgMTQuNzI1QzEzLjA5MTcgMTQuNTI1IDEzIDE0LjI4MzMgMTMgMTRDMTMgMTMuNzE2NyAxMy4wOTE3IDEzLjQ4MzMgMTMuMjc1IDEzLjNDMTMuNDc1IDEzLjEgMTMuNzE2NyAxMyAxNCAxM0MxNC4yODMzIDEzIDE0LjUxNjcgMTMuMSAxNC43IDEzLjNDMTQuOSAxMy40ODMzIDE1IDEzLjcxNjcgMTUgMTRDMTUgMTQuMjgzMyAxNC45IDE0LjUyNSAxNC43IDE0LjcyNVoiIGZpbGw9ImJsYWNrIi8+CiAgPHBhdGggZD0iTTIyLjcgMTQuNzI1QzIyLjUxNjcgMTQuOTA4MyAyMi4yODMzIDE1IDIyIDE1QzIxLjcxNjcgMTUgMjEuNDc1IDE0LjkwODMgMjEuMjc1IDE0LjcyNUMyMS4wOTE3IDE0LjUyNSAyMSAxNC4yODMzIDIxIDE0QzIxIDEzLjcxNjcgMjEuMDkxNyAxMy40ODMzIDIxLjI3NSAxMy4zQzIxLjQ3NSAxMy4xIDIxLjcxNjcgMTMgMjIgMTNDMjIuMjgzMyAxMyAyMi41MTY3IDEzLjEgMjIuNyAxMy4zQzIyLjkgMTMuNDgzMyAyMyAxMy43MTY3IDIzIDE0QzIzIDE0LjI4MzMgMjIuOSAxNC41MjUgMjIuNyAxNC43MjVaIiBmaWxsPSJibGFjayIvPgogIDxwYXRoIGQ9Ik0yOC43IDE0LjcyNUMyOC41MTY3IDE0LjkwODMgMjguMjgzMyAxNSAyOCAxNUMyNy43MTY3IDE1IDI3LjQ3NSAxNC45MDgzIDI3LjI3NSAxNC43MjVDMjcuMDkxNyAxNC41MjUgMjcgMTQuMjgzMyAyNyAxNEMyNyAxMy43MTY3IDI3LjA5MTcgMTMuNDgzMyAyNy4yNzUgMTMuM0MyNy40NzUgMTMuMSAyNy43MTY3IDEzIDI4IDEzQzI4LjI4MzMgMTMgMjguNTE2NyAxMy4xIDI4LjcgMTMuM0MyOC45IDEzLjQ4MzMgMjkgMTMuNzE2NyAyOSAxNEMyOSAxNC4yODMzIDI4LjkgMTQuNTI1IDI4LjcgMTQuNzI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTUgMTRDNSAxMi4zNDMxIDYuMzQzMTUgMTEgOCAxMUgxNEMxNC43NzYgMTEgMTUuMjg0IDExLjE1MzcgMTUuNjQgMTEuMzgxOEMxNS44NTg5IDEwLjc5NCAxNi4xNTE3IDEwLjE3MDkgMTYuNTU1IDkuNTk3OTVDMTUuODc5NyA5LjIxMTUzIDE1LjAzODYgOSAxNCA5SDhDNS4yMzg1OCA5IDMgMTEuMjM4NiAzIDE0QzMgMTYuNzYxMiA1LjIzNzU5IDE5IDcuOTk5MjYgMTlIMTRDMTUuNzYzNCAxOSAxNi45NTczIDE4LjM5MDIgMTcuNzM3NSAxNy4zNUMxOC40MjI4IDE2LjQzNjMgMTguNzE0OCAxNS4yNjYgMTguOTQ4MyAxNC4zMjk5TDE4Ljk3MDEgMTQuMjQyNUMxOS4yMzI3IDEzLjE5MjQgMTkuNDQ0MiAxMi40MDc3IDE5Ljg2MjUgMTEuODVDMjAuMjA3MyAxMS4zOTAyIDIwLjc2MzQgMTEgMjIgMTFIMjguMDAwNUMyOS42NTcyIDExIDMxIDEyLjM0MyAzMSAxNEMzMSAxNS42NTY5IDI5LjY1NjkgMTcgMjggMTdIMjJDMjEuMjI0IDE3IDIwLjcxNiAxNi44NDYzIDIwLjM2IDE2LjYxODJDMjAuMTQxMSAxNy4yMDYgMTkuODQ4MyAxNy44MjkxIDE5LjQ0NSAxOC40MDJDMjAuMTIwMyAxOC43ODg1IDIwLjk2MTQgMTkgMjIgMTlIMjhDMzAuNzYxNCAxOSAzMyAxNi43NjE0IDMzIDE0QzMzIDExLjIzODggMzAuNzYyMSA5IDI4LjAwMDUgOUgyMkMyMC4yMzY2IDkgMTkuMDQyNyA5LjYwOTc5IDE4LjI2MjUgMTAuNjVDMTcuNTc3MiAxMS41NjM3IDE3LjI4NTIgMTIuNzM0IDE3LjA1MTcgMTMuNjcwMUwxNy4wMjk5IDEzLjc1NzVDMTYuNzY3MyAxNC44MDc2IDE2LjU1NTggMTUuNTkyMyAxNi4xMzc1IDE2LjE1QzE1Ljc5MjcgMTYuNjA5OCAxNS4yMzY2IDE3IDE0IDE3SDcuOTk5MjZDNi4zNDI2NSAxNyA1IDE1LjY1NzEgNSAxNFoiIGZpbGw9ImJsYWNrIi8+CiAgPHBhdGggZD0iTTcgMjMuNUM2LjcxNjY3IDIzLjUgNi40NzUgMjMuNDA4MyA2LjI3NSAyMy4yMjVDNi4wOTE2NyAyMy4wMjUgNiAyMi43ODMzIDYgMjIuNUM2IDIyLjIxNjcgNi4wOTE2NyAyMS45ODMzIDYuMjc1IDIxLjhDNi40NzUgMjEuNiA2LjcxNjY3IDIxLjUgNyAyMS41SDEyQzEyLjI4MzMgMjEuNSAxMi41MTY3IDIxLjYgMTIuNyAyMS44QzEyLjkgMjEuOTgzMyAxMyAyMi4yMTY3IDEzIDIyLjVDMTMgMjIuNzgzMyAxMi45IDIzLjAyNSAxMi43IDIzLjIyNUMxMi41MTY3IDIzLjQwODMgMTIuMjgzMyAyMy41IDEyIDIzLjVIN1pNNSAyNy41QzQuNzE2NjcgMjcuNSA0LjQ3NSAyNy40MDgzIDQuMjc1IDI3LjIyNUM0LjA5MTY3IDI3LjAyNSA0IDI2Ljc4MzMgNCAyNi41QzQgMjYuMjE2NyA0LjA5MTY3IDI1Ljk4MzMgNC4yNzUgMjUuOEM0LjQ3NSAyNS42IDQuNzE2NjcgMjUuNSA1IDI1LjVIOEM4LjI4MzMzIDI1LjUgOC41MTY2NyAyNS42IDguNyAyNS44QzguOSAyNS45ODMzIDkgMjYuMjE2NyA5IDI2LjVDOSAyNi43ODMzIDguOSAyNy4wMjUgOC43IDI3LjIyNUM4LjUxNjY3IDI3LjQwODMgOC4yODMzMyAyNy41IDggMjcuNUg1Wk0xMiAyNy41QzExLjcxNjcgMjcuNSAxMS40NzUgMjcuNDA4MyAxMS4yNzUgMjcuMjI1QzExLjA5MTcgMjcuMDI1IDExIDI2Ljc4MzMgMTEgMjYuNUMxMSAyNi4yMTY3IDExLjA5MTcgMjUuOTgzMyAxMS4yNzUgMjUuOEMxMS40NzUgMjUuNiAxMS43MTY3IDI1LjUgMTIgMjUuNUgyMEMyMC4yODMzIDI1LjUgMjAuNTE2NyAyNS42IDIwLjcgMjUuOEMyMC45IDI1Ljk4MzMgMjEgMjYuMjE2NyAyMSAyNi41QzIxIDI2Ljc4MzMgMjAuOSAyNy4wMjUgMjAuNyAyNy4yMjVDMjAuNTE2NyAyNy40MDgzIDIwLjI4MzMgMjcuNSAyMCAyNy41SDEyWk0yOCAyNy41QzI3LjcxNjcgMjcuNSAyNy40NzUgMjcuNDA4MyAyNy4yNzUgMjcuMjI1QzI3LjA5MTcgMjcuMDI1IDI3IDI2Ljc4MzMgMjcgMjYuNUMyNyAyNi4yMTY3IDI3LjA5MTcgMjUuOTgzMyAyNy4yNzUgMjUuOEMyNy40NzUgMjUuNiAyNy43MTY3IDI1LjUgMjggMjUuNUgzMkMzMi4yODMzIDI1LjUgMzIuNTE2NyAyNS42IDMyLjcgMjUuOEMzMi45IDI1Ljk4MzMgMzMgMjYuMjE2NyAzMyAyNi41QzMzIDI2Ljc4MzMzMi45IDI3LjAyNSAzMi43IDI3LjIyNUMzMi41MTY3IDI3LjQwODMgMzIuMjgzMyAyNy41IDMyIDI3LjVIMjhaTTE2IDIzLjVDMTUuNzE2NyAyMy41IDE1LjQ3NSAyMy40MDgzIDE1LjI3NSAyMy4yMjVDMTUuMDkxNyAyMy4wMjUgMTUgMjIuNzgzMyAxNSAyMi41QzE1IDIyLjIxNjcgMTUuMDkxNyAyMS45ODMzIDE1LjI3NSAyMS44QzE1LjQ3NSAyMS42IDE1LjcxNjcgMjEuNSAxNiAyMS41QzE2LjI4MzMgMjEuNSAxNi41MTY3IDIxLjYgMTYuNyAyMS44QzE2LjkgMjEuOTgzMyAxNyAyMi4yMTY3IDE3IDIyLjVDMTcgMjIuNzgzMyAxNi45IDIzLjAyNSAxNi43IDIzLjIyNUMxNi41MTY3IDIzLjQwODMgMTYuMjgzMyAyMy41IDE2IDIzLjVaTTI0IDI3LjVDMjMuNzE2NyAyNy41IDIzLjQ3NSAyNy40MDgzIDIzLjI3NSAyNy4yMjVDMjMuMDkxNyAyNy4wMjUgMjMgMjYuNzgzMyAyMyAyNi41QzIzIDI2LjIxNjcgMjMuMDkxNyAyNS45ODMzIDIzLjI3NSAyNS44QzIzLjQ3NSAyNS42IDIzLjcxNjcgMjUuNSAyNCAyNS41QzI0LjI4MzMgMjUuNSAyNC41MTY3IDI1LjYgMjQuNyAyNS44QzI0LjkgMjUuOTgzMyAyNSAyNi4yMTY3IDI1IDI2LjVDMjUgMjYuNzgzMyAyNC45IDI3LjAyNSAyNC43IDI3LjIyNUMyNC41MTY3IDI3LjQwODMgMjQuMjgzMyAyNy41IDI0IDI3LjVaIiBmaWxsPSJibGFjayIvPgogIDxwYXRoIGQ9Ik0xOS4yNzUgMjMuMjI1QzE5LjQ3NSAyMy40MDgzIDE5LjcxNjcgMjMuNSAyMCAyMy41SDIzQzIzLjI4MzMgMjMuNSAyMy41MTY3IDIzLjQwODMgMjMuNyAyMy4yMjVDMjMuOSAyMy4wMjUgMjQgMjIuNzgzMyAyNCAyMi41QzI0IDIyLjIxNjcgMjMuOSAyMS45ODMzIDIzLjcgMjEuOEMyMy41MTY3IDIxLjYgMjMuMjgzMyAyMS41IDIzIDIxLjVIMjBDMTkuNzE2NyAyMS41IDE5LjQ3NSAyMS42IDE5LjI3NSAyMS44QzE5LjA5MTcgMjEuOTgzMyAxOSAyMi4yMTY3IDE5IDIyLjVDMTkgMjIuNzgzMyAxOS4wOTE3IDIzLjAyNSAxOS4yNzUgMjMuMjI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBkPSJNMjYuMjc1IDIzLjIyNUMyNi40NzUgMjMuNDA4MyAyNi43MTY3IDIzLjUgMjcgMjMuNUgzMEMzMC4yODMzIDIzLjUgMzAuNTE2NyAyMy40MDgzIDMwLjcgMjMuMjI1QzMwLjkgMjMuMDI1IDMxIDIyLjc4MzMgMzEgMjIuNUMzMSAyMi4yMTY3IDMwLjkgMjEuOTgzMyAzMC43IDIxLjhDMzAuNTE2NyAyMS42IDMwLjI4MzMgMjEuNSAzMCAyMS41SDI3QzI2LjcxNjcgMjEuNSAyNi40NzUgMjEuNiAyNi4yNzUgMjEuOEMyNi4wOTE3IDIxLjk4MzMgMjYgMjIuMjE2NyAyNiAyMi41QzI2IDIyLjc4MzMgMjYuMDkxNyAyMy4wMjUgMjYuMjc1IDIzLjIyNVoiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPg==">
+      <bpmn:documentation>Read the public Agent Card before entering the client agent. Returns the card, not credentials.</bpmn:documentation>
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="fetchAgentCard" target="operationId" />
+          <zeebe:input source="=camunda.secrets.A2A_AGENT_CARD_URL" target="url" />
+          <zeebe:input source="noAuth" target="authentication.type" />
+          <zeebe:input source="=if operationId = &quot;fetchAgentCard&quot; then &quot;GET&quot; else &quot;POST&quot;" target="method" />
+          <zeebe:input source="=if operationId = &quot;fetchAgentCard&quot; then {&quot;A2A-Version&quot;: &quot;1.0&quot;} else {&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: apiKey}" target="headers" />
+          <zeebe:input source="20" target="readTimeoutInSeconds" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultExpression" value="={agentCard: response.body}" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_QuestionAsked_DiscoverAgentCard</bpmn:incoming>
+      <bpmn:outgoing>Flow_DiscoverAgentCard_ClientJoin</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="ClientJoin">
+      <bpmn:incoming>Flow_DiscoverAgentCard_ClientJoin</bpmn:incoming>
+      <bpmn:incoming>Flow_PrepareClientFollowUp_ClientJoin</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClientJoin_ClientAgent</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:adHocSubProcess id="ClientAgent" name="Client AI agent" zeebe:modelerTemplate="io.camunda.connectors.agenticai.ai-agent-subprocess.v2" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNBNTZFRkYiLz4KPG1hc2sgaWQ9InBhdGgtMi1vdXRzaWRlLTFfMTg1XzYiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjQiIHk9IjQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0iYmxhY2siPgo8cmVjdCBmaWxsPSJ3aGl0ZSIgeD0iNCIgeT0iNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ii8+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIvPgo8L21hc2s+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMjAuMDEwNSAxMi4wOTg3QzE4LjQ5IDEwLjU4OTQgMTcuMTU5NCA4LjEwODE0IDE2LjE3OTkgNi4wMTEwM0MxNi4xNTIgNi4wMDQ1MSAxNi4xMTc2IDYgMTYuMDc5NCA2QzE2LjA0MTEgNiAxNi4wMDY2IDYuMDA0NTEgMTUuOTc4OCA2LjAxMTA0QzE0Ljk5OTQgOC4xMDgxNCAxMy42Njk3IDEwLjU4ODkgMTIuMTQ4MSAxMi4wOTgxQzEwLjYyNjkgMTMuNjA3MSA4LjEyNTY4IDE0LjkyNjQgNi4wMTE1NyAxNS44OTgxQzYuMDA0NzQgMTUuOTI2MSA2IDE1Ljk2MTEgNiAxNkM2IDE2LjAzODcgNi4wMDQ2OCAxNi4wNzM2IDYuMDExNDQgMTYuMTAxNEM4LjEyNTE5IDE3LjA3MjkgMTAuNjI2MiAxOC4zOTE5IDEyLjE0NzcgMTkuOTAxNkMxMy42Njk3IDIxLjQxMDcgMTQuOTk5NiAyMy44OTIgMTUuOTc5MSAyNS45ODlDMTYuMDA2OCAyNS45OTU2IDE2LjA0MTEgMjYgMTYuMDc5MyAyNkMxNi4xMTc1IDI2IDE2LjE1MTkgMjUuOTk1NCAxNi4xNzk2IDI1Ljk4OUMxNy4xNTkxIDIzLjg5MiAxOC40ODg4IDIxLjQxMSAyMC4wMDk5IDE5LjkwMjFNMjAuMDA5OSAxOS45MDIxQzIxLjUyNTMgMTguMzk4NyAyMy45NDY1IDE3LjA2NjkgMjUuOTkxNSAxNi4wODI0QzI1Ljk5NjUgMTYuMDU5MyAyNiAxNi4wMzEgMjYgMTUuOTk5N0MyNiAxNS45Njg0IDI1Ljk5NjUgMTUuOTQwMyAyNS45OTE1IDE1LjkxNzFDMjMuOTQ3NCAxNC45MzI3IDIxLjUyNTkgMTMuNjAxIDIwLjAxMDUgMTIuMDk4NyIgZmlsbD0id2hpdGUiLz4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yMC4wMTA1IDEyLjA5ODdDMTguNDkgMTAuNTg5NCAxNy4xNTk0IDguMTA4MTQgMTYuMTc5OSA2LjAxMTAzQzE2LjE1MiA2LjAwNDUxIDE2LjExNzYgNiAxNi4wNzk0IDZDMTYuMDQxMSA2IDE2LjAwNjYgNi4wMDQ1MSAxNS45Nzg4IDYuMDExMDRDMTQuOTk5NCA4LjEwODE0IDEzLjY2OTcgMTAuNTg4OSAxMi4xNDgxIDEyLjA5ODFDMTAuNjI2OSAxMy42MDcxIDguMTI1NjggMTQuOTI2NCA2LjAxMTU3IDE1Ljg5ODFDNi4wMDQ3NCAxNS45MjYxIDYgMTUuOTYxMSA2IDE2QzYgMTYuMDM4NyA2LjAwNDY4IDE2LjA3MzYgNi4wMTE0NCAxNi4xMDE0QzguMTI1MTkgMTcuMDcyOSAxMC42MjYyIDE4LjM5MTkgMTIuMTQ3NyAxOS45MDE2QzEzLjY2OTcgMjEuNDEwNyAxNC45OTk2IDIzLjg5MiAxNS45NzkxIDI1Ljk4OUMxNi4wMDY4IDI1Ljk5NTYgMTYuMDQxMSAyNiAxNi4wNzkzIDI2QzE2LjExNzUgMjYgMTYuMTUxOSAyNS45OTU0IDE2LjE3OTYgMjUuOTg5QzE3LjE1OTEgMjMuODkyIDE4LjQ4ODggMjEuNDExIDIwLjAwOTkgMTkuOTAyMU0yMC4wMDk5IDE5LjkwMjFDMjEuNTI1MyAxOC4zOTg3IDIzLjk0NjUgMTcuMDY2OSAyNS45OTE1IDE2LjA4MjRDMjUuOTk2NSAxNi4wNTkzIDI2IDE2LjAzMSAyNiAxNS45OTk3QzI2IDE1Ljk2ODQgMjUuOTk2NSAxNS45NDAzIDI1Ljk5MTUgMTUuOTE3MUMyMy45NDc0IDE0LjkzMjcgMjEuNTI1OSAxMy42MDEgMjAuMDEwNSAxMi4wOTg3IiBzdHJva2U9IiM0OTFEOEIiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgbWFzaz0idXJsKCNwYXRoLTItb3V0c2lkZS0xXzE4NV82KSIvPgo8L3N2Zz4K">
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="io.camunda.agenticai:aiagent:subprocess:2" retries="1" />
         <zeebe:ioMapping>
@@ -19,8 +46,8 @@
           <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY" target="provider.openai.backend.custom.authentication.apiKey" />
           <zeebe:input source="=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL" target="provider.openai.model.model" />
           <zeebe:input source="modelDefault" target="provider.openai.api.completions.effort" />
-          <zeebe:input source="=&quot;You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. GetA2ATask polls the task returned by the prior send. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.&quot;" target="data.systemPrompt.prompt" />
-          <zeebe:input source="=question" target="data.userPrompt.prompt" />
+          <zeebe:input source="=&quot;You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. The process has already fetched the remote Agent Card. ReadIntakeGuidance explains the synthetic demo's intake checklist. CheckConfirmedDetails checks whether the human has supplied confirmation; it does not reconcile charges. DraftReviewNote prepares an unsent draft for human review, not a financial decision. Use these local tools when useful; all charge arithmetic belongs to the remote server. Use SendA2AMessage to delegate the user's request to that remote agent. This tool sends the message and polls the returned task using an explicit BPMN flow. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. An active task is continued; after a terminal task a new task uses the server-returned context ID. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless the tool result reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.&quot;" target="data.systemPrompt.prompt" />
+          <zeebe:input source="=question + &quot;\n\nRemote agent: &quot; + agentCard.name + &quot;\nSkills: &quot; + string join(agentCard.skills.name, &quot;, &quot;)" target="data.userPrompt.prompt" />
           <zeebe:input source="=clientAgent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
@@ -32,6 +59,7 @@
           <zeebe:input source="true" target="data.response.includeAgentContext" />
           <zeebe:input target="agent" />
           <zeebe:output source="=agent" target="clientAgent" />
+          <zeebe:output source="=(for polls in [flatten( for message in agent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return for content in [if count(polls) &gt; 0 then polls[count(polls)].content[item.type = &quot;object&quot;][1].content else null] return for body in [if content instance of context and get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return for response in [if body instance of context then body.result else null] return for task in [if response instance of context then if get value(response, &quot;task&quot;) instance of context then response.task else response else null] return for state in [if task.status.state instance of string then task.status.state else null] return &quot;### Client agent response\n\n&quot; + (if agent.responseText instance of string then agent.responseText else &quot;The client agent returned no text.&quot;) + &quot;\n\n**Last observed server task state:** &quot; + (if state instance of string then state else &quot;No server task status was observed.&quot;))[1][1][1][1][1][1]" target="resultText" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="1" />
@@ -44,78 +72,132 @@
         <zeebe:adHoc outputCollection="toolCallResults" outputElement="={&#10;  id: toolCall._meta.id,&#10;  name: toolCall._meta.name,&#10;  content: toolCallResult,&#10;  completedAt: now()&#10;}" />
         <zeebe:agentDefinition agentType="aiAgentSubProcess" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_QuestionAsked_ClientAgent</bpmn:incoming>
-      <bpmn:outgoing>Flow_ClientAgent_PrepareClientResult</bpmn:outgoing>
-      <bpmn:serviceTask id="DiscoverAgentCard" name="Discover server agent" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
-        <bpmn:documentation>Read the public Agent Card before contacting the remote server. Use this tool first to inspect its name, JSON-RPC endpoint and advertised capabilities. Returns the card; does not send a task or expose credentials.</bpmn:documentation>
+      <bpmn:incoming>Flow_ClientJoin_ClientAgent</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClientAgent_ReviewClientResult</bpmn:outgoing>
+      <bpmn:scriptTask id="ReadIntakeGuidance" name="Read intake guidance">
+        <bpmn:documentation>Read the local synthetic-demo intake checklist before collecting dispute details. Returns required information and the client/server responsibilities. This is demonstration guidance, not bank policy, and performs no external call.</bpmn:documentation>
         <bpmn:extensionElements>
-          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
-          <zeebe:ioMapping>
-            <zeebe:input source="noAuth" target="authentication.type" />
-            <zeebe:input source="GET" target="method" />
-            <zeebe:input source="=camunda.secrets.A2A_AGENT_CARD_URL" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;}" target="headers" />
-            <zeebe:input source="=false" target="storeResponse" />
-            <zeebe:input source="=false" target="followRedirects" />
-            <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
-            <zeebe:input source="20" target="readTimeoutInSeconds" />
-          </zeebe:ioMapping>
-          <zeebe:taskHeaders>
-            <zeebe:header key="elementTemplateVersion" value="13" />
-            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-            <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
-            <zeebe:header key="retryBackoff" value="PT0S" />
-          </zeebe:taskHeaders>
+          <zeebe:script expression="={ syntheticDemoOnly: true, requiredDetails: [&quot;merchant&quot;, &quot;currency&quot;, &quot;two charge amounts&quot;, &quot;expected order amount&quot;, &quot;explicit confirmation that all values are synthetic&quot;], clientResponsibilities: [&quot;collect the user's account&quot;, &quot;request missing confirmation&quot;, &quot;delegate charge reconciliation&quot;, &quot;prepare a draft for human review&quot;], restrictions: [&quot;do not infer financial fields from narrative&quot;, &quot;do not authorize refunds or decide fraud&quot;, &quot;do not treat this demonstration checklist as bank policy&quot;] }" resultVariable="toolCallResult" />
         </bpmn:extensionElements>
-      </bpmn:serviceTask>
-      <bpmn:serviceTask id="SendA2AMessage" name="Send A2A message" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
-        <bpmn:documentation>Send a new A2A 1.0 message or a follow-up to the same task. Use the user's request as text. Follow-ups use task and context IDs from the prior send result. A structured syntheticClaim is added only from the AskClientForInput form result; neither can be supplied as an AI tool argument. Returns the JSON-RPC response and task.</bpmn:documentation>
+      </bpmn:scriptTask>
+      <bpmn:scriptTask id="CheckConfirmedDetails" name="Check confirmed details">
+        <bpmn:documentation>Check whether AskClientForInput returned a human-confirmed synthetic claim. Accepts no model-provided financial fields. Returns confirmation presence and next steps, not arithmetic, eligibility or a dispute decision. Use when deciding whether to ask for details.</bpmn:documentation>
         <bpmn:extensionElements>
-          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
           <zeebe:ioMapping>
-            <zeebe:input source="noAuth" target="authentication.type" />
-            <zeebe:input source="POST" target="method" />
-            <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
-            <zeebe:input source="=false" target="storeResponse" />
-            <zeebe:input source="=false" target="followRedirects" />
-            <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
-            <zeebe:input source="60" target="readTimeoutInSeconds" />
-            <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: { message: context merge([ { messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: fromAi(toolCall.text, &quot;The user's request or follow-up text&quot;, &quot;string&quot;)}], flatten( for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;AskClientForInput&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content[item.type = &quot;object&quot;][1].content] return for result in [if get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return if result.syntheticClaim instance of context then [{data: {syntheticClaim: result.syntheticClaim}}] else [])[1][1] else [] ) ) }, (for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content[item.type = &quot;object&quot;][1].content] return for response in [if content instance of context and get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if get value(result, &quot;task&quot;) instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] ]), configuration: {returnImmediately: true} } }" target="body" />
-            <zeebe:input source="=false" target="ignoreNullValues" />
+            <zeebe:input source="=flatten( for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;AskClientForInput&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content[item.type = &quot;object&quot;][1].content] return for result in [if get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return if result.syntheticClaim instance of context then [{data: {syntheticClaim: result.syntheticClaim}}] else [])[1][1] else [] )" target="confirmedParts" />
           </zeebe:ioMapping>
-          <zeebe:taskHeaders>
-            <zeebe:header key="elementTemplateVersion" value="13" />
-            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-            <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
-            <zeebe:header key="retryBackoff" value="PT0S" />
-          </zeebe:taskHeaders>
+          <zeebe:script expression="={ claim: if count(confirmedParts) = 1 then confirmedParts[1].data.syntheticClaim else null, humanConfirmationPresent: claim instance of context, syntheticOnlyConfirmed: claim.syntheticOnly = true, nextStep: if claim instance of context and claim.syntheticOnly = true then &quot;Send the human-confirmed details to the remote reconciliation agent.&quot; else &quot;Ask the human to confirm the synthetic claim using AskClientForInput.&quot;, notice: &quot;Checks confirmation provenance only. The server validates and reconciles amounts.&quot; }" resultVariable="toolCallResult" />
         </bpmn:extensionElements>
-      </bpmn:serviceTask>
-      <bpmn:serviceTask id="GetA2ATask" name="Poll A2A task" zeebe:modelerTemplate="io.camunda.connectors.HttpJson.v2" zeebe:modelerTemplateVersion="13">
-        <bpmn:documentation>Read the current state of the task returned by the prior SendA2AMessage call. The task ID comes from that response, not an AI tool argument. Poll while work continues and use the returned state and message to decide whether to request input or report a terminal result.</bpmn:documentation>
+      </bpmn:scriptTask>
+      <bpmn:scriptTask id="DraftReviewNote" name="Draft review note">
+        <bpmn:documentation>Format a draft note for the human reviewer after receiving remote reconciliation evidence. Supply a concise summary grounded in the user's account and actual tool results. Returns explicitly labeled draft text; it does not verify claims, send messages, change an account or authorize a refund.</bpmn:documentation>
         <bpmn:extensionElements>
-          <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
           <zeebe:ioMapping>
-            <zeebe:input source="noAuth" target="authentication.type" />
-            <zeebe:input source="POST" target="method" />
-            <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
-            <zeebe:input source="={&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: camunda.secrets.A2A_API_KEY}" target="headers" />
-            <zeebe:input source="=false" target="storeResponse" />
-            <zeebe:input source="=false" target="followRedirects" />
-            <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
-            <zeebe:input source="30" target="readTimeoutInSeconds" />
-            <zeebe:input source="={ jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: get value( (for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content[item.type = &quot;object&quot;][1].content] return for response in [if content instance of context and get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return if result instance of context then if get value(result, &quot;task&quot;) instance of context then {taskId: result.task.id, contextId: result.task.contextId} else if result.id instance of string and result.contextId instance of string then {taskId: result.id, contextId: result.contextId} else {} else {} )[1][1][1] else {})[1] , &quot;taskId&quot;)} }" target="body" />
-            <zeebe:input source="=false" target="ignoreNullValues" />
+            <zeebe:input source="=fromAi(toolCall.summary, &quot;Draft a concise note using only the user account and actual remote agent results. Label missing evidence; do not invent facts or authorize action.&quot;, &quot;string&quot;)" target="draftText" />
           </zeebe:ioMapping>
-          <zeebe:taskHeaders>
-            <zeebe:header key="elementTemplateVersion" value="13" />
-            <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-            <zeebe:header key="resultExpression" value="={toolCallResult: response.body}" />
-            <zeebe:header key="retryBackoff" value="PT0S" />
-          </zeebe:taskHeaders>
+          <zeebe:script expression="={draftOnly: true, text: draftText, notice: &quot;Unsent draft for human review. No refund, notification or financial action performed.&quot;}" resultVariable="toolCallResult" />
         </bpmn:extensionElements>
-      </bpmn:serviceTask>
+      </bpmn:scriptTask>
+      <bpmn:subProcess id="SendA2AMessage" name="Ask remote agent">
+        <bpmn:documentation>Delegate to the remote A2A agent. Sends a new message or follows up on the same task using response-derived task/context IDs. Polls two seconds apart while the task is working, then returns the actual JSON-RPC response, including input-required or failure states. Confirmed synthetic claim data comes only from the human form. Use AskClientForInput if the response requests confirmation; do not infer claim values.</bpmn:documentation>
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:input source="=fromAi(toolCall.text, &quot;The user request or follow-up text&quot;, &quot;string&quot;)" target="remoteText" />
+            <zeebe:input source="=(for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;SendA2AMessage&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content[item.type = &quot;object&quot;][1].content] return for response in [if content instance of context and get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return for result in [if response instance of context then response.result else null] return for task in [if result instance of context and get value(result, &quot;task&quot;) instance of context then result.task else result] return if task.id instance of string and task.contextId instance of string then if task.status.state in [&quot;TASK_STATE_COMPLETED&quot;, &quot;TASK_STATE_CANCELED&quot;, &quot;TASK_STATE_FAILED&quot;, &quot;TASK_STATE_REJECTED&quot;] then {contextId: task.contextId} else {taskId: task.id, contextId: task.contextId} else {} )[1][1][1][1] else {})[1]" target="previousTask" />
+            <zeebe:input source="=flatten( for records in [flatten( for message in agentContext.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;AskClientForInput&quot;] )] return if count(records) &gt; 0 then (for content in [records[count(records)].content[item.type = &quot;object&quot;][1].content] return for result in [if get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return if result.syntheticClaim instance of context then [{data: {syntheticClaim: result.syntheticClaim}}] else [])[1][1] else [] )" target="confirmedParts" />
+            <zeebe:output source="=remoteResponse" target="toolCallResult" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+        <bpmn:startEvent id="RemoteRequestStarted" name="Remote request started">
+          <bpmn:outgoing>Flow_RemoteRequestStarted_SendRemoteMessage</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:serviceTask id="SendRemoteMessage" name="Send A2A message" zeebe:modelerTemplate="dev.hansel.a2a.client.v1" zeebe:modelerTemplateVersion="3" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMTguNSIgdmlld0JveD0iMyA5IDMwIDE4LjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTguNyAxNC43MjVDOC41MTY2NyAxNC45MDgzIDguMjgzMzMgMTUgOCAxNUM3LjcxNjY3IDE1IDcuNDc1IDE0LjkwODMgNy4yNzUgMTQuNzI1QzcuMDkxNjcgMTQuNTI1IDcgMTQuMjgzMyA3IDE0QzcgMTMuNzE2NyA3LjA5MTY3IDEzLjQ4MzMgNy4yNzUgMTMuM0M3LjQ3NSAxMy4xIDcuNzE2NjcgMTMgOCAxM0M4LjI4MzMzIDEzIDguNTE2NjcgMTMuMSA4LjcgMTMuM0M4LjkgMTMuNDgzMyA5IDEzLjcxNjcgOSAxNEM5IDE0LjI4MzMgOC45IDE0LjUyNSA4LjcgMTQuNzI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBkPSJNMTQuNyAxNC43MjVDMTQuNTE2NyAxNC45MDgzIDE0LjI4MzMgMTUgMTQgMTVDMTMuNzE2NyAxNSAxMy40NzUgMTQuOTA4MyAxMy4yNzUgMTQuNzI1QzEzLjA5MTcgMTQuNTI1IDEzIDE0LjI4MzMgMTMgMTRDMTMgMTMuNzE2NyAxMy4wOTE3IDEzLjQ4MzMgMTMuMjc1IDEzLjNDMTMuNDc1IDEzLjEgMTMuNzE2NyAxMyAxNCAxM0MxNC4yODMzIDEzIDE0LjUxNjcgMTMuMSAxNC43IDEzLjNDMTQuOSAxMy40ODMzIDE1IDEzLjcxNjcgMTUgMTRDMTUgMTQuMjgzMyAxNC45IDE0LjUyNSAxNC43IDE0LjcyNVoiIGZpbGw9ImJsYWNrIi8+CiAgPHBhdGggZD0iTTIyLjcgMTQuNzI1QzIyLjUxNjcgMTQuOTA4MyAyMi4yODMzIDE1IDIyIDE1QzIxLjcxNjcgMTUgMjEuNDc1IDE0LjkwODMgMjEuMjc1IDE0LjcyNUMyMS4wOTE3IDE0LjUyNSAyMSAxNC4yODMzIDIxIDE0QzIxIDEzLjcxNjcgMjEuMDkxNyAxMy40ODMzIDIxLjI3NSAxMy4zQzIxLjQ3NSAxMy4xIDIxLjcxNjcgMTMgMjIgMTNDMjIuMjgzMyAxMyAyMi41MTY3IDEzLjEgMjIuNyAxMy4zQzIyLjkgMTMuNDgzMyAyMyAxMy43MTY3IDIzIDE0QzIzIDE0LjI4MzMgMjIuOSAxNC41MjUgMjIuNyAxNC43MjVaIiBmaWxsPSJibGFjayIvPgogIDxwYXRoIGQ9Ik0yOC43IDE0LjcyNUMyOC41MTY3IDE0LjkwODMgMjguMjgzMyAxNSAyOCAxNUMyNy43MTY3IDE1IDI3LjQ3NSAxNC45MDgzIDI3LjI3NSAxNC43MjVDMjcuMDkxNyAxNC41MjUgMjcgMTQuMjgzMyAyNyAxNEMyNyAxMy43MTY3IDI3LjA5MTcgMTMuNDgzMyAyNy4yNzUgMTMuM0MyNy40NzUgMTMuMSAyNy43MTY3IDEzIDI4IDEzQzI4LjI4MzMgMTMgMjguNTE2NyAxMy4xIDI4LjcgMTMuM0MyOC45IDEzLjQ4MzMgMjkgMTMuNzE2NyAyOSAxNEMyOSAxNC4yODMzIDI4LjkgMTQuNTI1IDI4LjcgMTQuNzI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTUgMTRDNSAxMi4zNDMxIDYuMzQzMTUgMTEgOCAxMUgxNEMxNC43NzYgMTEgMTUuMjg0IDExLjE1MzcgMTUuNjQgMTEuMzgxOEMxNS44NTg5IDEwLjc5NCAxNi4xNTE3IDEwLjE3MDkgMTYuNTU1IDkuNTk3OTVDMTUuODc5NyA5LjIxMTUzIDE1LjAzODYgOSAxNCA5SDhDNS4yMzg1OCA5IDMgMTEuMjM4NiAzIDE0QzMgMTYuNzYxMiA1LjIzNzU5IDE5IDcuOTk5MjYgMTlIMTRDMTUuNzYzNCAxOSAxNi45NTczIDE4LjM5MDIgMTcuNzM3NSAxNy4zNUMxOC40MjI4IDE2LjQzNjMgMTguNzE0OCAxNS4yNjYgMTguOTQ4MyAxNC4zMjk5TDE4Ljk3MDEgMTQuMjQyNUMxOS4yMzI3IDEzLjE5MjQgMTkuNDQ0MiAxMi40MDc3IDE5Ljg2MjUgMTEuODVDMjAuMjA3MyAxMS4zOTAyIDIwLjc2MzQgMTEgMjIgMTFIMjguMDAwNUMyOS42NTcyIDExIDMxIDEyLjM0MyAzMSAxNEMzMSAxNS42NTY5IDI5LjY1NjkgMTcgMjggMTdIMjJDMjEuMjI0IDE3IDIwLjcxNiAxNi44NDYzIDIwLjM2IDE2LjYxODJDMjAuMTQxMSAxNy4yMDYgMTkuODQ4MyAxNy44MjkxIDE5LjQ0NSAxOC40MDJDMjAuMTIwMyAxOC43ODg1IDIwLjk2MTQgMTkgMjIgMTlIMjhDMzAuNzYxNCAxOSAzMyAxNi43NjE0IDMzIDE0QzMzIDExLjIzODggMzAuNzYyMSA5IDI4LjAwMDUgOUgyMkMyMC4yMzY2IDkgMTkuMDQyNyA5LjYwOTc5IDE4LjI2MjUgMTAuNjVDMTcuNTc3MiAxMS41NjM3IDE3LjI4NTIgMTIuNzM0IDE3LjA1MTcgMTMuNjcwMUwxNy4wMjk5IDEzLjc1NzVDMTYuNzY3MyAxNC44MDc2IDE2LjU1NTggMTUuNTkyMyAxNi4xMzc1IDE2LjE1QzE1Ljc5MjcgMTYuNjA5OCAxNS4yMzY2IDE3IDE0IDE3SDcuOTk5MjZDNi4zNDI2NSAxNyA1IDE1LjY1NzEgNSAxNFoiIGZpbGw9ImJsYWNrIi8+CiAgPHBhdGggZD0iTTcgMjMuNUM2LjcxNjY3IDIzLjUgNi40NzUgMjMuNDA4MyA2LjI3NSAyMy4yMjVDNi4wOTE2NyAyMy4wMjUgNiAyMi43ODMzIDYgMjIuNUM2IDIyLjIxNjcgNi4wOTE2NyAyMS45ODMzIDYuMjc1IDIxLjhDNi40NzUgMjEuNiA2LjcxNjY3IDIxLjUgNyAyMS41SDEyQzEyLjI4MzMgMjEuNSAxMi41MTY3IDIxLjYgMTIuNyAyMS44QzEyLjkgMjEuOTgzMyAxMyAyMi4yMTY3IDEzIDIyLjVDMTMgMjIuNzgzMyAxMi45IDIzLjAyNSAxMi43IDIzLjIyNUMxMi41MTY3IDIzLjQwODMgMTIuMjgzMyAyMy41IDEyIDIzLjVIN1pNNSAyNy41QzQuNzE2NjcgMjcuNSA0LjQ3NSAyNy40MDgzIDQuMjc1IDI3LjIyNUM0LjA5MTY3IDI3LjAyNSA0IDI2Ljc4MzMgNCAyNi41QzQgMjYuMjE2NyA0LjA5MTY3IDI1Ljk4MzMgNC4yNzUgMjUuOEM0LjQ3NSAyNS42IDQuNzE2NjcgMjUuNSA1IDI1LjVIOEM4LjI4MzMzIDI1LjUgOC41MTY2NyAyNS42IDguNyAyNS44QzguOSAyNS45ODMzIDkgMjYuMjE2NyA5IDI2LjVDOSAyNi43ODMzIDguOSAyNy4wMjUgOC43IDI3LjIyNUM4LjUxNjY3IDI3LjQwODMgOC4yODMzMyAyNy41IDggMjcuNUg1Wk0xMiAyNy41QzExLjcxNjcgMjcuNSAxMS40NzUgMjcuNDA4MyAxMS4yNzUgMjcuMjI1QzExLjA5MTcgMjcuMDI1IDExIDI2Ljc4MzMgMTEgMjYuNUMxMSAyNi4yMTY3IDExLjA5MTcgMjUuOTgzMyAxMS4yNzUgMjUuOEMxMS40NzUgMjUuNiAxMS43MTY3IDI1LjUgMTIgMjUuNUgyMEMyMC4yODMzIDI1LjUgMjAuNTE2NyAyNS42IDIwLjcgMjUuOEMyMC45IDI1Ljk4MzMgMjEgMjYuMjE2NyAyMSAyNi41QzIxIDI2Ljc4MzMgMjAuOSAyNy4wMjUgMjAuNyAyNy4yMjVDMjAuNTE2NyAyNy40MDgzIDIwLjI4MzMgMjcuNSAyMCAyNy41SDEyWk0yOCAyNy41QzI3LjcxNjcgMjcuNSAyNy40NzUgMjcuNDA4MyAyNy4yNzUgMjcuMjI1QzI3LjA5MTcgMjcuMDI1IDI3IDI2Ljc4MzMgMjcgMjYuNUMyNyAyNi4yMTY3IDI3LjA5MTcgMjUuOTgzMyAyNy4yNzUgMjUuOEMyNy40NzUgMjUuNiAyNy43MTY3IDI1LjUgMjggMjUuNUgzMkMzMi4yODMzIDI1LjUgMzIuNTE2NyAyNS42IDMyLjcgMjUuOEMzMi45IDI1Ljk4MzMgMzMgMjYuMjE2NyAzMyAyNi41QzMzIDI2Ljc4MzMzMi45IDI3LjAyNSAzMi43IDI3LjIyNUMzMi41MTY3IDI3LjQwODMgMzIuMjgzMyAyNy41IDMyIDI3LjVIMjhaTTE2IDIzLjVDMTUuNzE2NyAyMy41IDE1LjQ3NSAyMy40MDgzIDE1LjI3NSAyMy4yMjVDMTUuMDkxNyAyMy4wMjUgMTUgMjIuNzgzMyAxNSAyMi41QzE1IDIyLjIxNjcgMTUuMDkxNyAyMS45ODMzIDE1LjI3NSAyMS44QzE1LjQ3NSAyMS42IDE1LjcxNjcgMjEuNSAxNiAyMS41QzE2LjI4MzMgMjEuNSAxNi41MTY3IDIxLjYgMTYuNyAyMS44QzE2LjkgMjEuOTgzMyAxNyAyMi4yMTY3IDE3IDIyLjVDMTcgMjIuNzgzMyAxNi45IDIzLjAyNSAxNi43IDIzLjIyNUMxNi41MTY3IDIzLjQwODMgMTYuMjgzMyAyMy41IDE2IDIzLjVaTTI0IDI3LjVDMjMuNzE2NyAyNy41IDIzLjQ3NSAyNy40MDgzIDIzLjI3NSAyNy4yMjVDMjMuMDkxNyAyNy4wMjUgMjMgMjYuNzgzMyAyMyAyNi41QzIzIDI2LjIxNjcgMjMuMDkxNyAyNS45ODMzIDIzLjI3NSAyNS44QzIzLjQ3NSAyNS42IDIzLjcxNjcgMjUuNSAyNCAyNS41QzI0LjI4MzMgMjUuNSAyNC41MTY3IDI1LjYgMjQuNyAyNS44QzI0LjkgMjUuOTgzMyAyNSAyNi4yMTY3IDI1IDI2LjVDMjUgMjYuNzgzMyAyNC45IDI3LjAyNSAyNC43IDI3LjIyNUMyNC41MTY3IDI3LjQwODMgMjQuMjgzMyAyNy41IDI0IDI3LjVaIiBmaWxsPSJibGFjayIvPgogIDxwYXRoIGQ9Ik0xOS4yNzUgMjMuMjI1QzE5LjQ3NSAyMy40MDgzIDE5LjcxNjcgMjMuNSAyMCAyMy41SDIzQzIzLjI4MzMgMjMuNSAyMy41MTY3IDIzLjQwODMgMjMuNyAyMy4yMjVDMjMuOSAyMy4wMjUgMjQgMjIuNzgzMyAyNCAyMi41QzI0IDIyLjIxNjcgMjMuOSAyMS45ODMzIDIzLjcgMjEuOEMyMy41MTY3IDIxLjYgMjMuMjgzMyAyMS41IDIzIDIxLjVIMjBDMTkuNzE2NyAyMS41IDE5LjQ3NSAyMS42IDE5LjI3NSAyMS44QzE5LjA5MTcgMjEuOTgzMyAxOSAyMi4yMTY3IDE5IDIyLjVDMTkgMjIuNzgzMyAxOS4wOTE3IDIzLjAyNSAxOS4yNzUgMjMuMjI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBkPSJNMjYuMjc1IDIzLjIyNUMyNi40NzUgMjMuNDA4MyAyNi43MTY3IDIzLjUgMjcgMjMuNUgzMEMzMC4yODMzIDIzLjUgMzAuNTE2NyAyMy40MDgzIDMwLjcgMjMuMjI1QzMwLjkgMjMuMDI1IDMxIDIyLjc4MzMgMzEgMjIuNUMzMSAyMi4yMTY3IDMwLjkgMjEuOTgzMyAzMC43IDIxLjhDMzAuNTE2NyAyMS42IDMwLjI4MzMgMjEuNSAzMCAyMS41SDI3QzI2LjcxNjcgMjEuNSAyNi40NzUgMjEuNiAyNi4yNzUgMjEuOEMyNi4wOTE3IDIxLjk4MzMgMjYgMjIuMjE2NyAyNiAyMi41QzI2IDIyLjc4MzMgMjYuMDkxNyAyMy4wMjUgMjYuMjc1IDIzLjIyNVoiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPg==">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+            <zeebe:ioMapping>
+              <zeebe:input source="sendMessage" target="operationId" />
+              <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
+              <zeebe:input source="=camunda.secrets.A2A_API_KEY" target="apiKey" />
+              <zeebe:input source="=context merge([ { messageId: uuid(), role: &quot;ROLE_USER&quot;, parts: concatenate( [{text: remoteText}], confirmedParts ) }, previousTask ])" target="message" />
+              <zeebe:input source="noAuth" target="authentication.type" />
+              <zeebe:input source="=if operationId = &quot;fetchAgentCard&quot; then &quot;GET&quot; else &quot;POST&quot;" target="method" />
+              <zeebe:input source="=if operationId = &quot;fetchAgentCard&quot; then {&quot;A2A-Version&quot;: &quot;1.0&quot;} else {&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: apiKey}" target="headers" />
+              <zeebe:input source="=if operationId = &quot;sendMessage&quot; then {jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: {message: message, configuration: {returnImmediately: true}}} else {jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: taskId}}" target="body" />
+              <zeebe:input source="60" target="readTimeoutInSeconds" />
+            </zeebe:ioMapping>
+            <zeebe:taskHeaders>
+              <zeebe:header key="resultExpression" value="={remoteResponse: response.body}" />
+            </zeebe:taskHeaders>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_RemoteRequestStarted_SendRemoteMessage</bpmn:incoming>
+          <bpmn:outgoing>Flow_SendRemoteMessage_RemoteTaskAccepted</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:exclusiveGateway id="RemoteTaskAccepted" name="Task returned?" default="Flow_RemoteTaskAccepted_RemoteReplyJoin">
+          <bpmn:incoming>Flow_SendRemoteMessage_RemoteTaskAccepted</bpmn:incoming>
+          <bpmn:outgoing>Flow_RemoteTaskAccepted_RemotePollJoin</bpmn:outgoing>
+          <bpmn:outgoing>Flow_RemoteTaskAccepted_RemoteReplyJoin</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:exclusiveGateway id="RemotePollJoin">
+          <bpmn:incoming>Flow_RemoteTaskAccepted_RemotePollJoin</bpmn:incoming>
+          <bpmn:incoming>Flow_RemoteTaskState_RemotePollJoin</bpmn:incoming>
+          <bpmn:outgoing>Flow_RemotePollJoin_WaitBeforeRemotePoll</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:intermediateCatchEvent id="WaitBeforeRemotePoll" name="Wait 2 seconds">
+          <bpmn:incoming>Flow_RemotePollJoin_WaitBeforeRemotePoll</bpmn:incoming>
+          <bpmn:outgoing>Flow_WaitBeforeRemotePoll_GetA2ATask</bpmn:outgoing>
+          <bpmn:timerEventDefinition id="WaitBeforeRemotePoll_def">
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">="PT2S"</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:intermediateCatchEvent>
+        <bpmn:serviceTask id="GetA2ATask" name="Get A2A task" zeebe:modelerTemplate="dev.hansel.a2a.client.v1" zeebe:modelerTemplateVersion="3" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAiIGhlaWdodD0iMTguNSIgdmlld0JveD0iMyA5IDMwIDE4LjUiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHBhdGggZD0iTTguNyAxNC43MjVDOC41MTY2NyAxNC45MDgzIDguMjgzMzMgMTUgOCAxNUM3LjcxNjY3IDE1IDcuNDc1IDE0LjkwODMgNy4yNzUgMTQuNzI1QzcuMDkxNjcgMTQuNTI1IDcgMTQuMjgzMyA3IDE0QzcgMTMuNzE2NyA3LjA5MTY3IDEzLjQ4MzMgNy4yNzUgMTMuM0M3LjQ3NSAxMy4xIDcuNzE2NjcgMTMgOCAxM0M4LjI4MzMzIDEzIDguNTE2NjcgMTMuMSA4LjcgMTMuM0M4LjkgMTMuNDgzMyA5IDEzLjcxNjcgOSAxNEM5IDE0LjI4MzMgOC45IDE0LjUyNSA4LjcgMTQuNzI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBkPSJNMTQuNyAxNC43MjVDMTQuNTE2NyAxNC45MDgzIDE0LjI4MzMgMTUgMTQgMTVDMTMuNzE2NyAxNSAxMy40NzUgMTQuOTA4MyAxMy4yNzUgMTQuNzI1QzEzLjA5MTcgMTQuNTI1IDEzIDE0LjI4MzMgMTMgMTRDMTMgMTMuNzE2NyAxMy4wOTE3IDEzLjQ4MzMgMTMuMjc1IDEzLjNDMTMuNDc1IDEzLjEgMTMuNzE2NyAxMyAxNCAxM0MxNC4yODMzIDEzIDE0LjUxNjcgMTMuMSAxNC43IDEzLjNDMTQuOSAxMy40ODMzIDE1IDEzLjcxNjcgMTUgMTRDMTUgMTQuMjgzMyAxNC45IDE0LjUyNSAxNC43IDE0LjcyNVoiIGZpbGw9ImJsYWNrIi8+CiAgPHBhdGggZD0iTTIyLjcgMTQuNzI1QzIyLjUxNjcgMTQuOTA4MyAyMi4yODMzIDE1IDIyIDE1QzIxLjcxNjcgMTUgMjEuNDc1IDE0LjkwODMgMjEuMjc1IDE0LjcyNUMyMS4wOTE3IDE0LjUyNSAyMSAxNC4yODMzIDIxIDE0QzIxIDEzLjcxNjcgMjEuMDkxNyAxMy40ODMzIDIxLjI3NSAxMy4zQzIxLjQ3NSAxMy4xIDIxLjcxNjcgMTMgMjIgMTNDMjIuMjgzMyAxMyAyMi41MTY3IDEzLjEgMjIuNyAxMy4zQzIyLjkgMTMuNDgzMyAyMyAxMy43MTY3IDIzIDE0QzIzIDE0LjI4MzMgMjIuOSAxNC41MjUgMjIuNyAxNC43MjVaIiBmaWxsPSJibGFjayIvPgogIDxwYXRoIGQ9Ik0yOC43IDE0LjcyNUMyOC41MTY3IDE0LjkwODMgMjguMjgzMyAxNSAyOCAxNUMyNy43MTY3IDE1IDI3LjQ3NSAxNC45MDgzIDI3LjI3NSAxNC43MjVDMjcuMDkxNyAxNC41MjUgMjcgMTQuMjgzMyAyNyAxNEMyNyAxMy43MTY3IDI3LjA5MTcgMTMuNDgzMyAyNy4yNzUgMTMuM0MyNy40NzUgMTMuMSAyNy43MTY3IDEzIDI4IDEzQzI4LjI4MzMgMTMgMjguNTE2NyAxMy4xIDI4LjcgMTMuM0MyOC45IDEzLjQ4MzMgMjkgMTMuNzE2NyAyOSAxNEMyOSAxNC4yODMzIDI4LjkgMTQuNTI1IDI4LjcgMTQuNzI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTUgMTRDNSAxMi4zNDMxIDYuMzQzMTUgMTEgOCAxMUgxNEMxNC43NzYgMTEgMTUuMjg0IDExLjE1MzcgMTUuNjQgMTEuMzgxOEMxNS44NTg5IDEwLjc5NCAxNi4xNTE3IDEwLjE3MDkgMTYuNTU1IDkuNTk3OTVDMTUuODc5NyA5LjIxMTUzIDE1LjAzODYgOSAxNCA5SDhDNS4yMzg1OCA5IDMgMTEuMjM4NiAzIDE0QzMgMTYuNzYxMiA1LjIzNzU5IDE5IDcuOTk5MjYgMTlIMTRDMTUuNzYzNCAxOSAxNi45NTczIDE4LjM5MDIgMTcuNzM3NSAxNy4zNUMxOC40MjI4IDE2LjQzNjMgMTguNzE0OCAxNS4yNjYgMTguOTQ4MyAxNC4zMjk5TDE4Ljk3MDEgMTQuMjQyNUMxOS4yMzI3IDEzLjE5MjQgMTkuNDQ0MiAxMi40MDc3IDE5Ljg2MjUgMTEuODVDMjAuMjA3MyAxMS4zOTAyIDIwLjc2MzQgMTEgMjIgMTFIMjguMDAwNUMyOS42NTcyIDExIDMxIDEyLjM0MyAzMSAxNEMzMSAxNS42NTY5IDI5LjY1NjkgMTcgMjggMTdIMjJDMjEuMjI0IDE3IDIwLjcxNiAxNi44NDYzIDIwLjM2IDE2LjYxODJDMjAuMTQxMSAxNy4yMDYgMTkuODQ4MyAxNy44MjkxIDE5LjQ0NSAxOC40MDJDMjAuMTIwMyAxOC43ODg1IDIwLjk2MTQgMTkgMjIgMTlIMjhDMzAuNzYxNCAxOSAzMyAxNi43NjE0IDMzIDE0QzMzIDExLjIzODggMzAuNzYyMSA5IDI4LjAwMDUgOUgyMkMyMC4yMzY2IDkgMTkuMDQyNyA5LjYwOTc5IDE4LjI2MjUgMTAuNjVDMTcuNTc3MiAxMS41NjM3IDE3LjI4NTIgMTIuNzM0IDE3LjA1MTcgMTMuNjcwMUwxNy4wMjk5IDEzLjc1NzVDMTYuNzY3MyAxNC44MDc2IDE2LjU1NTggMTUuNTkyMyAxNi4xMzc1IDE2LjE1QzE1Ljc5MjcgMTYuNjA5OCAxNS4yMzY2IDE3IDE0IDE3SDcuOTk5MjZDNi4zNDI2NSAxNyA1IDE1LjY1NzEgNSAxNFoiIGZpbGw9ImJsYWNrIi8+CiAgPHBhdGggZD0iTTcgMjMuNUM2LjcxNjY3IDIzLjUgNi40NzUgMjMuNDA4MyA2LjI3NSAyMy4yMjVDNi4wOTE2NyAyMy4wMjUgNiAyMi43ODMzIDYgMjIuNUM2IDIyLjIxNjcgNi4wOTE2NyAyMS45ODMzIDYuMjc1IDIxLjhDNi40NzUgMjEuNiA2LjcxNjY3IDIxLjUgNyAyMS41SDEyQzEyLjI4MzMgMjEuNSAxMi41MTY3IDIxLjYgMTIuNyAyMS44QzEyLjkgMjEuOTgzMyAxMyAyMi4yMTY3IDEzIDIyLjVDMTMgMjIuNzgzMyAxMi45IDIzLjAyNSAxMi43IDIzLjIyNUMxMi41MTY3IDIzLjQwODMgMTIuMjgzMyAyMy41IDEyIDIzLjVIN1pNNSAyNy41QzQuNzE2NjcgMjcuNSA0LjQ3NSAyNy40MDgzIDQuMjc1IDI3LjIyNUM0LjA5MTY3IDI3LjAyNSA0IDI2Ljc4MzMgNCAyNi41QzQgMjYuMjE2NyA0LjA5MTY3IDI1Ljk4MzMgNC4yNzUgMjUuOEM0LjQ3NSAyNS42IDQuNzE2NjcgMjUuNSA1IDI1LjVIOEM4LjI4MzMzIDI1LjUgOC41MTY2NyAyNS42IDguNyAyNS44QzguOSAyNS45ODMzIDkgMjYuMjE2NyA5IDI2LjVDOSAyNi43ODMzIDguOSAyNy4wMjUgOC43IDI3LjIyNUM4LjUxNjY3IDI3LjQwODMgOC4yODMzMyAyNy41IDggMjcuNUg1Wk0xMiAyNy41QzExLjcxNjcgMjcuNSAxMS40NzUgMjcuNDA4MyAxMS4yNzUgMjcuMjI1QzExLjA5MTcgMjcuMDI1IDExIDI2Ljc4MzMgMTEgMjYuNUMxMSAyNi4yMTY3IDExLjA5MTcgMjUuOTgzMyAxMS4yNzUgMjUuOEMxMS40NzUgMjUuNiAxMS43MTY3IDI1LjUgMTIgMjUuNUgyMEMyMC4yODMzIDI1LjUgMjAuNTE2NyAyNS42IDIwLjcgMjUuOEMyMC45IDI1Ljk4MzMgMjEgMjYuMjE2NyAyMSAyNi41QzIxIDI2Ljc4MzMgMjAuOSAyNy4wMjUgMjAuNyAyNy4yMjVDMjAuNTE2NyAyNy40MDgzIDIwLjI4MzMgMjcuNSAyMCAyNy41SDEyWk0yOCAyNy41QzI3LjcxNjcgMjcuNSAyNy40NzUgMjcuNDA4MyAyNy4yNzUgMjcuMjI1QzI3LjA5MTcgMjcuMDI1IDI3IDI2Ljc4MzMgMjcgMjYuNUMyNyAyNi4yMTY3IDI3LjA5MTcgMjUuOTgzMyAyNy4yNzUgMjUuOEMyNy40NzUgMjUuNiAyNy43MTY3IDI1LjUgMjggMjUuNUgzMkMzMi4yODMzIDI1LjUgMzIuNTE2NyAyNS42IDMyLjcgMjUuOEMzMi45IDI1Ljk4MzMgMzMgMjYuMjE2NyAzMyAyNi41QzMzIDI2Ljc4MzMzMi45IDI3LjAyNSAzMi43IDI3LjIyNUMzMi41MTY3IDI3LjQwODMgMzIuMjgzMyAyNy41IDMyIDI3LjVIMjhaTTE2IDIzLjVDMTUuNzE2NyAyMy41IDE1LjQ3NSAyMy40MDgzIDE1LjI3NSAyMy4yMjVDMTUuMDkxNyAyMy4wMjUgMTUgMjIuNzgzMyAxNSAyMi41QzE1IDIyLjIxNjcgMTUuMDkxNyAyMS45ODMzIDE1LjI3NSAyMS44QzE1LjQ3NSAyMS42IDE1LjcxNjcgMjEuNSAxNiAyMS41QzE2LjI4MzMgMjEuNSAxNi41MTY3IDIxLjYgMTYuNyAyMS44QzE2LjkgMjEuOTgzMyAxNyAyMi4yMTY3IDE3IDIyLjVDMTcgMjIuNzgzMyAxNi45IDIzLjAyNSAxNi43IDIzLjIyNUMxNi41MTY3IDIzLjQwODMgMTYuMjgzMyAyMy41IDE2IDIzLjVaTTI0IDI3LjVDMjMuNzE2NyAyNy41IDIzLjQ3NSAyNy40MDgzIDIzLjI3NSAyNy4yMjVDMjMuMDkxNyAyNy4wMjUgMjMgMjYuNzgzMyAyMyAyNi41QzIzIDI2LjIxNjcgMjMuMDkxNyAyNS45ODMzIDIzLjI3NSAyNS44QzIzLjQ3NSAyNS42IDIzLjcxNjcgMjUuNSAyNCAyNS41QzI0LjI4MzMgMjUuNSAyNC41MTY3IDI1LjYgMjQuNyAyNS44QzI0LjkgMjUuOTgzMyAyNSAyNi4yMTY3IDI1IDI2LjVDMjUgMjYuNzgzMyAyNC45IDI3LjAyNSAyNC43IDI3LjIyNUMyNC41MTY3IDI3LjQwODMgMjQuMjgzMyAyNy41IDI0IDI3LjVaIiBmaWxsPSJibGFjayIvPgogIDxwYXRoIGQ9Ik0xOS4yNzUgMjMuMjI1QzE5LjQ3NSAyMy40MDgzIDE5LjcxNjcgMjMuNSAyMCAyMy41SDIzQzIzLjI4MzMgMjMuNSAyMy41MTY3IDIzLjQwODMgMjMuNyAyMy4yMjVDMjMuOSAyMy4wMjUgMjQgMjIuNzgzMyAyNCAyMi41QzI0IDIyLjIxNjcgMjMuOSAyMS45ODMzIDIzLjcgMjEuOEMyMy41MTY3IDIxLjYgMjMuMjgzMyAyMS41IDIzIDIxLjVIMjBDMTkuNzE2NyAyMS41IDE5LjQ3NSAyMS42IDE5LjI3NSAyMS44QzE5LjA5MTcgMjEuOTgzMyAxOSAyMi4yMTY3IDE5IDIyLjVDMTkgMjIuNzgzMyAxOS4wOTE3IDIzLjAyNSAxOS4yNzUgMjMuMjI1WiIgZmlsbD0iYmxhY2siLz4KICA8cGF0aCBkPSJNMjYuMjc1IDIzLjIyNUMyNi40NzUgMjMuNDA4MyAyNi43MTY3IDIzLjUgMjcgMjMuNUgzMEMzMC4yODMzIDIzLjUgMzAuNTE2NyAyMy40MDgzIDMwLjcgMjMuMjI1QzMwLjkgMjMuMDI1IDMxIDIyLjc4MzMgMzEgMjIuNUMzMSAyMi4yMTY3IDMwLjkgMjEuOTgzMyAzMC43IDIxLjhDMzAuNTE2NyAyMS42IDMwLjI4MzMgMjEuNSAzMCAyMS41SDI3QzI2LjcxNjcgMjEuNSAyNi40NzUgMjEuNiAyNi4yNzUgMjEuOEMyNi4wOTE3IDIxLjk4MzMgMjYgMjIuMjE2NyAyNiAyMi41QzI2IDIyLjc4MzMgMjYuMDkxNyAyMy4wMjUgMjYuMjc1IDIzLjIyNVoiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPg==">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+            <zeebe:ioMapping>
+              <zeebe:input source="getTask" target="operationId" />
+              <zeebe:input source="=camunda.secrets.A2A_RPC_URL" target="url" />
+              <zeebe:input source="=camunda.secrets.A2A_API_KEY" target="apiKey" />
+              <zeebe:input source="=if remoteResponse.result.task instance of context then remoteResponse.result.task.id else remoteResponse.result.id" target="taskId" />
+              <zeebe:input source="noAuth" target="authentication.type" />
+              <zeebe:input source="=if operationId = &quot;fetchAgentCard&quot; then &quot;GET&quot; else &quot;POST&quot;" target="method" />
+              <zeebe:input source="=if operationId = &quot;fetchAgentCard&quot; then {&quot;A2A-Version&quot;: &quot;1.0&quot;} else {&quot;A2A-Version&quot;: &quot;1.0&quot;, &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;X-Api-Key&quot;: apiKey}" target="headers" />
+              <zeebe:input source="=if operationId = &quot;sendMessage&quot; then {jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;SendMessage&quot;, params: {message: message, configuration: {returnImmediately: true}}} else {jsonrpc: &quot;2.0&quot;, id: uuid(), method: &quot;GetTask&quot;, params: {id: taskId}}" target="body" />
+              <zeebe:input source="30" target="readTimeoutInSeconds" />
+            </zeebe:ioMapping>
+            <zeebe:taskHeaders>
+              <zeebe:header key="resultExpression" value="={remoteResponse: response.body}" />
+            </zeebe:taskHeaders>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_WaitBeforeRemotePoll_GetA2ATask</bpmn:incoming>
+          <bpmn:outgoing>Flow_GetA2ATask_RemoteTaskState</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:exclusiveGateway id="RemoteTaskState" name="Still working?" default="Flow_RemoteTaskState_RemoteReplyJoin">
+          <bpmn:incoming>Flow_GetA2ATask_RemoteTaskState</bpmn:incoming>
+          <bpmn:outgoing>Flow_RemoteTaskState_RemotePollJoin</bpmn:outgoing>
+          <bpmn:outgoing>Flow_RemoteTaskState_RemoteReplyJoin</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:exclusiveGateway id="RemoteReplyJoin">
+          <bpmn:incoming>Flow_RemoteTaskAccepted_RemoteReplyJoin</bpmn:incoming>
+          <bpmn:incoming>Flow_RemoteTaskState_RemoteReplyJoin</bpmn:incoming>
+          <bpmn:outgoing>Flow_RemoteReplyJoin_RemoteReplyReceived</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:endEvent id="RemoteReplyReceived" name="Remote agent replied">
+          <bpmn:incoming>Flow_RemoteReplyJoin_RemoteReplyReceived</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Flow_RemoteRequestStarted_SendRemoteMessage" sourceRef="RemoteRequestStarted" targetRef="SendRemoteMessage" />
+        <bpmn:sequenceFlow id="Flow_SendRemoteMessage_RemoteTaskAccepted" sourceRef="SendRemoteMessage" targetRef="RemoteTaskAccepted" />
+        <bpmn:sequenceFlow id="Flow_RemoteTaskAccepted_RemotePollJoin" name="yes" sourceRef="RemoteTaskAccepted" targetRef="RemotePollJoin">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=remoteResponse.error = null and (remoteResponse.result.id instance of string or remoteResponse.result.task.id instance of string)</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_RemoteTaskAccepted_RemoteReplyJoin" name="no task / error" sourceRef="RemoteTaskAccepted" targetRef="RemoteReplyJoin" />
+        <bpmn:sequenceFlow id="Flow_RemotePollJoin_WaitBeforeRemotePoll" sourceRef="RemotePollJoin" targetRef="WaitBeforeRemotePoll" />
+        <bpmn:sequenceFlow id="Flow_WaitBeforeRemotePoll_GetA2ATask" sourceRef="WaitBeforeRemotePoll" targetRef="GetA2ATask" />
+        <bpmn:sequenceFlow id="Flow_GetA2ATask_RemoteTaskState" sourceRef="GetA2ATask" targetRef="RemoteTaskState" />
+        <bpmn:sequenceFlow id="Flow_RemoteTaskState_RemotePollJoin" name="yes" sourceRef="RemoteTaskState" targetRef="RemotePollJoin">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=(for task in [if remoteResponse.result.task instance of context then remoteResponse.result.task else remoteResponse.result] return remoteResponse.error = null and task.status.state in ["TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"])[1]</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_RemoteTaskState_RemoteReplyJoin" name="otherwise" sourceRef="RemoteTaskState" targetRef="RemoteReplyJoin" />
+        <bpmn:sequenceFlow id="Flow_RemoteReplyJoin_RemoteReplyReceived" sourceRef="RemoteReplyJoin" targetRef="RemoteReplyReceived" />
+      </bpmn:subProcess>
       <bpmn:userTask id="AskClientForInput" name="Ask client for missing input">
         <bpmn:documentation>Pause for the user only when the server asks for missing information. Display its exact question and return the user's text plus explicitly confirmed synthetic claim fields. Never fill these fields from model inference.</bpmn:documentation>
         <bpmn:extensionElements>
@@ -128,79 +210,229 @@
         </bpmn:extensionElements>
       </bpmn:userTask>
     </bpmn:adHocSubProcess>
-    <bpmn:scriptTask id="PrepareClientResult" name="Prepare client result">
-      <bpmn:extensionElements>
-        <zeebe:script expression="=(for polls in [flatten( for message in clientAgent.context.conversation.messages[item.role = &quot;tool_call_result&quot;] return message.results[item.name = &quot;GetA2ATask&quot;] )] return for content in [if count(polls) &gt; 0 then polls[count(polls)].content[item.type = &quot;object&quot;][1].content else null] return for body in [if content instance of context and get value(content, &quot;toolCallResult&quot;) instance of context then content.toolCallResult else content] return for response in [if body instance of context then body.result else null] return for task in [if response instance of context then if get value(response, &quot;task&quot;) instance of context then response.task else response else null] return for state in [if task.status.state instance of string then task.status.state else null] return &quot;### Client agent response\n\n&quot; + (if clientAgent.responseText instance of string then clientAgent.responseText else &quot;The client agent returned no text.&quot;) + &quot;\n\n**Last observed server task state:** &quot; + (if state instance of string then state else &quot;No GetTask status was observed.&quot;))[1][1][1][1][1][1]" resultVariable="resultText" />
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_ClientAgent_PrepareClientResult</bpmn:incoming>
-      <bpmn:outgoing>Flow_PrepareClientResult_ReviewClientResult</bpmn:outgoing>
-    </bpmn:scriptTask>
-    <bpmn:userTask id="ReviewClientResult" name="Review client agent result">
+    <bpmn:userTask id="ReviewClientResult" name="User feedback">
       <bpmn:extensionElements>
         <zeebe:userTask />
         <zeebe:formDefinition formId="a2a-client-result" />
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_PrepareClientResult_ReviewClientResult</bpmn:incoming>
-      <bpmn:outgoing>Flow_ReviewClientResult_ClientConversationFinished</bpmn:outgoing>
+      <bpmn:incoming>Flow_ClientAgent_ReviewClientResult</bpmn:incoming>
+      <bpmn:outgoing>Flow_ReviewClientResult_ClientSatisfied</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:endEvent id="ClientConversationFinished" name="Client conversation finished">
-      <bpmn:incoming>Flow_ReviewClientResult_ClientConversationFinished</bpmn:incoming>
+    <bpmn:exclusiveGateway id="ClientSatisfied" name="User satisfied?" default="Flow_ClientSatisfied_PrepareClientFollowUp">
+      <bpmn:incoming>Flow_ReviewClientResult_ClientSatisfied</bpmn:incoming>
+      <bpmn:outgoing>Flow_ClientSatisfied_ClientConversationFinished</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ClientSatisfied_PrepareClientFollowUp</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:scriptTask id="PrepareClientFollowUp" name="Use user feedback">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=clientFeedback" resultVariable="question" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_ClientSatisfied_PrepareClientFollowUp</bpmn:incoming>
+      <bpmn:outgoing>Flow_PrepareClientFollowUp_ClientJoin</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="ClientConversationFinished" name="Request answered">
+      <bpmn:incoming>Flow_ClientSatisfied_ClientConversationFinished</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_QuestionAsked_ClientAgent" sourceRef="QuestionAsked" targetRef="ClientAgent" />
-    <bpmn:sequenceFlow id="Flow_ClientAgent_PrepareClientResult" sourceRef="ClientAgent" targetRef="PrepareClientResult" />
-    <bpmn:sequenceFlow id="Flow_PrepareClientResult_ReviewClientResult" sourceRef="PrepareClientResult" targetRef="ReviewClientResult" />
-    <bpmn:sequenceFlow id="Flow_ReviewClientResult_ClientConversationFinished" sourceRef="ReviewClientResult" targetRef="ClientConversationFinished" />
+    <bpmn:sequenceFlow id="Flow_QuestionAsked_DiscoverAgentCard" sourceRef="QuestionAsked" targetRef="DiscoverAgentCard" />
+    <bpmn:sequenceFlow id="Flow_DiscoverAgentCard_ClientJoin" sourceRef="DiscoverAgentCard" targetRef="ClientJoin" />
+    <bpmn:sequenceFlow id="Flow_ClientJoin_ClientAgent" sourceRef="ClientJoin" targetRef="ClientAgent" />
+    <bpmn:sequenceFlow id="Flow_ClientAgent_ReviewClientResult" sourceRef="ClientAgent" targetRef="ReviewClientResult" />
+    <bpmn:sequenceFlow id="Flow_ReviewClientResult_ClientSatisfied" sourceRef="ReviewClientResult" targetRef="ClientSatisfied" />
+    <bpmn:sequenceFlow id="Flow_ClientSatisfied_ClientConversationFinished" name="yes" sourceRef="ClientSatisfied" targetRef="ClientConversationFinished">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=clientSatisfied = "yes"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_ClientSatisfied_PrepareClientFollowUp" name="no - follow up" sourceRef="ClientSatisfied" targetRef="PrepareClientFollowUp" />
+    <bpmn:sequenceFlow id="Flow_PrepareClientFollowUp_ClientJoin" sourceRef="PrepareClientFollowUp" targetRef="ClientJoin" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="a2a-client">
-      <bpmndi:BPMNShape id="QuestionAsked_di" bpmnElement="QuestionAsked">
-        <dc:Bounds x="70" y="192" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="33" y="236" width="110" height="28" />
-        </bpmndi:BPMNLabel>
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="A2AClientConversation">
+      <bpmndi:BPMNShape id="Pool_a2a-client_di" bpmnElement="Pool_a2a-client" isHorizontal="true">
+        <dc:Bounds x="60" y="40" width="1850" height="840" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClientAgent_di" bpmnElement="ClientAgent" isExpanded="true">
-        <dc:Bounds x="180" y="60" width="400" height="300" />
+      <bpmndi:BPMNShape id="QuestionAsked_di" bpmnElement="QuestionAsked">
+        <dc:Bounds x="120" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="83" y="356" width="110" height="28" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DiscoverAgentCard_di" bpmnElement="DiscoverAgentCard">
-        <dc:Bounds x="220" y="110" width="120" height="80" />
+        <dc:Bounds x="210" y="290" width="120" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SendA2AMessage_di" bpmnElement="SendA2AMessage">
-        <dc:Bounds x="420" y="110" width="120" height="80" />
+      <bpmndi:BPMNShape id="ClientJoin_di" bpmnElement="ClientJoin" isMarkerVisible="true">
+        <dc:Bounds x="380" y="305" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="GetA2ATask_di" bpmnElement="GetA2ATask">
-        <dc:Bounds x="220" y="240" width="120" height="80" />
+      <bpmndi:BPMNShape id="ClientAgent_di" bpmnElement="ClientAgent" isExpanded="true">
+        <dc:Bounds x="480" y="90" width="1000" height="510" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="AskClientForInput_di" bpmnElement="AskClientForInput">
-        <dc:Bounds x="420" y="240" width="120" height="80" />
+      <bpmndi:BPMNShape id="ReadIntakeGuidance_di" bpmnElement="ReadIntakeGuidance">
+        <dc:Bounds x="530" y="140" width="120" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="PrepareClientResult_di" bpmnElement="PrepareClientResult">
-        <dc:Bounds x="650" y="170" width="100" height="80" />
+      <bpmndi:BPMNShape id="CheckConfirmedDetails_di" bpmnElement="CheckConfirmedDetails">
+        <dc:Bounds x="750" y="140" width="120" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ReviewClientResult_di" bpmnElement="ReviewClientResult">
-        <dc:Bounds x="820" y="170" width="100" height="80" />
+      <bpmndi:BPMNShape id="DraftReviewNote_di" bpmnElement="DraftReviewNote">
+        <dc:Bounds x="970" y="140" width="120" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="ClientConversationFinished_di" bpmnElement="ClientConversationFinished">
-        <dc:Bounds x="1000" y="192" width="36" height="36" />
+      <bpmndi:BPMNShape id="SendA2AMessage_di" bpmnElement="SendA2AMessage" isExpanded="true">
+        <dc:Bounds x="530" y="270" width="770" height="280" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RemoteRequestStarted_di" bpmnElement="RemoteRequestStarted">
+        <dc:Bounds x="555" y="352" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="963" y="236" width="110" height="28" />
+          <dc:Bounds x="518" y="396" width="110" height="28" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_QuestionAsked_ClientAgent_di" bpmnElement="Flow_QuestionAsked_ClientAgent">
-        <di:waypoint x="106" y="210" />
-        <di:waypoint x="180" y="210" />
+      <bpmndi:BPMNShape id="SendRemoteMessage_di" bpmnElement="SendRemoteMessage">
+        <dc:Bounds x="620" y="330" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RemoteTaskAccepted_di" bpmnElement="RemoteTaskAccepted" isMarkerVisible="true">
+        <dc:Bounds x="780" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="756.0" y="323.0" width="98" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RemotePollJoin_di" bpmnElement="RemotePollJoin" isMarkerVisible="true">
+        <dc:Bounds x="850" y="345" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="WaitBeforeRemotePoll_di" bpmnElement="WaitBeforeRemotePoll">
+        <dc:Bounds x="925" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="888" y="396" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="GetA2ATask_di" bpmnElement="GetA2ATask">
+        <dc:Bounds x="980" y="330" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RemoteTaskState_di" bpmnElement="RemoteTaskState" isMarkerVisible="true">
+        <dc:Bounds x="1160" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1136.0" y="323.0" width="98" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RemoteReplyJoin_di" bpmnElement="RemoteReplyJoin" isMarkerVisible="true">
+        <dc:Bounds x="1160" y="415" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="RemoteReplyReceived_di" bpmnElement="RemoteReplyReceived">
+        <dc:Bounds x="1167" y="492" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1130" y="536" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_RemoteRequestStarted_SendRemoteMessage_di" bpmnElement="Flow_RemoteRequestStarted_SendRemoteMessage">
+        <di:waypoint x="591" y="370" />
+        <di:waypoint x="620" y="370" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ClientAgent_PrepareClientResult_di" bpmnElement="Flow_ClientAgent_PrepareClientResult">
-        <di:waypoint x="580" y="210" />
-        <di:waypoint x="650" y="210" />
+      <bpmndi:BPMNEdge id="Flow_SendRemoteMessage_RemoteTaskAccepted_di" bpmnElement="Flow_SendRemoteMessage_RemoteTaskAccepted">
+        <di:waypoint x="740" y="370" />
+        <di:waypoint x="780" y="370" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_PrepareClientResult_ReviewClientResult_di" bpmnElement="Flow_PrepareClientResult_ReviewClientResult">
-        <di:waypoint x="750" y="210" />
-        <di:waypoint x="820" y="210" />
+      <bpmndi:BPMNEdge id="Flow_RemoteTaskAccepted_RemotePollJoin_di" bpmnElement="Flow_RemoteTaskAccepted_RemotePollJoin">
+        <di:waypoint x="830" y="370" />
+        <di:waypoint x="850" y="370" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="830" y="345" width="25" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_ReviewClientResult_ClientConversationFinished_di" bpmnElement="Flow_ReviewClientResult_ClientConversationFinished">
-        <di:waypoint x="920" y="210" />
-        <di:waypoint x="1000" y="210" />
+      <bpmndi:BPMNEdge id="Flow_RemoteTaskAccepted_RemoteReplyJoin_di" bpmnElement="Flow_RemoteTaskAccepted_RemoteReplyJoin">
+        <di:waypoint x="805" y="395" />
+        <di:waypoint x="805" y="440" />
+        <di:waypoint x="1160" y="440" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="930" y="415" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RemotePollJoin_WaitBeforeRemotePoll_di" bpmnElement="Flow_RemotePollJoin_WaitBeforeRemotePoll">
+        <di:waypoint x="900" y="370" />
+        <di:waypoint x="925" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_WaitBeforeRemotePoll_GetA2ATask_di" bpmnElement="Flow_WaitBeforeRemotePoll_GetA2ATask">
+        <di:waypoint x="961" y="370" />
+        <di:waypoint x="980" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_GetA2ATask_RemoteTaskState_di" bpmnElement="Flow_GetA2ATask_RemoteTaskState">
+        <di:waypoint x="1100" y="370" />
+        <di:waypoint x="1160" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RemoteTaskState_RemotePollJoin_di" bpmnElement="Flow_RemoteTaskState_RemotePollJoin">
+        <di:waypoint x="1185" y="345" />
+        <di:waypoint x="1185" y="305" />
+        <di:waypoint x="875" y="305" />
+        <di:waypoint x="875" y="345" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1050" y="284" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RemoteTaskState_RemoteReplyJoin_di" bpmnElement="Flow_RemoteTaskState_RemoteReplyJoin">
+        <di:waypoint x="1185" y="395" />
+        <di:waypoint x="1185" y="415" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1220" y="395" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_RemoteReplyJoin_RemoteReplyReceived_di" bpmnElement="Flow_RemoteReplyJoin_RemoteReplyReceived">
+        <di:waypoint x="1185" y="465" />
+        <di:waypoint x="1185" y="492" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="AskClientForInput_di" bpmnElement="AskClientForInput">
+        <dc:Bounds x="1190" y="140" width="120" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ReviewClientResult_di" bpmnElement="ReviewClientResult">
+        <dc:Bounds x="1530" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ClientSatisfied_di" bpmnElement="ClientSatisfied" isMarkerVisible="true">
+        <dc:Bounds x="1690" y="305" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1662.5" y="283.0" width="105" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PrepareClientFollowUp_di" bpmnElement="PrepareClientFollowUp">
+        <dc:Bounds x="1070" y="680" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ClientConversationFinished_di" bpmnElement="ClientConversationFinished">
+        <dc:Bounds x="1810" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1773" y="356" width="110" height="28" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_QuestionAsked_DiscoverAgentCard_di" bpmnElement="Flow_QuestionAsked_DiscoverAgentCard">
+        <di:waypoint x="156" y="330" />
+        <di:waypoint x="210" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_DiscoverAgentCard_ClientJoin_di" bpmnElement="Flow_DiscoverAgentCard_ClientJoin">
+        <di:waypoint x="330" y="330" />
+        <di:waypoint x="380" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ClientJoin_ClientAgent_di" bpmnElement="Flow_ClientJoin_ClientAgent">
+        <di:waypoint x="430" y="330" />
+        <di:waypoint x="480" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ClientAgent_ReviewClientResult_di" bpmnElement="Flow_ClientAgent_ReviewClientResult">
+        <di:waypoint x="1480" y="330" />
+        <di:waypoint x="1530" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ReviewClientResult_ClientSatisfied_di" bpmnElement="Flow_ReviewClientResult_ClientSatisfied">
+        <di:waypoint x="1630" y="330" />
+        <di:waypoint x="1690" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ClientSatisfied_ClientConversationFinished_di" bpmnElement="Flow_ClientSatisfied_ClientConversationFinished">
+        <di:waypoint x="1740" y="330" />
+        <di:waypoint x="1810" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1755" y="308" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_ClientSatisfied_PrepareClientFollowUp_di" bpmnElement="Flow_ClientSatisfied_PrepareClientFollowUp">
+        <di:waypoint x="1715" y="355" />
+        <di:waypoint x="1715" y="720" />
+        <di:waypoint x="1170" y="720" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1430" y="696" width="100" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_PrepareClientFollowUp_ClientJoin_di" bpmnElement="Flow_PrepareClientFollowUp_ClientJoin">
+        <di:waypoint x="1070" y="720" />
+        <di:waypoint x="405" y="720" />
+        <di:waypoint x="405" y="355" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

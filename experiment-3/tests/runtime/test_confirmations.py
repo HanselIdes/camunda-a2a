@@ -29,36 +29,77 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn("agent.", validation.get("expression"))
         self.assertNotIn("history", validation.get("expression"))
 
-    def test_client_confirmation_and_task_identity_come_from_process_results(self):
+    def test_client_agent_history_uses_exact_nested_result_paths(self):
         root = ET.parse(ROOT / "blueprint/demo/01-client-agent.bpmn").getroot()
+        discover = next(e for e in root.iter() if e.get("id") == "DiscoverAgentCard")
+        card_expression = next(e for e in discover.iter(Z + "header")
+                              if e.get("key") == "resultExpression").get("value")
+        self.assertEqual(card_expression, "={agentCard: response.body}")
+
         send = next(e for e in root.iter() if e.get("id") == "SendA2AMessage")
-        send_body = next(e for e in send.iter(Z + "input") if e.get("target") == "body").get("source")
-        self.assertNotIn("toolCall.claim", send_body)
-        self.assertNotIn("toolCall.taskId", send_body)
-        self.assertNotIn("toolCall.contextId", send_body)
-        self.assertIn("message: context merge([", send_body)
-        self.assertIn("agentContext.conversation.messages", send_body)
-        self.assertIn('content[item.type = "object"][1].content', send_body)
-        self.assertIn('message.results[item.name = "AskClientForInput"]', send_body)
-        self.assertIn('message.results[item.name = "SendA2AMessage"]', send_body)
-        self.assertIn("result.task.id", send_body)
-        self.assertIn("result.task.contextId", send_body)
-        self.assertIn("syntheticClaim", send_body)
+        agent = next(e for e in root.iter() if e.get("id") == "ClientAgent")
+        self.assertNotIn(discover, list(agent.iter()))
+        send_output = next(e for e in send.iter(Z + "output")
+                           if e.get("target") == "toolCallResult").get("source")
+        self.assertEqual(send_output, "=remoteResponse")
+        previous_task = next(e for e in send.iter(Z + "input")
+                             if e.get("target") == "previousTask").get("source")
+        self.assertIn('message.results[item.name = "SendA2AMessage"]', previous_task)
+        self.assertIn('content[item.type = "object"][1].content', previous_task)
+        self.assertIn('get value(content, "toolCallResult")', previous_task)
+        self.assertIn("task.id", previous_task)
+        self.assertIn("task.contextId", previous_task)
+        self.assertNotIn("fromAi(", previous_task)
 
-        get_task = next(e for e in root.iter() if e.get("id") == "GetA2ATask")
-        get_body = next(e for e in get_task.iter(Z + "input") if e.get("target") == "body").get("source")
-        self.assertNotIn("fromAi(toolCall.taskId", get_body)
-        self.assertIn('message.results[item.name = "SendA2AMessage"]', get_body)
-        self.assertIn("agentContext.conversation.messages", get_body)
-        self.assertIn('content[item.type = "object"][1].content', get_body)
-        self.assertIn('get value(', get_body)
+        confirmed_parts = next(e for e in send.iter(Z + "input")
+                               if e.get("target") == "confirmedParts").get("source")
+        self.assertIn('message.results[item.name = "AskClientForInput"]', confirmed_parts)
+        self.assertIn('content[item.type = "object"][1].content', confirmed_parts)
+        self.assertIn('get value(content, "toolCallResult")', confirmed_parts)
+        self.assertIn("result.syntheticClaim", confirmed_parts)
+        self.assertNotIn("SendA2AMessage", confirmed_parts)
 
-        prepare_result = next(e for e in root.iter() if e.get("id") == "PrepareClientResult")
-        prepare_expression = next(e for e in prepare_result.iter(Z + "script")).get("expression")
-        self.assertIn("clientAgent.context.conversation.messages", prepare_expression)
-        self.assertIn('content[item.type = "object"][1].content', prepare_expression)
-        self.assertIn('message.results[item.name = "GetA2ATask"]', prepare_expression)
-        self.assertNotIn("toolCallResults", prepare_expression)
+        send_task = next(e for e in send.iter() if e.get("id") == "SendRemoteMessage")
+        message = next(e for e in send_task.iter(Z + "input")
+                       if e.get("target") == "message").get("source")
+        self.assertIn("context merge([", message)
+        self.assertIn("remoteText", message)
+        self.assertIn("confirmedParts", message)
+        self.assertIn("previousTask", message)
+        self.assertNotIn("toolCall.claim", message)
+        self.assertNotIn("toolCall.taskId", message)
+        self.assertNotIn("toolCall.contextId", message)
+
+        get_task = next(e for e in send.iter() if e.get("id") == "GetA2ATask")
+        task_id = next(e for e in get_task.iter(Z + "input")
+                       if e.get("target") == "taskId").get("source")
+        self.assertIn("remoteResponse.result.task", task_id)
+        self.assertIn("remoteResponse.result.id", task_id)
+        self.assertNotIn("fromAi(", task_id)
+
+        output_sources = {e.get("target"): e.get("source") for e in agent.iter(Z + "output")}
+        self.assertEqual(output_sources["clientAgent"], "=agent")
+        result_expression = output_sources["resultText"]
+        self.assertIn("agent.responseText", result_expression)
+        self.assertIn('message.results[item.name = "SendA2AMessage"]', result_expression)
+        self.assertIn("task.status.state", result_expression)
+        self.assertNotIn("PrepareClientResult", {e.get("id") for e in root.iter()})
+
+    def test_client_result_review_requires_explicit_satisfaction(self):
+        form = json.loads((ROOT / "blueprint/demo/06-client-agent-result.form").read_text())
+        satisfied = next(component for component in form["components"]
+                         if component.get("key") == "clientSatisfied")
+        self.assertTrue(satisfied["validate"]["required"])
+        self.assertEqual({value["value"] for value in satisfied["values"]}, {"yes", "no"})
+
+    def test_server_card_uses_the_documented_prototype_placeholder(self):
+        root = ET.parse(ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn").getroot()
+        public_url = next(e for e in root.iter(Z + "property")
+                          if e.get("name") == "inbound.publicRpcUrl")
+        self.assertEqual(
+            public_url.get("value"),
+            "https://camunda-a2a-demo.example.com/inbound/a2a",
+        )
 
     def test_form_has_explicit_empty_confirmation_inputs(self):
         form = json.loads((ROOT / "blueprint/demo/05-client-agent-confirm.form").read_text())

@@ -1,7 +1,7 @@
 """Generate the client-side AI Agent Sub-process and its root A2A tools."""
 from bpmn_gen.client import form
 from bpmn_gen.feel import one
-from bpmn_gen.lib import Proc, q
+from bpmn_gen.lib import Collab, Proc, q
 from gen_card import feel_str
 
 
@@ -22,13 +22,20 @@ SAMPLE = (
 SYSTEM_PROMPT = (
     "You are the client-side AI agent for a synthetic A2A demonstration. "
     "The remote server agent owns the review; do not invent case facts or make financial decisions. "
-    "Start by calling DiscoverAgentCard, then use SendA2AMessage for the user's request. "
-    "GetA2ATask polls the task returned by the prior send. If the server requests input, "
+    "The process has already fetched the remote Agent Card. "
+    "ReadIntakeGuidance explains the synthetic demo's intake checklist. "
+    "CheckConfirmedDetails checks whether the human has supplied confirmation; it does not reconcile charges. "
+    "DraftReviewNote prepares an unsent draft for human review, not a financial decision. "
+    "Use these local tools when useful; all charge arithmetic belongs to the remote server. "
+    "Use SendA2AMessage to delegate the user's request to that remote agent. "
+    "This tool sends the message and polls the returned task using an explicit BPMN flow. "
+    "If the server requests input, "
     "call AskClientForInput with the server's exact question, then send the user's answer and "
     "confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from "
     "the prior send result, and takes confirmation data only from the AskClientForInput form result. "
+    "An active task is continued; after a terminal task a new task uses the server-returned context ID. "
     "Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. "
-    "Never describe a request as completed unless a GetA2ATask response reports TASK_STATE_COMPLETED. "
+    "Never describe a request as completed unless the tool result reports TASK_STATE_COMPLETED. "
     "Report failures and nonterminal states accurately. This example performs no real financial action."
 )
 
@@ -58,50 +65,149 @@ PREVIOUS_A2A_TASK_PARAMS = """
     for response in [if content instance of context and get value(content, "toolCallResult") instance of context
                      then content.toolCallResult else content] return
       for result in [if response instance of context then response.result else null] return
-        if result instance of context then
-          if get value(result, "task") instance of context then
-            {taskId: result.task.id, contextId: result.task.contextId}
-          else if result.id instance of string and result.contextId instance of string then
-            {taskId: result.id, contextId: result.contextId}
+        for task in [if result instance of context and get value(result, "task") instance of context
+                     then result.task else result] return
+          if task.id instance of string and task.contextId instance of string then
+            if task.status.state in ["TASK_STATE_COMPLETED", "TASK_STATE_CANCELED",
+                                     "TASK_STATE_FAILED", "TASK_STATE_REJECTED"] then
+              {contextId: task.contextId}
+            else {taskId: task.id, contextId: task.contextId}
           else {}
-        else {}
-  )[1][1][1]
+  )[1][1][1][1]
 else {})[1]
 """
+
+
+CLIENT_RESULT_EXPRESSION = one("""=(for polls in [flatten(
+  for message in agent.context.conversation.messages[item.role = "tool_call_result"]
+  return message.results[item.name = "SendA2AMessage"]
+  )] return
+  for content in [if count(polls) > 0 then
+    polls[count(polls)].content[item.type = "object"][1].content else null] return
+  for body in [if content instance of context and get value(content, "toolCallResult") instance of context
+               then content.toolCallResult else content] return
+  for response in [if body instance of context then body.result else null] return
+  for task in [if response instance of context then
+    if get value(response, "task") instance of context then response.task else response else null] return
+  for state in [if task.status.state instance of string then task.status.state else null] return
+  "### Client agent response\\n\\n" +
+  (if agent.responseText instance of string then agent.responseText
+   else "The client agent returned no text.") +
+  "\\n\\n**Last observed server task state:** " +
+  (if state instance of string then state else "No server task status was observed."))[1][1][1][1][1][1]""")
 
 
 def build():
     p = Proc("a2a-client", "01 Client Agent - Ask the Server")
     p.start("QuestionAsked", "Client request received", 150, 210,
             ext='<zeebe:formDefinition formId="a2a-client-ask" />')
-    p.sub("ClientAgent", "Coordinate with the A2A server", 250, 80, 400, 290,
+    p.node(
+        "serviceTask", "DiscoverAgentCard", "Fetch remote agent card", 230, 210,
+        doc="Read the public Agent Card before entering the client agent. Returns the card, not credentials.",
+    )
+    p.xor("ClientJoin", "", 380, 225)
+    p.sub("ClientAgent", "Client AI agent", 470, 80, 760, 510,
           kind="adHocSubProcess")
     p.node(
-        "serviceTask", "DiscoverAgentCard", "Discover server agent",
-        290, 135, parent="ClientAgent",
-        doc=("Read the public Agent Card before contacting the remote server. Use this tool first "
-             "to inspect its name, JSON-RPC endpoint and advertised capabilities. Returns the card; "
-             "does not send a task or expose credentials."),
+        "scriptTask", "ReadIntakeGuidance", "Read intake guidance", 530, 140,
+        parent="ClientAgent",
+        ext='<zeebe:script expression=%s resultVariable="toolCallResult" />' % q(one("""={
+          syntheticDemoOnly: true,
+          requiredDetails: ["merchant", "currency", "two charge amounts", "expected order amount",
+                            "explicit confirmation that all values are synthetic"],
+          clientResponsibilities: ["collect the user's account", "request missing confirmation",
+                                   "delegate charge reconciliation", "prepare a draft for human review"],
+          restrictions: ["do not infer financial fields from narrative",
+                         "do not authorize refunds or decide fraud",
+                         "do not treat this demonstration checklist as bank policy"]
+        }""")),
+        doc=("Read the local synthetic-demo intake checklist before collecting dispute details. "
+             "Returns required information and the client/server responsibilities. "
+             "This is demonstration guidance, not bank policy, and performs no external call."),
     )
     p.node(
-        "serviceTask", "SendA2AMessage", "Send A2A message",
-        495, 135, parent="ClientAgent",
-        doc=("Send a new A2A 1.0 message or a follow-up to the same task. Use the user's request "
-             "as text. Follow-ups use task and context IDs from the prior send result. A structured "
-             "syntheticClaim is added only from the AskClientForInput form result; neither can be "
-             "supplied as an AI tool argument. Returns the JSON-RPC response and task."),
+        "scriptTask", "CheckConfirmedDetails", "Check confirmed details", 750, 140,
+        parent="ClientAgent",
+        ext=('<zeebe:ioMapping><zeebe:input source=%s target="confirmedParts" /></zeebe:ioMapping>'
+             '<zeebe:script expression=%s resultVariable="toolCallResult" />' % (
+                 q("=" + one(CONFIRMED_CLIENT_DATA_PARTS)),
+                 q(one("""={
+                   claim: if count(confirmedParts) = 1 then confirmedParts[1].data.syntheticClaim else null,
+                   humanConfirmationPresent: claim instance of context,
+                   syntheticOnlyConfirmed: claim.syntheticOnly = true,
+                   nextStep: if claim instance of context and claim.syntheticOnly = true
+                     then "Send the human-confirmed details to the remote reconciliation agent."
+                     else "Ask the human to confirm the synthetic claim using AskClientForInput.",
+                   notice: "Checks confirmation provenance only. The server validates and reconciles amounts."
+                 }""")),
+             )),
+        doc=("Check whether AskClientForInput returned a human-confirmed synthetic claim. "
+             "Accepts no model-provided financial fields. Returns confirmation presence and next steps, "
+             "not arithmetic, eligibility or a dispute decision. Use when deciding whether to ask for details."),
     )
     p.node(
-        "serviceTask", "GetA2ATask", "Poll A2A task",
-        290, 255, parent="ClientAgent",
-        doc=("Read the current state of the task returned by the prior SendA2AMessage call. "
-             "The task ID comes from that response, not an AI tool argument. Poll while work "
-             "continues and use the returned state and message to decide whether to request input "
-             "or report a terminal result."),
+        "scriptTask", "DraftReviewNote", "Draft review note", 970, 140,
+        parent="ClientAgent",
+        ext=('<zeebe:ioMapping><zeebe:input source=%s target="draftText" /></zeebe:ioMapping>'
+             '<zeebe:script expression=%s resultVariable="toolCallResult" />' % (
+                 q('=fromAi(toolCall.summary, "Draft a concise note using only the user account and actual '
+                   'remote agent results. Label missing evidence; do not invent facts or authorize action.", "string")'),
+                 q('={draftOnly: true, text: draftText, '
+                   'notice: "Unsent draft for human review. No refund, notification or financial action performed."}'),
+             )),
+        doc=("Format a draft note for the human reviewer after receiving remote reconciliation evidence. "
+             "Supply a concise summary grounded in the user's account and actual tool results. "
+             "Returns explicitly labeled draft text; it does not verify claims, send messages, "
+             "change an account or authorize a refund."),
     )
+    p.sub(
+        "SendA2AMessage", "Ask remote agent", 510, 250, 680, 300, parent="ClientAgent",
+        ext=('<zeebe:ioMapping>'
+             '<zeebe:input source=%s target="remoteText" />'
+             '<zeebe:input source=%s target="previousTask" />'
+             '<zeebe:input source=%s target="confirmedParts" />'
+             '<zeebe:output source="=remoteResponse" target="toolCallResult" />'
+             '</zeebe:ioMapping>' % (
+                 q('=fromAi(toolCall.text, "The user request or follow-up text", "string")'),
+                 q("=" + one(PREVIOUS_A2A_TASK_PARAMS)),
+                 q("=" + one(CONFIRMED_CLIENT_DATA_PARTS)),
+             )),
+        doc=("Delegate to the remote A2A agent. Sends a new message or follows up on the same task "
+             "using response-derived task/context IDs. Polls two seconds apart while the task is working, "
+             "then returns the actual JSON-RPC response, including input-required or failure states. "
+             "Confirmed synthetic claim data comes only from the human form. "
+             "Use AskClientForInput if the response requests confirmation; do not infer claim values."),
+    )
+    p.start("RemoteRequestStarted", "Remote request started", 535, 330, parent="SendA2AMessage")
+    p.node("serviceTask", "SendRemoteMessage", "Send A2A message", 600, 308, parent="SendA2AMessage")
+    p.xor("RemoteTaskAccepted", "Task returned?", 720, 323, parent="SendA2AMessage")
+    p.xor("RemotePollJoin", "", 800, 323, parent="SendA2AMessage")
+    p.catch_timer("WaitBeforeRemotePoll", "Wait 2 seconds", 745, 330, '="PT2S"',
+                  parent="SendA2AMessage")
+    p.node("serviceTask", "GetA2ATask", "Get A2A task", 825, 308, parent="SendA2AMessage")
+    p.xor("RemoteTaskState", "Still working?", 1100, 323, parent="SendA2AMessage")
+    p.xor("RemoteReplyJoin", "", 1100, 415, parent="SendA2AMessage")
+    p.end("RemoteReplyReceived", "Remote agent replied", 1107, 450, parent="SendA2AMessage")
+    p.flow("RemoteRequestStarted", "SendRemoteMessage")
+    p.flow("SendRemoteMessage", "RemoteTaskAccepted")
+    p.flow("RemoteTaskAccepted", "RemotePollJoin", "yes",
+           cond='=remoteResponse.error = null and (remoteResponse.result.id instance of string or '
+                'remoteResponse.result.task.id instance of string)')
+    p.flow("RemoteTaskAccepted", "RemoteReplyJoin", "no task / error",
+           default=True, route="back:30")
+    p.flow("RemotePollJoin", "WaitBeforeRemotePoll")
+    p.flow("WaitBeforeRemotePoll", "GetA2ATask")
+    p.flow("GetA2ATask", "RemoteTaskState")
+    p.flow("RemoteTaskState", "RemotePollJoin", "yes", route="over:30",
+           cond='=(for task in [if remoteResponse.result.task instance of context then '
+                'remoteResponse.result.task else remoteResponse.result] return '
+                'remoteResponse.error = null and task.status.state in '
+                '["TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"])[1]')
+    p.flow("RemoteTaskState", "RemoteReplyJoin", "otherwise", default=True, route="down-in")
+    p.flow("RemoteReplyJoin", "RemoteReplyReceived")
     p.node(
         "userTask", "AskClientForInput", "Ask client for missing input",
-        495, 255, parent="ClientAgent",
+        1190, 140, parent="ClientAgent",
         ext=('<zeebe:userTask /><zeebe:formDefinition formId="a2a-client-answer" />'
              '<zeebe:ioMapping>'
              '<zeebe:input source=%s target="question" />'
@@ -117,42 +223,28 @@ def build():
              "fields. Never fill these fields from model inference."),
     )
 
-    p.script(
-        "PrepareClientResult", "Prepare client result", 720, 185,
-        one("""=(for polls in [flatten(
-          for message in clientAgent.context.conversation.messages[item.role = "tool_call_result"]
-          return message.results[item.name = "GetA2ATask"]
-          )] return
-          for content in [if count(polls) > 0 then
-            polls[count(polls)].content[item.type = "object"][1].content else null] return
-          for body in [if content instance of context and get value(content, "toolCallResult") instance of context
-                       then content.toolCallResult else content] return
-          for response in [if body instance of context then body.result else null] return
-          for task in [if response instance of context then
-            if get value(response, "task") instance of context then response.task else response else null] return
-          for state in [if task.status.state instance of string then task.status.state else null] return
-          "### Client agent response\\n\\n" +
-          (if clientAgent.responseText instance of string then clientAgent.responseText
-           else "The client agent returned no text.") +
-          "\\n\\n**Last observed server task state:** " +
-          (if state instance of string then state else "No GetTask status was observed."))[1][1][1][1][1][1]"""),
-        "resultText",
-    )
-    p.node("userTask", "ReviewClientResult", "Review client agent result", 900, 185,
+    p.node("userTask", "ReviewClientResult", "User feedback", 1430, 210,
            ext='<zeebe:userTask /><zeebe:formDefinition formId="a2a-client-result" />')
-    p.end("ClientConversationFinished", "Client conversation finished", 1080, 207)
+    p.xor("ClientSatisfied", "User satisfied?", 1590, 225)
+    p.script("PrepareClientFollowUp", "Use user feedback", 1030, 680, "=clientFeedback", "question")
+    p.end("ClientConversationFinished", "Request answered", 1710, 232)
 
-    p.flow("QuestionAsked", "ClientAgent")
-    p.flow("ClientAgent", "PrepareClientResult")
-    p.flow("PrepareClientResult", "ReviewClientResult")
-    p.flow("ReviewClientResult", "ClientConversationFinished")
+    p.flow("QuestionAsked", "DiscoverAgentCard")
+    p.flow("DiscoverAgentCard", "ClientJoin")
+    p.flow("ClientJoin", "ClientAgent")
+    p.flow("ClientAgent", "ReviewClientResult")
+    p.flow("ReviewClientResult", "ClientSatisfied")
+    p.flow("ClientSatisfied", "ClientConversationFinished", "yes", cond='=clientSatisfied = "yes"')
+    p.flow("ClientSatisfied", "PrepareClientFollowUp", "no - follow up", default=True, route="back:30")
+    p.flow("PrepareClientFollowUp", "ClientJoin", route="back:60")
 
     forms = {
         "04-client-agent-ask.form": form("a2a-client-ask", [
             {"type": "text", "text": (
                 "### Ask the A2A server agent\n\n"
-                "The client AI agent discovers the server's Agent Card and chooses when to send, "
-                "poll, or request missing input. The example uses synthetic dispute data only."
+                "The process fetches the server's Agent Card, then the client AI agent delegates "
+                "through A2A templates. You can provide feedback and continue the conversation. "
+                "The example uses synthetic dispute data only."
             )},
             {"type": "textarea", "key": "question", "label": "What should the server agent review?",
              "validate": {"required": True}, "defaultValue": SAMPLE},
@@ -174,55 +266,49 @@ def build():
         ]),
         "06-client-agent-result.form": form("a2a-client-result", [
             {"type": "text", "text": "=resultText"},
+            {"type": "radio", "key": "clientSatisfied", "label": "Are you satisfied with this response?",
+             "values": [{"label": "Yes, finish", "value": "yes"},
+                        {"label": "No, send a follow-up", "value": "no"}],
+             "validate": {"required": True}},
+            {"type": "textarea", "key": "clientFeedback", "label": "Your follow-up",
+             "conditional": {"hide": '=clientSatisfied != "no"'},
+             "validate": {"required": True}},
         ]),
     }
 
     http = {
         "DiscoverAgentCard": [
-            ("method", "GET"),
+            ("operationId", "fetchAgentCard"),
             ("url", "=camunda.secrets.A2A_AGENT_CARD_URL"),
-            ("headers", '={"A2A-Version": "1.0"}'),
             ("readTimeoutInSeconds", "20"),
-            ("resultExpression", "={toolCallResult: response.body}"),
+            ("resultExpression", "={agentCard: response.body}"),
         ],
-        "SendA2AMessage": [
-            ("method", "POST"),
+        "SendRemoteMessage": [
+            ("operationId", "sendMessage"),
+            ("apiKey", "=camunda.secrets.A2A_API_KEY"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
-            ("headers", '={"A2A-Version": "1.0", "Content-Type": "application/json", '
-                        '"X-Api-Key": camunda.secrets.A2A_API_KEY}'),
-            ("body", one("""={
-              jsonrpc: "2.0", id: uuid(), method: "SendMessage",
-              params: {
-                message: context merge([
+            ("message", one("""=context merge([
                   {
                   messageId: uuid(), role: "ROLE_USER",
                   parts: concatenate(
-                    [{text: fromAi(toolCall.text, "The user's request or follow-up text", "string")}],
-                    CONFIRMED_CLIENT_DATA_PARTS
+                    [{text: remoteText}], confirmedParts
                   )
                   },
-                PREVIOUS_A2A_TASK_PARAMS
-                ]),
-                configuration: {returnImmediately: true}
-              }
-            }""".replace("CONFIRMED_CLIENT_DATA_PARTS", CONFIRMED_CLIENT_DATA_PARTS)
-                 .replace("PREVIOUS_A2A_TASK_PARAMS", PREVIOUS_A2A_TASK_PARAMS))),
+                previousTask
+                ])""")),
             ("readTimeoutInSeconds", "60"),
             ("retries", "1"),
-            ("resultExpression", "={toolCallResult: response.body}"),
+            ("resultExpression", "={remoteResponse: response.body}"),
         ],
         "GetA2ATask": [
-            ("method", "POST"),
+            ("operationId", "getTask"),
+            ("apiKey", "=camunda.secrets.A2A_API_KEY"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
-            ("headers", '={"A2A-Version": "1.0", "Content-Type": "application/json", '
-                        '"X-Api-Key": camunda.secrets.A2A_API_KEY}'),
-            ("body", one("""={
-              jsonrpc: "2.0", id: uuid(), method: "GetTask",
-              params: {id: get value(PREVIOUS_A2A_TASK_PARAMS, "taskId")}
-            }""".replace("PREVIOUS_A2A_TASK_PARAMS", PREVIOUS_A2A_TASK_PARAMS))),
+            ("taskId", '=if remoteResponse.result.task instance of context then '
+                       'remoteResponse.result.task.id else remoteResponse.result.id'),
             ("readTimeoutInSeconds", "30"),
             ("retries", "1"),
-            ("resultExpression", "={toolCallResult: response.body}"),
+            ("resultExpression", "={remoteResponse: response.body}"),
         ],
     }
     ai_subprocess = [
@@ -234,7 +320,8 @@ def build():
         ("provider.openai.backend.custom.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
         ("provider.openai.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM_PROMPT)),
-        ("data.userPrompt.prompt", "=question"),
+        ("data.userPrompt.prompt", '=question + "\\n\\nRemote agent: " + agentCard.name + '
+         '"\\nSkills: " + string join(agentCard.skills.name, ", ")'),
         ("agentContext", "=clientAgent.context"),
         ("data.memory.storage.type", "in-process"),
         ("data.memory.contextWindowSize", "=20"),
@@ -243,4 +330,6 @@ def build():
         ("data.response.includeAgentContext", "true"),
         ("retries", "1"),
     ]
-    return p.xml(), forms, http, ai_subprocess
+    collaboration = Collab("A2AClientConversation", "A2A client conversation")
+    collaboration.add(p, "A2A client agent")
+    return collaboration.xml(), forms, http, ai_subprocess

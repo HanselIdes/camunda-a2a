@@ -1,0 +1,68 @@
+{
+  "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.10/schema.json",
+  "processId": "a2a-client",
+  "testCases": [
+    {
+      "name": "Live E2E - confirm synthetic claim and review the response",
+      "description": "Runs the real client agent against the configured A2A server and reconciliation agent, supplies human confirmation, then accepts the reviewed response. Requires reachable deployed server processes and configured model/Connector secrets. Asserts client routing, not response wording, reconciliation correctness or A2A conformance.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": {
+            "processDefinitionId": "a2a-client"
+          },
+          "variables": {
+            "question": "Northwind Electronics charged USD 49.95 twice for one order. The expected charge was USD 49.95. Review this synthetic example only. Delegate the reconciliation to the remote agent. If it requests confirmation, ask me using the confirmation form before sending the confirmed details."
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "AskClientForInput"
+          },
+          "variables": {
+            "followUp": "I confirm that these are synthetic demonstration values. Please reconcile them for human review.",
+            "claimMerchant": "Northwind Electronics",
+            "claimCurrency": "USD",
+            "claimFirstAmount": 49.95,
+            "claimSecondAmount": 49.95,
+            "claimExpectedAmount": 49.95,
+            "claimSyntheticOnly": true
+          }
+        },
+        {
+          "type": "COMPLETE_USER_TASK",
+          "userTaskSelector": {
+            "elementId": "ReviewClientResult"
+          },
+          "variables": {
+            "clientSatisfied": "yes"
+          }
+        },
+        {
+          "type": "ASSERT_PROCESS_INSTANCE",
+          "processInstanceSelector": {
+            "processDefinitionId": "a2a-client"
+          },
+          "state": "IS_COMPLETED",
+          "hasActiveIncidents": false
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCES",
+          "processInstanceSelector": {
+            "processDefinitionId": "a2a-client"
+          },
+          "elementSelectors": [
+            { "elementId": "DiscoverAgentCard" },
+            { "elementId": "SendRemoteMessage" },
+            { "elementId": "GetA2ATask" },
+            { "elementId": "AskClientForInput" },
+            { "elementId": "ReviewClientResult" },
+            { "elementId": "ClientConversationFinished" }
+          ],
+          "state": "IS_COMPLETED"
+        }
+      ]
+    }
+  ]
+}

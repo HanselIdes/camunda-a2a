@@ -45,7 +45,31 @@ complete current demo on 8.9.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
 
-### Why the current client requires 8.10
+### A2A templates target 8.9; the AI-agent demo requires 8.10
+
+The reusable A2A Client, RPC Endpoint and Agent Card Endpoint templates target **engine and stock
+Connectors 8.9 or later**, independently of the AI Agent connector. Their engine constraints are
+`^8.9`; this is a compatibility target, **not a fresh 8.9 runtime pass**. The current prototype's
+revised flows and mappings remain unverified on 8.9 while prototyping is in progress.
+
+On 8.9, configure the Connector secret store and use `{{secrets.A2A_API_KEY}}` for the shared API key.
+The RPC template exposes this reference as an editable field; the client uses the same default.
+For Self-Managed, the standard environment provider uses `SECRET_A2A_API_KEY`. For SaaS, configure
+the corresponding Connector secret. Keep the `X-Api-Key` header and HTTPS transport unchanged.
+Use literal public HTTPS endpoint URLs or 8.9-compatible Connector secret placeholders, not
+`camunda.secrets` expressions, when configuring these templates on 8.9.
+
+On 8.10+, use `=camunda.secrets.A2A_API_KEY` with the cluster secret store. The supplied 8.10 BPMN
+examples explicitly retain this native reference, along with the other native secret mappings;
+the templates' 8.9 defaults do not change the examples' secret configuration.
+
+The five older templates under `element-templates/` also target 8.9 at the template level, including
+the optional push sender and callback receiver. They remain part of the nonshipping historical
+experiment, not supported companions for the current blueprint. Their version declarations do not
+enable push in the supplied server or establish current runtime verification.
+
+The complete current demo still requires 8.10. In particular, applying an A2A template to an
+8.9 process does not make the supplied AI Agent Sub-process v2 host available there.
 
 The requirement comes from the selected
 [`io.camunda.connectors.agenticai.ai-agent-subprocess.v2@1` template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json),
@@ -58,11 +82,11 @@ The verified Connectors 8.9.17 source instead has the older
 These are different connector contracts. The 8.10 minimum is not a generic requirement of A2A,
 BPMN, AI agents, or all ad-hoc subprocess implementations.
 
-| Package / runtime | What works or is unavailable | Evidence |
-| --- | --- | --- |
-| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/18e2a06/README.md). |
-| Current package / 8.9 | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only. |
-| [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client. | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
+| Package / runtime                                                                                                                                                                                 | What works or is unavailable                                                                                                                         | Evidence                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Current package / engine and Connectors 8.10.2                                                                                                                                                    | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review.                    | [Focused local-model run](../verification/18e2a06/README.md).                                                                                                                                                               |
+| Current package / 8.9                                                                                                                                                                             | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only.                                                                                                                                                                 |
+| [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client.                   | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
 
 For an 8.9 cluster, use the whole pinned Task-based package with its own README and dependencies.
 Its deployed model bytes match the source-pinned run. Do not mix those resources with current files;
@@ -74,17 +98,17 @@ These are version-specific limits, separate from the selected Basic profile: upg
 does not enable push, streaming, OAuth, or per-user authorization in that demo. Both recorded
 journeys used local Ollama; neither verifies Camunda-provided SaaS model execution.
 
-| Component            | Version or setting                                                                                                   |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Self-Managed engine  | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                             |
-| Stock Connectors     | 8.10.2; no custom worker or custom HTTP server                                                                       |
-| Secondary storage    | Elasticsearch 8.19.23                                                                                                |
-| Client AI Agent Sub-process | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10`                     |
-| Server AI Agent      | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                                    |
-| HTTP template        | `io.camunda.connectors.HttpJson.v2`, version 13                                                                      |
-| Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
-| Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
-| Engine exporter      | Explicit CamundaExporter class and `bulk.delay=1`; see below                                                      |
+| Component                   | Version or setting                                                                             |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
+| Self-Managed engine         | Camunda 8.10.2, Basic authentication and platform authorizations enabled                       |
+| Stock Connectors            | 8.10.2; no custom worker or custom HTTP server                                                 |
+| Secondary storage           | Elasticsearch 8.19.23                                                                          |
+| Client AI Agent Sub-process | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10` |
+| Server AI Agent             | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                              |
+| HTTP template               | `io.camunda.connectors.HttpJson.v2`, version 13                                                |
+| Transport                   | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients       |
+| Runtime settings            | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`  |
+| Engine exporter             | Explicit CamundaExporter class and `bulk.delay=1`; see below                                   |
 
 Use `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `CAMUNDA_PROVIDED_LLM_API_KEY`, and
 `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` in the shipped BPMN. An isolated local verification may override
@@ -99,6 +123,35 @@ client agent, current display names, or Camunda-provided model execution.
 The execution-thread setting matters when client and server use the same Connectors runtime: a synchronous
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
 The candidate verifier uses four threads; this is not a capacity guarantee.
+
+## Web Modeler starter tests (prototype, not run)
+
+Import these `.test.json` files with the three BPMN diagrams, forms and
+`07-server-request-validation.dmn` into Web Modeler. Select exactly one server profile; Basic and
+OAuth share the same process and element IDs, so the server test file works with either profile.
+The files use the official CPT 8.10 instruction schema and the
+[tutorial integration-test format](https://github.com/camunda/camunda-8-tutorials/blob/main/solutions/ai-agent-chat-with-tools/ai-agent-chat-with-tools.integration.test.json).
+They are a small starting set, not a coverage or conformance suite.
+
+| Test file                                                                             | Scope                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [01-client-agent.integration.test.json](demo/01-client-agent.integration.test.json)   | One live E2E journey: discover, delegate, poll, supply human-confirmed synthetic values, and accept the reviewed response. Uses real connectors and models; may incur model charges.                                                   |
+| [02-a2a-server.test.json](profiles/basic/02-a2a-server.test.json)                     | Four self-contained server flow segments: invalid request, GetTask, terminal cancellation rejection, and context-mismatched follow-up rejection. No engine HTTP or model calls. The invalid-request case uses the real validation DMN. |
+| [03-server-agent-card-dispute.test.json](demo/03-server-agent-card-dispute.test.json) | Two isolated local-tool segments, with and without confirmation. No model or external service calls; terminate after the tool.                                                                                                         |
+
+Before running the live test, deploy/configure the actual server and business agent, set
+`A2A_AGENT_PROCESS=a2a-card-dispute`, and configure the client/model secrets in the test runtime.
+The Card's public RPC URL must be a reachable deployment URL matching `A2A_RPC_URL`.
+`https://camunda-a2a-demo.example.com/inbound/a2a` is only a nonfunctional prototype placeholder.
+Web Modeler must reach the configured HTTPS endpoints; importing BPMN alone does not provide that
+connectivity. Follow the Web Modeler integration-test runtime's secret configuration.
+
+The E2E test completes the confirmation and feedback user tasks programmatically. It expects one
+confirmation step; unexpected model behavior should fail rather than be silently skipped. It checks
+client flow completion and tool traversal, not response wording, reconciliation accuracy, remote
+process-instance state, HTTP authentication or A2A conformance. The isolated server/tool cases start
+at named elements with explicit fixtures; they do not prove ingress, lookup, retries or full task
+lifecycle behavior. No tests in this starter set have been executed during prototyping.
 
 ## Frozen-source engineering results
 

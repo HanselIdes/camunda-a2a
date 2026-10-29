@@ -20,6 +20,7 @@ from observations import read_root_variable
 
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = Path(__file__).with_name("compose.yml")
+SERVER_CARD_PLACEHOLDER = "https://camunda-a2a-demo.example.com/inbound/a2a"
 source_before = source_snapshot(ROOT)
 if source_before["targetWorktreeDirty"]:
     raise RuntimeError("Client-agent runtime verification requires a clean committed source tree")
@@ -213,7 +214,9 @@ try:
             field = model.find(
                 ".//{http://camunda.org/schema/zeebe/1.0}property[@name='inbound.publicRpcUrl']"
             )
-            assert field is not None and field.get("value") == "", "Expected required public URL field"
+            assert field is not None and field.get("value") == SERVER_CARD_PLACEHOLDER, (
+                "Expected the documented server Agent Card URL placeholder"
+            )
             field.set("value", secret_values["A2A_RPC_URL"])
             contents = ET.tostring(model, encoding="utf-8", xml_declaration=True)
         body.extend((f"--{boundary}\r\nContent-Disposition: form-data; name=\"resources\"; "
@@ -253,7 +256,7 @@ try:
     agent_history_checks(ROOT, engine_request)
     report["checks"].append(
         "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
-        "response-derived task/context identity, final result preparation, legacy/current server evidence "
+        "response-derived task/context identity, client output mapping, server evidence "
         "and explicit card URL configuration errors"
     )
 
@@ -285,82 +288,60 @@ try:
     assert status == 401, f"Invalid-key A2A request returned HTTP {status}, expected 401"
     report["checks"].append("integrated direct HTTPS Agent Card and authenticated endpoint rejection")
 
-    question = (
-        "Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. "
-        "The expected charge was USD 49.95. Reconcile this example."
+    monitoring = subprocess.run(
+        stack.command + ["port", "camunda", "9600"],
+        env=env, capture_output=True, text=True, check=True, timeout=30,
+    ).stdout.strip()
+    scenario = subprocess.run(
+        ["mvn", "-q", "-Dtest=BlueprintLiveScenarioIT", "test"],
+        cwd=ROOT / "tests",
+        env=dict(env, PROOF_ENGINE_URL=engine_url, PROOF_CONNECTORS_URL=connectors_url,
+                 PROOF_MONITORING_URL="http://" + monitoring),
+        capture_output=True, text=True, timeout=900,
     )
+    (report_dir / "web-modeler-e2e.log").write_text(redact(scenario.stdout + scenario.stderr))
+    assert scenario.returncode == 0, "Web Modeler E2E scenario failed; see web-modeler-e2e.log"
+    report["checks"].append("shipped Web Modeler E2E JSON executed by the official CPT 8.10.4 runner")
     status, response = engine_request(
-        "/v2/process-instances",
-        {"processDefinitionId": "a2a-client", "variables": {"question": question}},
+        "/v2/process-instances/search", {"filter": {"processDefinitionId": "a2a-client"}}
     )
-    assert status in (200, 201), (status, response)
-    client_key = json.loads(response)["processInstanceKey"]
-    ask_completed = False
-    ask_seen = False
-    deadline = time.monotonic() + 480
-    review_task = None
-    ask_fields = {
-        "followUp": "These are explicitly confirmed synthetic demonstration values.",
-        "claimMerchant": "Northwind Electronics",
-        "claimCurrency": "USD",
-        "claimFirstAmount": 49.95,
-        "claimSecondAmount": 49.95,
-        "claimExpectedAmount": 49.95,
-        "claimSyntheticOnly": True,
-    }
-    while True:
-        status, response = engine_request(
-            "/v2/user-tasks/search", {"filter": {"processInstanceKey": client_key}}
-        )
-        assert status == 200, (status, response)
-        tasks = json.loads(response)["items"]
-        ask_task = next((task for task in tasks if task["elementId"] == "AskClientForInput"), None)
-        if ask_task and not ask_completed:
-            ask_seen = True
-            status, response = engine_request(
-                f"/v2/user-tasks/{ask_task['userTaskKey']}/completion",
-                {"variables": ask_fields},
-            )
-            assert status in (200, 204), (status, response)
-            ask_completed = True
-        review_task = next(
-            (task for task in tasks if task["elementId"] == "ReviewClientResult"), None
-        )
-        if review_task:
-            break
-        status, response = engine_request(
-            "/v2/incidents/search", {"filter": {"processInstanceKey": client_key}}
-        )
-        assert status == 200, (status, response)
-        incidents = json.loads(response)["items"]
-        if incidents:
-            raise AssertionError("Client agent incident: " + json.dumps(incidents))
-        if time.monotonic() >= deadline:
-            raise TimeoutError("Client agent did not reach result review within eight minutes")
-        time.sleep(1)
-    assert ask_seen and ask_completed, "The client agent never requested explicit user confirmation"
+    assert status == 200, (status, response)
+    clients = json.loads(response)["items"]
+    assert len(clients) == 1 and clients[0]["state"] == "COMPLETED", clients
+    client_key = clients[0]["processInstanceKey"]
+    status, response = engine_request(
+        "/v2/user-tasks/search", {"filter": {"processInstanceKey": client_key}}
+    )
+    assert status == 200, (status, response)
+    completed_tasks = json.loads(response)["items"]
+    ask_completed = any(task["elementId"] == "AskClientForInput" and task["state"] == "COMPLETED"
+                        for task in completed_tasks)
+    assert ask_completed, "The client agent never requested explicit user confirmation"
 
     agent = read_root_variable(engine_request, client_key, "clientAgent", seconds=30)
     result_text = read_root_variable(engine_request, client_key, "resultText", seconds=30)
+    discovered_card = read_root_variable(engine_request, client_key, "agentCard", seconds=30)
     results = client_results(agent)
     tool_names = [result.get("name") for result in results]
-    assert "DiscoverAgentCard" in tool_names, tool_names
+    assert "DiscoverAgentCard" not in tool_names, tool_names
     assert "SendA2AMessage" in tool_names, tool_names
-    assert "GetA2ATask" in tool_names, tool_names
+    assert "GetA2ATask" not in tool_names, tool_names
     assert "AskClientForInput" in tool_names, tool_names
 
-    discovered = [
-        result_body(result)
-        for result in results if result.get("name") == "DiscoverAgentCard"
-    ]
-    discovered_card = next(
-        (value.get("body", value) for value in discovered
-         if isinstance(value.get("body", value), dict)
-         and value.get("body", value).get("supportedInterfaces")),
-        None,
-    )
-    assert discovered_card is not None, "Client tool did not return the Agent Card"
+    assert isinstance(discovered_card, dict), discovered_card
     assert discovered_card["supportedInterfaces"][0]["url"] == expected_card_url, discovered_card
+    confirmation_result = result_body(next(
+        result for result in results if result.get("name") == "AskClientForInput"
+    ))
+    expected_claim = {
+        "merchant": "Northwind Electronics",
+        "currency": "USD",
+        "chargeAmounts": [49.95, 49.95],
+        "expectedAmount": 49.95,
+        "syntheticOnly": True,
+    }
+    assert confirmation_result["syntheticClaim"] == expected_claim, confirmation_result
+    assert confirmation_result["text"] == ask_fields["followUp"], confirmation_result
 
     sent_tasks = []
     for result in results:
@@ -372,19 +353,12 @@ try:
     assert sent_tasks, "Client agent did not send an A2A message that created or updated a task"
     assert len({task["id"] for task in sent_tasks}) == 1, sent_tasks
     assert len({task["contextId"] for task in sent_tasks}) == 1, sent_tasks
-    final_tasks = []
-    for result in results:
-        if result.get("name") != "GetA2ATask":
-            continue
-        response_body = result_body(result)
-        if isinstance(response_body.get("result"), dict):
-            final_tasks.append(task_from_rpc(response_body))
     task = next(
-        (value for value in reversed(final_tasks)
+        (value for value in reversed(sent_tasks)
          if value["status"]["state"] == "TASK_STATE_COMPLETED"),
         None,
     )
-    assert task is not None, f"Client agent did not observe a completed A2A task: {final_tasks}"
+    assert task is not None, f"Client subprocess did not return a completed A2A task: {sent_tasks}"
     assert task["id"] == sent_tasks[0]["id"], (task, sent_tasks)
     user_messages = [
         message for message in task.get("history", [])
@@ -402,13 +376,6 @@ try:
         part for message in user_messages[1:] for part in message.get("parts", [])
         if isinstance(part, dict) and "data" in part
     ]
-    expected_claim = {
-        "merchant": "Northwind Electronics",
-        "currency": "USD",
-        "chargeAmounts": [49.95, 49.95],
-        "expectedAmount": 49.95,
-        "syntheticOnly": True,
-    }
     assert len(confirmed_parts) == 1, (
         f"Expected one confirmed synthetic data part after the initial message: {confirmed_parts}"
     )
@@ -446,23 +413,6 @@ try:
     report["checks"].append(
         "random engine password, A2A API key and Basic credential absent from untruncated persisted variables"
     )
-    status, response = engine_request(
-        f"/v2/user-tasks/{review_task['userTaskKey']}/completion", {"variables": {}}
-    )
-    assert status in (200, 204), (status, response)
-    deadline = time.monotonic() + 30
-    while True:
-        status, response = engine_request(
-            "/v2/process-instances/search", {"filter": {"processInstanceKey": client_key}}
-        )
-        assert status == 200, (status, response)
-        instances = json.loads(response)["items"]
-        if instances and instances[0]["state"] == "COMPLETED":
-            break
-        if time.monotonic() >= deadline:
-            raise TimeoutError("Client process did not complete after result review")
-        time.sleep(0.25)
-
     logs = subprocess.run(
         stack.command + ["logs", "--no-color", "camunda", "connectors"],
         env=env, capture_output=True, text=True, check=True, timeout=30,
@@ -475,7 +425,7 @@ try:
 
     report["checks"].append(
         "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, "
-        "followed up, polled the same task and reviewed the exact server-agent artifact"
+        "continued the same task through its subprocess and reviewed the exact server-agent artifact"
     )
     report.update({
         "verdict": "PASS",
@@ -485,11 +435,11 @@ try:
         "clientProcessState": "COMPLETED",
         "clientToolCalls": tool_names,
         "assertedBehavior": {
-            "clientRequestedExplicitConfirmation": ask_seen and ask_completed,
+            "clientRequestedExplicitConfirmation": ask_completed,
             "initialUserMessageContainsStructuredClaim": bool(initial_data_parts),
             "confirmedFollowUpStructuredClaimParts": len(confirmed_parts),
             "followUpReusedInitialTaskAndContext": True,
-            "pollObservedSameTaskCompleted": True,
+            "completedTaskReturnedBySendSubprocess": True,
         },
         "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
         "secretResolution": {

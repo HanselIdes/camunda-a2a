@@ -47,7 +47,7 @@ import java.util.List;
 public final class A2aTemplates {
 
   static final String DOCS = "https://a2a-protocol.org/latest/specification/";
-  static final Engines ENGINES = new Engines("^8.10");
+  static final Engines ENGINES = new Engines("^8.9");
   static final ElementTemplateIcon ICON =
       ElementTemplateIcon.from("a2a-icon.svg", A2aTemplates.class.getClassLoader());
   static final ConnectorElementType SERVICE_TASK =
@@ -138,7 +138,7 @@ public final class A2aTemplates {
         HttpOutboundElementTemplateBuilder.create()
             .id("dev.hansel.a2a.client.v1")
             .name("A2A 1.0 Client")
-            .version(1)
+            .version(2)
             .icon(ICON)
             .documentationRef(DOCS)
             .description(
@@ -215,7 +215,7 @@ public final class A2aTemplates {
         .removeProperties(p -> "inbound.auth.type".equals(p.getId()))
         .id("dev.hansel.a2a.client.webhook.intermediate.v1")
         .name("A2A 1.0 Client Webhook Intermediate Catch Event")
-        .version(4)
+        .version(5)
         .description(
             "Receives A2A 1.0 push notifications (StreamResponse) for a task sent with the A2A 1.0 Client. "
                 + "Correlates on the task ID; a push without the expected X-A2A-Notification-Token is rejected.")
@@ -271,7 +271,7 @@ public final class A2aTemplates {
     return webhookBase()
         .id("dev.hansel.a2a.server.card.v1")
         .name("A2A 1.0 Server: Agent Card")
-        .version(4)
+        .version(5)
         .description(
             "Serves the A2A 1.0 Agent Card on GET {connectors base}/inbound/{webhook ID}. Put it on the start event "
                 + "of a process that ends right away: every request starts one run of that process. A proxy maps "
@@ -323,7 +323,7 @@ public final class A2aTemplates {
     return webhookBase(true)
         .id("dev.hansel.a2a.server.rpc.v1")
         .name("A2A 1.0 Server: JSON-RPC endpoint")
-        .version(1)
+        .version(2)
         .description(
             "The A2A 1.0 JSON-RPC endpoint: POST {connectors base}/inbound/{webhook ID}. Every request starts one run "
                 + "of the process, which parses, validates and answers it. The webhook waits for the run to end and "
@@ -369,7 +369,7 @@ public final class A2aTemplates {
         HttpOutboundElementTemplateBuilder.create()
             .id("dev.hansel.a2a.server.push.v1")
             .name("A2A 1.0 Server: push task update")
-            .version(3)
+            .version(4)
             .icon(ICON)
             .documentationRef(DOCS)
             .description(
