@@ -147,10 +147,8 @@ SYSTEM = (
     "call external financial services or claim that matching amounts alone prove fraud."
 )
 CONFIRMATION_QUESTION = (
-    "Confirm synthetic data only: supply one message data part with syntheticClaim containing "
-    "merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), "
-    "expectedAmount (a finite nonnegative number), and syntheticOnly=true. "
-    "Free text alone is context, not confirmation."
+    "Please confirm the merchant, currency, both charges and the total you expected to pay "
+    "using the charge details form."
 )
 CONFIRMATION = original.one("""={
   parts: if req.message.parts instance of list then

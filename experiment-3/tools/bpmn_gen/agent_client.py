@@ -8,10 +8,10 @@ from gen_card import feel_str
 CONFIRMATION_FIELDS = (
     ("claimMerchant", "Merchant", "textfield"),
     ("claimCurrency", "Currency", "textfield"),
-    ("claimFirstAmount", "First charge amount", "number"),
-    ("claimSecondAmount", "Second charge amount", "number"),
-    ("claimExpectedAmount", "Expected order amount", "number"),
-    ("claimSyntheticOnly", "I confirm these are synthetic demonstration values", "checkbox"),
+    ("claimFirstAmount", "First charge", "number"),
+    ("claimSecondAmount", "Second charge", "number"),
+    ("claimExpectedAmount", "Expected total", "number"),
+    ("claimSyntheticOnly", "I confirm these details are correct and use demo data only", "checkbox"),
 )
 
 SAMPLE = (
@@ -29,6 +29,7 @@ SYSTEM_PROMPT = (
     "Use these local tools when useful; all charge arithmetic belongs to the remote server. "
     "Use SendA2AMessage to delegate the user's request to that remote agent. "
     "This tool sends the message and polls the returned task using an explicit BPMN flow. "
+    "Calling it while the last accepted task is submitted or working resumes polling without resending. "
     "Its response field is the actual JSON-RPC reply; task retains the last successful task observation. "
     "Report response errors accurately rather than treating retained task data as a successful poll. "
     "If the server requests input, "
@@ -58,7 +59,7 @@ flatten(
 )
 """
 
-PREVIOUS_A2A_TASK_PARAMS = """
+PREVIOUS_A2A_TASK = """
 (for records in [flatten(
   for message in agentContext.conversation.messages[item.role = "tool_call_result"]
   return message.results[item.name = "SendA2AMessage"]
@@ -71,14 +72,19 @@ PREVIOUS_A2A_TASK_PARAMS = """
         else null] return
         for task in [if result instance of context and get value(result, "task") instance of context
                      then result.task else result] return
-          if task.id instance of string and task.contextId instance of string then
-            if list contains(["TASK_STATE_COMPLETED", "TASK_STATE_CANCELED",
-                              "TASK_STATE_FAILED", "TASK_STATE_REJECTED"], task.status.state) then
-              {contextId: task.contextId}
-            else {taskId: task.id, contextId: task.contextId}
-          else {}
+          if task.id instance of string and task.contextId instance of string then task else null
   )[1][1][1][1]
-else {})[1]
+else null)[1]
+"""
+
+PREVIOUS_A2A_TASK_PARAMS = f"""
+(for task in [{PREVIOUS_A2A_TASK}] return
+  if task instance of context then
+    if list contains(["TASK_STATE_COMPLETED", "TASK_STATE_CANCELED",
+                      "TASK_STATE_FAILED", "TASK_STATE_REJECTED"], task.status.state) then
+      {{contextId: task.contextId}}
+    else {{taskId: task.id, contextId: task.contextId}}
+  else {{}})[1]
 """
 
 
@@ -173,21 +179,24 @@ def build():
              '<zeebe:input source=%s target="previousTask" />'
              '<zeebe:input source=%s target="confirmedParts" />'
              '<zeebe:input source="=null" target="remoteResponse" />'
-             '<zeebe:input source="=null" target="acceptedTask" />'
+             '<zeebe:input source=%s target="acceptedTask" />'
              '<zeebe:output source="={response: remoteResponse, task: acceptedTask}" target="toolCallResult" />'
              '</zeebe:ioMapping>' % (
                  q('=fromAi(toolCall.text, "The user request or follow-up text", "string")'),
                  q("=" + one(PREVIOUS_A2A_TASK_PARAMS)),
                  q("=" + one(CONFIRMED_CLIENT_DATA_PARTS)),
+                 q("=" + one(PREVIOUS_A2A_TASK)),
              )),
         doc=("Delegate to the remote A2A agent. Sends a new message or follows up on the same task "
              "using response-derived task/context IDs. Polls two seconds apart while the task is working, "
              "then returns the actual JSON-RPC response, including input-required or failure states. "
+             "Calling again while that task is submitted or working resumes polling without resending. "
              "The result separates response from the last successful task so polling errors retain identity. "
              "Confirmed synthetic claim data comes only from the human form. "
              "Use AskClientForInput if the response requests confirmation; do not infer claim values."),
     )
     p.start("RemoteRequestStarted", "Remote request started", 535, 330, parent="SendA2AMessage")
+    p.xor("RemoteTaskMode", "Task already active?", 565, 323, parent="SendA2AMessage")
     p.node("serviceTask", "SendRemoteMessage", "Send A2A message", 600, 308, parent="SendA2AMessage")
     p.xor("RemoteTaskAccepted", "Task returned?", 720, 323, parent="SendA2AMessage")
     p.xor("RemotePollJoin", "", 800, 323, parent="SendA2AMessage")
@@ -197,7 +206,12 @@ def build():
     p.xor("RemoteTaskState", "Still working?", 1100, 323, parent="SendA2AMessage")
     p.xor("RemoteReplyJoin", "", 1100, 415, parent="SendA2AMessage")
     p.end("RemoteReplyReceived", "Remote agent replied", 1107, 450, parent="SendA2AMessage")
-    p.flow("RemoteRequestStarted", "SendRemoteMessage")
+    p.flow("RemoteRequestStarted", "RemoteTaskMode")
+    p.flow("RemoteTaskMode", "RemotePollJoin", "resume polling",
+           cond='=if acceptedTask instance of context then list contains('
+                '["TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"], acceptedTask.status.state) else false',
+           route="over:30")
+    p.flow("RemoteTaskMode", "SendRemoteMessage", "send message", default=True)
     p.flow("SendRemoteMessage", "RemoteTaskAccepted")
     p.flow("RemoteTaskAccepted", "RemotePollJoin", "yes",
            cond='=remoteResponse.error = null and (remoteResponse.result.id instance of string or '
@@ -227,8 +241,8 @@ def build():
                    'chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, '
                    'syntheticOnly: claimSyntheticOnly}}'),
              )),
-        doc=("Pause for the user only when the server asks for missing information. Display its "
-             "exact question and return the user's text plus explicitly confirmed synthetic claim "
+        doc=("Pause for the user only when the server asks for missing information. Present the "
+             "charge details form and return the user's text plus explicitly confirmed synthetic claim "
              "fields. Never fill these fields from model inference."),
     )
 
@@ -260,9 +274,10 @@ def build():
         ]),
         "05-client-agent-confirm.form": form("a2a-client-answer", [
             {"type": "text", "text": (
-                '="### The server needs more information\\n\\n" + question'
+                "### Confirm the charge details\n\n"
+                "Check the two charges and the amount you expected to pay."
             )},
-            {"type": "textarea", "key": "followUp", "label": "Your answer or additional context",
+            {"type": "textarea", "key": "followUp", "label": "Additional details",
              "validate": {"required": True}},
             *[
                 {
@@ -320,8 +335,7 @@ def build():
             ("operationId", "getTask"),
             ("authentication.value", "=camunda.secrets.A2A_API_KEY"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
-            ("taskId", '=if remoteResponse.result.task instance of context then '
-                       'remoteResponse.result.task.id else remoteResponse.result.id'),
+            ("taskId", "=acceptedTask.id"),
             ("readTimeoutInSeconds", "30"),
             ("retries", "1"),
             ("resultExpression", remote_result),

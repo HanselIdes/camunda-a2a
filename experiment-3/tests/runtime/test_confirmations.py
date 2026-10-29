@@ -11,6 +11,31 @@ Z = "{http://camunda.org/schema/zeebe/1.0}"
 
 
 class ConfirmationContractTest(unittest.TestCase):
+    def test_confirmation_form_uses_customer_copy_without_protocol_internals(self):
+        form = json.loads((ROOT / "blueprint/demo/05-client-agent-confirm.form").read_text())
+        heading = form["components"][0]["text"]
+        self.assertEqual(heading, "### Confirm the charge details\n\n"
+                         "Check the two charges and the amount you expected to pay.")
+        self.assertNotIn("question", heading)
+        fields = {component["key"]: component for component in form["components"] if "key" in component}
+        self.assertEqual(set(fields), {"followUp", *FORM_VALUES.keys()})
+        for key, label in (("followUp", "Additional details"), ("claimMerchant", "Merchant"),
+                           ("claimCurrency", "Currency"), ("claimFirstAmount", "First charge"),
+                           ("claimSecondAmount", "Second charge"), ("claimExpectedAmount", "Expected total")):
+            self.assertEqual(fields[key]["label"], label)
+            self.assertTrue(fields[key]["validate"]["required"])
+        self.assertTrue(fields["claimSyntheticOnly"]["validate"]["required"])
+        self.assertEqual(fields["claimSyntheticOnly"]["label"],
+                         "I confirm these details are correct and use demo data only")
+        for key in ("claimFirstAmount", "claimSecondAmount", "claimExpectedAmount"):
+            self.assertEqual(fields[key]["validate"]["min"], 0)
+        server = ET.parse(ROOT / "blueprint/demo/03-server-agent-card-dispute.bpmn").getroot()
+        tool = next(e for e in server.iter() if e.get("id") == "review_duplicate_charge")
+        expression = next(tool.iter(Z + "script")).get("expression")
+        self.assertIn("Please confirm the merchant, currency, both charges", expression)
+        self.assertNotIn("message data part", expression)
+        self.assertNotIn("finite nonnegative", expression)
+
     def test_client_fixture_has_independent_data(self):
         part = data_part()
         part["data"]["syntheticClaim"]["chargeAmounts"][0] = 0
@@ -73,8 +98,7 @@ class ConfirmationContractTest(unittest.TestCase):
         get_task = next(e for e in send.iter() if e.get("id") == "GetA2ATask")
         task_id = next(e for e in get_task.iter(Z + "input")
                        if e.get("target") == "taskId").get("source")
-        self.assertIn("remoteResponse.result.task", task_id)
-        self.assertIn("remoteResponse.result.id", task_id)
+        self.assertEqual(task_id, "=acceptedTask.id")
         self.assertNotIn("fromAi(", task_id)
 
         output_sources = {e.get("target"): e.get("source") for e in agent.iter(Z + "output")}

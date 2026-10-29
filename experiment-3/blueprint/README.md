@@ -167,7 +167,7 @@ confirmation step; unexpected model behavior should fail rather than be silently
 client flow completion and tool traversal, not response wording, reconciliation accuracy, remote
 process-instance state, HTTP authentication or A2A conformance. The isolated server/tool cases start
 at named elements with explicit fixtures; they do not prove ingress, lookup, retries or full task
-lifecycle behavior. No tests in this starter set have been executed during prototyping.
+lifecycle behavior. Browser-based Web Modeler execution remains unverified.
 
 ## Frozen-source engineering results
 

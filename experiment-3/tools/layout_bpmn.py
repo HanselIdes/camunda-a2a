@@ -299,16 +299,17 @@ def _place_client_agent(plane, process):
         "CheckConfirmedDetails": (750, 140, 120, 80),
         "DraftReviewNote": (970, 140, 120, 80),
         "AskClientForInput": (1190, 140, 120, 80),
-        "SendA2AMessage": (530, 270, 770, 280),
+        "SendA2AMessage": (530, 270, 900, 280),
         "RemoteRequestStarted": (555, 352, 36, 36),
-        "SendRemoteMessage": (620, 330, 120, 80),
-        "RemoteTaskAccepted": (780, 345, 50, 50),
-        "RemotePollJoin": (850, 345, 50, 50),
-        "WaitBeforeRemotePoll": (925, 352, 36, 36),
-        "GetA2ATask": (980, 330, 120, 80),
-        "RemoteTaskState": (1160, 345, 50, 50),
-        "RemoteReplyJoin": (1160, 415, 50, 50),
-        "RemoteReplyReceived": (1167, 492, 36, 36),
+        "RemoteTaskMode": (620, 345, 50, 50),
+        "SendRemoteMessage": (705, 330, 120, 80),
+        "RemoteTaskAccepted": (865, 345, 50, 50),
+        "RemotePollJoin": (935, 345, 50, 50),
+        "WaitBeforeRemotePoll": (1010, 352, 36, 36),
+        "GetA2ATask": (1065, 330, 120, 80),
+        "RemoteTaskState": (1245, 345, 50, 50),
+        "RemoteReplyJoin": (1245, 415, 50, 50),
+        "RemoteReplyReceived": (1252, 492, 36, 36),
         "ReviewClientResult": (1530, 290, 100, 80),
         "ClientSatisfied": (1690, 305, 50, 50),
         "ClientConversationFinished": (1810, 312, 36, 36),
@@ -342,26 +343,31 @@ def _place_client_agent(plane, process):
         _set_edge_route(plane, f"Flow_{source}_{target}", (
             (x + width, 330), (boxes[target][0], 330)))
     for source, target in (
-            ("RemoteRequestStarted", "SendRemoteMessage"), ("SendRemoteMessage", "RemoteTaskAccepted"),
+            ("RemoteRequestStarted", "RemoteTaskMode"), ("RemoteTaskMode", "SendRemoteMessage"),
+            ("SendRemoteMessage", "RemoteTaskAccepted"),
             ("RemoteTaskAccepted", "RemotePollJoin"), ("RemotePollJoin", "WaitBeforeRemotePoll"),
             ("WaitBeforeRemotePoll", "GetA2ATask"), ("GetA2ATask", "RemoteTaskState")):
         x, _, width, _ = boxes[source]
         _set_edge_route(plane, f"Flow_{source}_{target}", (
             (x + width, 370), (boxes[target][0], 370)))
+    _set_edge_route(plane, "Flow_RemoteTaskMode_RemotePollJoin", (
+        (645, 345), (645, 290), (960, 290), (960, 345)))
+    _set_edge_label(plane, "Flow_RemoteTaskMode_RemotePollJoin", 720, 272, 110)
+    _set_edge_label(plane, "Flow_RemoteTaskMode_SendRemoteMessage", 674, 395, 80)
     _set_edge_route(plane, "Flow_RemoteTaskState_RemotePollJoin", (
-        (1185, 345), (1185, 305), (875, 305), (875, 345)))
-    _set_edge_label(plane, "Flow_RemoteTaskState_RemotePollJoin", 1050, 284, 50)
-    _set_edge_route(plane, "Flow_RemoteTaskState_RemoteReplyJoin", ((1185, 395), (1185, 415)))
-    _set_edge_label(plane, "Flow_RemoteTaskState_RemoteReplyJoin", 1220, 395, 65)
-    _set_edge_route(plane, "Flow_RemoteReplyJoin_RemoteReplyReceived", ((1185, 465), (1185, 492)))
+        (1270, 345), (1270, 305), (960, 305), (960, 345)))
+    _set_edge_label(plane, "Flow_RemoteTaskState_RemotePollJoin", 1135, 284, 50)
+    _set_edge_route(plane, "Flow_RemoteTaskState_RemoteReplyJoin", ((1270, 395), (1270, 415)))
+    _set_edge_label(plane, "Flow_RemoteTaskState_RemoteReplyJoin", 1305, 395, 65)
+    _set_edge_route(plane, "Flow_RemoteReplyJoin_RemoteReplyReceived", ((1270, 465), (1270, 492)))
     _set_edge_route(plane, "Flow_RemoteTaskAccepted_RemoteReplyJoin", (
-        (805, 395), (805, 440), (1160, 440)))
-    _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemoteReplyJoin", 930, 415, 100)
-    _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemotePollJoin", 830, 345, 25)
+        (890, 395), (890, 440), (1245, 440)))
+    _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemoteReplyJoin", 1015, 415, 100)
+    _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemotePollJoin", 915, 345, 25)
     timer_label = next(shape for shape in plane.findall(BPMN_SHAPE)
                        if shape.get("bpmnElement") == "WaitBeforeRemotePoll").find(
                            f"{BPMN_LABEL}/{DC_BOUNDS}")
-    timer_label.attrib.update(x="905", width="72")
+    timer_label.attrib.update(x="990", width="72")
     _set_edge_route(plane, "Flow_ClientSatisfied_PrepareClientFollowUp", (
         (1715, 355), (1715, 720), (1170, 720)))
     _set_edge_label(plane, "Flow_ClientSatisfied_PrepareClientFollowUp", 1430, 696, 100)

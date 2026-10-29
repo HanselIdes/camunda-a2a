@@ -83,6 +83,8 @@ of accepting IDs from the model. After a terminal task, a new task retains only 
 free-text request or model output cannot satisfy this client confirmation step.
 The remote tool result contains the actual JSON-RPC `response` and the last successfully observed
 `task`. A polling error remains visible in `response.error` without losing the accepted task's identity.
+Calling the tool again while that task is submitted or working resumes polling without sending
+another message. Input-required tasks accept a follow-up; terminal tasks start a new task in the retained context.
 The next invocation continues that task rather than silently creating a duplicate.
 The business agent and reconciliation tool are separate from the protocol. The model can request the tool, but cannot supply its financial arguments.
 The tool uses only deterministically validated client fields from the current message.
@@ -215,14 +217,14 @@ does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongsi
 Free text is context, not confirmation, even when it contains every value. If the server requests confirmation, open the client agent's
 Tasklist user task using `05-client-agent-confirm.form` and enter the requested values:
 
-| Confirmation field          | Value                   |
-| --------------------------- | ----------------------- |
-| Merchant                    | `Northwind Electronics` |
-| Currency                    | `USD`                   |
-| First charge amount         | `49.95`                 |
-| Second charge amount        | `49.95`                 |
-| Expected amount             | `49.95`                 |
-| Synthetic-only confirmation | Checked.                |
+| Confirmation field                 | Value                   |
+| ---------------------------------- | ----------------------- |
+| Merchant                           | `Northwind Electronics` |
+| Currency                           | `USD`                   |
+| First charge                       | `49.95`                 |
+| Second charge                      | `49.95`                 |
+| Expected total                     | `49.95`                 |
+| Details and demo-data confirmation | Checked.                |
 
 The client agent can send structured data on the original task and context. Review its tool outcomes and final result.
 For the sample values, the expected `reconciliation` artifact is:

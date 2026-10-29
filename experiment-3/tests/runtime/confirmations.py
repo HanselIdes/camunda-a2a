@@ -149,7 +149,22 @@ def agent_history_checks(root, request):
     })
     assert confirmed["parts"] == [{"text": "Synthetic request"}, data_part()], confirmed
     assert confirmed["taskId"] == task["id"] and confirmed["contextId"] == task["contextId"]
-    assert evaluate(task_id_expression, {"remoteResponse": {"result": {"task": task}}}) == task["id"]
+    assert evaluate(task_id_expression, {"acceptedTask": task}) == task["id"]
+    retained_task = input_source("SendA2AMessage", "acceptedTask")
+    assert evaluate(retained_task, {"agentContext": context}) == task
+    resume = node("Flow_RemoteTaskMode_RemotePollJoin").find(
+        "{http://www.omg.org/spec/BPMN/20100524/MODEL}conditionExpression").text
+    assert evaluate(resume, {"acceptedTask": None}) is False
+    assert evaluate(resume, {"acceptedTask": task}) is False
+    for state in ("TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"):
+        working = {**task, "status": {"state": state}}
+        history = {"conversation": {"messages": [record(
+            "SendA2AMessage", {"toolCallResult": {"response": error, "task": working}}
+        )]}}
+        recovered = evaluate(retained_task, {"agentContext": history})
+        assert recovered == working
+        assert evaluate(resume, {"acceptedTask": recovered}) is True
+        assert evaluate(task_id_expression, {"acceptedTask": recovered}) == task["id"]
 
     result_expression = output_source("ClientAgent", "resultText")
     agent_context = {"conversation": {"messages": [record(

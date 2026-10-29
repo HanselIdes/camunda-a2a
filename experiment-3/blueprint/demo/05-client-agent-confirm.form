@@ -2,7 +2,7 @@
   "components": [
     {
       "type": "text",
-      "text": "=\"### The server needs more information\\n\\n\" + question",
+      "text": "### Confirm the charge details\n\nCheck the two charges and the amount you expected to pay.",
       "id": "Field_a2a_client_answer_0",
       "layout": {
         "row": "Row_0",
@@ -12,7 +12,7 @@
     {
       "type": "textarea",
       "key": "followUp",
-      "label": "Your answer or additional context",
+      "label": "Additional details",
       "validate": {
         "required": true
       },
@@ -51,7 +51,7 @@
     {
       "type": "number",
       "key": "claimFirstAmount",
-      "label": "First charge amount",
+      "label": "First charge",
       "validate": {
         "required": true,
         "min": 0
@@ -66,7 +66,7 @@
     {
       "type": "number",
       "key": "claimSecondAmount",
-      "label": "Second charge amount",
+      "label": "Second charge",
       "validate": {
         "required": true,
         "min": 0
@@ -81,7 +81,7 @@
     {
       "type": "number",
       "key": "claimExpectedAmount",
-      "label": "Expected order amount",
+      "label": "Expected total",
       "validate": {
         "required": true,
         "min": 0
@@ -96,7 +96,7 @@
     {
       "type": "checkbox",
       "key": "claimSyntheticOnly",
-      "label": "I confirm these are synthetic demonstration values",
+      "label": "I confirm these details are correct and use demo data only",
       "validate": {
         "required": true
       },

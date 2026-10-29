@@ -295,7 +295,8 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertEqual(set(inputs), {"remoteText", "previousTask", "confirmedParts",
                                        "remoteResponse", "acceptedTask"})
         self.assertEqual(inputs["remoteResponse"], "=null")
-        self.assertEqual(inputs["acceptedTask"], "=null")
+        self.assertIn('message.results[item.name = "SendA2AMessage"]', inputs["acceptedTask"])
+        self.assertNotIn("fromAi(", inputs["acceptedTask"])
         self.assertIn("fromAi(toolCall.text,", inputs["remoteText"])
         for key in ("confirmedParts", "previousTask"):
             self.assertNotIn("fromAi(", inputs[key])
@@ -322,9 +323,7 @@ class ResourceClosureTest(unittest.TestCase):
         poll = remote.find(f"{{{B}}}serviceTask[@id='GetA2ATask']")
         poll_inputs = {e.get("target"): e.get("source") for e in poll.findall(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
-        self.assertEqual(poll_inputs["taskId"],
-                         "=if remoteResponse.result.task instance of context then "
-                         "remoteResponse.result.task.id else remoteResponse.result.id")
+        self.assertEqual(poll_inputs["taskId"], "=acceptedTask.id")
         self.assertNotIn("fromAi(", poll_inputs["taskId"])
 
     def test_client_uses_stock_api_key_binding_without_staged_secret_headers(self):
@@ -362,7 +361,8 @@ class ResourceClosureTest(unittest.TestCase):
             self.assertIsNotNone(join)
             self.assertEqual(
                 {flow.text for flow in join.findall(f"{{{B}}}incoming")},
-                {f"Flow_RemoteTaskAccepted_{join_id}", f"Flow_RemoteTaskState_{join_id}"})
+                {f"Flow_RemoteTaskAccepted_{join_id}", f"Flow_RemoteTaskState_{join_id}"}
+                | ({"Flow_RemoteTaskMode_RemotePollJoin"} if join_id == "RemotePollJoin" else set()))
             self.assertEqual(
                 [flow.text for flow in join.findall(f"{{{B}}}outgoing")],
                 [f"Flow_{join_id}_{target_id}"])
