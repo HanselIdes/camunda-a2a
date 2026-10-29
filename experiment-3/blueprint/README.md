@@ -9,6 +9,13 @@ current numbered candidate. Do not use prior Desktop/Hub, TCK, or model runs as 
 assets. Marketplace import and external licensing/eligibility approval are separate deferred release
 gates, not prototype acceptance. SaaS runtime and Camunda-provided model execution are unverified.
 
+**Current focused verification:** source `269a61c` passed the authenticated live JSON journey on
+engine 8.10.2, Connectors 8.10.0 and Elasticsearch 8.19.23 using the authorized local Ollama override.
+The official CPT 8.10.4 runner executed the shipped integration scenario; additional checks verified
+confirmation provenance, same-task follow-up, exact reconciliation evidence, authentication and credential absence.
+This is not a browser-based Hub Test Studio run, SaaS verification, or a fresh TCK run.
+The default Maven suite passed 197 tests; the seven affected client/server/tool tests also passed after regeneration.
+
 **Earlier 8.9 input-only repair: overall FAIL.** Exact model-input preservation passes, but incomplete
 leading-equals JSON input caused the real model to invent reconciliation fields and the demo to
 complete instead of asking for missing input. The existing synthetic-result guard does not validate
@@ -30,8 +37,8 @@ determination, financial integration, or custom HTTP server is included.
 ## 8.10+ client/server demo configuration
 
 The complete demo now requires **Camunda 8.10 and Connectors 8.10 or later** because the selected client
-Sub-process template has engine constraint `^8.10`. The focused verification profile is engine 8.10.2,
-stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
+Sub-process template has engine constraint `^8.10`. Current focused verification uses engine 8.10.2,
+stock Connectors 8.10.0, and Elasticsearch 8.19.23; other combinations require their own evidence.
 The [focused authenticated 8.10.2 run](../verification/18e2a06/README.md) passed on clean
 source `18e2a06`, including native secrets, redacted-header authentication, actual-model confirmation,
 same-task follow-up, result review, and bounded credential scans.
@@ -84,7 +91,7 @@ BPMN, AI agents, or all ad-hoc subprocess implementations.
 
 | Package / runtime                                                                                                                                                                                 | What works or is unavailable                                                                                                                         | Evidence                                                                                                                                                                                                                    |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Current package / engine and Connectors 8.10.2                                                                                                                                                    | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review.                    | [Focused local-model run](../verification/18e2a06/README.md).                                                                                                                                                               |
+| Earlier package at `18e2a06` / engine and Connectors 8.10.2                                                                                                                                       | Earlier compact Sub-process v2 client journey. This does not verify the revised nested tool flow.                                                    | [Source-pinned local-model run](../verification/18e2a06/README.md).                                                                                                                                                         |
 | Current package / 8.9                                                                                                                                                                             | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only.                                                                                                                                                                 |
 | [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client.                   | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
 
@@ -101,7 +108,7 @@ journeys used local Ollama; neither verifies Camunda-provided SaaS model executi
 | Component                   | Version or setting                                                                                       |
 | --------------------------- | -------------------------------------------------------------------------------------------------------- |
 | Self-Managed engine         | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                 |
-| Stock Connectors            | 8.10.2; no custom worker or custom HTTP server                                                           |
+| Stock Connectors            | 8.10.0 in the current focused run; no custom worker or custom HTTP server                                |
 | Secondary storage           | Elasticsearch 8.19.23                                                                                    |
 | Client AI Agent Sub-process | `dev.hansel.a2a.client-agent.v1`, version 1, configuring stock Sub-process v2; engine constraint `^8.10` |
 | Server AI Agent             | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                        |
@@ -124,7 +131,7 @@ The execution-thread setting matters when client and server use the same Connect
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
 The candidate verifier uses four threads; this is not a capacity guarantee.
 
-## Web Modeler starter tests (prototype, not run)
+## Web Modeler starter tests
 
 Import these `.test.json` files with the three BPMN diagrams, forms and
 `07-server-request-validation.dmn` into Web Modeler. Select exactly one server profile; Basic and
@@ -132,6 +139,10 @@ OAuth share the same process and element IDs, so the server test file works with
 The files use the official CPT 8.10 instruction schema and the
 [tutorial integration-test format](https://github.com/camunda/camunda-8-tutorials/blob/main/solutions/ai-agent-chat-with-tools/ai-agent-chat-with-tools.integration.test.json).
 They are a small starting set, not a coverage or conformance suite.
+All seven JSON scenarios have run through the official CPT 8.10.4 runner: six self-contained
+server/tool segments and one real-model E2E scenario. A separate deterministic CPT test rejects
+one result, retains the conversation, and accepts the next response.
+Web Modeler's browser test UI itself remains unverified.
 
 | Test file                                                                             | Scope                                                                                                                                                                                                                                  |
 | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
