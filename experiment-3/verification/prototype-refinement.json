@@ -1,0 +1,117 @@
+{
+  "verifiedAt": "2026-10-29",
+  "profile": {
+    "engine": "camunda/camunda:8.10.2",
+    "connectors": "camunda/connectors-bundle:8.10.0",
+    "elasticsearch": "docker.elastic.co/elasticsearch/elasticsearch:8.19.23",
+    "runner": "Camunda Process Test 8.10.4",
+    "modelOverride": "Local Ollama qwen3-coder-30b-64k:latest",
+    "engineAuthentication": "Basic and platform authorizations enabled",
+    "a2aAuthentication": "X-Api-Key over trusted direct HTTPS",
+    "publicDeployment": false
+  },
+  "liveRuns": [
+    {
+      "source": "269a61c2558d3f3dc7cdc28573256504b8db9f48",
+      "cleanSourceBeforeAndAfter": true,
+      "verdict": "PASS",
+      "scope": "Original single-review JSON scenario, human confirmation, same-task follow-up, polling, exact artifact, authentication and credential absence"
+    },
+    {
+      "source": "6a0247a357fe83052b874c13dd4ec69b2c49c79a",
+      "cleanSourceBeforeAndAfter": true,
+      "verdict": "PASS",
+      "command": "PROOF_ENGINE_IMAGE=camunda/camunda:8.10.2 PROOF_CONNECTORS_IMAGE=camunda/connectors-bundle:8.10.0 python3 experiment-3/tests/runtime/verify_client_agent.py",
+      "runnerCommand": "cd experiment-3/tests && mvn -q -Dtest=BlueprintLiveScenarioIT test",
+      "scenario": "experiment-3/blueprint/demo/01-client-agent.integration.test.json",
+      "firstCompletedTask": "01a1875b-fb95-75fd-8597-9a4d873d93db",
+      "feedbackCompletedTask": "01a1875c-a1f0-7e5a-88f3-07eb31df16a8",
+      "distinctTaskIds": true,
+      "sameServerContext": true,
+      "completedResultReviews": 2,
+      "modelCallCeilings": [8, 14],
+      "modelCallsAtFeedbackEntryDerivedFromMappedCeiling": 6,
+      "finalCumulativeModelCalls": 8,
+      "expectedArtifactForBothTasks": {
+        "merchant": "Northwind Electronics",
+        "currency": "USD",
+        "chargeAmounts": [49.95, 49.95],
+        "expectedAmount": 49.95,
+        "paidAmount": 99.9,
+        "overchargeAmount": 49.95,
+        "matchingAmounts": true,
+        "recommendation": "REQUEST_HUMAN_REVIEW",
+        "syntheticOnly": true
+      },
+      "additionalChecks": [
+        "Human-confirmed structured values, not model-inferred financial inputs",
+        "Missing and invalid shared API keys return HTTP 401",
+        "Native-secret engine references resolve through the disposable file store",
+        "No random credentials in untruncated persisted variables or owned runtime logs",
+        "Engine-evaluated poll-error mapping retains accepted task and context",
+        "Conversation and cumulative metrics survive feedback re-entry"
+      ]
+    }
+  ],
+  "otherChecks": [
+    {
+      "source": "538966428e58c919ee92c96d8b8f5dbdab7683b3",
+      "command": "cd experiment-3/tests && mvn -q test",
+      "tests": 197,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Default suite; optional ollama-tagged profile excluded"
+    },
+    {
+      "source": "6a0247a357fe83052b874c13dd4ec69b2c49c79a",
+      "command": "cd experiment-3/tests && mvn -q -Dtest=BlueprintClientTest,BlueprintScenariosTest test",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "scope": "Six server/tool JSON segments and deterministic feedback with actual mapped ceilings 8 then 16"
+    },
+    {
+      "command": "python3 -m unittest discover -s experiment-3/tools -p 'test_*.py'",
+      "tests": 28,
+      "verdict": "PASS"
+    },
+    {
+      "command": "python3 -m unittest discover -s experiment-3/tests/runtime -p 'test_*.py'",
+      "tests": 44,
+      "verdict": "PASS"
+    },
+    {
+      "command": "python3 experiment-3/tools/build_blueprint.py --check",
+      "verdict": "PASS"
+    },
+    {
+      "command": "python3 experiment-3/tools/layout_bpmn.py --check",
+      "verdict": "PASS"
+    },
+    {
+      "tool": "Desktop Modeler 5.52.0",
+      "scope": "Feedback template displayed a FEEL ceiling with no problems before the later expression-only corrections",
+      "verdict": "PASS"
+    }
+  ],
+  "priorFailuresNotCountedAsPasses": [
+    {"source": "4680890", "reason": "FEEL list-membership warnings"},
+    {"source": "9cebbf8", "reason": "Outgoing SendMessage HTTP 401"},
+    {"source": "a67b527", "reason": "Initial missing-context warning"},
+    {"source": "98efac0", "reason": "Null-context entry warnings"},
+    {"source": "f73618b", "reason": "Journey passed, final source-freeze assertion failed on Finder metadata"},
+    {"source": "c01723b", "reason": "Repeated JSON finished, verifier queried an absent scoped agent variable"},
+    {"source": "963747b", "reason": "Repeated JSON finished, but actual ceilings were [8,8] under combined input mappings"}
+  ],
+  "unverifiedOrExcluded": [
+    "Fresh 8.9 execution: A2A templates target 8.9; full supplied AI demo requires 8.10",
+    "SaaS execution and Camunda-provided model",
+    "Browser-based Hub Test Studio execution",
+    "Fresh TCK conformance",
+    "Optional ollama-tagged Maven profile",
+    "OAuth, push, streaming, standard-path ingress and broad version matrices",
+    "Production financial grounding, Marketplace eligibility or publication"
+  ]
+}

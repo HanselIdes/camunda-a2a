@@ -9,10 +9,14 @@ current numbered candidate. Do not use prior Desktop/Hub, TCK, or model runs as 
 assets. Marketplace import and external licensing/eligibility approval are separate deferred release
 gates, not prototype acceptance. SaaS runtime and Camunda-provided model execution are unverified.
 
-**Current focused verification:** source `269a61c` passed the authenticated live JSON journey on
+**Current focused verification:** source `6a0247a` passed the authenticated, two-review live JSON journey on
 engine 8.10.2, Connectors 8.10.0 and Elasticsearch 8.19.23 using the authorized local Ollama override.
 The official CPT 8.10.4 runner executed the shipped integration scenario; additional checks verified
 confirmation provenance, same-task follow-up, exact reconciliation evidence, authentication and credential absence.
+After the first terminal task, user feedback created a new completed task in the same server context.
+The model-call ceilings were 8 then 14, with cumulative calls increasing from 6 to 8.
+The [minimal sanitized report](../verification/prototype-refinement.json) retains exact sources,
+commands, prior failures and exclusions, including the earlier single-review pass on `269a61c`.
 This is not a browser-based Hub Test Studio run, SaaS verification, or a fresh TCK run.
 The default Maven suite passed 197 tests; the seven affected client/server/tool tests also passed after regeneration.
 
@@ -140,7 +144,8 @@ The files use the official CPT 8.10 instruction schema and the
 [tutorial integration-test format](https://github.com/camunda/camunda-8-tutorials/blob/main/solutions/ai-agent-chat-with-tools/ai-agent-chat-with-tools.integration.test.json).
 They are a small starting set, not a coverage or conformance suite.
 All seven JSON scenarios have run through the official CPT 8.10.4 runner: six self-contained
-server/tool segments and one real-model E2E scenario. A separate deterministic CPT test rejects
+server/tool segments and one real-model E2E scenario. The live scenario rejects one result and requests another reconciliation before acceptance.
+A separate deterministic CPT test rejects
 one result, retains the conversation, and accepts the next response.
 Web Modeler's browser test UI itself remains unverified.
 
