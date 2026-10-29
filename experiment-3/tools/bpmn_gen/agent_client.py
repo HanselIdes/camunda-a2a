@@ -68,8 +68,8 @@ PREVIOUS_A2A_TASK_PARAMS = """
         for task in [if result instance of context and get value(result, "task") instance of context
                      then result.task else result] return
           if task.id instance of string and task.contextId instance of string then
-            if task.status.state in ["TASK_STATE_COMPLETED", "TASK_STATE_CANCELED",
-                                     "TASK_STATE_FAILED", "TASK_STATE_REJECTED"] then
+            if list contains(["TASK_STATE_COMPLETED", "TASK_STATE_CANCELED",
+                              "TASK_STATE_FAILED", "TASK_STATE_REJECTED"], task.status.state) then
               {contextId: task.contextId}
             else {taskId: task.id, contextId: task.contextId}
           else {}
@@ -201,8 +201,8 @@ def build():
     p.flow("RemoteTaskState", "RemotePollJoin", "yes", route="over:30",
            cond='=(for task in [if remoteResponse.result.task instance of context then '
                 'remoteResponse.result.task else remoteResponse.result] return '
-                'remoteResponse.error = null and task.status.state in '
-                '["TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"])[1]')
+                'remoteResponse.error = null and list contains('
+                '["TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"], task.status.state))[1]')
     p.flow("RemoteTaskState", "RemoteReplyJoin", "otherwise", default=True, route="down-in")
     p.flow("RemoteReplyJoin", "RemoteReplyReceived")
     p.node(
