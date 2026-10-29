@@ -26,10 +26,10 @@ PATHS = (
     "blueprint/demo/README.md",
 )
 AI_URL = ("https://raw.githubusercontent.com/camunda/connectors/"
-          "844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
-          "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json")
+          "b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/"
+          "connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json")
 EXTERNAL_TEMPLATES = {
-    ("io.camunda.connectors.agenticai.aiagent.jobworker.v1", "5"),
+    ("io.camunda.connectors.agenticai.ai-agent-subprocess.v2", "1"),
 }
 
 

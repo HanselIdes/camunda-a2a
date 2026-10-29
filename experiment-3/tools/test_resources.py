@@ -608,12 +608,34 @@ class ResourceClosureTest(unittest.TestCase):
                         self.assertEqual(headers["elementTemplateVersion"], "13")
         self.assertGreater(count, 0)
 
-    def test_server_agent_preserves_template_icon(self):
+    def test_server_agent_uses_v2_template_and_preserves_contract(self):
         root = ET.parse(ROOT / RESOURCE_PATHS[2]).getroot()
         host = root.find(f".//{{{B}}}adHocSubProcess[@id='AgentTools']")
         self.assertEqual(host.get(f"{{{Z}}}modelerTemplate"),
-                         "io.camunda.connectors.agenticai.aiagent.jobworker.v1")
-        self.assertEqual(host.get(f"{{{Z}}}modelerTemplateVersion"), "5")
+                         "io.camunda.connectors.agenticai.ai-agent-subprocess.v2")
+        self.assertEqual(host.get(f"{{{Z}}}modelerTemplateVersion"), "1")
+        task = host.find(f"{{{B}}}extensionElements/{{{Z}}}taskDefinition")
+        self.assertEqual(task.get("type"), "io.camunda.agenticai:aiagent:subprocess:2")
+        inputs = {field.get("target"): field.get("source") for field in
+                  host.findall(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
+        self.assertEqual(inputs["provider.type"], "openai")
+        self.assertEqual(inputs["provider.openai.api.type"], "completions")
+        self.assertEqual(inputs["provider.openai.backend.type"], "custom")
+        self.assertEqual(inputs["provider.openai.backend.custom.authentication.type"], "apiKey")
+        for field, secret in (
+                ("provider.openai.backend.custom.endpoint", "CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
+                ("provider.openai.backend.custom.authentication.apiKey", "CAMUNDA_PROVIDED_LLM_API_KEY"),
+                ("provider.openai.model.model", "CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL")):
+            self.assertEqual(inputs[field], "=camunda.secrets." + secret)
+        self.assertFalse(any(name.startswith("provider.openaiCompatible.") for name in inputs))
+        self.assertEqual(inputs["agentContext"], "=agent.context")
+        self.assertEqual(inputs["data.limits.maxModelCalls"], "=8")
+        self.assertEqual(inputs["data.response.includeAgentContext"], "true")
+        output = host.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output")
+        self.assertEqual(output.attrib, {"source": "=agent", "target": "agent"})
+        ad_hoc = host.find(f"{{{B}}}extensionElements/{{{Z}}}adHoc")
+        self.assertEqual(ad_hoc.get("outputCollection"), "toolCallResults")
+        self.assertIn("content: toolCallResult", ad_hoc.get("outputElement"))
         icon = host.get(f"{{{Z}}}modelerTemplateIcon")
         self.assertIsNotNone(icon)
         client = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()

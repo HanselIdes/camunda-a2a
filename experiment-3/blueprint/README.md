@@ -51,8 +51,10 @@ same-task follow-up, result review, and bounded credential scans.
 The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
 [`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
 The protocol lifecycle remains, with native secret mappings and the current `X-Api-Key` contract.
-The server's result mapping accepts both legacy object results and 8.10
-structured content blocks without changing its v5 connector variant. Earlier source-pinned
+The server now uses the AI Agent Sub-process v2, version 1 template, with the same native-secret
+OpenAI-compatible backend as the client. The source-pinned live runs above predate this server
+upgrade and do not verify it. Its result mapping accepts both legacy object results and 8.10
+structured content blocks. Earlier source-pinned
 8.9 evidence remains historical server evidence, not a fresh run of these mappings or support for the
 complete current demo on 8.9.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
@@ -117,7 +119,7 @@ journeys used local Ollama; neither verifies Camunda-provided SaaS model executi
 | Stock Connectors            | 8.10.0 in the current focused run; no custom worker or custom HTTP server                                |
 | Secondary storage           | Elasticsearch 8.19.23                                                                                    |
 | Client AI Agent Sub-process | `dev.hansel.a2a.client-agent.v1`, version 1, configuring stock Sub-process v2; engine constraint `^8.10` |
-| Server AI Agent             | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                        |
+| Server AI Agent             | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10`            |
 | HTTP template               | `io.camunda.connectors.HttpJson.v2`, version 13                                                          |
 | Transport                   | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                 |
 | Runtime settings            | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`            |
@@ -426,7 +428,7 @@ For Docker Desktop, a host-local Ollama service can be reached through `host.doc
 that hostname works on a remote cluster. Model inference needs sufficient local resources.
 The client subprocess `ClientAgent` references these secrets through the v2 template's
 `provider.openai.backend.custom.*` and `provider.openai.model.model` inputs, selecting Chat Completions
-and API-key authentication. Server activity `AgentTools` retains its `provider.openaiCompatible.*` inputs.
+and API-key authentication. Server activity `AgentTools` uses the same `provider.openai.*` inputs.
 Changing secret values does not require editing those activities.
 Changing provider type, business tools, or system instructions requires configuring the corresponding BPMN.
 
@@ -440,15 +442,15 @@ For this revised import, start with a fresh Modeler project when possible. Impor
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
-The complete import closure is 16 repository resources plus the pinned upstream server AI Agent Job Worker v5
+The complete import closure is 16 repository resources plus the pinned upstream server AI Agent Sub-process v2, version 1
 template (17 import resources total): seven BPMN/DMN/form resources, five local element-template JSON files,
 three test-scenario files, the README, and one external template.
 Confirm that the target Modeler resolves the exact server AI template ID and version before import.
 The local HTTP JSON v13 snapshot may be omitted only after confirming that the
 target already provides that exact ID and version. Keep both custom server templates and the pinned upstream
-AI Agent Job Worker v5 template. An "Already available" notice alone does not establish version equivalence.
+AI Agent Sub-process v2, version 1 template. An "Already available" notice alone does not establish version equivalence.
 Use the Modeler's element-template import workflow for the five local JSON files and the
-[pinned server template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json).
+[pinned server template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json).
 The local `12-client-agent-feedback.json` configures the stock Sub-process v2 worker.
 It exposes an expression-capable cumulative call ceiling, allowing eight additional calls per feedback turn
 without clearing conversation history or metrics. It does not redistribute the upstream AI template.

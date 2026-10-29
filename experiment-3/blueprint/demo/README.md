@@ -30,7 +30,7 @@ Camunda does not support or certify it.
 The numeric prefixes order the project by role: client agent, server protocol, server agent, forms, validation, then templates.
 Runtime process IDs remain `a2a-rpc`, `a2a-card-dispute`, and `a2a-client`.
 
-The 16 repository resources plus the pinned [AI Agent Job Worker version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
+The 16 repository resources plus the pinned [AI Agent Sub-process v2, version 1 template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json)
 form the 17-resource import list. The server AI template remains an external dependency. Before import, confirm that the
 target Modeler resolves this exact ID and version; do not substitute another version. An “already available”
 notice alone does not prove a version match.
@@ -107,12 +107,13 @@ See `prototype-refinement.json` in the [verification records](https://github.com
 for exact command attribution, prior failures and exclusions.
 Long-conversation retention beyond the configured 20-message context window remains unverified.
 Earlier 8.9.26 / Connectors 8.9.17 evidence applies only to its pinned earlier source, not this client
-or the server's revised result mapping. The server still uses the v5 connector and accepts both legacy
+or the server's revised result mapping. The server now uses Sub-process v2, version 1; the source-pinned
+live results above predate this server upgrade and do not verify it. Its result mapping accepts both legacy
 object results and 8.10 structured content blocks. Camunda-provided model execution and other version pairs remain unverified.
 
 ### Why 8.10, and what can I use on 8.9?
 
-This is a requirement of the **selected client connector**, not of A2A or BPMN in general.
+This is a requirement of the **selected client and server connectors**, not of A2A or BPMN in general.
 The [pinned Sub-process v2 template, version 1](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json)
 declares engine constraint `^8.10` and worker type `io.camunda.agenticai:aiagent:subprocess:2`.
 That worker handles tool activation and feedback inside the ad-hoc subprocess. The verified
@@ -173,7 +174,8 @@ Input provider.openai.model.model: =camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT
 ```
 
 The client selects provider `openai`, API `completions`, custom backend and API-key authentication.
-The server's pinned v5 template retains its `openaiCompatible` fields. These secret references do not establish compatibility with a particular
+The server uses the same OpenAI-compatible custom backend fields as the client.
+These secret references do not establish compatibility with a particular
 Camunda SaaS provider; verify the endpoint and model through your authorized environment.
 
 Both A2A URLs must resolve from external clients and the Connectors runtime. Use matching certificate names and configure trusted issuers.
@@ -206,7 +208,7 @@ For this revised import, start with a fresh Modeler project when possible. Impor
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
-1. Import the 16 repository resources, including local `12-client-agent-feedback.json`, and the pinned upstream server AI Agent Job Worker v5 template. Confirm each exact template version.
+1. Import the 16 repository resources, including local `12-client-agent-feedback.json`, and the pinned upstream server AI Agent Sub-process v2, version 1 template. Confirm each exact template version.
 2. Configure secrets and the runtime requirements above.
 3. Deploy the selected BPMN, DMN, and form resources together.
 4. Wait for healthy `CardRequested` and `RpcReceived` inbound Connectors in process `a2a-rpc`.

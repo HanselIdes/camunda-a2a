@@ -127,8 +127,6 @@ def configure_card(root):
     ))
     return root
 
-UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
-AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
 AI_CLIENT = ("https://raw.githubusercontent.com/camunda/connectors/"
              "b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/"
              "connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json")
@@ -202,7 +200,6 @@ def serialize(root, version="8.9.0"):
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", version)
     for node in root.iter():
         if node.get(f"{{{Z}}}modelerTemplate") not in (
-                "io.camunda.connectors.agenticai.aiagent.jobworker.v1",
                 "io.camunda.connectors.agenticai.ai-agent-subprocess.v2",
                 "dev.hansel.a2a.client-agent.v1",
                 "dev.hansel.a2a.client.v1"):
@@ -261,12 +258,15 @@ def agent(path):
     outcome = outcome.replace("QUESTION", feel_str(CONFIRMATION_QUESTION))
     p.nodes["UpdateTask"].ext = p.nodes["UpdateTask"].ext.replace(q("={agent: agent}"), q("=" + outcome))
     path.write_text(p.xml())
-    apply(path, AI, "AgentTools", [
-        ("provider.type", "openaiCompatible"),
-        ("provider.openaiCompatible.endpoint", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
-        ("provider.openaiCompatible.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
-        ("provider.openaiCompatible.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
-        ("provider.openaiCompatible.model.parameters.temperature", "=0"),
+    apply(path, AI_CLIENT, "AgentTools", [
+        ("provider.type", "openai"), ("provider.openai.api.type", "completions"),
+        ("provider.openai.backend.type", "custom"),
+        ("provider.openai.backend.custom.endpoint", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
+        ("provider.openai.backend.custom.authentication.type", "apiKey"),
+        ("provider.openai.backend.custom.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
+        ("provider.openai.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
+        ("provider.openai.timeouts.timeout", "PT180S"),
+        ("provider.openai.api.completions.temperature", "=0"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM)),
         ("data.userPrompt.prompt", "=promptText"), ("agentContext", "=agent.context"),
         ("data.memory.storage.type", "in-process"), ("data.memory.contextWindowSize", "=20"),
