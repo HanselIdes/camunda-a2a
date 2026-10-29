@@ -8,6 +8,45 @@
         "row": "Row_0",
         "columns": null
       }
+    },
+    {
+      "type": "radio",
+      "key": "clientSatisfied",
+      "label": "Are you satisfied with this response?",
+      "values": [
+        {
+          "label": "Yes, finish",
+          "value": "yes"
+        },
+        {
+          "label": "No, send a follow-up",
+          "value": "no"
+        }
+      ],
+      "validate": {
+        "required": true
+      },
+      "id": "Field_a2a_client_result_1",
+      "layout": {
+        "row": "Row_1",
+        "columns": null
+      }
+    },
+    {
+      "type": "textarea",
+      "key": "clientFeedback",
+      "label": "Your follow-up",
+      "conditional": {
+        "hide": "=clientSatisfied != \"no\""
+      },
+      "validate": {
+        "required": true
+      },
+      "id": "Field_a2a_client_result_2",
+      "layout": {
+        "row": "Row_2",
+        "columns": null
+      }
     }
   ],
   "type": "default",

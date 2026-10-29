@@ -291,15 +291,30 @@ def _place_client_agent(plane, process):
     if host is None:
         return
     boxes = {
-        "QuestionAsked": (70, 192, 36, 36),
-        "ClientAgent": (180, 60, 400, 300),
-        "DiscoverAgentCard": (220, 110, 120, 80),
-        "SendA2AMessage": (420, 110, 120, 80),
-        "GetA2ATask": (220, 240, 120, 80),
-        "AskClientForInput": (420, 240, 120, 80),
-        "PrepareClientResult": (650, 170, 100, 80),
-        "ReviewClientResult": (820, 170, 100, 80),
-        "ClientConversationFinished": (1000, 192, 36, 36),
+        "QuestionAsked": (120, 312, 36, 36),
+        "DiscoverAgentCard": (210, 290, 120, 80),
+        "ClientJoin": (380, 305, 50, 50),
+        "ClientAgent": (480, 90, 1000, 510),
+        "ReadIntakeGuidance": (530, 140, 120, 80),
+        "CheckConfirmedDetails": (750, 140, 120, 80),
+        "DraftReviewNote": (970, 140, 120, 80),
+        "AskClientForInput": (1190, 140, 120, 80),
+        "SendA2AMessage": (530, 270, 900, 280),
+        "RemoteRequestStarted": (555, 352, 36, 36),
+        "RemoteTaskMode": (620, 345, 50, 50),
+        "SendRemoteMessage": (705, 330, 120, 80),
+        "RemoteTaskAccepted": (865, 345, 50, 50),
+        "RemotePollJoin": (935, 345, 50, 50),
+        "WaitBeforeRemotePoll": (1010, 352, 36, 36),
+        "GetA2ATask": (1065, 330, 120, 80),
+        "RemoteTaskState": (1245, 345, 50, 50),
+        "RemoteReplyJoin": (1245, 415, 50, 50),
+        "RemoteReplyReceived": (1252, 492, 36, 36),
+        "ReviewClientResult": (1530, 290, 100, 80),
+        "ClientSatisfied": (1690, 305, 50, 50),
+        "ClientConversationFinished": (1810, 312, 36, 36),
+        "PrepareClientFollowUp": (1070, 680, 100, 80),
+        "Pool_a2a-client": (60, 40, 1850, 840),
     }
     for element_id, (x, y, width, height) in boxes.items():
         bounds = _shape_bounds(plane, element_id)
@@ -308,7 +323,8 @@ def _place_client_agent(plane, process):
         bounds.attrib.update(x=str(x), y=str(y), width=str(width), height=str(height))
         shape = next(shape for shape in plane.findall(BPMN_SHAPE)
                      if shape.get("bpmnElement") == element_id)
-        if element_id in ("QuestionAsked", "ClientConversationFinished"):
+        if element_id in ("QuestionAsked", "ClientConversationFinished", "RemoteRequestStarted", "RemoteReplyReceived",
+                          "WaitBeforeRemotePoll"):
             label = shape.find(BPMN_LABEL)
             if label is None:
                 label = ET.SubElement(shape, BPMN_LABEL)
@@ -319,12 +335,46 @@ def _place_client_agent(plane, process):
                 "width": "110", "height": "28",
             })
     for source, target in (
-            ("QuestionAsked", "ClientAgent"), ("ClientAgent", "PrepareClientResult"),
-            ("PrepareClientResult", "ReviewClientResult"),
-            ("ReviewClientResult", "ClientConversationFinished")):
+            ("QuestionAsked", "DiscoverAgentCard"), ("DiscoverAgentCard", "ClientJoin"),
+            ("ClientJoin", "ClientAgent"), ("ClientAgent", "ReviewClientResult"),
+            ("ReviewClientResult", "ClientSatisfied"),
+            ("ClientSatisfied", "ClientConversationFinished")):
         x, _, width, _ = boxes[source]
         _set_edge_route(plane, f"Flow_{source}_{target}", (
-            (x + width, 210), (boxes[target][0], 210)))
+            (x + width, 330), (boxes[target][0], 330)))
+    for source, target in (
+            ("RemoteRequestStarted", "RemoteTaskMode"), ("RemoteTaskMode", "SendRemoteMessage"),
+            ("SendRemoteMessage", "RemoteTaskAccepted"),
+            ("RemoteTaskAccepted", "RemotePollJoin"), ("RemotePollJoin", "WaitBeforeRemotePoll"),
+            ("WaitBeforeRemotePoll", "GetA2ATask"), ("GetA2ATask", "RemoteTaskState")):
+        x, _, width, _ = boxes[source]
+        _set_edge_route(plane, f"Flow_{source}_{target}", (
+            (x + width, 370), (boxes[target][0], 370)))
+    _set_edge_route(plane, "Flow_RemoteTaskMode_RemotePollJoin", (
+        (645, 345), (645, 290), (960, 290), (960, 345)))
+    _set_edge_label(plane, "Flow_RemoteTaskMode_RemotePollJoin", 720, 272, 110)
+    _set_edge_label(plane, "Flow_RemoteTaskMode_SendRemoteMessage", 674, 395, 80)
+    _set_edge_route(plane, "Flow_RemoteTaskState_RemotePollJoin", (
+        (1270, 345), (1270, 305), (960, 305), (960, 345)))
+    _set_edge_label(plane, "Flow_RemoteTaskState_RemotePollJoin", 1135, 284, 50)
+    _set_edge_route(plane, "Flow_RemoteTaskState_RemoteReplyJoin", ((1270, 395), (1270, 415)))
+    _set_edge_label(plane, "Flow_RemoteTaskState_RemoteReplyJoin", 1305, 395, 65)
+    _set_edge_route(plane, "Flow_RemoteReplyJoin_RemoteReplyReceived", ((1270, 465), (1270, 492)))
+    _set_edge_route(plane, "Flow_RemoteTaskAccepted_RemoteReplyJoin", (
+        (890, 395), (890, 440), (1245, 440)))
+    _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemoteReplyJoin", 1015, 415, 100)
+    _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemotePollJoin", 915, 345, 25)
+    timer_label = next(shape for shape in plane.findall(BPMN_SHAPE)
+                       if shape.get("bpmnElement") == "WaitBeforeRemotePoll").find(
+                           f"{BPMN_LABEL}/{DC_BOUNDS}")
+    timer_label.attrib.update(x="990", width="72")
+    _set_edge_route(plane, "Flow_ClientSatisfied_PrepareClientFollowUp", (
+        (1715, 355), (1715, 720), (1170, 720)))
+    _set_edge_label(plane, "Flow_ClientSatisfied_PrepareClientFollowUp", 1430, 696, 100)
+    _set_edge_route(plane, "Flow_PrepareClientFollowUp_ClientJoin", (
+        (1070, 720), (405, 720), (405, 355)))
+    _set_edge_label(plane, "Flow_ClientSatisfied_ClientConversationFinished", 1755, 308, 35)
+    _place_gateway_labels(plane, process)
 
 
 def _place_gateway_labels(plane, process):
@@ -356,6 +406,166 @@ def _place_gateway_labels(plane, process):
             "width": f"{width:g}",
             "height": f"{height:g}",
         })
+
+
+def _place_compact_server(plane, processes):
+    rpc = processes.get("a2a-rpc")
+    if rpc is None or rpc.find(
+            "{http://www.omg.org/spec/BPMN/20100524/MODEL}scriptTask[@id='BuildValidationError']") is not None:
+        return
+    centers = {
+        "RpcReceived": (150, 150), "ParseRequest": (290, 150),
+        "ValidateRequest": (440, 150), "RouteRequest": (590, 150),
+        "ValidationErrorReady": (760, 150),
+        "CardRequested": (150, 290), "CardServed": (290, 290),
+        "PrepareList": (760, 290), "CollectTaskList": (910, 290),
+        "ListCollected": (1060, 290), "TaskListReady": (1210, 290),
+        "ListFailureReady": (1210, 390),
+        "PrepareNewTask": (760, 480), "CreateTask": (910, 480),
+        "AwaitNewTask": (1060, 480), "NewTaskReady": (1210, 480),
+        "PrepareLookup": (760, 660), "LookupJoin": (880, 660),
+        "FindTask": (1000, 660), "TaskKnown": (1150, 660),
+        "ReadTask": (1300, 660), "RouteMethod": (1450, 660),
+        "LookupTimeLeft": (1150, 800), "WaitForIndex": (1000, 800),
+        "NotFoundJoin": (1450, 800), "NotFoundReady": (1450, 920),
+        "TaskViewReady": (1600, 540),
+        "Cancelable": (1600, 660), "RequestCancellation": (1750, 660),
+        "AwaitCanceled": (1910, 660), "CancellationOutcome": (2060, 660),
+        "CanceledReady": (2220, 660), "CancellationErrorReady": (2060, 540),
+        "NotCancelableJoin": (2060, 800), "NotCancelableReady": (2220, 800),
+        "CheckFollowUp": (1600, 1060), "FollowUpAccepted": (1750, 1060),
+        "CorrelateFollowUp": (1910, 1060), "TaskWaiting": (2060, 1060),
+        "AwaitFollowUp": (2220, 1060), "FollowUpReady": (2370, 1060),
+        "FollowUpErrorJoin": (2060, 1200), "FollowUpErrorReady": (2220, 1200),
+        "TurnFinished": (150, 1430), "ApplyOutcome": (290, 1430),
+        "TaskUpdated": (440, 1430),
+        "AwaitRequested": (150, 1630), "LookAgain": (290, 1630),
+        "ReadState": (440, 1630), "CheckState": (590, 1630),
+        "IsVisible": (740, 1630), "Visible": (900, 1630),
+        "TriesLeft": (740, 1770), "WaitAMoment": (590, 1770),
+        "GaveUp": (900, 1770),
+        "CorrelateRequested": (150, 1990), "ResetAttempts": (290, 1990),
+        "TryJoin": (440, 1990), "CorrelateMessage": (590, 1990),
+        "Correlated": (740, 1990), "NoSubscription": (590, 2030),
+        "CountAttempt": (590, 2140), "AttemptsLeft": (740, 2140),
+        "WaitBeforeRetry": (440, 2140), "NotCorrelated": (900, 2140),
+        "ListScanRequested": (150, 2390), "StartListScan": (290, 2390),
+        "ListProcessPageJoin": (440, 2390), "SearchTasks": (590, 2390),
+        "AnyTasks": (740, 2390), "ListVariablesJoin": (890, 2390),
+        "ReadTasks": (1040, 2390), "ListBatchJoin": (1190, 2390),
+        "CollectListBatch": (1340, 2390), "ListScanDecision": (1490, 2390),
+        "FinishListScan": (1650, 2390), "ListResultJoin": (1800, 2390),
+        "ListScanReady": (1950, 2390), "WaitListVariables": (1040, 2530),
+        "FailListScan": (1650, 2660),
+    }
+    pools = {
+        "Pool_a2a-rpc": (60, 40, 2400, 1250),
+        "Pool_a2a-task-update": (60, 1360, 470, 160),
+        "Pool_a2a-await": (60, 1570, 950, 300),
+        "Pool_a2a-correlate": (60, 1920, 950, 320),
+        "Pool_a2a-list-collect": (60, 2300, 2000, 470),
+    }
+    nodes = {element.get("id"): element for process in processes.values() for element in process}
+    for element_id, (cx, cy) in centers.items():
+        bounds = _shape_bounds(plane, element_id)
+        if bounds is None:
+            raise ValueError(f"missing compact server shape {element_id}")
+        width, height = float(bounds.get("width")), float(bounds.get("height"))
+        bounds.set("x", str(cx - width / 2))
+        bounds.set("y", str(cy - height / 2))
+        shape = next(shape for shape in plane.findall(BPMN_SHAPE)
+                     if shape.get("bpmnElement") == element_id)
+        label = shape.find(BPMN_LABEL)
+        if label is not None:
+            shape.remove(label)
+        node = nodes[element_id]
+        if node.tag.endswith("Event") and node.get("name"):
+            label = ET.SubElement(shape, BPMN_LABEL)
+            ET.SubElement(label, DC_BOUNDS, {
+                "x": str(cx - 60), "y": str(cy + height / 2 + 8),
+                "width": "120", "height": "28",
+            })
+    for element_id, (x, y, width, height) in pools.items():
+        _shape_bounds(plane, element_id).attrib.update(
+            x=str(x), y=str(y), width=str(width), height=str(height))
+
+    routes = {
+        "Flow_RouteRequest_BuildValidationError": [(615, 150), (742, 150)],
+        "Flow_RouteRequest_PrepareList": [(602.5, 162.5), (640, 162.5), (640, 290), (710, 290)],
+        "Flow_RouteRequest_PrepareNewTask": [(590, 175), (590, 480), (710, 480)],
+        "Flow_RouteRequest_PrepareLookup": [(577.5, 162.5), (550, 162.5), (550, 660), (710, 660)],
+        "Flow_ListCollected_BuildListFailure": [(1060, 315), (1060, 390), (1192, 390)],
+        "Flow_TaskKnown_LookupTimeLeft": [(1150, 685), (1150, 775)],
+        "Flow_LookupTimeLeft_WaitForIndex": [(1125, 800), (1018, 800)],
+        "Flow_WaitForIndex_LookupJoin": [(982, 800), (880, 800), (880, 685)],
+        "Flow_LookupTimeLeft_NotFoundJoin": [(1175, 800), (1425, 800)],
+        "Flow_RouteMethod_NotFoundJoin": [(1450, 685), (1450, 775)],
+        "Flow_NotFoundJoin_BuildNotFound": [(1450, 825), (1450, 902)],
+        "Flow_RouteMethod_BuildTaskView": [(1450, 635), (1450, 540), (1582, 540)],
+        "Flow_RouteMethod_CheckFollowUp": [(1462.5, 672.5), (1500, 672.5), (1500, 1060), (1550, 1060)],
+        "Flow_Cancelable_NotCancelableJoin": [(1600, 685), (1600, 800), (2035, 800)],
+        "Flow_CancellationOutcome_NotCancelableJoin": [(2060, 685), (2060, 775)],
+        "Flow_CancellationOutcome_CancellationTimeout": [(2060, 635), (2060, 558)],
+        "Flow_FollowUpAccepted_FollowUpErrorJoin": [(1750, 1085), (1750, 1200), (2035, 1200)],
+        "Flow_TaskWaiting_FollowUpErrorJoin": [(2060, 1085), (2060, 1175)],
+        "Flow_IsVisible_TriesLeft": [(740, 1655), (740, 1745)],
+        "Flow_TriesLeft_WaitAMoment": [(715, 1770), (608, 1770)],
+        "Flow_WaitAMoment_LookAgain": [(572, 1770), (290, 1770), (290, 1655)],
+        "Flow_NoSubscription_CountAttempt": [(590, 2048), (590, 2100)],
+        "Flow_AttemptsLeft_WaitBeforeRetry": [(740, 2165), (740, 2200), (440, 2200), (440, 2158)],
+        "Flow_WaitBeforeRetry_TryJoin": [(440, 2122), (440, 2015)],
+        "Flow_AnyTasks_ListBatchJoin": [(740, 2415), (740, 2470), (1190, 2470), (1190, 2415)],
+        "Flow_ListScanDecision_ListProcessPageJoin": [(1490, 2365), (1490, 2330), (440, 2330), (440, 2365)],
+        "Flow_ListScanDecision_WaitListVariables": [(1490, 2415), (1490, 2530), (1058, 2530)],
+        "Flow_WaitListVariables_ListVariablesJoin": [(1022, 2530), (890, 2530), (890, 2415)],
+        "Flow_ListScanDecision_FailListScan": [(1502.5, 2402.5), (1550, 2402.5), (1550, 2660), (1600, 2660)],
+        "Flow_FailListScan_ListResultJoin": [(1700, 2660), (1800, 2660), (1800, 2415)],
+    }
+    for process in processes.values():
+        if process.get("id") not in (
+                "a2a-rpc", "a2a-task-update", "a2a-await", "a2a-correlate", "a2a-list-collect"):
+            continue
+        for flow in process.findall("{http://www.omg.org/spec/BPMN/20100524/MODEL}sequenceFlow"):
+            edge_id = flow.get("id")
+            source, target = flow.get("sourceRef"), flow.get("targetRef")
+            if edge_id in routes:
+                points = routes[edge_id]
+            else:
+                sx, sy = centers[source]
+                tx, ty = centers[target]
+                sb, tb = _shape_bounds(plane, source), _shape_bounds(plane, target)
+                if sy != ty:
+                    raise ValueError(f"missing compact server route {edge_id}")
+                points = [(sx + float(sb.get("width")) / 2, sy),
+                          (tx - float(tb.get("width")) / 2, ty)]
+            _set_edge_route(plane, edge_id, points)
+            edge = next(edge for edge in plane.findall(BPMN_EDGE)
+                        if edge.get("bpmnElement") == edge_id)
+            label = edge.find(BPMN_LABEL)
+            if label is not None:
+                edge.remove(label)
+            if flow.get("name"):
+                segments = list(zip(points, points[1:]))
+                a, b = max(segments, key=lambda pair: abs(pair[1][0] - pair[0][0]) +
+                           abs(pair[1][1] - pair[0][1]))
+                x, y = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+                width = min(130, max(35, len(flow.get("name")) * 7))
+                _set_edge_label(plane, edge_id,
+                                x + 8 if a[0] == b[0] else x - width / 2,
+                                y - 18, width)
+        _place_gateway_labels(plane, process)
+    for element_id, x, y, width in (
+            ("RouteMethod", 1380, 610, 60),
+            ("LookupTimeLeft", 1005, 755, 115),
+            ("CancellationOutcome", 2085, 610, 145),
+            ("TriesLeft", 765, 1720, 85),
+            ("ListScanDecision", 1510, 2320, 120),
+            ("NoSubscription", 620, 2040, 120)):
+        shape = next(shape for shape in plane.findall(BPMN_SHAPE)
+                     if shape.get("bpmnElement") == element_id)
+        label = shape.find(BPMN_LABEL)
+        label.find(DC_BOUNDS).attrib.update(
+            x=str(x), y=str(y), width=str(width), height="28")
 
 
 def _apply_process_layout_fixes(plane, process_id, process):
@@ -488,6 +698,7 @@ def layout_xml(source):
         for process in collaboration:
             process_ref = process.get("processRef")
             _apply_process_layout_fixes(plane, process_ref, processes.get(process_ref))
+        _place_compact_server(plane, processes)
 
     if process_planes:
         raise ValueError("No Diagram Interchange plane found for process(es): "

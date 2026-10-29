@@ -20,6 +20,7 @@ from observations import read_root_variable
 
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = Path(__file__).with_name("compose.yml")
+SERVER_CARD_PLACEHOLDER = "https://camunda-a2a-demo.example.com/inbound/a2a"
 source_before = source_snapshot(ROOT)
 if source_before["targetWorktreeDirty"]:
     raise RuntimeError("Client-agent runtime verification requires a clean committed source tree")
@@ -168,6 +169,8 @@ def result_body(result):
         content = json.loads(content)
     if not isinstance(content, dict):
         raise AssertionError(f"Tool {result.get('name')} did not return an object")
+    if result.get("name") == "SendA2AMessage":
+        content = content["response"]
     return content
 
 
@@ -213,7 +216,9 @@ try:
             field = model.find(
                 ".//{http://camunda.org/schema/zeebe/1.0}property[@name='inbound.publicRpcUrl']"
             )
-            assert field is not None and field.get("value") == "", "Expected required public URL field"
+            assert field is not None and field.get("value") == SERVER_CARD_PLACEHOLDER, (
+                "Expected the documented server Agent Card URL placeholder"
+            )
             field.set("value", secret_values["A2A_RPC_URL"])
             contents = ET.tostring(model, encoding="utf-8", xml_declaration=True)
         body.extend((f"--{boundary}\r\nContent-Disposition: form-data; name=\"resources\"; "
@@ -253,7 +258,7 @@ try:
     agent_history_checks(ROOT, engine_request)
     report["checks"].append(
         "native engine FEEL regressions for structured 8.10 tool content, confirmed claim, "
-        "response-derived task/context identity, final result preparation, legacy/current server evidence "
+        "response-derived task/context identity, client output mapping, server evidence "
         "and explicit card URL configuration errors"
     )
 
@@ -285,82 +290,68 @@ try:
     assert status == 401, f"Invalid-key A2A request returned HTTP {status}, expected 401"
     report["checks"].append("integrated direct HTTPS Agent Card and authenticated endpoint rejection")
 
-    question = (
-        "Synthetic example only: Northwind Electronics charged USD 49.95 twice for one order. "
-        "The expected charge was USD 49.95. Reconcile this example."
+    monitoring = subprocess.run(
+        stack.command + ["port", "camunda", "9600"],
+        env=env, capture_output=True, text=True, check=True, timeout=30,
+    ).stdout.strip()
+    scenario = subprocess.run(
+        ["mvn", "-q", "-Dtest=BlueprintLiveScenarioIT", "test"],
+        cwd=ROOT / "tests",
+        env=dict(env, PROOF_ENGINE_URL=engine_url, PROOF_CONNECTORS_URL=connectors_url,
+                 PROOF_MONITORING_URL="http://" + monitoring),
+        capture_output=True, text=True, timeout=900,
     )
+    (report_dir / "web-modeler-e2e.log").write_text(redact(scenario.stdout + scenario.stderr))
+    assert scenario.returncode == 0, "Web Modeler E2E scenario failed; see web-modeler-e2e.log"
+    report["checks"].append("shipped Web Modeler E2E JSON executed by the official CPT 8.10.4 runner")
     status, response = engine_request(
-        "/v2/process-instances",
-        {"processDefinitionId": "a2a-client", "variables": {"question": question}},
+        "/v2/process-instances/search", {"filter": {"processDefinitionId": "a2a-client"}}
     )
-    assert status in (200, 201), (status, response)
-    client_key = json.loads(response)["processInstanceKey"]
-    ask_completed = False
-    ask_seen = False
-    deadline = time.monotonic() + 480
-    review_task = None
-    ask_fields = {
-        "followUp": "These are explicitly confirmed synthetic demonstration values.",
-        "claimMerchant": "Northwind Electronics",
-        "claimCurrency": "USD",
-        "claimFirstAmount": 49.95,
-        "claimSecondAmount": 49.95,
-        "claimExpectedAmount": 49.95,
-        "claimSyntheticOnly": True,
-    }
-    while True:
-        status, response = engine_request(
-            "/v2/user-tasks/search", {"filter": {"processInstanceKey": client_key}}
-        )
-        assert status == 200, (status, response)
-        tasks = json.loads(response)["items"]
-        ask_task = next((task for task in tasks if task["elementId"] == "AskClientForInput"), None)
-        if ask_task and not ask_completed:
-            ask_seen = True
-            status, response = engine_request(
-                f"/v2/user-tasks/{ask_task['userTaskKey']}/completion",
-                {"variables": ask_fields},
-            )
-            assert status in (200, 204), (status, response)
-            ask_completed = True
-        review_task = next(
-            (task for task in tasks if task["elementId"] == "ReviewClientResult"), None
-        )
-        if review_task:
-            break
-        status, response = engine_request(
-            "/v2/incidents/search", {"filter": {"processInstanceKey": client_key}}
-        )
-        assert status == 200, (status, response)
-        incidents = json.loads(response)["items"]
-        if incidents:
-            raise AssertionError("Client agent incident: " + json.dumps(incidents))
-        if time.monotonic() >= deadline:
-            raise TimeoutError("Client agent did not reach result review within eight minutes")
-        time.sleep(1)
-    assert ask_seen and ask_completed, "The client agent never requested explicit user confirmation"
+    assert status == 200, (status, response)
+    clients = json.loads(response)["items"]
+    assert len(clients) == 1 and clients[0]["state"] == "COMPLETED", clients
+    client_key = clients[0]["processInstanceKey"]
+    status, response = engine_request(
+        "/v2/user-tasks/search", {"filter": {"processInstanceKey": client_key}}
+    )
+    assert status == 200, (status, response)
+    completed_tasks = json.loads(response)["items"]
+    ask_completed = any(task["elementId"] == "AskClientForInput" and task["state"] == "COMPLETED"
+                        for task in completed_tasks)
+    assert ask_completed, "The client agent never requested explicit user confirmation"
 
     agent = read_root_variable(engine_request, client_key, "clientAgent", seconds=30)
     result_text = read_root_variable(engine_request, client_key, "resultText", seconds=30)
+    discovered_card = read_root_variable(engine_request, client_key, "agentCard", seconds=30)
     results = client_results(agent)
     tool_names = [result.get("name") for result in results]
-    assert "DiscoverAgentCard" in tool_names, tool_names
+    assert "DiscoverAgentCard" not in tool_names, tool_names
     assert "SendA2AMessage" in tool_names, tool_names
-    assert "GetA2ATask" in tool_names, tool_names
+    assert "GetA2ATask" not in tool_names, tool_names
     assert "AskClientForInput" in tool_names, tool_names
 
-    discovered = [
-        result_body(result)
-        for result in results if result.get("name") == "DiscoverAgentCard"
-    ]
-    discovered_card = next(
-        (value.get("body", value) for value in discovered
-         if isinstance(value.get("body", value), dict)
-         and value.get("body", value).get("supportedInterfaces")),
-        None,
-    )
-    assert discovered_card is not None, "Client tool did not return the Agent Card"
+    assert isinstance(discovered_card, dict), discovered_card
     assert discovered_card["supportedInterfaces"][0]["url"] == expected_card_url, discovered_card
+    confirmation_result = result_body(next(
+        result for result in results if result.get("name") == "AskClientForInput"
+    ))
+    expected_claim = {
+        "merchant": "Northwind Electronics",
+        "currency": "USD",
+        "chargeAmounts": [49.95, 49.95],
+        "expectedAmount": 49.95,
+        "syntheticOnly": True,
+    }
+    assert confirmation_result["syntheticClaim"] == expected_claim, confirmation_result
+    scenario_cases = json.loads(
+        (ROOT / "blueprint/demo/01-client-agent.integration.test.json").read_text()
+    )
+    confirmation_step = next(
+        instruction for instruction in scenario_cases["testCases"][0]["instructions"]
+        if instruction["type"] == "COMPLETE_USER_TASK"
+        and instruction["userTaskSelector"]["elementId"] == "AskClientForInput"
+    )
+    assert confirmation_result["text"] == confirmation_step["variables"]["followUp"], confirmation_result
 
     sent_tasks = []
     for result in results:
@@ -370,22 +361,37 @@ try:
         if isinstance(response_body.get("result"), dict):
             sent_tasks.append(task_from_rpc(response_body))
     assert sent_tasks, "Client agent did not send an A2A message that created or updated a task"
-    assert len({task["id"] for task in sent_tasks}) == 1, sent_tasks
+    assert len({task["id"] for task in sent_tasks}) == 2, sent_tasks
     assert len({task["contextId"] for task in sent_tasks}) == 1, sent_tasks
-    final_tasks = []
-    for result in results:
-        if result.get("name") != "GetA2ATask":
-            continue
-        response_body = result_body(result)
-        if isinstance(response_body.get("result"), dict):
-            final_tasks.append(task_from_rpc(response_body))
     task = next(
-        (value for value in reversed(final_tasks)
-         if value["status"]["state"] == "TASK_STATE_COMPLETED"),
+        (value for value in sent_tasks
+         if value["id"] == sent_tasks[0]["id"]
+         and value["status"]["state"] == "TASK_STATE_COMPLETED"),
         None,
     )
-    assert task is not None, f"Client agent did not observe a completed A2A task: {final_tasks}"
+    assert task is not None, f"Client subprocess did not return a completed A2A task: {sent_tasks}"
     assert task["id"] == sent_tasks[0]["id"], (task, sent_tasks)
+    feedback_task = sent_tasks[-1]
+    assert feedback_task["id"] != task["id"], (task, feedback_task)
+    assert feedback_task["status"]["state"] == "TASK_STATE_COMPLETED", feedback_task
+    reviews = [item for item in completed_tasks
+               if item["elementId"] == "ReviewClientResult" and item["state"] == "COMPLETED"]
+    assert len(reviews) == 2, reviews
+    status, response = engine_request(
+        "/v2/variables/search?truncateValues=false",
+        {"filter": {"processInstanceKey": client_key, "name": "data"}},
+    )
+    assert status == 200, (status, response)
+    budgets = sorted(json.loads(response)["items"], key=lambda item: int(item["scopeKey"]))
+    assert len(budgets) == 2, budgets
+    ceilings = [json.loads(item["value"])["limits"]["maxModelCalls"] for item in budgets]
+    report["observedModelCallCeilings"] = ceilings
+    report["observedFinalMetrics"] = agent["context"].get("metrics")
+    # The mapped ceiling freezes the entry-time metric; agentContext can change during tool calls.
+    prior_calls = ceilings[1] - 8
+    assert ceilings[0] == 8 and prior_calls > 0, ceilings
+    final_calls = agent["context"]["metrics"]["modelCalls"]
+    assert prior_calls < final_calls <= ceilings[1], (prior_calls, final_calls, ceilings)
     user_messages = [
         message for message in task.get("history", [])
         if message.get("role") == "ROLE_USER"
@@ -402,13 +408,6 @@ try:
         part for message in user_messages[1:] for part in message.get("parts", [])
         if isinstance(part, dict) and "data" in part
     ]
-    expected_claim = {
-        "merchant": "Northwind Electronics",
-        "currency": "USD",
-        "chargeAmounts": [49.95, 49.95],
-        "expectedAmount": 49.95,
-        "syntheticOnly": True,
-    }
     assert len(confirmed_parts) == 1, (
         f"Expected one confirmed synthetic data part after the initial message: {confirmed_parts}"
     )
@@ -426,6 +425,9 @@ try:
         "syntheticOnly": True,
     }
     assert artifact["parts"][0]["data"] == expected_artifact, artifact
+    feedback_artifact = next(
+        item for item in feedback_task.get("artifacts", []) if item["name"] == "reconciliation")
+    assert feedback_artifact["parts"][0]["data"] == expected_artifact, feedback_artifact
     assert "TASK_STATE_COMPLETED" in result_text, result_text
     credentials = (env["PROOF_ENGINE_PASSWORD"], env["PROOF_A2A_API_KEY"], authorization)
     cursor = None
@@ -446,23 +448,6 @@ try:
     report["checks"].append(
         "random engine password, A2A API key and Basic credential absent from untruncated persisted variables"
     )
-    status, response = engine_request(
-        f"/v2/user-tasks/{review_task['userTaskKey']}/completion", {"variables": {}}
-    )
-    assert status in (200, 204), (status, response)
-    deadline = time.monotonic() + 30
-    while True:
-        status, response = engine_request(
-            "/v2/process-instances/search", {"filter": {"processInstanceKey": client_key}}
-        )
-        assert status == 200, (status, response)
-        instances = json.loads(response)["items"]
-        if instances and instances[0]["state"] == "COMPLETED":
-            break
-        if time.monotonic() >= deadline:
-            raise TimeoutError("Client process did not complete after result review")
-        time.sleep(0.25)
-
     logs = subprocess.run(
         stack.command + ["logs", "--no-color", "camunda", "connectors"],
         env=env, capture_output=True, text=True, check=True, timeout=30,
@@ -475,21 +460,29 @@ try:
 
     report["checks"].append(
         "client AI agent discovered the card, authenticated A2A, requested explicit confirmation, "
-        "followed up, polled the same task and reviewed the exact server-agent artifact"
+        "continued the same task through its subprocess and reviewed the exact server-agent artifact"
+    )
+    report["checks"].append(
+        "live user-feedback re-entry retained conversation and server context, created a new completed "
+        "task with the exact artifact and used a fresh eight-call allowance without resetting metrics"
     )
     report.update({
         "verdict": "PASS",
         "serverTaskId": task["id"],
         "serverTaskState": task["status"]["state"],
+        "feedbackTaskId": feedback_task["id"],
+        "modelCallCeilings": ceilings,
+        "modelCallsBeforeFeedback": prior_calls,
+        "modelCallsAfterFeedback": final_calls,
         "artifact": expected_artifact,
         "clientProcessState": "COMPLETED",
         "clientToolCalls": tool_names,
         "assertedBehavior": {
-            "clientRequestedExplicitConfirmation": ask_seen and ask_completed,
+            "clientRequestedExplicitConfirmation": ask_completed,
             "initialUserMessageContainsStructuredClaim": bool(initial_data_parts),
             "confirmedFollowUpStructuredClaimParts": len(confirmed_parts),
             "followUpReusedInitialTaskAndContext": True,
-            "pollObservedSameTaskCompleted": True,
+            "completedTaskReturnedBySendSubprocess": True,
         },
         "providerValidation": "Local Ollama override completed the actual Sub-process-v2 client and Job-Worker-v5 server calls.",
         "secretResolution": {
@@ -505,6 +498,38 @@ try:
     assert report["sourceAfter"] == source_before, "Source changed during runtime verification"
     report_file.write_text(json.dumps(report, indent=2) + "\n")
     print(f"Client-agent 8.10 end-to-end verification PASS: {report_file}", flush=True)
+    if os.environ.get("PROOF_HUB_HANDOFF") == "1":
+        grpc_address = subprocess.run(
+            stack.command + ["port", "camunda", "26500"],
+            env=env, capture_output=True, text=True, check=True, timeout=30,
+        ).stdout.strip()
+        handoff_dir = report_dir / "hub-runtime"
+        handoff_dir.mkdir(mode=0o700)
+        handoff_file = handoff_dir / "connection.json"
+        release_file = handoff_dir / "release"
+        with os.fdopen(os.open(handoff_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w") as stream:
+            json.dump({
+                "source": source_before["targetCommit"],
+                "engineUrl": engine_url,
+                "connectorsUrl": connectors_url,
+                "monitoringUrl": "http://" + monitoring,
+                "grpcUrl": "http://" + grpc_address,
+                "engineImage": report["engineImage"],
+                "connectorsImage": report["connectorsImage"],
+                "username": "proof",
+                "password": env["PROOF_ENGINE_PASSWORD"],
+                "secretDirectory": secret_directory.name,
+                "certificateDirectory": tls_directory.name,
+                "composeProject": stack.project,
+                "releaseFile": str(release_file),
+                "expiresAt": time.time() + 3600,
+            }, stream, indent=2)
+        print(f"Owned Hub runtime lease ready: {handoff_file}", flush=True)
+        lease_deadline = time.monotonic() + 3600
+        while not release_file.exists() and time.monotonic() < lease_deadline:
+            time.sleep(2)
+        print("Owned Hub runtime lease ended; cleaning up", flush=True)
+        handoff_file.unlink()
 except Exception as failure:
     report.update({"verdict": "FAIL", "failureType": type(failure).__name__,
                    "failureMessage": redact(str(failure))})

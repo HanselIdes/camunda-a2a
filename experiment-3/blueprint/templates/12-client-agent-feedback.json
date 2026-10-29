@@ -1,0 +1,256 @@
+{
+  "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+  "id": "dev.hansel.a2a.client-agent.v1",
+  "version": 1,
+  "name": "Client AI Agent - Feedback",
+  "description": "Blueprint-specific configuration of the stock AI Agent Sub-process v2 with eight additional model calls per user-feedback turn.",
+  "appliesTo": [
+    "bpmn:AdHocSubProcess"
+  ],
+  "elementType": {
+    "value": "bpmn:AdHocSubProcess"
+  },
+  "engines": {
+    "camunda": "^8.10"
+  },
+  "properties": [
+    {
+      "id": "provider.type",
+      "type": "Hidden",
+      "value": "openai",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.type"
+      }
+    },
+    {
+      "id": "provider.openai.api.type",
+      "type": "Hidden",
+      "value": "completions",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.openai.api.type"
+      }
+    },
+    {
+      "id": "provider.openai.backend.type",
+      "type": "Hidden",
+      "value": "custom",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.openai.backend.type"
+      }
+    },
+    {
+      "id": "provider.openai.backend.custom.endpoint",
+      "type": "Text",
+      "value": "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.openai.backend.custom.endpoint"
+      },
+      "label": "Model endpoint",
+      "feel": "required",
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "provider.openai.backend.custom.authentication.type",
+      "type": "Hidden",
+      "value": "apiKey",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.openai.backend.custom.authentication.type"
+      }
+    },
+    {
+      "id": "provider.openai.backend.custom.authentication.apiKey",
+      "type": "Text",
+      "value": "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.openai.backend.custom.authentication.apiKey"
+      },
+      "label": "Model API key reference",
+      "feel": "required",
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "provider.openai.model.model",
+      "type": "Text",
+      "value": "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "provider.openai.model.model"
+      },
+      "label": "Model name",
+      "feel": "required",
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "data.systemPrompt.prompt",
+      "type": "Text",
+      "value": "=\"You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. The process has already fetched the remote Agent Card. ReadIntakeGuidance explains the synthetic demo's intake checklist. CheckConfirmedDetails checks whether the human has supplied confirmation; it does not reconcile charges. DraftReviewNote prepares an unsent draft for human review, not a financial decision. Use these local tools when useful; all charge arithmetic belongs to the remote server. Use SendA2AMessage to delegate the user's request to that remote agent. This tool sends the message and polls the returned task using an explicit BPMN flow. Calling it while the last accepted task is submitted or working resumes polling without resending. Its response field is the actual JSON-RPC reply; task retains the last successful task observation. Report response errors accurately rather than treating retained task data as a successful poll. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. An active task is continued; after a terminal task a new task uses the server-returned context ID. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless the tool result reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.\"",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.systemPrompt.prompt"
+      },
+      "label": "Client instructions",
+      "feel": "required",
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "data.userPrompt.prompt",
+      "type": "Text",
+      "value": "=question + \"\\n\\nRemote agent: \" + agentCard.name + \"\\nSkills: \" + string join(agentCard.skills.name, \", \")",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.userPrompt.prompt"
+      },
+      "label": "Current request",
+      "feel": "required",
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "agentContext",
+      "type": "Hidden",
+      "value": "=if clientAgent instance of context then get value(clientAgent, \"context\") else null",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "agentContext"
+      }
+    },
+    {
+      "id": "data.memory.storage.type",
+      "type": "Hidden",
+      "value": "in-process",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.memory.storage.type"
+      }
+    },
+    {
+      "id": "data.memory.contextWindowSize",
+      "type": "Hidden",
+      "value": "=20",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.memory.contextWindowSize"
+      }
+    },
+    {
+      "id": "data.limits.maxModelCalls",
+      "type": "Text",
+      "value": "=(if clientAgent instance of context then if get value(clientAgent, \"context\") instance of context then if get value(clientAgent.context, \"metrics\") instance of context then if get value(clientAgent.context.metrics, \"modelCalls\") instance of number then clientAgent.context.metrics.modelCalls else 0 else 0 else 0 else 0) + 8",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.limits.maxModelCalls"
+      },
+      "label": "Maximum model calls",
+      "feel": "required",
+      "constraints": {
+        "notEmpty": true
+      }
+    },
+    {
+      "id": "data.response.format.type",
+      "type": "Hidden",
+      "value": "text",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.response.format.type"
+      }
+    },
+    {
+      "id": "data.response.includeAgentContext",
+      "type": "Hidden",
+      "value": "true",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.response.includeAgentContext"
+      }
+    },
+    {
+      "id": "data.events.behavior",
+      "type": "Hidden",
+      "value": "WAIT_FOR_TOOL_CALL_RESULTS",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "data.events.behavior"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "io.camunda.agenticai:aiagent:subprocess:2",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "type"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "1",
+      "binding": {
+        "type": "zeebe:taskDefinition",
+        "property": "retries"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "toolCallResults",
+      "binding": {
+        "type": "zeebe:adHoc",
+        "property": "outputCollection"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "={id: toolCall._meta.id, name: toolCall._meta.name, content: toolCallResult, completedAt: now()}",
+      "binding": {
+        "type": "zeebe:adHoc",
+        "property": "outputElement"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "aiAgentSubProcess",
+      "binding": {
+        "type": "zeebe:agentDefinition",
+        "property": "agentType"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "true",
+      "binding": {
+        "type": "zeebe:property",
+        "name": "io.camunda.agenticai.toolContainer"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "clientAgent",
+      "binding": {
+        "type": "zeebe:output",
+        "source": "=agent"
+      }
+    },
+    {
+      "type": "Hidden",
+      "value": "resultText",
+      "binding": {
+        "type": "zeebe:output",
+        "source": "=(for polls in [flatten( for message in agent.context.conversation.messages[item.role = \"tool_call_result\"] return message.results[item.name = \"SendA2AMessage\"] )] return for content in [if count(polls) > 0 then polls[count(polls)].content[item.type = \"object\"][1].content else null] return for body in [if content instance of context and get value(content, \"toolCallResult\") instance of context then content.toolCallResult else content] return for response in [if body instance of context then if get value(body, \"task\") instance of context then body.task else get value(body, \"result\") else null] return for task in [if response instance of context then if get value(response, \"task\") instance of context then response.task else response else null] return for state in [if task.status.state instance of string then task.status.state else null] return \"### Client agent response\\n\\n\" + (if agent.responseText instance of string then agent.responseText else \"The client agent returned no text.\") + \"\\n\\n**Last observed server task state:** \" + (if state instance of string then state else \"No server task status was observed.\"))[1][1][1][1][1][1]"
+      }
+    }
+  ]
+}

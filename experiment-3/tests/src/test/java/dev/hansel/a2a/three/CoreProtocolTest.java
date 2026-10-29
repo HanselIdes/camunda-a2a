@@ -200,7 +200,7 @@ class CoreProtocolTest {
   void lateActivatedBusinessJobCannotWriteAfterCancellationInterruptsTheAgent() throws Exception {
     h.agentProcess = "a2a-controlled-agent";
     final var working = task(h.sendWith("late-agent-job", "{\"returnImmediately\":true}"));
-    final var jobs = client.newActivateJobsCommand().jobType("io.camunda.agenticai:aiagent-job-worker:1")
+    final var jobs = client.newActivateJobsCommand().jobType("io.camunda.agenticai:aiagent:subprocess:2")
         .maxJobsToActivate(1).workerName("controlled-cancellation-regression").timeout(Duration.ofSeconds(30))
         .send().join().getJobs();
     assertThat(jobs).hasSize(1);
@@ -530,7 +530,7 @@ class CoreProtocolTest {
     final var result = client.newCreateInstanceCommand().bpmnProcessId("a2a-literal-prompt").latestVersion()
         .variables(Map.of("request", Map.of("headers", headers, "body", body)))
         .withResult().fetchVariables("mapped").send().join().getVariablesAsMap().get("mapped");
-    assertThat(result).isEqualTo(Map.of("rpc", body, "hdr",
+    assertThat(result).isEqualTo(Map.of("rpc", body, "pushEnabled", false, "hdr",
         Map.of("content-type", "application/a2a+json", "a2a-version", "1.0")));
     assertThat(result.toString()).doesNotContain("MUST-NOT-PERSIST");
   }

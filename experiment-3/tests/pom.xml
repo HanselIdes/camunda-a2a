@@ -86,6 +86,10 @@
         <directory>${project.basedir}/../blueprint/templates</directory>
         <targetPath>core-templates</targetPath>
       </testResource>
+      <testResource>
+        <directory>${project.basedir}/../blueprint/demo</directory>
+        <targetPath>demo</targetPath>
+      </testResource>
     </testResources>
     <plugins>
       <plugin>

@@ -42,13 +42,17 @@ Edition terms. The root repository license does not replace those terms or estab
 redistribution authority for that module. Existing authorized non-production runtime
 access is not a blanket redistribution permission.
 
-The client references AI Agent Sub-process template
+The client uses the stock AI Agent Sub-process runtime associated with upstream template
 `io.camunda.connectors.agenticai.ai-agent-subprocess.v2@1`, pinned to Connectors 8.10.2
 commit `b490d065b59ffe4788319609dbe41deb25e68e3f` at
 `connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json`.
-Its JSON remains an external upstream dependency, not copied into this repository.
+Its JSON remains an external upstream reference, not copied into this repository.
 That module's proprietary license notice remains applicable; this repository grants
 no additional licensing or redistribution rights.
+
+`experiment-3/blueprint/templates/12-client-agent-feedback.json` is a separately authored,
+blueprint-specific configuration for that runtime, not a copy of the upstream AI template.
+It uses the same connector input and tool-result contracts with an expression-capable call ceiling.
 
 The client- and server-agent BPMNs retain the embedded icons supplied by their pinned upstream
 templates as Modeler metadata. The templates and icons remain subject to their module terms above;

@@ -12,13 +12,90 @@ from build_core import B, Z, ROOT, REQUEST_MAPPING
 from layout_bpmn import layout_xml
 from gen_card import feel_str, json_string_expression, skills_from_bpmn, skills_feel
 from bpmn_gen import build as original
-from bpmn_gen.agent_client import build as build_client_agent
+from bpmn_gen.agent_client import CLIENT_RESULT_EXPRESSION, build as build_client_agent
+from bpmn_gen.a2a_client_template import build as build_client_template
 from bpmn_gen.cancellation import add_hook
 from bpmn_gen.lib import Proc, q
 from bpmn_gen.secrets import current_secret_expression, current_secret_mappings
 
 CARD_RPC_URL_PROPERTY = "inbound.publicRpcUrl"
 CARD_RPC_URL_PATTERN = "^https://[^ /]+/[^ ]*$"
+DEMO_PUBLIC_RPC_URL = "https://camunda-a2a-demo.example.com/inbound/a2a"
+RPC_REQUEST_MAPPING = REQUEST_MAPPING[:-1] + ", pushEnabled: false}"
+
+
+def initialize_rpc_request(root):
+    process = root.find(f"{{{B}}}process[@id='a2a-rpc']")
+    start = process.find(f"{{{B}}}startEvent[@id='RpcReceived']")
+    mapping = start.find(
+        f"{{{B}}}extensionElements/{{{Z}}}properties/"
+        f"{{{Z}}}property[@name='resultExpression']")
+    mapping.set("value", RPC_REQUEST_MAPPING)
+    outgoing = start.find(f"{{{B}}}outgoing")
+    entry = process.find(f"{{{B}}}sequenceFlow[@id='{outgoing.text}']")
+    old_entry_id = entry.get("id")
+    entry.set("id", "Flow_RpcReceived_ParseRequest")
+    outgoing.text = entry.get("id")
+    entry.set("targetRef", "ParseRequest")
+    parse = process.find(f"{{{B}}}scriptTask[@id='ParseRequest']")
+    parse.find(f"{{{B}}}incoming").text = entry.get("id")
+    removed = {"IsPushMethod", "ReadPushSetting", "PushSettingKnown"}
+    for element in list(process):
+        if element.get("id") in removed:
+            process.remove(element)
+        elif element.tag == f"{{{B}}}sequenceFlow" and element.get("sourceRef") in removed:
+            removed.add(element.get("id"))
+            process.remove(element)
+    for plane in root.iter("{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane"):
+        for element in list(plane):
+            if element.get("bpmnElement") in removed:
+                plane.remove(element)
+            elif element.get("bpmnElement") == old_entry_id:
+                element.set("bpmnElement", entry.get("id"))
+                element.set("id", entry.get("id") + "_di")
+    return root
+
+
+def compact_server_responses(root):
+    task_ids = (
+        "BuildValidationError", "BuildTaskList", "BuildNewTaskResponse",
+        "BuildNotFound", "BuildTaskView", "BuildCanceledView",
+        "BuildNotCancelable", "BuildFollowUpResponse", "BuildFollowUpError",
+        "CancellationTimeout", "BuildListFailure",
+        "MarkCorrelated", "MarkNotCorrelated",
+    )
+    removed = set()
+    for task_id in task_ids:
+        process = next(p for p in root.findall(f"{{{B}}}process")
+                       if p.find(f"{{{B}}}scriptTask[@id='{task_id}']") is not None)
+        task = process.find(f"{{{B}}}scriptTask[@id='{task_id}']")
+        outgoing = task.findall(f"{{{B}}}outgoing")
+        if len(outgoing) != 1:
+            raise ValueError(f"{task_id} must have exactly one outgoing flow")
+        flow = process.find(f"{{{B}}}sequenceFlow[@id='{outgoing[0].text}']")
+        end = process.find(f"{{{B}}}endEvent[@id='{flow.get('targetRef')}']")
+        if end is None or len(end.findall(f"{{{B}}}incoming")) != 1:
+            raise ValueError(f"{task_id} must lead directly to its own end event")
+        script = task.find(f"{{{B}}}extensionElements/{{{Z}}}script")
+        if script is None or end.find(f"{{{B}}}extensionElements") is not None:
+            raise ValueError(f"{task_id} has unexpected execution configuration")
+        extension = ET.Element(f"{{{B}}}extensionElements")
+        mapping = ET.SubElement(extension, f"{{{Z}}}ioMapping")
+        ET.SubElement(mapping, f"{{{Z}}}output",
+                      source=script.get("expression"), target=script.get("resultVariable"))
+        end.insert(0, extension)
+        end.remove(end.find(f"{{{B}}}incoming"))
+        for incoming in task.findall(f"{{{B}}}incoming"):
+            process.find(f"{{{B}}}sequenceFlow[@id='{incoming.text}']").set("targetRef", end.get("id"))
+            ET.SubElement(end, f"{{{B}}}incoming").text = incoming.text
+        process.remove(task)
+        process.remove(flow)
+        removed.update((task_id, flow.get("id")))
+    for plane in root.iter("{http://www.omg.org/spec/BPMN/20100524/DI}BPMNPlane"):
+        for element in list(plane):
+            if element.get("bpmnElement") in removed:
+                plane.remove(element)
+    return root
 
 
 def configure_card(root):
@@ -27,10 +104,19 @@ def configure_card(root):
             node.set(key, value.replace("X-A2A-Api-Key", "X-Api-Key")
                      .replace("x-a2a-api-key", "x-api-key"))
         if node.get(f"{{{Z}}}modelerTemplate", "").startswith("dev.hansel.a2a.core."):
-            node.set(f"{{{Z}}}modelerTemplateVersion", "2")
+            node.set(f"{{{Z}}}modelerTemplateVersion", "3")
     start = root.find(f".//{{{B}}}startEvent[@id='CardRequested']")
+    documentation = start.find(f"{{{B}}}documentation")
+    if documentation is None:
+        documentation = ET.Element(f"{{{B}}}documentation")
+        start.insert(0, documentation)
+    documentation.text = (
+        "The camunda-a2a-demo.example.com public RPC URL is a nonfunctional example. "
+        "Replace it with the deployed HTTPS A2A RPC webhook URL before use; "
+        "it must match the client's A2A_RPC_URL secret."
+    )
     properties = start.find(f"{{{B}}}extensionElements/{{{Z}}}properties")
-    ET.SubElement(properties, f"{{{Z}}}property", name=CARD_RPC_URL_PROPERTY, value="")
+    ET.SubElement(properties, f"{{{Z}}}property", name=CARD_RPC_URL_PROPERTY, value=DEMO_PUBLIC_RPC_URL)
     response = properties.find(f"{{{Z}}}property[@name='inbound.responseExpression']")
     card = response.get("value").replace("camunda.secrets.A2A_RPC_URL", "rpcUrl")
     response.set("value", (
@@ -41,8 +127,6 @@ def configure_card(root):
     ))
     return root
 
-UPSTREAM = "https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
-AI = UPSTREAM + "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json"
 AI_CLIENT = ("https://raw.githubusercontent.com/camunda/connectors/"
              "b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/"
              "connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json")
@@ -61,10 +145,8 @@ SYSTEM = (
     "call external financial services or claim that matching amounts alone prove fraud."
 )
 CONFIRMATION_QUESTION = (
-    "Confirm synthetic data only: supply one message data part with syntheticClaim containing "
-    "merchant and currency (nonempty text), chargeAmounts (exactly two finite nonnegative numbers), "
-    "expectedAmount (a finite nonnegative number), and syntheticOnly=true. "
-    "Free text alone is context, not confirmation."
+    "Please confirm the merchant, currency, both charges and the total you expected to pay "
+    "using the charge details form."
 )
 CONFIRMATION = original.one("""={
   parts: if req.message.parts instance of list then
@@ -102,7 +184,6 @@ CONFIRMATION_FIELDS = (
     ("claimFirstAmount", "First charge amount", "number"),
     ("claimSecondAmount", "Second charge amount", "number"),
     ("claimExpectedAmount", "Expected order amount", "number"),
-    ("claimSyntheticOnly", "I confirm these are synthetic demonstration values", "checkbox"),
 )
 
 
@@ -119,8 +200,9 @@ def serialize(root, version="8.9.0"):
     root.set("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion", version)
     for node in root.iter():
         if node.get(f"{{{Z}}}modelerTemplate") not in (
-                "io.camunda.connectors.agenticai.aiagent.jobworker.v1",
-                "io.camunda.connectors.agenticai.ai-agent-subprocess.v2"):
+                "io.camunda.connectors.agenticai.ai-agent-subprocess.v2",
+                "dev.hansel.a2a.client-agent.v1",
+                "dev.hansel.a2a.client.v1"):
             node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     ET.indent(root, space="  ")
     return layout_xml(ET.tostring(root, encoding="UTF-8", xml_declaration=True) + b"\n")
@@ -176,12 +258,15 @@ def agent(path):
     outcome = outcome.replace("QUESTION", feel_str(CONFIRMATION_QUESTION))
     p.nodes["UpdateTask"].ext = p.nodes["UpdateTask"].ext.replace(q("={agent: agent}"), q("=" + outcome))
     path.write_text(p.xml())
-    apply(path, AI, "AgentTools", [
-        ("provider.type", "openaiCompatible"),
-        ("provider.openaiCompatible.endpoint", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
-        ("provider.openaiCompatible.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
-        ("provider.openaiCompatible.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
-        ("provider.openaiCompatible.model.parameters.temperature", "=0"),
+    apply(path, AI_CLIENT, "AgentTools", [
+        ("provider.type", "openai"), ("provider.openai.api.type", "completions"),
+        ("provider.openai.backend.type", "custom"),
+        ("provider.openai.backend.custom.endpoint", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_ENDPOINT"),
+        ("provider.openai.backend.custom.authentication.type", "apiKey"),
+        ("provider.openai.backend.custom.authentication.apiKey", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_API_KEY"),
+        ("provider.openai.model.model", "=camunda.secrets.CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL"),
+        ("provider.openai.timeouts.timeout", "PT180S"),
+        ("provider.openai.api.completions.temperature", "=0"),
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM)),
         ("data.userPrompt.prompt", "=promptText"), ("agentContext", "=agent.context"),
         ("data.memory.storage.type", "in-process"), ("data.memory.contextWindowSize", "=20"),
@@ -216,7 +301,7 @@ def assets():
             profile = configure_card(current_secret_mappings(
                 ET.fromstring(build_core.build(authentication, agent_path))))
             output[ROOT / "blueprint/profiles" / authentication / "02-a2a-server.bpmn"] = serialize(
-                profile, "8.10.0")
+                compact_server_responses(initialize_rpc_request(profile)), "8.10.0")
         decision = ET.parse(ROOT / "dmn/a2a-validate.dmn").getroot()
         decision.set("name", "07 Server - Validate A2A Request")
         for element in decision.iter():
@@ -236,23 +321,32 @@ def assets():
             data.pop("icon", None)
             data["name"] = ("Server - A2A RPC Endpoint" if kind == "rpc"
                             else "Server - Agent Card Endpoint")
-            data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=2)
-            data["engines"]["camunda"] = "^8.10"
+            data.update(id=f"dev.hansel.a2a.core.{kind}.v1", version=3)
+            data["engines"]["camunda"] = "^8.9"
             data["description"] = ("Direct stock-Connectors A2A 1.0 endpoint for a non-production blueprint. "
-                                   "Requires stock Connectors and Camunda engine 8.10 or later; "
-                                   "only combinations documented in the setup guide are verified.")
+                                   "Targets engine and stock Connectors 8.9+; runtime verification pending for 8.9. "
+                                   "The complete AI-agent demo still requires 8.10+. "
+                                   "Only combinations documented in the setup guide are verified.")
             if kind == "rpc":
                 next(p for p in data["properties"] if p.get("id") == "inbound.auth.type")["value"] = "APIKEY"
                 mapping = next(p for p in data["properties"] if p.get("id") == "resultExpression")
-                mapping["value"] = REQUEST_MAPPING
+                mapping["value"] = RPC_REQUEST_MAPPING
                 mapping["description"] = ("Persist the JSON-RPC body and only content-type/a2a-version headers. "
                                           "Never persist authorization, API keys or arbitrary request headers.")
                 for name, value in {
-                    "inbound.auth.apiKey": "=camunda.secrets.A2A_API_KEY",
                     "inbound.auth.apiKeyLocator": '=request.headers.`x-api-key`',
                 }.items():
                     data["properties"].append({"type": "Hidden", "id": name, "value": value,
                                                "binding": {"type": "zeebe:property", "name": name}})
+                data["properties"].append({
+                    "type": "String", "id": "inbound.auth.apiKey", "label": "Shared API key",
+                    "group": "endpoint", "value": "{{secrets.A2A_API_KEY}}", "feel": "optional",
+                    "constraints": {"notEmpty": True},
+                    "description": ("8.9: {{secrets.A2A_API_KEY}} from the Connector secret store. "
+                                    "8.10+: =camunda.secrets.A2A_API_KEY from the cluster secret store. "
+                                    "Never enter a credential value in the diagram."),
+                    "binding": {"type": "zeebe:property", "name": "inbound.auth.apiKey"},
+                })
             else:
                 root = ET.fromstring(output[ROOT / "blueprint/profiles/basic/02-a2a-server.bpmn"])
                 card_start = root.find(f".//{{{B}}}startEvent[@id='CardRequested']")
@@ -278,22 +372,81 @@ def assets():
             filename = ("08-server-a2a-rpc-endpoint.json" if kind == "rpc"
                         else "09-server-agent-card-endpoint.json")
             for prop in data["properties"]:
-                if "value" in prop:
+                if "value" in prop and prop.get("id") != "inbound.auth.apiKey":
                     prop["value"] = current_secret_expression(prop["value"])
             output[templates / filename] = (json.dumps(data, indent=2) + "\n").encode()
         client_xml, client_forms, client_http, client_ai_settings = build_client_agent()
+        client_template = directory / "a2a-client.json"
+        template_content = (json.dumps(build_client_template(ROOT), indent=2) + "\n").encode()
+        client_template.write_bytes(template_content)
+        output[templates / "11-client-a2a.json"] = template_content
         client_path = directory / "01-client-agent.bpmn"
         client_path.write_text(client_xml)
-        apply(client_path, AI_CLIENT, "ClientAgent", client_ai_settings)
+        fetched = subprocess.run(["c8ctl", "element-template", "get", AI_CLIENT],
+                                 check=True, capture_output=True, text=True)
+        upstream_icon = json.loads(fetched.stdout)["icon"]["contents"]
+        editable = {
+            "provider.openai.backend.custom.endpoint": "Model endpoint",
+            "provider.openai.backend.custom.authentication.apiKey": "Model API key reference",
+            "provider.openai.model.model": "Model name",
+            "data.systemPrompt.prompt": "Client instructions",
+            "data.userPrompt.prompt": "Current request",
+            "data.limits.maxModelCalls": "Maximum model calls",
+        }
+        inputs = [(name, value) for name, value in client_ai_settings if name != "retries"]
+        inputs += [("data.events.behavior", "WAIT_FOR_TOOL_CALL_RESULTS")]
+        agent_properties = []
+        for name, value in inputs:
+            prop = {"id": name, "type": "Hidden", "value": value,
+                    "binding": {"type": "zeebe:input", "name": name}}
+            if name in editable:
+                prop.update(type="Text", label=editable[name], feel="required",
+                            constraints={"notEmpty": True})
+            agent_properties.append(prop)
+        for binding, key, value in (
+                ("zeebe:taskDefinition", "type", "io.camunda.agenticai:aiagent:subprocess:2"),
+                ("zeebe:taskDefinition", "retries", "1"),
+                ("zeebe:adHoc", "outputCollection", "toolCallResults"),
+                ("zeebe:adHoc", "outputElement",
+                 "={id: toolCall._meta.id, name: toolCall._meta.name, "
+                 "content: toolCallResult, completedAt: now()}"),
+                ("zeebe:agentDefinition", "agentType", "aiAgentSubProcess")):
+            agent_properties.append({"type": "Hidden", "value": value,
+                                     "binding": {"type": binding, "property": key}})
+        agent_properties += [
+            {"type": "Hidden", "value": "true", "binding": {
+                "type": "zeebe:property", "name": "io.camunda.agenticai.toolContainer"}},
+            {"type": "Hidden", "value": "clientAgent", "binding": {
+                "type": "zeebe:output", "source": "=agent"}},
+            {"type": "Hidden", "value": "resultText", "binding": {
+                "type": "zeebe:output", "source": CLIENT_RESULT_EXPRESSION}},
+        ]
+        agent_template = {
+            "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+            "id": "dev.hansel.a2a.client-agent.v1", "version": 1,
+            "name": "Client AI Agent - Feedback",
+            "description": "Blueprint-specific configuration of the stock AI Agent Sub-process v2 "
+                           "with eight additional model calls per user-feedback turn.",
+            "appliesTo": ["bpmn:AdHocSubProcess"],
+            "elementType": {"value": "bpmn:AdHocSubProcess"},
+            "engines": {"camunda": "^8.10"},
+            "properties": agent_properties,
+        }
+        agent_template_path = directory / "client-agent.json"
+        agent_content = (json.dumps(agent_template, indent=2) + "\n").encode()
+        agent_template_path.write_bytes(agent_content)
+        output[templates / "12-client-agent-feedback.json"] = agent_content
+        apply(client_path, str(agent_template_path), "ClientAgent", [])
         client_root = ET.parse(client_path).getroot()
         client_host = client_root.find(f".//{{{B}}}adHocSubProcess[@id='ClientAgent']")
+        client_host.set(f"{{{Z}}}modelerTemplateIcon", upstream_icon)
         response = client_host.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output")
         if response is None or response.get("source") != "=agent":
             raise ValueError("Client Sub-process template changed its response output contract")
         response.set("target", "clientAgent")
         client_path.write_bytes(ET.tostring(client_root, encoding="UTF-8", xml_declaration=True))
         for element, settings in client_http.items():
-            apply(client_path, HTTP, element, settings)
+            apply(client_path, str(client_template), element, settings)
         for filename, text in client_forms.items():
             output[DEMO / filename] = text.encode()
         output[DEMO / "01-client-agent.bpmn"] = serialize(ET.parse(client_path).getroot(), "8.10.0")

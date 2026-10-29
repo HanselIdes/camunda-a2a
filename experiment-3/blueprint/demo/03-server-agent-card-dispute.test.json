@@ -1,0 +1,56 @@
+{
+  "$schema": "https://camunda.com/json-schema/cpt-test-cases/8.10/schema.json",
+  "processId": "a2a-card-dispute",
+  "testCases": [
+    {
+      "name": "Synthetic claim - invoke local reconciliation tool",
+      "description": "Runs only the deterministic reconciliation tool with supplied confirmed synthetic data; terminates after the tool, without a model, engine HTTP or financial service.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "a2a-card-dispute" },
+          "startInstructions": [{ "elementId": "review_duplicate_charge" }],
+          "runtimeInstructions": [{ "type": "TERMINATE_PROCESS_INSTANCE", "afterElementId": "review_duplicate_charge" }],
+          "variables": {
+            "task": { "id": "confirmed-tool-task" },
+            "confirmation": {
+              "valid": true,
+              "claim": {
+                "merchant": "Northwind Electronics", "currency": "USD",
+                "chargeAmounts": [49.95, 49.95], "expectedAmount": 49.95, "syntheticOnly": true
+              }
+            }
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "a2a-card-dispute" },
+          "elementSelector": { "elementId": "review_duplicate_charge" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    },
+    {
+      "name": "Missing confirmation - invoke the guarded tool",
+      "description": "Runs the same local tool without confirmed data to illustrate the confirmation guard; no model or external calls, and no assertion of arithmetic or generated text.",
+      "instructions": [
+        {
+          "type": "CREATE_PROCESS_INSTANCE",
+          "processDefinitionSelector": { "processDefinitionId": "a2a-card-dispute" },
+          "startInstructions": [{ "elementId": "review_duplicate_charge" }],
+          "runtimeInstructions": [{ "type": "TERMINATE_PROCESS_INSTANCE", "afterElementId": "review_duplicate_charge" }],
+          "variables": {
+            "task": { "id": "unconfirmed-tool-task" },
+            "confirmation": { "valid": false, "claim": null }
+          }
+        },
+        {
+          "type": "ASSERT_ELEMENT_INSTANCE",
+          "processInstanceSelector": { "processDefinitionId": "a2a-card-dispute" },
+          "elementSelector": { "elementId": "review_duplicate_charge" },
+          "state": "IS_COMPLETED"
+        }
+      ]
+    }
+  ]
+}

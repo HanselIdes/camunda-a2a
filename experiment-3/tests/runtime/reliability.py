@@ -67,14 +67,14 @@ def timed_echo(source, target):
     for shape in plane.findall(f"{{{DI}}}BPMNShape"):
         if shape.get("bpmnElement") != "TaskReceived":
             bounds = shape.find(f"{{{DC}}}Bounds")
-            bounds.set("x", str(int(bounds.get("x")) + 160))
+            bounds.set("x", str(float(bounds.get("x")) + 160))
     for edge in plane.findall(f"{{{DI}}}BPMNEdge"):
         if edge.get("bpmnElement") == "Flow_Received_Echo":
             edge.set("id", "Flow_Received_Hold_di")
             edge.set("bpmnElement", "Flow_Received_Hold")
         else:
             for point in edge:
-                point.set("x", str(int(point.get("x")) + 160))
+                point.set("x", str(float(point.get("x")) + 160))
     shape = ET.SubElement(plane, f"{{{DI}}}BPMNShape", id="HoldConcurrency_di", bpmnElement="HoldConcurrency")
     ET.SubElement(shape, f"{{{DC}}}Bounds", x="240", y="122", width="36", height="36")
     edge = ET.SubElement(plane, f"{{{DI}}}BPMNEdge", id="Flow_Hold_Echo_di", bpmnElement="Flow_Hold_Echo")

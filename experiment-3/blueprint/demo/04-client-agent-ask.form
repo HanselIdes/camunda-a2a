@@ -2,7 +2,7 @@
   "components": [
     {
       "type": "text",
-      "text": "### Ask the A2A server agent\n\nThe client AI agent discovers the server's Agent Card and chooses when to send, poll, or request missing input. The example uses synthetic dispute data only.",
+      "text": "### Ask the A2A server agent\n\nThe process fetches the server's Agent Card, then the client AI agent delegates through A2A templates. You can provide feedback and continue the conversation. The example uses synthetic dispute data only.",
       "id": "Field_a2a_client_ask_0",
       "layout": {
         "row": "Row_0",

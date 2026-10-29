@@ -28,6 +28,8 @@ services:
       CAMUNDA_DATA_SECONDARYSTORAGE_ELASTICSEARCH_URL: http://elasticsearch:9200
     ports:
       - "127.0.0.1:${PROOF_ENGINE_PORT:?required}:8080"
+      - "127.0.0.1::9600"
+      - "127.0.0.1::26500"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:9600/actuator/health/status >/dev/null"]
       interval: 5s

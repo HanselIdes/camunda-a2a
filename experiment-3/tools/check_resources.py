@@ -6,7 +6,6 @@ import re
 import xml.etree.ElementTree as ET
 
 from build_core import B, Z, ROOT
-from build_blueprint import AI_CLIENT
 
 PATHS = (
     "blueprint/demo/01-client-agent.bpmn",
@@ -19,13 +18,17 @@ PATHS = (
     "blueprint/templates/08-server-a2a-rpc-endpoint.json",
     "blueprint/templates/09-server-agent-card-endpoint.json",
     "blueprint/templates/10-server-http-json-v13.json",
+    "blueprint/templates/11-client-a2a.json",
+    "blueprint/templates/12-client-agent-feedback.json",
+    "blueprint/demo/01-client-agent.integration.test.json",
+    "blueprint/profiles/basic/02-a2a-server.test.json",
+    "blueprint/demo/03-server-agent-card-dispute.test.json",
     "blueprint/demo/README.md",
 )
 AI_URL = ("https://raw.githubusercontent.com/camunda/connectors/"
-          "844cb028a43e2a15d31f5a49e6cb0a9961c0f208/"
-          "connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json")
+          "b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/"
+          "connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json")
 EXTERNAL_TEMPLATES = {
-    ("io.camunda.connectors.agenticai.aiagent.jobworker.v1", "5"),
     ("io.camunda.connectors.agenticai.ai-agent-subprocess.v2", "1"),
 }
 
@@ -36,10 +39,11 @@ def check(resources=None):
     if set(resources) != set(PATHS):
         raise ValueError("Candidate resource set differs from the selected Basic import set")
     names = [path.rsplit("/", 1)[-1] for path in PATHS] + [
-        url.rsplit("/", 1)[-1] for url in (AI_URL, AI_CLIENT)]
+        url.rsplit("/", 1)[-1] for url in (AI_URL,)]
     if len(set(names)) != len(names):
         raise ValueError("Import resources have duplicate flattened filenames")
     models, templates, forms, processes, decisions = [], set(EXTERNAL_TEMPLATES), set(), set(), set()
+    scenarios = []
     for path, content in resources.items():
         if path.endswith(".bpmn"):
             root = ET.fromstring(content)
@@ -54,9 +58,16 @@ def check(resources=None):
             data = json.loads(content)
             if path.endswith(".form"):
                 forms.add(data["id"])
+            elif path.endswith(".test.json"):
+                scenarios.append((path, data))
             else:
                 templates.add((data["id"], str(data["version"])))
     errors = []
+    for path, data in scenarios:
+        if data.get("processId") not in processes:
+            errors.append(f"{path}: unresolved scenario processId {data.get('processId')}")
+        if not isinstance(data.get("testCases"), list) or not data["testCases"]:
+            errors.append(f"{path}: missing Web Modeler test cases")
     for path, root in models:
         for element in root.iter():
             template = element.get(f"{{{Z}}}modelerTemplate")
@@ -91,6 +102,6 @@ if __name__ == "__main__":
         prefix = f"https://raw.githubusercontent.com/HanselIdes/camunda-a2a/{args.ref}/experiment-3/"
         print(json.dumps([{"name": p.rsplit("/", 1)[-1], "url": prefix + p} for p in PATHS]
                          + [{"name": url.rsplit("/", 1)[-1], "url": url}
-                            for url in (AI_URL, AI_CLIENT)], indent=2))
+                            for url in (AI_URL,)], indent=2))
     else:
         print(f"{count} candidate import resources: templates, forms, decisions and process references resolve")

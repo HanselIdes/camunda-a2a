@@ -13,7 +13,7 @@ EXPECTED = {**CLAIM, "paidAmount": 99.9, "overchargeAmount": 49.95,
             "matchingAmounts": True, "recommendation": "REQUEST_HUMAN_REVIEW"}
 FORM_VALUES = {"claimMerchant": CLAIM["merchant"], "claimCurrency": CLAIM["currency"],
                "claimFirstAmount": 49.95, "claimSecondAmount": 49.95,
-               "claimExpectedAmount": 49.95, "claimSyntheticOnly": True}
+               "claimExpectedAmount": 49.95}
 
 
 def data_part(claim=None):
@@ -70,10 +70,16 @@ def agent_history_checks(root, request):
     model = ET.parse(root / "blueprint/demo/01-client-agent.bpmn").getroot()
     namespace = "{http://camunda.org/schema/zeebe/1.0}"
 
-    def body(element):
-        task = next(node for node in model.iter() if node.get("id") == element)
-        return next(node.get("source") for node in task.iter(namespace + "input")
-                    if node.get("target") == "body")
+    def node(element):
+        return next(node for node in model.iter() if node.get("id") == element)
+
+    def input_source(element, target):
+        return next(item.get("source") for item in node(element).iter(namespace + "input")
+                    if item.get("target") == target)
+
+    def output_source(element, target):
+        return next(item.get("source") for item in node(element).iter(namespace + "output")
+                    if item.get("target") == target)
 
     def evaluate(expression, variables):
         status, response = request("/v2/expression/evaluation",
@@ -83,40 +89,92 @@ def agent_history_checks(root, request):
         assert not response.get("warnings"), response
         return response["result"]
 
-    send = body("SendA2AMessage").replace(
-        'fromAi(toolCall.text, "The user\'s request or follow-up text", "string")',
-        '"Synthetic request"',
-    )
-    assert "fromAi(" not in send
+    subprocess = node("SendA2AMessage")
+    send_task = node("SendRemoteMessage")
+    poll_task = node("GetA2ATask")
+    assert send_task in list(subprocess.iter()) and poll_task in list(subprocess.iter())
+    assert output_source("SendA2AMessage", "toolCallResult") == \
+        "={response: remoteResponse, task: acceptedTask}"
+    assert input_source("SendA2AMessage", "remoteResponse") == "=null"
+    budget = input_source("ClientAgent", "data.limits.maxModelCalls")
+    for prior_calls in (None, 8, 19):
+        variables = {"clientAgent": None if prior_calls is None else {
+            "context": {"metrics": {"modelCalls": prior_calls}},
+        }}
+        assert evaluate(budget, variables) == (prior_calls or 0) + 8
+    previous_task = input_source("SendA2AMessage", "previousTask")
+    confirmed_parts = input_source("SendA2AMessage", "confirmedParts")
+    message_expression = input_source("SendRemoteMessage", "message")
+    task_id_expression = input_source("GetA2ATask", "taskId")
+
     task = {"id": "response-task", "contextId": "response-context",
-            "status": {"state": "TASK_STATE_COMPLETED"}}
-    messages = []
-    context = {"conversation": {"messages": messages}}
-    initial = evaluate(send, {"agentContext": context})["params"]["message"]
-    assert "taskId" not in initial and "contextId" not in initial, initial
-    assert initial["parts"] == [{"text": "Synthetic request"}], initial
+            "status": {"state": "TASK_STATE_INPUT_REQUIRED"}}
+    poll_result = next(item.get("value") for item in poll_task.iter(namespace + "header")
+                       if item.get("key") == "resultExpression")
+    error = {"jsonrpc": "2.0", "id": "poll-error",
+             "error": {"code": -32603, "message": "Temporary polling failure"}}
+    failed_poll = evaluate(poll_result, {"response": {"body": error}, "acceptedTask": task})
+    assert failed_poll == {"remoteResponse": error, "acceptedTask": task}, failed_poll
 
     def record(name, content):
-        messages.append({"role": "tool_call_result", "results": [{
+        return {"role": "tool_call_result", "results": [{
             "name": name, "content": [{"type": "object", "content": content}],
-        }]})
+        }]}
 
-    record("SendA2AMessage", {"result": {"task": task}})
-    unconfirmed = evaluate(send, {"agentContext": context})["params"]["message"]
-    assert unconfirmed["taskId"] == task["id"], unconfirmed
-    assert unconfirmed["contextId"] == task["contextId"], unconfirmed
-    assert unconfirmed["parts"] == [{"text": "Synthetic request"}], unconfirmed
-    record("AskClientForInput", {"text": "Confirmed", "syntheticClaim": CLAIM})
-    confirmed = evaluate(send, {"agentContext": context})["params"]["message"]
+    context = {"conversation": {"messages": []}}
+    initial = evaluate(message_expression, {
+        "remoteText": "Synthetic request", "confirmedParts": [],
+        "previousTask": {}, "message": {"messageId": "initial"},
+    })
+    assert initial["parts"] == [{"text": "Synthetic request"}], initial
+    assert "taskId" not in initial and "contextId" not in initial, initial
+
+    context["conversation"]["messages"].append(record(
+        "SendA2AMessage", {"toolCallResult": {"result": {"task": task}}}
+    ))
+    active_task = evaluate(previous_task, {"agentContext": context})
+    assert active_task == {"taskId": task["id"], "contextId": task["contextId"]}, active_task
+    context["conversation"]["messages"].append(record(
+        "SendA2AMessage", {"toolCallResult": {"response": error, "task": task}}
+    ))
+    assert evaluate(previous_task, {"agentContext": context}) == active_task
+    context["conversation"]["messages"].append(record(
+        "AskClientForInput", {"toolCallResult": {"text": "Confirmed", "syntheticClaim": CLAIM}}
+    ))
+    confirmed_data = evaluate(confirmed_parts, {"agentContext": context})
+    assert confirmed_data == [data_part()], confirmed_data
+    confirmed = evaluate(message_expression, {
+        "remoteText": "Synthetic request", "confirmedParts": confirmed_data,
+        "previousTask": active_task, "message": {"messageId": "follow-up"},
+    })
     assert confirmed["parts"] == [{"text": "Synthetic request"}, data_part()], confirmed
     assert confirmed["taskId"] == task["id"] and confirmed["contextId"] == task["contextId"]
-    poll = evaluate(body("GetA2ATask"), {"agentContext": context})
-    assert poll["params"] == {"id": task["id"]}, poll
+    assert evaluate(task_id_expression, {"acceptedTask": task}) == task["id"]
+    retained_task = input_source("SendA2AMessage", "acceptedTask")
+    assert evaluate(retained_task, {"agentContext": context}) == task
+    resume = node("Flow_RemoteTaskMode_RemotePollJoin").find(
+        "{http://www.omg.org/spec/BPMN/20100524/MODEL}conditionExpression").text
+    assert evaluate(resume, {"acceptedTask": None}) is False
+    assert evaluate(resume, {"acceptedTask": task}) is False
+    for state in ("TASK_STATE_SUBMITTED", "TASK_STATE_WORKING"):
+        working = {**task, "status": {"state": state}}
+        history = {"conversation": {"messages": [record(
+            "SendA2AMessage", {"toolCallResult": {"response": error, "task": working}}
+        )]}}
+        recovered = evaluate(retained_task, {"agentContext": history})
+        assert recovered == working
+        assert evaluate(resume, {"acceptedTask": recovered}) is True
+        assert evaluate(task_id_expression, {"acceptedTask": recovered}) == task["id"]
 
-    record("GetA2ATask", {"result": task})
-    prepare = next(node for node in model.iter() if node.get("id") == "PrepareClientResult")
-    expression = next(prepare.iter(namespace + "script")).get("expression")
-    text = evaluate(expression, {"clientAgent": {"context": context, "responseText": "Reviewed"}})
+    result_expression = output_source("ClientAgent", "resultText")
+    agent_context = {"conversation": {"messages": [record(
+        "SendA2AMessage", {"toolCallResult": {"result": {"task": {
+            **task, "status": {"state": "TASK_STATE_COMPLETED"},
+        }}}}
+    )]}}
+    text = evaluate(result_expression, {
+        "agent": {"context": agent_context, "responseText": "Reviewed"},
+    })
     assert "Reviewed" in text and "TASK_STATE_COMPLETED" in text, text
 
     server = ET.parse(root / "blueprint/demo/03-server-agent-card-dispute.bpmn").getroot()
@@ -137,12 +195,14 @@ def agent_history_checks(root, request):
     card_start = next(node for node in protocol.iter() if node.get("id") == "CardRequested")
     card_response = next(node.get("value") for node in card_start.iter(namespace + "property")
                          if node.get("name") == "inbound.responseExpression")
-    for url in (None, "", "http://example.test/inbound/a2a", "https://example.test/inbound/a2a"):
+    placeholder = "https://camunda-a2a-demo.example.com/inbound/a2a"
+    live_url = "https://example.test/inbound/a2a"
+    for url in (None, "", "http://example.test/inbound/a2a", placeholder, live_url):
         properties = {} if url is None else {"inbound.publicRpcUrl": url}
         response = evaluate(card_response, {"correlation": {
             "activatedElement": {"delegate": {"properties": properties}},
         }})
-        if url == "https://example.test/inbound/a2a":
+        if url in (placeholder, live_url):
             assert response["statusCode"] == 200, response
             assert response["body"]["supportedInterfaces"][0]["url"] == url, response
         else:

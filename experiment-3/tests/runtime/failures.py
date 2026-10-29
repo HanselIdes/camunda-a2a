@@ -270,8 +270,8 @@ def run(root, reports, rpc, request, deploy, env, stack):
             derived = reports / f"nonshipping-{mode}.bpmn"
             controlled_model(root / "blueprint/demo/03-server-agent-card-dispute.bpmn", derived, "a2a-echo")
             model = ET.parse(derived)
-            target = ("provider.openaiCompatible.endpoint" if mode == "unavailable-model-endpoint"
-                      else "provider.openaiCompatible.model.model")
+            target = ("provider.openai.backend.custom.endpoint" if mode == "unavailable-model-endpoint"
+                      else "provider.openai.model.model")
             for element in model.getroot().iter(f"{{{Z}}}input"):
                 if element.get("target") == target:
                     element.set("source", "http://127.0.0.1:1/v1" if mode == "unavailable-model-endpoint"

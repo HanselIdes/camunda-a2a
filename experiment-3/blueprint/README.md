@@ -9,6 +9,19 @@ current numbered candidate. Do not use prior Desktop/Hub, TCK, or model runs as 
 assets. Marketplace import and external licensing/eligibility approval are separate deferred release
 gates, not prototype acceptance. SaaS runtime and Camunda-provided model execution are unverified.
 
+**Current focused verification:** source `0bcc1e7` passed the authenticated, two-review live JSON journey on
+engine 8.10.2, Connectors 8.10.0 and Elasticsearch 8.19.23 using the authorized local Ollama override.
+The official CPT 8.10.4 runner executed the shipped integration scenario; additional checks verified
+confirmation provenance, same-task follow-up, exact reconciliation evidence, authentication and credential absence.
+After the first terminal task, user feedback created a new completed task in the same server context.
+The model-call ceilings were 8 then 15, with cumulative calls increasing from 7 to 9.
+The [minimal sanitized report](../verification/prototype-refinement.json) retains exact sources,
+commands, prior failures and exclusions, including the earlier single-review pass on `269a61c`.
+This is not a browser-based Hub Test Studio run, SaaS verification, or a fresh TCK run.
+The default Maven suite passed 198 tests before the optional free-text adjustment; source-specific checks are listed in the report.
+The nine affected client/server/tool tests passed on `0bcc1e7`, including optional text and polling-error recovery.
+Long-conversation retention beyond the configured 20-message context window remains unverified.
+
 **Earlier 8.9 input-only repair: overall FAIL.** Exact model-input preservation passes, but incomplete
 leading-equals JSON input caused the real model to invent reconciliation fields and the demo to
 complete instead of asking for missing input. The existing synthetic-result guard does not validate
@@ -18,8 +31,8 @@ The [earlier confirmed-input prototype](../verification/fb158a5-89/README.md) pa
 checks on engine 8.9.26 / Connectors 8.9.17 / Elasticsearch 8.19.23. Those results do not verify
 the current numbered candidate.
 
-The demonstration has a client-side AI Agent Sub-process (v2 template version 1) that chooses among A2A discovery,
-send, poll, and user-input root tools in a compact two-by-two grid. Its stock connector owns the feedback loop.
+The demonstration fetches discovery before a client-side AI Agent Sub-process chooses local tools,
+a nested A2A send/poll tool, or human confirmation. Its stock connector owns the internal tool-feedback loop.
 The protocol and
 discovery webhooks share process `a2a-rpc`; a new A2A task starts the separate server-side AI agent
 `a2a-card-dispute`. Its deterministic BPMN tool validates explicit synthetic inputs and returns arithmetic
@@ -30,22 +43,48 @@ determination, financial integration, or custom HTTP server is included.
 ## 8.10+ client/server demo configuration
 
 The complete demo now requires **Camunda 8.10 and Connectors 8.10 or later** because the selected client
-Sub-process template has engine constraint `^8.10`. The focused verification profile is engine 8.10.2,
-stock Connectors 8.10.2, and Elasticsearch 8.19.23; other combinations are unverified.
+Sub-process template has engine constraint `^8.10`. Current focused verification uses engine 8.10.2,
+stock Connectors 8.10.0, and Elasticsearch 8.19.23; other combinations require their own evidence.
 The [focused authenticated 8.10.2 run](../verification/18e2a06/README.md) passed on clean
 source `18e2a06`, including native secrets, redacted-header authentication, actual-model confirmation,
 same-task follow-up, result review, and bounded credential scans.
 The earlier client Task variant passed on 8.9.26 / Connectors 8.9.17 at
 [`69e77df`](../verification/69e77df/README.md), but that evidence does not verify this replacement client.
 The protocol lifecycle remains, with native secret mappings and the current `X-Api-Key` contract.
-The server's result mapping accepts both legacy object results and 8.10
-structured content blocks without changing its v5 connector variant. Earlier source-pinned
+The server now uses the AI Agent Sub-process v2, version 1 template, with the same native-secret
+OpenAI-compatible backend as the client. The source-pinned live runs above predate this server
+upgrade and do not verify it. Its result mapping accepts both legacy object results and 8.10
+structured content blocks. Earlier source-pinned
 8.9 evidence remains historical server evidence, not a fresh run of these mappings or support for the
 complete current demo on 8.9.
 Earlier engine 8.8.44 / Connectors 8.8.24 evidence showed the synchronous webhook result needed by the
 protocol was unavailable; it does not establish support for 8.8.
 
-### Why the current client requires 8.10
+### A2A templates target 8.9; the AI-agent demo requires 8.10
+
+The reusable A2A Client, RPC Endpoint and Agent Card Endpoint templates target **engine and stock
+Connectors 8.9 or later**, independently of the AI Agent connector. Their engine constraints are
+`^8.9`; this is a compatibility target, **not a fresh 8.9 runtime pass**. The current prototype's
+revised flows and mappings remain unverified on 8.9 while prototyping is in progress.
+
+On 8.9, configure the Connector secret store and use `{{secrets.A2A_API_KEY}}` for the shared API key.
+The RPC template exposes this reference as an editable field; the client uses the same default.
+For Self-Managed, the standard environment provider uses `SECRET_A2A_API_KEY`. For SaaS, configure
+the corresponding Connector secret. Keep the `X-Api-Key` header and HTTPS transport unchanged.
+Use literal public HTTPS endpoint URLs or 8.9-compatible Connector secret placeholders, not
+`camunda.secrets` expressions, when configuring these templates on 8.9.
+
+On 8.10+, use `=camunda.secrets.A2A_API_KEY` with the cluster secret store. The supplied 8.10 BPMN
+examples explicitly retain this native reference, along with the other native secret mappings;
+the templates' 8.9 defaults do not change the examples' secret configuration.
+
+The five older templates under `element-templates/` also target 8.9 at the template level, including
+the optional push sender and callback receiver. They remain part of the nonshipping historical
+experiment, not supported companions for the current blueprint. Their version declarations do not
+enable push in the supplied server or establish current runtime verification.
+
+The complete current demo still requires 8.10. In particular, applying an A2A template to an
+8.9 process does not make the supplied AI Agent Sub-process v2 host available there.
 
 The requirement comes from the selected
 [`io.camunda.connectors.agenticai.ai-agent-subprocess.v2@1` template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json),
@@ -58,11 +97,11 @@ The verified Connectors 8.9.17 source instead has the older
 These are different connector contracts. The 8.10 minimum is not a generic requirement of A2A,
 BPMN, AI agents, or all ad-hoc subprocess implementations.
 
-| Package / runtime | What works or is unavailable | Evidence |
-| --- | --- | --- |
-| Current package / engine and Connectors 8.10.2 | Compact Sub-process v2 client, discovery, authenticated send/poll, explicit confirmation, same-task follow-up, and result review. | [Focused local-model run](../verification/18e2a06/README.md). |
-| Current package / 8.9 | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only. |
-| [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client. | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
+| Package / runtime                                                                                                                                                                                 | What works or is unavailable                                                                                                                         | Evidence                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Earlier package at `18e2a06` / engine and Connectors 8.10.2                                                                                                                                       | Earlier compact Sub-process v2 client journey. This does not verify the revised nested tool flow.                                                    | [Source-pinned local-model run](../verification/18e2a06/README.md).                                                                                                                                                         |
+| Current package / 8.9                                                                                                                                                                             | The compact client and complete demo cannot be deployed and executed as supplied. The revised server result mapping is not freshly validated on 8.9. | Template constraint is `^8.10`; current run is 8.10.2 only.                                                                                                                                                                 |
+| [Immutable Task-based package at `565adf7`](https://github.com/HanselIdes/camunda-a2a/tree/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/blueprint) / engine 8.9.26 and Connectors 8.9.17 | Earlier complete journey with a client AI Agent Task and external tool-feedback loop instead of the compact Sub-process v2 client.                   | [`69e77df` evidence in that package](https://github.com/HanselIdes/camunda-a2a/blob/565adf7e740aa472cb0cc3f813ca43ff861e73b5/experiment-3/verification/69e77df/README.md); exact local-model profile, not all 8.9 versions. |
 
 For an 8.9 cluster, use the whole pinned Task-based package with its own README and dependencies.
 Its deployed model bytes match the source-pinned run. Do not mix those resources with current files;
@@ -74,17 +113,17 @@ These are version-specific limits, separate from the selected Basic profile: upg
 does not enable push, streaming, OAuth, or per-user authorization in that demo. Both recorded
 journeys used local Ollama; neither verifies Camunda-provided SaaS model execution.
 
-| Component            | Version or setting                                                                                                   |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Self-Managed engine  | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                             |
-| Stock Connectors     | 8.10.2; no custom worker or custom HTTP server                                                                       |
-| Secondary storage    | Elasticsearch 8.19.23                                                                                                |
-| Client AI Agent Sub-process | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10`                     |
-| Server AI Agent      | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                                    |
-| HTTP template        | `io.camunda.connectors.HttpJson.v2`, version 13                                                                      |
-| Transport            | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                             |
-| Runtime settings     | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`                        |
-| Engine exporter      | Explicit CamundaExporter class and `bulk.delay=1`; see below                                                      |
+| Component                   | Version or setting                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Self-Managed engine         | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                 |
+| Stock Connectors            | 8.10.0 in the current focused run; no custom worker or custom HTTP server                                |
+| Secondary storage           | Elasticsearch 8.19.23                                                                                    |
+| Client AI Agent Sub-process | `dev.hansel.a2a.client-agent.v1`, version 1, configuring stock Sub-process v2; engine constraint `^8.10` |
+| Server AI Agent             | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10`            |
+| HTTP template               | `io.camunda.connectors.HttpJson.v2`, version 13                                                          |
+| Transport                   | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                 |
+| Runtime settings            | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`            |
+| Engine exporter             | Explicit CamundaExporter class and `bulk.delay=1`; see below                                             |
 
 Use `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `CAMUNDA_PROVIDED_LLM_API_KEY`, and
 `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` in the shipped BPMN. An isolated local verification may override
@@ -99,6 +138,40 @@ client agent, current display names, or Camunda-provided model execution.
 The execution-thread setting matters when client and server use the same Connectors runtime: a synchronous
 client HTTP job must not occupy the only job-execution thread while the server needs another HTTP job.
 The candidate verifier uses four threads; this is not a capacity guarantee.
+
+## Web Modeler starter tests
+
+Import these `.test.json` files with the three BPMN diagrams, forms and
+`07-server-request-validation.dmn` into Web Modeler. Select exactly one server profile; Basic and
+OAuth share the same process and element IDs, so the server test file works with either profile.
+The files use the official CPT 8.10 instruction schema and the
+[tutorial integration-test format](https://github.com/camunda/camunda-8-tutorials/blob/main/solutions/ai-agent-chat-with-tools/ai-agent-chat-with-tools.integration.test.json).
+They are a small starting set, not a coverage or conformance suite.
+All seven JSON scenarios have run through the official CPT 8.10.4 runner: six self-contained
+server/tool segments and one real-model E2E scenario. The live scenario rejects one result and requests another reconciliation before acceptance.
+A separate deterministic CPT test rejects
+one result, retains the conversation, and accepts the next response.
+Web Modeler's browser test UI itself remains unverified.
+
+| Test file                                                                             | Scope                                                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [01-client-agent.integration.test.json](demo/01-client-agent.integration.test.json)   | One live E2E journey: discover, delegate, poll, supply human-confirmed synthetic values, and accept the reviewed response. Uses real connectors and models; may incur model charges.                                                   |
+| [02-a2a-server.test.json](profiles/basic/02-a2a-server.test.json)                     | Four self-contained server flow segments: invalid request, GetTask, terminal cancellation rejection, and context-mismatched follow-up rejection. No engine HTTP or model calls. The invalid-request case uses the real validation DMN. |
+| [03-server-agent-card-dispute.test.json](demo/03-server-agent-card-dispute.test.json) | Two isolated local-tool segments, with and without confirmation. No model or external service calls; terminate after the tool.                                                                                                         |
+
+Before running the live test, deploy/configure the actual server and business agent, set
+`A2A_AGENT_PROCESS=a2a-card-dispute`, and configure the client/model secrets in the test runtime.
+The Card's public RPC URL must be a reachable deployment URL matching `A2A_RPC_URL`.
+`https://camunda-a2a-demo.example.com/inbound/a2a` is only a nonfunctional prototype placeholder.
+Web Modeler must reach the configured HTTPS endpoints; importing BPMN alone does not provide that
+connectivity. Follow the Web Modeler integration-test runtime's secret configuration.
+
+The E2E test completes the confirmation and feedback user tasks programmatically. It expects one
+confirmation step; unexpected model behavior should fail rather than be silently skipped. It checks
+client flow completion and tool traversal, not response wording, reconciliation accuracy, remote
+process-instance state, HTTP authentication or A2A conformance. The isolated server/tool cases start
+at named elements with explicit fixtures; they do not prove ingress, lookup, retries or full task
+lifecycle behavior. Browser-based Web Modeler execution remains unverified.
 
 ## Frozen-source engineering results
 
@@ -355,7 +428,7 @@ For Docker Desktop, a host-local Ollama service can be reached through `host.doc
 that hostname works on a remote cluster. Model inference needs sufficient local resources.
 The client subprocess `ClientAgent` references these secrets through the v2 template's
 `provider.openai.backend.custom.*` and `provider.openai.model.model` inputs, selecting Chat Completions
-and API-key authentication. Server activity `AgentTools` retains its `provider.openaiCompatible.*` inputs.
+and API-key authentication. Server activity `AgentTools` uses the same `provider.openai.*` inputs.
 Changing secret values does not require editing those activities.
 Changing provider type, business tools, or system instructions requires configuring the corresponding BPMN.
 
@@ -369,16 +442,18 @@ For this revised import, start with a fresh Modeler project when possible. Impor
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
-The complete import closure is 11 repository resources plus the pinned upstream server AI Agent Job Worker v5
-and client AI Agent Sub-process v2 version 1 templates (13 import resources total):
-seven BPMN/DMN/form resources, three local element-template JSON files, the README, and two external templates.
-Confirm that the target Modeler resolves both exact AI template IDs and versions before import.
+The complete import closure is 16 repository resources plus the pinned upstream server AI Agent Sub-process v2, version 1
+template (17 import resources total): seven BPMN/DMN/form resources, five local element-template JSON files,
+three test-scenario files, the README, and one external template.
+Confirm that the target Modeler resolves the exact server AI template ID and version before import.
 The local HTTP JSON v13 snapshot may be omitted only after confirming that the
 target already provides that exact ID and version. Keep both custom server templates and the pinned upstream
-AI Agent Job Worker v5 template. An "Already available" notice alone does not establish version equivalence.
-Use the Modeler's element-template import workflow for the three local JSON files and the
-[pinned server template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
-and [pinned client template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json).
+AI Agent Sub-process v2, version 1 template. An "Already available" notice alone does not establish version equivalence.
+Use the Modeler's element-template import workflow for the five local JSON files and the
+[pinned server template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json).
+The local `12-client-agent-feedback.json` configures the stock Sub-process v2 worker.
+It exposes an expression-capable cumulative call ceiling, allowing eight additional calls per feedback turn
+without clearing conversation history or metrics. It does not redistribute the upstream AI template.
 The upstream templates remain subject to their own terms; see [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
 Deploy these seven resources together: `profiles/basic/02-a2a-server.bpmn`,
@@ -410,9 +485,10 @@ Start process `a2a-client` through its start form, or with a `question` variable
 }
 ```
 
-The `ClientAgent` AI Agent Sub-process chooses its own calls to `DiscoverAgentCard`,
-`SendA2AMessage`, `GetA2ATask`, and, when needed, `AskClientForInput`. The connector handles tool
-activation and feedback internally, with an eight-call model limit and meaningful `toolCallResult` values.
+The process fetches the Agent Card before entering `ClientAgent`. The agent can call local intake,
+confirmation-provenance and draft-note tools, delegate through `SendA2AMessage`, and request human
+confirmation with `AskClientForInput`. The remote tool contains the explicit send, timer and polling flow.
+Each user-feedback turn allows eight additional model calls while retaining conversation context.
 The client sends credentials only to the configured `A2A_RPC_URL`, not to an arbitrary URL returned by a card.
 Discovery and A2A 1.0 JSON-RPC are explicit BPMN/HTTP behavior, not the stock A2A 0.3 client connector.
 
@@ -424,8 +500,9 @@ the final user task.
 
 Free text is context, not confirmation. If the server responds `INPUT_REQUIRED`, the client agent can call
 `AskClientForInput`, which presents a Tasklist user task using `05-client-agent-confirm.form`. Enter merchant
-`Northwind Electronics`, currency `USD`, first/second charge amounts `49.95`, expected order amount `49.95`,
-and check the synthetic-only confirmation. In the bundled client process, the outbound mapping derives the
+`Northwind Electronics`, currency `USD`, first/second charge amounts `49.95`, and expected total `49.95`.
+No demo-data checkbox is required. The bundled demo marks its outgoing claim as synthetic automatically;
+the charge values still come only from the submitted form. The outbound mapping derives the
 `data.syntheticClaim` part only from that form result; the model cannot supply claim fields as tool arguments.
 Follow-up messages reuse the task and context IDs returned by the initial send; the model cannot supply those
 identifiers either. This is a prototype interaction: the model decides whether and when to call each tool.
