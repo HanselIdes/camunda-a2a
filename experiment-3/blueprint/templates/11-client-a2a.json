@@ -96,7 +96,7 @@
       "group": "operation",
       "binding": {
         "type": "zeebe:input",
-        "name": "apiKey"
+        "name": "authentication.value"
       },
       "feel": "optional",
       "constraints": {
@@ -159,11 +159,47 @@
       "id": "authentication.type",
       "label": "",
       "type": "Hidden",
-      "value": "noAuth",
+      "value": "=if operationId = \"fetchAgentCard\" then \"noAuth\" else \"apiKey\"",
       "group": "operation",
       "binding": {
         "type": "zeebe:input",
         "name": "authentication.type"
+      }
+    },
+    {
+      "id": "authentication.apiKeyLocation",
+      "label": "",
+      "type": "Hidden",
+      "value": "headers",
+      "group": "operation",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.apiKeyLocation"
+      },
+      "condition": {
+        "property": "operationId",
+        "oneOf": [
+          "sendMessage",
+          "getTask"
+        ]
+      }
+    },
+    {
+      "id": "authentication.name",
+      "label": "",
+      "type": "Hidden",
+      "value": "X-Api-Key",
+      "group": "operation",
+      "binding": {
+        "type": "zeebe:input",
+        "name": "authentication.name"
+      },
+      "condition": {
+        "property": "operationId",
+        "oneOf": [
+          "sendMessage",
+          "getTask"
+        ]
       }
     },
     {
@@ -181,7 +217,7 @@
       "id": "headers",
       "label": "",
       "type": "Hidden",
-      "value": "=if operationId = \"fetchAgentCard\" then {\"A2A-Version\": \"1.0\"} else {\"A2A-Version\": \"1.0\", \"Content-Type\": \"application/json\", \"X-Api-Key\": apiKey}",
+      "value": "=if operationId = \"fetchAgentCard\" then {\"A2A-Version\": \"1.0\"} else {\"A2A-Version\": \"1.0\", \"Content-Type\": \"application/json\"}",
       "group": "operation",
       "binding": {
         "type": "zeebe:input",

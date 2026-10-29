@@ -358,6 +358,10 @@ def _place_client_agent(plane, process):
         (805, 395), (805, 440), (1160, 440)))
     _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemoteReplyJoin", 930, 415, 100)
     _set_edge_label(plane, "Flow_RemoteTaskAccepted_RemotePollJoin", 830, 345, 25)
+    timer_label = next(shape for shape in plane.findall(BPMN_SHAPE)
+                       if shape.get("bpmnElement") == "WaitBeforeRemotePoll").find(
+                           f"{BPMN_LABEL}/{DC_BOUNDS}")
+    timer_label.attrib.update(x="905", width="72")
     _set_edge_route(plane, "Flow_ClientSatisfied_PrepareClientFollowUp", (
         (1715, 355), (1715, 720), (1170, 720)))
     _set_edge_label(plane, "Flow_ClientSatisfied_PrepareClientFollowUp", 1430, 696, 100)

@@ -36,6 +36,7 @@ def build(root):
                 "message": "Enter the complete HTTPS Agent Card or JSON-RPC URL",
             }}),
         field("apiKey", "Shared API key", "{{secrets.A2A_API_KEY}}",
+              binding={"type": "zeebe:input", "name": "authentication.value"},
               condition=["sendMessage", "getTask"], description=(
                   "8.9: {{secrets.A2A_API_KEY}} from the Connector secret store. "
                   "8.10+: =camunda.secrets.A2A_API_KEY from the cluster secret store. "
@@ -46,11 +47,16 @@ def build(root):
                   "contextId from the server response, never invented identifiers.")),
         field("taskId", "Task ID", condition=["getTask"],
               description="Use the task ID returned by SendMessage or GetTask."),
-        field("authentication.type", "", "noAuth", kind="Hidden"),
+        field("authentication.type", "",
+              '=if operationId = "fetchAgentCard" then "noAuth" else "apiKey"', kind="Hidden"),
+        field("authentication.apiKeyLocation", "", "headers", kind="Hidden",
+              condition=["sendMessage", "getTask"]),
+        field("authentication.name", "", "X-Api-Key", kind="Hidden",
+              condition=["sendMessage", "getTask"]),
         field("method", "", '=if operationId = "fetchAgentCard" then "GET" else "POST"', kind="Hidden"),
         field("headers", "", (
             '=if operationId = "fetchAgentCard" then {"A2A-Version": "1.0"} else '
-            '{"A2A-Version": "1.0", "Content-Type": "application/json", "X-Api-Key": apiKey}'
+            '{"A2A-Version": "1.0", "Content-Type": "application/json"}'
         ), kind="Hidden"),
         field("body", "", (
             '=if operationId = "sendMessage" then {jsonrpc: "2.0", id: uuid(), method: "SendMessage", '

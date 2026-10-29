@@ -8,31 +8,30 @@ Camunda does not support or certify it.
 
 ## What is in this blueprint?
 
-| File                                           | Modeler name or role                      | Purpose                                                                                                 |
-| ---------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `demo/01-client-agent.bpmn`                    | 01 Client Agent - Ask the Server          | Run a client AI agent that selects A2A tools and requests human input.                                  |
-| `profiles/basic/02-a2a-server.bpmn`            | 02 A2A Server - Protocol and Discovery    | Expose discovery and task webhooks, manage task state, and handle follow-up, cancellation, and queries. |
-| `demo/03-server-agent-card-dispute.bpmn`       | 03 Server Agent - Synthetic Card Dispute  | Run the server-side AI agent and its deterministic reconciliation tool.                                 |
-| `demo/04-client-agent-ask.form`                | Client request form                       | Collect the initial free-text request.                                                                  |
-| `demo/05-client-agent-confirm.form`            | Client confirmation form                  | Collect explicit confirmation of synthetic financial inputs.                                            |
-| `demo/06-client-agent-result.form`             | Client result form                        | Display the result and arithmetic evidence for review.                                                  |
-| `demo/07-server-request-validation.dmn`        | 07 Server - Validate A2A Request          | Validate protocol requests.                                                                             |
-| `templates/08-server-a2a-rpc-endpoint.json`    | Server - A2A RPC Endpoint                 | Configure the authenticated task webhook.                                                               |
-| `templates/09-server-agent-card-endpoint.json` | Server - Agent Card Endpoint              | Configure the discovery webhook.                                                                        |
-| `templates/10-server-http-json-v13.json`       | HTTP JSON Connector, version 13           | Pinned stock outbound HTTP template.                                                                    |
-| `templates/11-client-a2a.json`                 | Client - A2A 1.0                          | Fetch the Agent Card, send messages, and retrieve tasks using stock HTTP Connectors.                    |
-| `demo/01-client-agent.integration.test.json`   | Web Modeler client integration scenario   | Exercise the live client journey; requires deployed server processes, Connectors, and a model.          |
-| `profiles/basic/02-a2a-server.test.json`       | Web Modeler protocol scenarios            | Exercise selected protocol paths without a live webhook.                                                |
-| `demo/03-server-agent-card-dispute.test.json`  | Web Modeler reconciliation scenarios      | Exercise the deterministic tool without a language model.                                               |
-| Pinned upstream template                       | Client AI Agent Sub-process v2, version 1 | Required external template for the client agent; not redistributed here.                                |
-| `demo/README.md`                               | Project instructions                      | Explain this imported project and how to run it.                                                        |
+| File                                           | Modeler name or role                     | Purpose                                                                                                 |
+| ---------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `demo/01-client-agent.bpmn`                    | 01 Client Agent - Ask the Server         | Run a client AI agent that selects A2A tools and requests human input.                                  |
+| `profiles/basic/02-a2a-server.bpmn`            | 02 A2A Server - Protocol and Discovery   | Expose discovery and task webhooks, manage task state, and handle follow-up, cancellation, and queries. |
+| `demo/03-server-agent-card-dispute.bpmn`       | 03 Server Agent - Synthetic Card Dispute | Run the server-side AI agent and its deterministic reconciliation tool.                                 |
+| `demo/04-client-agent-ask.form`                | Client request form                      | Collect the initial free-text request.                                                                  |
+| `demo/05-client-agent-confirm.form`            | Client confirmation form                 | Collect explicit confirmation of synthetic financial inputs.                                            |
+| `demo/06-client-agent-result.form`             | Client result form                       | Display the result and arithmetic evidence for review.                                                  |
+| `demo/07-server-request-validation.dmn`        | 07 Server - Validate A2A Request         | Validate protocol requests.                                                                             |
+| `templates/08-server-a2a-rpc-endpoint.json`    | Server - A2A RPC Endpoint                | Configure the authenticated task webhook.                                                               |
+| `templates/09-server-agent-card-endpoint.json` | Server - Agent Card Endpoint             | Configure the discovery webhook.                                                                        |
+| `templates/10-server-http-json-v13.json`       | HTTP JSON Connector, version 13          | Pinned stock outbound HTTP template.                                                                    |
+| `templates/11-client-a2a.json`                 | Client - A2A 1.0                         | Fetch the Agent Card, send messages, and retrieve tasks using stock HTTP Connectors.                    |
+| `demo/01-client-agent.integration.test.json`   | Web Modeler client integration scenario  | Exercise the live client journey; requires deployed server processes, Connectors, and a model.          |
+| `profiles/basic/02-a2a-server.test.json`       | Web Modeler protocol scenarios           | Exercise selected protocol paths without a live webhook.                                                |
+| `demo/03-server-agent-card-dispute.test.json`  | Web Modeler reconciliation scenarios     | Exercise the deterministic tool without a language model.                                               |
+| `templates/12-client-agent-feedback.json`      | Client AI Agent - Feedback               | Stock Sub-process v2 template with an expression-capable model-call ceiling.                            |
+| `demo/README.md`                               | Project instructions                     | Explain this imported project and how to run it.                                                        |
 
 The numeric prefixes order the project by role: client agent, server protocol, server agent, forms, validation, then templates.
 Runtime process IDs remain `a2a-rpc`, `a2a-card-dispute`, and `a2a-client`.
 
-The 15 repository resources plus the pinned [AI Agent Job Worker version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
-and [client AI Agent Sub-process v2 version 1 template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json)
-form the 17-resource import list. Both AI templates remain external dependencies. Before import, confirm that the
+The 16 repository resources plus the pinned [AI Agent Job Worker version 5 template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
+form the 17-resource import list. The server AI template remains an external dependency. Before import, confirm that the
 target Modeler resolves this exact ID and version; do not substitute another version. An “already available”
 notice alone does not prove a version match.
 
@@ -45,8 +44,11 @@ Camunda process instances and variables hold task state, messages, and artifacts
 The `a2a-rpc` process has independent webhook starts: `CardRequested` for discovery and `RpcReceived` for task requests.
 Their contexts remain `a2a-card` and `a2a`. The discovery endpoint uses the custom card template.
 
-The client uses AI Agent Sub-process template `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`,
-version 1, on ad-hoc subprocess `ClientAgent`. Discovery runs explicitly before this host, not as a selectable AI tool.
+The client uses `dev.hansel.a2a.client-agent.v1`, version 1, on ad-hoc subprocess `ClientAgent`.
+It is a blueprint-specific template authored for the stock Sub-process v2 connector.
+Its model-call limit accepts FEEL; the upstream static number field otherwise displays a dynamic ceiling as blank.
+The runtime remains stock `io.camunda.agenticai:aiagent:subprocess:2`.
+Discovery runs explicitly before this host, not as a selectable AI tool.
 The host exposes three local script tools, a human-input tool, and an expanded remote-agent subprocess.
 The stock connector owns tool activation and the internal model feedback loop.
 
@@ -70,7 +72,8 @@ The surrounding process fixes discovery and feedback routing. The language model
 
 Every root tool returns a meaningful `toolCallResult`. During execution the connector maintains
 `agentContext`; the completed response maps from the connector's local `agent` variable to `clientAgent`,
-including its conversation context for result preparation. The model-call limit remains eight.
+including its conversation context for result preparation. Each feedback turn receives eight additional
+model calls; the ceiling is the retained context's cumulative call count plus eight.
 The 8.10 conversation stores each tool result as structured content blocks; the client reads the
 `object` block's `content` for confirmation, task identity, and final task-state review.
 The bundled `SendA2AMessage` tool has no model-supplied claim parameter: it adds a structured data part only from the

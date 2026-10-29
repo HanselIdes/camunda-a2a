@@ -18,8 +18,8 @@ The [earlier confirmed-input prototype](../verification/fb158a5-89/README.md) pa
 checks on engine 8.9.26 / Connectors 8.9.17 / Elasticsearch 8.19.23. Those results do not verify
 the current numbered candidate.
 
-The demonstration has a client-side AI Agent Sub-process (v2 template version 1) that chooses among A2A discovery,
-send, poll, and user-input root tools in a compact two-by-two grid. Its stock connector owns the feedback loop.
+The demonstration fetches discovery before a client-side AI Agent Sub-process chooses local tools,
+a nested A2A send/poll tool, or human confirmation. Its stock connector owns the internal tool-feedback loop.
 The protocol and
 discovery webhooks share process `a2a-rpc`; a new A2A task starts the separate server-side AI agent
 `a2a-card-dispute`. Its deterministic BPMN tool validates explicit synthetic inputs and returns arithmetic
@@ -98,17 +98,17 @@ These are version-specific limits, separate from the selected Basic profile: upg
 does not enable push, streaming, OAuth, or per-user authorization in that demo. Both recorded
 journeys used local Ollama; neither verifies Camunda-provided SaaS model execution.
 
-| Component                   | Version or setting                                                                             |
-| --------------------------- | ---------------------------------------------------------------------------------------------- |
-| Self-Managed engine         | Camunda 8.10.2, Basic authentication and platform authorizations enabled                       |
-| Stock Connectors            | 8.10.2; no custom worker or custom HTTP server                                                 |
-| Secondary storage           | Elasticsearch 8.19.23                                                                          |
-| Client AI Agent Sub-process | `io.camunda.connectors.agenticai.ai-agent-subprocess.v2`, version 1; engine constraint `^8.10` |
-| Server AI Agent             | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                              |
-| HTTP template               | `io.camunda.connectors.HttpJson.v2`, version 13                                                |
-| Transport                   | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients       |
-| Runtime settings            | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`  |
-| Engine exporter             | Explicit CamundaExporter class and `bulk.delay=1`; see below                                   |
+| Component                   | Version or setting                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Self-Managed engine         | Camunda 8.10.2, Basic authentication and platform authorizations enabled                                 |
+| Stock Connectors            | 8.10.2; no custom worker or custom HTTP server                                                           |
+| Secondary storage           | Elasticsearch 8.19.23                                                                                    |
+| Client AI Agent Sub-process | `dev.hansel.a2a.client-agent.v1`, version 1, configuring stock Sub-process v2; engine constraint `^8.10` |
+| Server AI Agent             | `io.camunda.connectors.agenticai.aiagent.jobworker.v1`, version 5                                        |
+| HTTP template               | `io.camunda.connectors.HttpJson.v2`, version 13                                                          |
+| Transport                   | Direct Connectors HTTPS, with certificate verification on both external and BPMN clients                 |
+| Runtime settings            | `CAMUNDA_CONNECTOR_POLLING_ACTIVEVERSIONSENABLED=false`, `CAMUNDA_CLIENT_EXECUTION_THREADS=4`            |
+| Engine exporter             | Explicit CamundaExporter class and `bulk.delay=1`; see below                                             |
 
 Use `CAMUNDA_PROVIDED_LLM_API_ENDPOINT`, `CAMUNDA_PROVIDED_LLM_API_KEY`, and
 `CAMUNDA_PROVIDED_LLM_DEFAULT_MODEL` in the shipped BPMN. An isolated local verification may override
@@ -422,16 +422,18 @@ For this revised import, start with a fresh Modeler project when possible. Impor
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
-The complete import closure is 11 repository resources plus the pinned upstream server AI Agent Job Worker v5
-and client AI Agent Sub-process v2 version 1 templates (13 import resources total):
-seven BPMN/DMN/form resources, three local element-template JSON files, the README, and two external templates.
-Confirm that the target Modeler resolves both exact AI template IDs and versions before import.
+The complete import closure is 16 repository resources plus the pinned upstream server AI Agent Job Worker v5
+template (17 import resources total): seven BPMN/DMN/form resources, five local element-template JSON files,
+three test-scenario files, the README, and one external template.
+Confirm that the target Modeler resolves the exact server AI template ID and version before import.
 The local HTTP JSON v13 snapshot may be omitted only after confirming that the
 target already provides that exact ID and version. Keep both custom server templates and the pinned upstream
 AI Agent Job Worker v5 template. An "Already available" notice alone does not establish version equivalence.
-Use the Modeler's element-template import workflow for the three local JSON files and the
-[pinned server template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json)
-and [pinned client template](https://raw.githubusercontent.com/camunda/connectors/b490d065b59ffe4788319609dbe41deb25e68e3f/connectors/agentic-ai/connector-agentic-ai/element-templates/agenticai-ai-agent-subprocess.v2.json).
+Use the Modeler's element-template import workflow for the five local JSON files and the
+[pinned server template](https://raw.githubusercontent.com/camunda/connectors/844cb028a43e2a15d31f5a49e6cb0a9961c0f208/connectors/agentic-ai/element-templates/versioned/agenticai-aiagent-job-worker-5.json).
+The local `12-client-agent-feedback.json` configures the stock Sub-process v2 worker.
+It exposes an expression-capable cumulative call ceiling, allowing eight additional calls per feedback turn
+without clearing conversation history or metrics. It does not redistribute the upstream AI template.
 The upstream templates remain subject to their own terms; see [third-party notices](../../THIRD_PARTY_NOTICES.md).
 
 Deploy these seven resources together: `profiles/basic/02-a2a-server.bpmn`,
@@ -463,9 +465,10 @@ Start process `a2a-client` through its start form, or with a `question` variable
 }
 ```
 
-The `ClientAgent` AI Agent Sub-process chooses its own calls to `DiscoverAgentCard`,
-`SendA2AMessage`, `GetA2ATask`, and, when needed, `AskClientForInput`. The connector handles tool
-activation and feedback internally, with an eight-call model limit and meaningful `toolCallResult` values.
+The process fetches the Agent Card before entering `ClientAgent`. The agent can call local intake,
+confirmation-provenance and draft-note tools, delegate through `SendA2AMessage`, and request human
+confirmation with `AskClientForInput`. The remote tool contains the explicit send, timer and polling flow.
+Each user-feedback turn allows eight additional model calls while retaining conversation context.
 The client sends credentials only to the configured `A2A_RPC_URL`, not to an arbitrary URL returned by a card.
 Discovery and A2A 1.0 JSON-RPC are explicit BPMN/HTTP behavior, not the stock A2A 0.3 client connector.
 

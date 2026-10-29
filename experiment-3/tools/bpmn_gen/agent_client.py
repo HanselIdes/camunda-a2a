@@ -166,6 +166,7 @@ def build():
              '<zeebe:input source=%s target="remoteText" />'
              '<zeebe:input source=%s target="previousTask" />'
              '<zeebe:input source=%s target="confirmedParts" />'
+             '<zeebe:input source="=null" target="remoteResponse" />'
              '<zeebe:output source="=remoteResponse" target="toolCallResult" />'
              '</zeebe:ioMapping>' % (
                  q('=fromAi(toolCall.text, "The user request or follow-up text", "string")'),
@@ -285,7 +286,7 @@ def build():
         ],
         "SendRemoteMessage": [
             ("operationId", "sendMessage"),
-            ("apiKey", "=camunda.secrets.A2A_API_KEY"),
+            ("authentication.value", "=camunda.secrets.A2A_API_KEY"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
             ("message", one("""=context merge([
                   {
@@ -302,7 +303,7 @@ def build():
         ],
         "GetA2ATask": [
             ("operationId", "getTask"),
-            ("apiKey", "=camunda.secrets.A2A_API_KEY"),
+            ("authentication.value", "=camunda.secrets.A2A_API_KEY"),
             ("url", "=camunda.secrets.A2A_RPC_URL"),
             ("taskId", '=if remoteResponse.result.task instance of context then '
                        'remoteResponse.result.task.id else remoteResponse.result.id'),
@@ -325,7 +326,9 @@ def build():
         ("agentContext", "=clientAgent.context"),
         ("data.memory.storage.type", "in-process"),
         ("data.memory.contextWindowSize", "=20"),
-        ("data.limits.maxModelCalls", "=8"),
+        ("data.limits.maxModelCalls",
+         "=(if clientAgent.context.metrics.modelCalls instance of number "
+         "then clientAgent.context.metrics.modelCalls else 0) + 8"),
         ("data.response.format.type", "text"),
         ("data.response.includeAgentContext", "true"),
         ("retries", "1"),

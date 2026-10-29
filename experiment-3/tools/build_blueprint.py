@@ -207,6 +207,7 @@ def serialize(root, version="8.9.0"):
         if node.get(f"{{{Z}}}modelerTemplate") not in (
                 "io.camunda.connectors.agenticai.aiagent.jobworker.v1",
                 "io.camunda.connectors.agenticai.ai-agent-subprocess.v2",
+                "dev.hansel.a2a.client-agent.v1",
                 "dev.hansel.a2a.client.v1"):
             node.attrib.pop(f"{{{Z}}}modelerTemplateIcon", None)
     ET.indent(root, space="  ")
@@ -384,15 +385,68 @@ def assets():
         output[templates / "11-client-a2a.json"] = template_content
         client_path = directory / "01-client-agent.bpmn"
         client_path.write_text(client_xml)
-        apply(client_path, AI_CLIENT, "ClientAgent", client_ai_settings)
+        fetched = subprocess.run(["c8ctl", "element-template", "get", AI_CLIENT],
+                                 check=True, capture_output=True, text=True)
+        upstream_icon = json.loads(fetched.stdout)["icon"]["contents"]
+        editable = {
+            "provider.openai.backend.custom.endpoint": "Model endpoint",
+            "provider.openai.backend.custom.authentication.apiKey": "Model API key reference",
+            "provider.openai.model.model": "Model name",
+            "data.systemPrompt.prompt": "Client instructions",
+            "data.userPrompt.prompt": "Current request",
+            "data.limits.maxModelCalls": "Maximum model calls",
+        }
+        inputs = [(name, value) for name, value in client_ai_settings if name != "retries"]
+        inputs += [("data.events.behavior", "WAIT_FOR_TOOL_CALL_RESULTS")]
+        agent_properties = []
+        for name, value in inputs:
+            prop = {"id": name, "type": "Hidden", "value": value,
+                    "binding": {"type": "zeebe:input", "name": name}}
+            if name in editable:
+                prop.update(type="Text", label=editable[name], feel="required",
+                            constraints={"notEmpty": True})
+            agent_properties.append(prop)
+        for binding, key, value in (
+                ("zeebe:taskDefinition", "type", "io.camunda.agenticai:aiagent:subprocess:2"),
+                ("zeebe:taskDefinition", "retries", "1"),
+                ("zeebe:adHoc", "outputCollection", "toolCallResults"),
+                ("zeebe:adHoc", "outputElement",
+                 "={id: toolCall._meta.id, name: toolCall._meta.name, "
+                 "content: toolCallResult, completedAt: now()}"),
+                ("zeebe:agentDefinition", "agentType", "aiAgentSubProcess")):
+            agent_properties.append({"type": "Hidden", "value": value,
+                                     "binding": {"type": binding, "property": key}})
+        agent_properties += [
+            {"type": "Hidden", "value": "true", "binding": {
+                "type": "zeebe:property", "name": "io.camunda.agenticai.toolContainer"}},
+            {"type": "Hidden", "value": "clientAgent", "binding": {
+                "type": "zeebe:output", "source": "=agent"}},
+            {"type": "Hidden", "value": "resultText", "binding": {
+                "type": "zeebe:output", "source": CLIENT_RESULT_EXPRESSION}},
+        ]
+        agent_template = {
+            "$schema": "https://unpkg.com/@camunda/zeebe-element-templates-json-schema/resources/schema.json",
+            "id": "dev.hansel.a2a.client-agent.v1", "version": 1,
+            "name": "Client AI Agent - Feedback",
+            "description": "Blueprint-specific configuration of the stock AI Agent Sub-process v2 "
+                           "with eight additional model calls per user-feedback turn.",
+            "appliesTo": ["bpmn:AdHocSubProcess"],
+            "elementType": {"value": "bpmn:AdHocSubProcess"},
+            "engines": {"camunda": "^8.10"},
+            "properties": agent_properties,
+        }
+        agent_template_path = directory / "client-agent.json"
+        agent_content = (json.dumps(agent_template, indent=2) + "\n").encode()
+        agent_template_path.write_bytes(agent_content)
+        output[templates / "12-client-agent-feedback.json"] = agent_content
+        apply(client_path, str(agent_template_path), "ClientAgent", [])
         client_root = ET.parse(client_path).getroot()
         client_host = client_root.find(f".//{{{B}}}adHocSubProcess[@id='ClientAgent']")
+        client_host.set(f"{{{Z}}}modelerTemplateIcon", upstream_icon)
         response = client_host.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output")
         if response is None or response.get("source") != "=agent":
             raise ValueError("Client Sub-process template changed its response output contract")
         response.set("target", "clientAgent")
-        ET.SubElement(client_host.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping"),
-                      f"{{{Z}}}output", source=CLIENT_RESULT_EXPRESSION, target="resultText")
         client_path.write_bytes(ET.tostring(client_root, encoding="UTF-8", xml_declaration=True))
         for element, settings in client_http.items():
             apply(client_path, str(client_template), element, settings)

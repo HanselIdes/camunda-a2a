@@ -24,6 +24,7 @@ RESOURCE_PATHS = (
     "blueprint/templates/09-server-agent-card-endpoint.json",
     "blueprint/templates/10-server-http-json-v13.json",
     "blueprint/templates/11-client-a2a.json",
+    "blueprint/templates/12-client-agent-feedback.json",
     "blueprint/demo/01-client-agent.integration.test.json",
     "blueprint/profiles/basic/02-a2a-server.test.json",
     "blueprint/demo/03-server-agent-card-dispute.test.json",
@@ -235,7 +236,7 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertEqual(client_process.get("name"), "01 Client Agent - Ask the Server")
         client_agent = client.find(f".//{{{B}}}adHocSubProcess[@id='ClientAgent']")
         self.assertEqual(client_agent.get(f"{{{Z}}}modelerTemplate"),
-                         "io.camunda.connectors.agenticai.ai-agent-subprocess.v2")
+                         "dev.hansel.a2a.client-agent.v1")
         self.assertEqual(client_agent.get(f"{{{Z}}}modelerTemplateVersion"), "1")
         self.assertIsNone(client_agent.find(f"{{{B}}}multiInstanceLoopCharacteristics"))
         self.assertIsNone(client.find(f".//*[@id='ClientTools']"))
@@ -245,8 +246,13 @@ class ResourceClosureTest(unittest.TestCase):
         inputs = {e.get("target"): e.get("source") for e in client_agent.findall(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
         self.assertEqual(inputs["agentContext"], "=clientAgent.context")
-        self.assertEqual(inputs["data.limits.maxModelCalls"], "=8")
+        self.assertEqual(inputs["data.limits.maxModelCalls"],
+                         "=(if clientAgent.context.metrics.modelCalls instance of number "
+                         "then clientAgent.context.metrics.modelCalls else 0) + 8")
         self.assertEqual(inputs["data.response.includeAgentContext"], "true")
+        template = json.loads(self.resources["blueprint/templates/12-client-agent-feedback.json"])
+        limit = next(p for p in template["properties"] if p.get("id") == "data.limits.maxModelCalls")
+        self.assertEqual((limit["type"], limit["feel"]), ("Text", "required"))
         self.assertEqual(client.get("{http://camunda.org/schema/modeler/1.0}executionPlatformVersion"),
                          "8.10.0")
         output = client_agent.find(f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output")
@@ -282,7 +288,8 @@ class ResourceClosureTest(unittest.TestCase):
         remote = root.find(f".//{{{B}}}subProcess[@id='SendA2AMessage']")
         inputs = {e.get("target"): e.get("source") for e in remote.findall(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
-        self.assertEqual(set(inputs), {"remoteText", "previousTask", "confirmedParts"})
+        self.assertEqual(set(inputs), {"remoteText", "previousTask", "confirmedParts", "remoteResponse"})
+        self.assertEqual(inputs["remoteResponse"], "=null")
         self.assertIn("fromAi(toolCall.text,", inputs["remoteText"])
         for key in ("confirmedParts", "previousTask"):
             self.assertNotIn("fromAi(", inputs[key])
@@ -313,6 +320,21 @@ class ResourceClosureTest(unittest.TestCase):
                          "=if remoteResponse.result.task instance of context then "
                          "remoteResponse.result.task.id else remoteResponse.result.id")
         self.assertNotIn("fromAi(", poll_inputs["taskId"])
+
+    def test_client_uses_stock_api_key_binding_without_staged_secret_headers(self):
+        template = json.loads(self.resources["blueprint/templates/11-client-a2a.json"])
+        key = next(p for p in template["properties"] if p.get("id") == "apiKey")
+        self.assertEqual(key["binding"], {"type": "zeebe:input", "name": "authentication.value"})
+        root = ET.fromstring(self.resources["blueprint/demo/01-client-agent.bpmn"])
+        for element_id in ("SendRemoteMessage", "GetA2ATask"):
+            task = root.find(f".//{{{B}}}serviceTask[@id='{element_id}']")
+            inputs = {e.get("target"): e.get("source") for e in task.findall(
+                f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
+            self.assertEqual(inputs["authentication.value"], "=camunda.secrets.A2A_API_KEY")
+            self.assertEqual(inputs["authentication.apiKeyLocation"], "headers")
+            self.assertEqual(inputs["authentication.name"], "X-Api-Key")
+            self.assertNotIn("apiKey", inputs)
+            self.assertNotIn("Api-Key", inputs["headers"])
 
     def test_client_remote_polling_and_user_feedback_are_explicit(self):
         root = ET.parse(ROOT / RESOURCE_PATHS[0]).getroot()

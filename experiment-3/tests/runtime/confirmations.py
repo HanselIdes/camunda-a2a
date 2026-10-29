@@ -94,6 +94,13 @@ def agent_history_checks(root, request):
     poll_task = node("GetA2ATask")
     assert send_task in list(subprocess.iter()) and poll_task in list(subprocess.iter())
     assert output_source("SendA2AMessage", "toolCallResult") == "=remoteResponse"
+    assert input_source("SendA2AMessage", "remoteResponse") == "=null"
+    budget = input_source("ClientAgent", "data.limits.maxModelCalls")
+    for prior_calls in (None, 8, 19):
+        variables = {} if prior_calls is None else {
+            "clientAgent": {"context": {"metrics": {"modelCalls": prior_calls}}},
+        }
+        assert evaluate(budget, variables) == (prior_calls or 0) + 8
     previous_task = input_source("SendA2AMessage", "previousTask")
     confirmed_parts = input_source("SendA2AMessage", "confirmedParts")
     message_expression = input_source("SendRemoteMessage", "message")

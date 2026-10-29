@@ -341,7 +341,15 @@ try:
         "syntheticOnly": True,
     }
     assert confirmation_result["syntheticClaim"] == expected_claim, confirmation_result
-    assert confirmation_result["text"] == ask_fields["followUp"], confirmation_result
+    scenario_cases = json.loads(
+        (ROOT / "blueprint/demo/01-client-agent.integration.test.json").read_text()
+    )
+    confirmation_step = next(
+        instruction for instruction in scenario_cases["testCases"][0]["instructions"]
+        if instruction["type"] == "COMPLETE_USER_TASK"
+        and instruction["userTaskSelector"]["elementId"] == "AskClientForInput"
+    )
+    assert confirmation_result["text"] == confirmation_step["variables"]["followUp"], confirmation_result
 
     sent_tasks = []
     for result in results:
