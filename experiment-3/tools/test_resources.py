@@ -245,12 +245,14 @@ class ResourceClosureTest(unittest.TestCase):
         self.assertEqual(definition.get("type"), "io.camunda.agenticai:aiagent:subprocess:2")
         inputs = {e.get("target"): e.get("source") for e in client_agent.findall(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
-        self.assertEqual(inputs["agentContext"], "=clientAgent.context")
+        self.assertEqual(inputs["agentContext"],
+                         '=if clientAgent instance of context then get value(clientAgent, "context") else null')
         self.assertEqual(inputs["data.limits.maxModelCalls"],
-                         "=(if agentContext instance of context then "
-                         "if get value(agentContext, \"metrics\") instance of context then "
-                         "if get value(agentContext.metrics, \"modelCalls\") instance of number "
-                         "then agentContext.metrics.modelCalls else 0 else 0 else 0) + 8")
+                         "=(if clientAgent instance of context then "
+                         "if get value(clientAgent, \"context\") instance of context then "
+                         "if get value(clientAgent.context, \"metrics\") instance of context then "
+                         "if get value(clientAgent.context.metrics, \"modelCalls\") instance of number "
+                         "then clientAgent.context.metrics.modelCalls else 0 else 0 else 0 else 0) + 8")
         self.assertEqual(inputs["data.response.includeAgentContext"], "true")
         template = json.loads(self.resources["blueprint/templates/12-client-agent-feedback.json"])
         limit = next(p for p in template["properties"] if p.get("id") == "data.limits.maxModelCalls")
@@ -290,8 +292,10 @@ class ResourceClosureTest(unittest.TestCase):
         remote = root.find(f".//{{{B}}}subProcess[@id='SendA2AMessage']")
         inputs = {e.get("target"): e.get("source") for e in remote.findall(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
-        self.assertEqual(set(inputs), {"remoteText", "previousTask", "confirmedParts", "remoteResponse"})
+        self.assertEqual(set(inputs), {"remoteText", "previousTask", "confirmedParts",
+                                       "remoteResponse", "acceptedTask"})
         self.assertEqual(inputs["remoteResponse"], "=null")
+        self.assertEqual(inputs["acceptedTask"], "=null")
         self.assertIn("fromAi(toolCall.text,", inputs["remoteText"])
         for key in ("confirmedParts", "previousTask"):
             self.assertNotIn("fromAi(", inputs[key])
@@ -369,7 +373,7 @@ class ResourceClosureTest(unittest.TestCase):
                              [f"Flow_{join_id}_{target_id}"])
         self.assertEqual(remote.find(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output").attrib,
-            {"source": "=remoteResponse", "target": "toolCallResult"})
+            {"source": "={response: remoteResponse, task: acceptedTask}", "target": "toolCallResult"})
         self.assertNotRegex(ET.tostring(remote).decode(),
                             r"(?i)(pollCount|pollAttempts|pollLimit|maxPolls|CountPoll)")
         self.assertFalse(remote.findall(f"{{{B}}}scriptTask"))

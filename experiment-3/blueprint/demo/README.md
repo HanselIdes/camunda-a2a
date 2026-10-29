@@ -81,6 +81,9 @@ The bundled `SendA2AMessage` tool has no model-supplied claim parameter: it adds
 of accepting IDs from the model. After a terminal task, a new task retains only the server-returned context ID.
 `GetA2ATask` likewise polls the ID returned by the server. Values in the initial
 free-text request or model output cannot satisfy this client confirmation step.
+The remote tool result contains the actual JSON-RPC `response` and the last successfully observed
+`task`. A polling error remains visible in `response.error` without losing the accepted task's identity.
+The next invocation continues that task rather than silently creating a duplicate.
 The business agent and reconciliation tool are separate from the protocol. The model can request the tool, but cannot supply its financial arguments.
 The tool uses only deterministically validated client fields from the current message.
 
@@ -195,7 +198,7 @@ For this revised import, start with a fresh Modeler project when possible. Impor
 does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongside
 `profiles/basic/02-a2a-server.bpmn`, which now contains discovery.
 
-1. Import the 15 repository resources and both pinned upstream AI Agent templates. Confirm that each BPMN template assignment resolves to its exact stated version.
+1. Import the 16 repository resources, including local `12-client-agent-feedback.json`, and the pinned upstream server AI Agent Job Worker v5 template. Confirm each exact template version.
 2. Configure secrets and the runtime requirements above.
 3. Deploy the selected BPMN, DMN, and form resources together.
 4. Wait for healthy `CardRequested` and `RpcReceived` inbound Connectors in process `a2a-rpc`.

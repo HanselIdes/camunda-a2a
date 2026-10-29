@@ -29,6 +29,8 @@ SYSTEM_PROMPT = (
     "Use these local tools when useful; all charge arithmetic belongs to the remote server. "
     "Use SendA2AMessage to delegate the user's request to that remote agent. "
     "This tool sends the message and polls the returned task using an explicit BPMN flow. "
+    "Its response field is the actual JSON-RPC reply; task retains the last successful task observation. "
+    "Report response errors accurately rather than treating retained task data as a successful poll. "
     "If the server requests input, "
     "call AskClientForInput with the server's exact question, then send the user's answer and "
     "confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from "
@@ -64,7 +66,9 @@ PREVIOUS_A2A_TASK_PARAMS = """
   (for content in [records[count(records)].content[item.type = "object"][1].content] return
     for response in [if content instance of context and get value(content, "toolCallResult") instance of context
                      then content.toolCallResult else content] return
-      for result in [if response instance of context then response.result else null] return
+      for result in [if response instance of context then
+        if get value(response, "task") instance of context then response.task else get value(response, "result")
+        else null] return
         for task in [if result instance of context and get value(result, "task") instance of context
                      then result.task else result] return
           if task.id instance of string and task.contextId instance of string then
@@ -86,7 +90,8 @@ CLIENT_RESULT_EXPRESSION = one("""=(for polls in [flatten(
     polls[count(polls)].content[item.type = "object"][1].content else null] return
   for body in [if content instance of context and get value(content, "toolCallResult") instance of context
                then content.toolCallResult else content] return
-  for response in [if body instance of context then body.result else null] return
+  for response in [if body instance of context then
+    if get value(body, "task") instance of context then body.task else get value(body, "result") else null] return
   for task in [if response instance of context then
     if get value(response, "task") instance of context then response.task else response else null] return
   for state in [if task.status.state instance of string then task.status.state else null] return
@@ -100,7 +105,8 @@ CLIENT_RESULT_EXPRESSION = one("""=(for polls in [flatten(
 def build():
     p = Proc("a2a-client", "01 Client Agent - Ask the Server")
     p.start("QuestionAsked", "Client request received", 150, 210,
-            ext='<zeebe:formDefinition formId="a2a-client-ask" />')
+            ext=('<zeebe:formDefinition formId="a2a-client-ask" />'
+                 '<zeebe:ioMapping><zeebe:output source="=null" target="clientAgent" /></zeebe:ioMapping>'))
     p.node(
         "serviceTask", "DiscoverAgentCard", "Fetch remote agent card", 230, 210,
         doc="Read the public Agent Card before entering the client agent. Returns the card, not credentials.",
@@ -167,7 +173,8 @@ def build():
              '<zeebe:input source=%s target="previousTask" />'
              '<zeebe:input source=%s target="confirmedParts" />'
              '<zeebe:input source="=null" target="remoteResponse" />'
-             '<zeebe:output source="=remoteResponse" target="toolCallResult" />'
+             '<zeebe:input source="=null" target="acceptedTask" />'
+             '<zeebe:output source="={response: remoteResponse, task: acceptedTask}" target="toolCallResult" />'
              '</zeebe:ioMapping>' % (
                  q('=fromAi(toolCall.text, "The user request or follow-up text", "string")'),
                  q("=" + one(PREVIOUS_A2A_TASK_PARAMS)),
@@ -176,6 +183,7 @@ def build():
         doc=("Delegate to the remote A2A agent. Sends a new message or follows up on the same task "
              "using response-derived task/context IDs. Polls two seconds apart while the task is working, "
              "then returns the actual JSON-RPC response, including input-required or failure states. "
+             "The result separates response from the last successful task so polling errors retain identity. "
              "Confirmed synthetic claim data comes only from the human form. "
              "Use AskClientForInput if the response requests confirmation; do not infer claim values."),
     )
@@ -277,6 +285,13 @@ def build():
         ]),
     }
 
+    remote_result = (
+        '={remoteResponse: response.body, acceptedTask: '
+        'if get value(response.body, "result") instance of context then '
+        'if get value(response.body.result, "task") instance of context then response.body.result.task '
+        'else if get value(response.body.result, "id") instance of string then response.body.result '
+        'else acceptedTask else acceptedTask}'
+    )
     http = {
         "DiscoverAgentCard": [
             ("operationId", "fetchAgentCard"),
@@ -299,7 +314,7 @@ def build():
                 ])""")),
             ("readTimeoutInSeconds", "60"),
             ("retries", "1"),
-            ("resultExpression", "={remoteResponse: response.body}"),
+            ("resultExpression", remote_result),
         ],
         "GetA2ATask": [
             ("operationId", "getTask"),
@@ -309,7 +324,7 @@ def build():
                        'remoteResponse.result.task.id else remoteResponse.result.id'),
             ("readTimeoutInSeconds", "30"),
             ("retries", "1"),
-            ("resultExpression", "={remoteResponse: response.body}"),
+            ("resultExpression", remote_result),
         ],
     }
     ai_subprocess = [
@@ -323,14 +338,15 @@ def build():
         ("data.systemPrompt.prompt", "=" + feel_str(SYSTEM_PROMPT)),
         ("data.userPrompt.prompt", '=question + "\\n\\nRemote agent: " + agentCard.name + '
          '"\\nSkills: " + string join(agentCard.skills.name, ", ")'),
-        ("agentContext", "=clientAgent.context"),
+        ("agentContext", '=if clientAgent instance of context then get value(clientAgent, "context") else null'),
         ("data.memory.storage.type", "in-process"),
         ("data.memory.contextWindowSize", "=20"),
         ("data.limits.maxModelCalls",
-         "=(if agentContext instance of context then "
-         "if get value(agentContext, \"metrics\") instance of context then "
-         "if get value(agentContext.metrics, \"modelCalls\") instance of number "
-         "then agentContext.metrics.modelCalls else 0 else 0 else 0) + 8"),
+         "=(if clientAgent instance of context then "
+         "if get value(clientAgent, \"context\") instance of context then "
+         "if get value(clientAgent.context, \"metrics\") instance of context then "
+         "if get value(clientAgent.context.metrics, \"modelCalls\") instance of number "
+         "then clientAgent.context.metrics.modelCalls else 0 else 0 else 0 else 0) + 8"),
         ("data.response.format.type", "text"),
         ("data.response.includeAgentContext", "true"),
         ("retries", "1"),

@@ -93,12 +93,13 @@ def agent_history_checks(root, request):
     send_task = node("SendRemoteMessage")
     poll_task = node("GetA2ATask")
     assert send_task in list(subprocess.iter()) and poll_task in list(subprocess.iter())
-    assert output_source("SendA2AMessage", "toolCallResult") == "=remoteResponse"
+    assert output_source("SendA2AMessage", "toolCallResult") == \
+        "={response: remoteResponse, task: acceptedTask}"
     assert input_source("SendA2AMessage", "remoteResponse") == "=null"
     budget = input_source("ClientAgent", "data.limits.maxModelCalls")
     for prior_calls in (None, 8, 19):
-        variables = {"agentContext": None if prior_calls is None else {
-            "metrics": {"modelCalls": prior_calls},
+        variables = {"clientAgent": None if prior_calls is None else {
+            "context": {"metrics": {"modelCalls": prior_calls}},
         }}
         assert evaluate(budget, variables) == (prior_calls or 0) + 8
     previous_task = input_source("SendA2AMessage", "previousTask")
@@ -108,6 +109,12 @@ def agent_history_checks(root, request):
 
     task = {"id": "response-task", "contextId": "response-context",
             "status": {"state": "TASK_STATE_INPUT_REQUIRED"}}
+    poll_result = next(item.get("value") for item in poll_task.iter(namespace + "header")
+                       if item.get("key") == "resultExpression")
+    error = {"jsonrpc": "2.0", "id": "poll-error",
+             "error": {"code": -32603, "message": "Temporary polling failure"}}
+    failed_poll = evaluate(poll_result, {"response": {"body": error}, "acceptedTask": task})
+    assert failed_poll == {"remoteResponse": error, "acceptedTask": task}, failed_poll
 
     def record(name, content):
         return {"role": "tool_call_result", "results": [{
@@ -127,6 +134,10 @@ def agent_history_checks(root, request):
     ))
     active_task = evaluate(previous_task, {"agentContext": context})
     assert active_task == {"taskId": task["id"], "contextId": task["contextId"]}, active_task
+    context["conversation"]["messages"].append(record(
+        "SendA2AMessage", {"toolCallResult": {"response": error, "task": task}}
+    ))
+    assert evaluate(previous_task, {"agentContext": context}) == active_task
     context["conversation"]["messages"].append(record(
         "AskClientForInput", {"toolCallResult": {"text": "Confirmed", "syntheticClaim": CLAIM}}
     ))

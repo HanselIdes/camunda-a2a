@@ -95,7 +95,7 @@
     {
       "id": "data.systemPrompt.prompt",
       "type": "Text",
-      "value": "=\"You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. The process has already fetched the remote Agent Card. ReadIntakeGuidance explains the synthetic demo's intake checklist. CheckConfirmedDetails checks whether the human has supplied confirmation; it does not reconcile charges. DraftReviewNote prepares an unsent draft for human review, not a financial decision. Use these local tools when useful; all charge arithmetic belongs to the remote server. Use SendA2AMessage to delegate the user's request to that remote agent. This tool sends the message and polls the returned task using an explicit BPMN flow. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. An active task is continued; after a terminal task a new task uses the server-returned context ID. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless the tool result reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.\"",
+      "value": "=\"You are the client-side AI agent for a synthetic A2A demonstration. The remote server agent owns the review; do not invent case facts or make financial decisions. The process has already fetched the remote Agent Card. ReadIntakeGuidance explains the synthetic demo's intake checklist. CheckConfirmedDetails checks whether the human has supplied confirmation; it does not reconcile charges. DraftReviewNote prepares an unsent draft for human review, not a financial decision. Use these local tools when useful; all charge arithmetic belongs to the remote server. Use SendA2AMessage to delegate the user's request to that remote agent. This tool sends the message and polls the returned task using an explicit BPMN flow. Its response field is the actual JSON-RPC reply; task retains the last successful task observation. Report response errors accurately rather than treating retained task data as a successful poll. If the server requests input, call AskClientForInput with the server's exact question, then send the user's answer and confirmed syntheticClaim as a follow-up. SendA2AMessage continues the task and context from the prior send result, and takes confirmation data only from the AskClientForInput form result. An active task is continued; after a terminal task a new task uses the server-returned context ID. Neither tool accepts model-supplied task identifiers. Never send model-inferred values or invent IDs. Never describe a request as completed unless the tool result reports TASK_STATE_COMPLETED. Report failures and nonterminal states accurately. This example performs no real financial action.\"",
       "binding": {
         "type": "zeebe:input",
         "name": "data.systemPrompt.prompt"
@@ -123,7 +123,7 @@
     {
       "id": "agentContext",
       "type": "Hidden",
-      "value": "=clientAgent.context",
+      "value": "=if clientAgent instance of context then get value(clientAgent, \"context\") else null",
       "binding": {
         "type": "zeebe:input",
         "name": "agentContext"
@@ -150,7 +150,7 @@
     {
       "id": "data.limits.maxModelCalls",
       "type": "Text",
-      "value": "=(if agentContext instance of context then if get value(agentContext, \"metrics\") instance of context then if get value(agentContext.metrics, \"modelCalls\") instance of number then agentContext.metrics.modelCalls else 0 else 0 else 0) + 8",
+      "value": "=(if clientAgent instance of context then if get value(clientAgent, \"context\") instance of context then if get value(clientAgent.context, \"metrics\") instance of context then if get value(clientAgent.context.metrics, \"modelCalls\") instance of number then clientAgent.context.metrics.modelCalls else 0 else 0 else 0 else 0) + 8",
       "binding": {
         "type": "zeebe:input",
         "name": "data.limits.maxModelCalls"
@@ -249,7 +249,7 @@
       "value": "resultText",
       "binding": {
         "type": "zeebe:output",
-        "source": "=(for polls in [flatten( for message in agent.context.conversation.messages[item.role = \"tool_call_result\"] return message.results[item.name = \"SendA2AMessage\"] )] return for content in [if count(polls) > 0 then polls[count(polls)].content[item.type = \"object\"][1].content else null] return for body in [if content instance of context and get value(content, \"toolCallResult\") instance of context then content.toolCallResult else content] return for response in [if body instance of context then body.result else null] return for task in [if response instance of context then if get value(response, \"task\") instance of context then response.task else response else null] return for state in [if task.status.state instance of string then task.status.state else null] return \"### Client agent response\\n\\n\" + (if agent.responseText instance of string then agent.responseText else \"The client agent returned no text.\") + \"\\n\\n**Last observed server task state:** \" + (if state instance of string then state else \"No server task status was observed.\"))[1][1][1][1][1][1]"
+        "source": "=(for polls in [flatten( for message in agent.context.conversation.messages[item.role = \"tool_call_result\"] return message.results[item.name = \"SendA2AMessage\"] )] return for content in [if count(polls) > 0 then polls[count(polls)].content[item.type = \"object\"][1].content else null] return for body in [if content instance of context and get value(content, \"toolCallResult\") instance of context then content.toolCallResult else content] return for response in [if body instance of context then if get value(body, \"task\") instance of context then body.task else get value(body, \"result\") else null] return for task in [if response instance of context then if get value(response, \"task\") instance of context then response.task else response else null] return for state in [if task.status.state instance of string then task.status.state else null] return \"### Client agent response\\n\\n\" + (if agent.responseText instance of string then agent.responseText else \"The client agent returned no text.\") + \"\\n\\n**Last observed server task state:** \" + (if state instance of string then state else \"No server task status was observed.\"))[1][1][1][1][1][1]"
       }
     }
   ]

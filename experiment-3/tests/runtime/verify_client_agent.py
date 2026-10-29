@@ -169,6 +169,8 @@ def result_body(result):
         content = json.loads(content)
     if not isinstance(content, dict):
         raise AssertionError(f"Tool {result.get('name')} did not return an object")
+    if result.get("name") == "SendA2AMessage":
+        content = content["response"]
     return content
 
 
@@ -383,6 +385,8 @@ try:
     budgets = sorted(json.loads(response)["items"], key=lambda item: int(item["scopeKey"]))
     assert len(budgets) == 2, budgets
     ceilings = [json.loads(item["value"])["limits"]["maxModelCalls"] for item in budgets]
+    report["observedModelCallCeilings"] = ceilings
+    report["observedFinalMetrics"] = agent["context"].get("metrics")
     # The mapped ceiling freezes the entry-time metric; agentContext can change during tool calls.
     prior_calls = ceilings[1] - 8
     assert ceilings[0] == 8 and prior_calls > 0, ceilings
@@ -495,6 +499,10 @@ try:
     report_file.write_text(json.dumps(report, indent=2) + "\n")
     print(f"Client-agent 8.10 end-to-end verification PASS: {report_file}", flush=True)
     if os.environ.get("PROOF_HUB_HANDOFF") == "1":
+        grpc_address = subprocess.run(
+            stack.command + ["port", "camunda", "26500"],
+            env=env, capture_output=True, text=True, check=True, timeout=30,
+        ).stdout.strip()
         handoff_dir = report_dir / "hub-runtime"
         handoff_dir.mkdir(mode=0o700)
         handoff_file = handoff_dir / "connection.json"
@@ -505,6 +513,9 @@ try:
                 "engineUrl": engine_url,
                 "connectorsUrl": connectors_url,
                 "monitoringUrl": "http://" + monitoring,
+                "grpcUrl": "http://" + grpc_address,
+                "engineImage": report["engineImage"],
+                "connectorsImage": report["connectorsImage"],
                 "username": "proof",
                 "password": env["PROOF_ENGINE_PASSWORD"],
                 "secretDirectory": secret_directory.name,

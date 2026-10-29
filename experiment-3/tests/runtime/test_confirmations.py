@@ -41,7 +41,7 @@ class ConfirmationContractTest(unittest.TestCase):
         self.assertNotIn(discover, list(agent.iter()))
         send_output = next(e for e in send.iter(Z + "output")
                            if e.get("target") == "toolCallResult").get("source")
-        self.assertEqual(send_output, "=remoteResponse")
+        self.assertEqual(send_output, "={response: remoteResponse, task: acceptedTask}")
         previous_task = next(e for e in send.iter(Z + "input")
                              if e.get("target") == "previousTask").get("source")
         self.assertIn('message.results[item.name = "SendA2AMessage"]', previous_task)
