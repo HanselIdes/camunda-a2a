@@ -42,6 +42,29 @@ class BlueprintClientTest {
   }
 
   @Test
+  void chargeConfirmationDoesNotRequireAdditionalFreeText() {
+    final long key = client.newCreateInstanceCommand().bpmnProcessId("a2a-client").latestVersion()
+        .variables(Map.of("question", "Review synthetic data")).send().join().getProcessInstanceKey();
+    final var instance = ProcessInstanceSelectors.byKey(key);
+    context.completeJob(JobSelectors.byElementId("DiscoverAgentCard"), Map.of("agentCard", Map.of(
+        "name", "Synthetic agent", "skills", List.of(Map.of("name", "Review")))));
+    context.completeJobOfAdHocSubProcess(JobSelectors.byElementId("ClientAgent"),
+        result -> result.activateElement("AskClientForInput").variables(Map.of(
+            "toolCall", Map.of("question", "Please confirm the charge details"))));
+    context.completeUserTask("AskClientForInput", Map.of(
+        "claimMerchant", "Northwind Electronics", "claimCurrency", "USD",
+        "claimFirstAmount", 49.95, "claimSecondAmount", 49.95,
+        "claimExpectedAmount", 49.95, "claimSyntheticOnly", true));
+    assertThat(instance).hasCompletedElements("AskClientForInput").hasNoActiveIncidents();
+    context.completeJobOfAdHocSubProcess(JobSelectors.byElementId("ClientAgent"),
+        Map.of("agent", Map.of("responseText", "Confirmed",
+            "context", Map.of("conversation", Map.of("messages", List.of())))),
+        result -> result.completionConditionFulfilled(true));
+    context.completeUserTask("ReviewClientResult", Map.of("clientSatisfied", "yes"));
+    assertThat(instance).isCompleted();
+  }
+
+  @Test
   void pollingRecoveryKeepsTheWorkingTaskWithoutResendingMessages() {
     final long key = client.newCreateInstanceCommand().bpmnProcessId("a2a-client").latestVersion()
         .variables(Map.of("question", "Review synthetic data")).send().join().getProcessInstanceKey();

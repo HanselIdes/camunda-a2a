@@ -215,7 +215,8 @@
           <zeebe:formDefinition formId="a2a-client-answer" />
           <zeebe:ioMapping>
             <zeebe:input source="=fromAi(toolCall.question, &quot;The exact clarification requested by the server&quot;, &quot;string&quot;)" target="question" />
-            <zeebe:output source="={text: followUp, syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}" target="toolCallResult" />
+            <zeebe:input source="=&quot;&quot;" target="followUp" />
+            <zeebe:output source="={text: if followUp instance of string then followUp else &quot;&quot;, syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}" target="toolCallResult" />
           </zeebe:ioMapping>
         </bpmn:extensionElements>
       </bpmn:userTask>

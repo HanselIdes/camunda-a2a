@@ -13,9 +13,6 @@
       "type": "textarea",
       "key": "followUp",
       "label": "Additional details",
-      "validate": {
-        "required": true
-      },
       "id": "Field_a2a_client_answer_1",
       "layout": {
         "row": "Row_1",

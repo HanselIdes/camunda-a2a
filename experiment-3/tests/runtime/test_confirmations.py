@@ -23,7 +23,9 @@ class ConfirmationContractTest(unittest.TestCase):
                            ("claimCurrency", "Currency"), ("claimFirstAmount", "First charge"),
                            ("claimSecondAmount", "Second charge"), ("claimExpectedAmount", "Expected total")):
             self.assertEqual(fields[key]["label"], label)
-            self.assertTrue(fields[key]["validate"]["required"])
+            if key != "followUp":
+                self.assertTrue(fields[key]["validate"]["required"])
+        self.assertFalse(fields["followUp"].get("validate", {}).get("required", False))
         self.assertTrue(fields["claimSyntheticOnly"]["validate"]["required"])
         self.assertEqual(fields["claimSyntheticOnly"]["label"],
                          "I confirm these details are correct and use demo data only")
@@ -138,7 +140,8 @@ class ConfirmationContractTest(unittest.TestCase):
         task = next(e for e in root.iter() if e.get("id") == "AskClientForInput")
         inputs = {e.get("target"): e.get("source") for e in task.iter(Z + "input")}
         outputs = {e.get("target"): e.get("source") for e in task.iter(Z + "output")}
-        self.assertEqual(set(inputs), {"question"})
+        self.assertEqual(set(inputs), {"question", "followUp"})
+        self.assertEqual(inputs["followUp"], '=""')
         self.assertIn("fromAi(toolCall.question", inputs["question"])
         self.assertEqual(set(outputs), {"toolCallResult"})
         for key in fields:

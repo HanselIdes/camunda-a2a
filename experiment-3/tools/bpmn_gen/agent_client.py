@@ -234,10 +234,13 @@ def build():
         ext=('<zeebe:userTask /><zeebe:formDefinition formId="a2a-client-answer" />'
              '<zeebe:ioMapping>'
              '<zeebe:input source=%s target="question" />'
+             '<zeebe:input source=%s target="followUp" />'
              '<zeebe:output source=%s target="toolCallResult" />'
              '</zeebe:ioMapping>' % (
                  q('=fromAi(toolCall.question, "The exact clarification requested by the server", "string")'),
-                 q('={text: followUp, syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, '
+                 q('=""'),
+                 q('={text: if followUp instance of string then followUp else "", '
+                   'syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, '
                    'chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, '
                    'syntheticOnly: claimSyntheticOnly}}'),
              )),
@@ -277,8 +280,7 @@ def build():
                 "### Confirm the charge details\n\n"
                 "Check the two charges and the amount you expected to pay."
             )},
-            {"type": "textarea", "key": "followUp", "label": "Additional details",
-             "validate": {"required": True}},
+            {"type": "textarea", "key": "followUp", "label": "Additional details"},
             *[
                 {
                     "type": kind, "key": key, "label": label,
