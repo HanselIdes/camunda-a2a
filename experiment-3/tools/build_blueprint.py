@@ -186,7 +186,6 @@ CONFIRMATION_FIELDS = (
     ("claimFirstAmount", "First charge amount", "number"),
     ("claimSecondAmount", "Second charge amount", "number"),
     ("claimExpectedAmount", "Expected order amount", "number"),
-    ("claimSyntheticOnly", "I confirm these are synthetic demonstration values", "checkbox"),
 )
 
 

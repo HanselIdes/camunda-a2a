@@ -26,8 +26,7 @@
             "claimCurrency": "USD",
             "claimFirstAmount": 49.95,
             "claimSecondAmount": 49.95,
-            "claimExpectedAmount": 49.95,
-            "claimSyntheticOnly": true
+            "claimExpectedAmount": 49.95
           }
         },
         {

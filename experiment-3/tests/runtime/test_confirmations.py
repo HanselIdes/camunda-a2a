@@ -26,9 +26,7 @@ class ConfirmationContractTest(unittest.TestCase):
             if key != "followUp":
                 self.assertTrue(fields[key]["validate"]["required"])
         self.assertFalse(fields["followUp"].get("validate", {}).get("required", False))
-        self.assertTrue(fields["claimSyntheticOnly"]["validate"]["required"])
-        self.assertEqual(fields["claimSyntheticOnly"]["label"],
-                         "I confirm these details are correct and use demo data only")
+        self.assertNotIn("claimSyntheticOnly", fields)
         for key in ("claimFirstAmount", "claimSecondAmount", "claimExpectedAmount"):
             self.assertEqual(fields[key]["validate"]["min"], 0)
         server = ET.parse(ROOT / "blueprint/demo/03-server-agent-card-dispute.bpmn").getroot()
@@ -147,6 +145,8 @@ class ConfirmationContractTest(unittest.TestCase):
         for key in fields:
             self.assertIn(key, outputs["toolCallResult"])
         self.assertIn("followUp", outputs["toolCallResult"])
+        self.assertIn("syntheticOnly: true", outputs["toolCallResult"])
+        self.assertNotIn("claimSyntheticOnly", outputs["toolCallResult"])
 
     def test_regression_matrix_includes_malformed_and_nonfinite_values(self):
         names = {name for name, value in invalid_claims()}

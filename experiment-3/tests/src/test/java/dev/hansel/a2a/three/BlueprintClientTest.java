@@ -54,7 +54,7 @@ class BlueprintClientTest {
     context.completeUserTask("AskClientForInput", Map.of(
         "claimMerchant", "Northwind Electronics", "claimCurrency", "USD",
         "claimFirstAmount", 49.95, "claimSecondAmount", 49.95,
-        "claimExpectedAmount", 49.95, "claimSyntheticOnly", true));
+        "claimExpectedAmount", 49.95));
     assertThat(instance).hasCompletedElements("AskClientForInput").hasNoActiveIncidents();
     context.completeJobOfAdHocSubProcess(JobSelectors.byElementId("ClientAgent"),
         Map.of("agent", Map.of("responseText", "Confirmed",

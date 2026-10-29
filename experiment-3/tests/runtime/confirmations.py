@@ -13,7 +13,7 @@ EXPECTED = {**CLAIM, "paidAmount": 99.9, "overchargeAmount": 49.95,
             "matchingAmounts": True, "recommendation": "REQUEST_HUMAN_REVIEW"}
 FORM_VALUES = {"claimMerchant": CLAIM["merchant"], "claimCurrency": CLAIM["currency"],
                "claimFirstAmount": 49.95, "claimSecondAmount": 49.95,
-               "claimExpectedAmount": 49.95, "claimSyntheticOnly": True}
+               "claimExpectedAmount": 49.95}
 
 
 def data_part(claim=None):

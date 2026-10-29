@@ -11,7 +11,6 @@ CONFIRMATION_FIELDS = (
     ("claimFirstAmount", "First charge", "number"),
     ("claimSecondAmount", "Second charge", "number"),
     ("claimExpectedAmount", "Expected total", "number"),
-    ("claimSyntheticOnly", "I confirm these details are correct and use demo data only", "checkbox"),
 )
 
 SAMPLE = (
@@ -125,8 +124,7 @@ def build():
         parent="ClientAgent",
         ext='<zeebe:script expression=%s resultVariable="toolCallResult" />' % q(one("""={
           syntheticDemoOnly: true,
-          requiredDetails: ["merchant", "currency", "two charge amounts", "expected order amount",
-                            "explicit confirmation that all values are synthetic"],
+          requiredDetails: ["merchant", "currency", "two charge amounts", "expected order amount"],
           clientResponsibilities: ["collect the user's account", "request missing confirmation",
                                    "delegate charge reconciliation", "prepare a draft for human review"],
           restrictions: ["do not infer financial fields from narrative",
@@ -242,7 +240,7 @@ def build():
                  q('={text: if followUp instance of string then followUp else "", '
                    'syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, '
                    'chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, '
-                   'syntheticOnly: claimSyntheticOnly}}'),
+                   'syntheticOnly: true}}'),
              )),
         doc=("Pause for the user only when the server asks for missing information. Present the "
              "charge details form and return the user's text plus explicitly confirmed synthetic claim "

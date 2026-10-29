@@ -71,7 +71,7 @@
       <bpmn:scriptTask id="ReadIntakeGuidance" name="Read intake guidance">
         <bpmn:documentation>Read the local synthetic-demo intake checklist before collecting dispute details. Returns required information and the client/server responsibilities. This is demonstration guidance, not bank policy, and performs no external call.</bpmn:documentation>
         <bpmn:extensionElements>
-          <zeebe:script expression="={ syntheticDemoOnly: true, requiredDetails: [&quot;merchant&quot;, &quot;currency&quot;, &quot;two charge amounts&quot;, &quot;expected order amount&quot;, &quot;explicit confirmation that all values are synthetic&quot;], clientResponsibilities: [&quot;collect the user's account&quot;, &quot;request missing confirmation&quot;, &quot;delegate charge reconciliation&quot;, &quot;prepare a draft for human review&quot;], restrictions: [&quot;do not infer financial fields from narrative&quot;, &quot;do not authorize refunds or decide fraud&quot;, &quot;do not treat this demonstration checklist as bank policy&quot;] }" resultVariable="toolCallResult" />
+          <zeebe:script expression="={ syntheticDemoOnly: true, requiredDetails: [&quot;merchant&quot;, &quot;currency&quot;, &quot;two charge amounts&quot;, &quot;expected order amount&quot;], clientResponsibilities: [&quot;collect the user's account&quot;, &quot;request missing confirmation&quot;, &quot;delegate charge reconciliation&quot;, &quot;prepare a draft for human review&quot;], restrictions: [&quot;do not infer financial fields from narrative&quot;, &quot;do not authorize refunds or decide fraud&quot;, &quot;do not treat this demonstration checklist as bank policy&quot;] }" resultVariable="toolCallResult" />
         </bpmn:extensionElements>
       </bpmn:scriptTask>
       <bpmn:scriptTask id="CheckConfirmedDetails" name="Check confirmed details">
@@ -216,7 +216,7 @@
           <zeebe:ioMapping>
             <zeebe:input source="=fromAi(toolCall.question, &quot;The exact clarification requested by the server&quot;, &quot;string&quot;)" target="question" />
             <zeebe:input source="=&quot;&quot;" target="followUp" />
-            <zeebe:output source="={text: if followUp instance of string then followUp else &quot;&quot;, syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, syntheticOnly: claimSyntheticOnly}}" target="toolCallResult" />
+            <zeebe:output source="={text: if followUp instance of string then followUp else &quot;&quot;, syntheticClaim: {merchant: claimMerchant, currency: claimCurrency, chargeAmounts: [claimFirstAmount, claimSecondAmount], expectedAmount: claimExpectedAmount, syntheticOnly: true}}" target="toolCallResult" />
           </zeebe:ioMapping>
         </bpmn:extensionElements>
       </bpmn:userTask>

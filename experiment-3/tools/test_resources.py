@@ -312,8 +312,10 @@ class ResourceClosureTest(unittest.TestCase):
         confirmation = form_task.find(
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}output").get("source")
         for field in ("claimMerchant", "claimCurrency", "claimFirstAmount",
-                      "claimSecondAmount", "claimExpectedAmount", "claimSyntheticOnly"):
+                      "claimSecondAmount", "claimExpectedAmount"):
             self.assertIn(field, confirmation)
+        self.assertIn("syntheticOnly: true", confirmation)
+        self.assertNotIn("claimSyntheticOnly", confirmation)
         self.assertNotIn("fromAi(", confirmation)
         send = remote.find(f"{{{B}}}serviceTask[@id='SendRemoteMessage']")
         send_inputs = {e.get("target"): e.get("source") for e in send.findall(

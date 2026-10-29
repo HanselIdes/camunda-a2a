@@ -219,14 +219,13 @@ does not remove the earlier standalone `a2a-card.bpmn`; do not deploy it alongsi
 Free text is context, not confirmation, even when it contains every value. If the server requests confirmation, open the client agent's
 Tasklist user task using `05-client-agent-confirm.form` and enter the requested values:
 
-| Confirmation field                 | Value                   |
-| ---------------------------------- | ----------------------- |
-| Merchant                           | `Northwind Electronics` |
-| Currency                           | `USD`                   |
-| First charge                       | `49.95`                 |
-| Second charge                      | `49.95`                 |
-| Expected total                     | `49.95`                 |
-| Details and demo-data confirmation | Checked.                |
+| Confirmation field | Value                   |
+| ------------------ | ----------------------- |
+| Merchant           | `Northwind Electronics` |
+| Currency           | `USD`                   |
+| First charge       | `49.95`                 |
+| Second charge      | `49.95`                 |
+| Expected total     | `49.95`                 |
 
 The client agent can send structured data on the original task and context. Review its tool outcomes and final result.
 For the sample values, the expected `reconciliation` artifact is:

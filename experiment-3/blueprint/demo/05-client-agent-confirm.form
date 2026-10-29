@@ -89,19 +89,6 @@
         "row": "Row_6",
         "columns": null
       }
-    },
-    {
-      "type": "checkbox",
-      "key": "claimSyntheticOnly",
-      "label": "I confirm these details are correct and use demo data only",
-      "validate": {
-        "required": true
-      },
-      "id": "Field_a2a_client_answer_7",
-      "layout": {
-        "row": "Row_7",
-        "columns": null
-      }
     }
   ],
   "type": "default",

@@ -498,8 +498,9 @@ the final user task.
 
 Free text is context, not confirmation. If the server responds `INPUT_REQUIRED`, the client agent can call
 `AskClientForInput`, which presents a Tasklist user task using `05-client-agent-confirm.form`. Enter merchant
-`Northwind Electronics`, currency `USD`, first/second charge amounts `49.95`, expected order amount `49.95`,
-and check the synthetic-only confirmation. In the bundled client process, the outbound mapping derives the
+`Northwind Electronics`, currency `USD`, first/second charge amounts `49.95`, and expected total `49.95`.
+No demo-data checkbox is required. The bundled demo marks its outgoing claim as synthetic automatically;
+the charge values still come only from the submitted form. The outbound mapping derives the
 `data.syntheticClaim` part only from that form result; the model cannot supply claim fields as tool arguments.
 Follow-up messages reuse the task and context IDs returned by the initial send; the model cannot supply those
 identifiers either. This is a prototype interaction: the model decides whether and when to call each tool.
