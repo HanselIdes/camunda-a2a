@@ -327,8 +327,10 @@ def build():
         ("data.memory.storage.type", "in-process"),
         ("data.memory.contextWindowSize", "=20"),
         ("data.limits.maxModelCalls",
-         "=(if agentContext.metrics.modelCalls instance of number "
-         "then agentContext.metrics.modelCalls else 0) + 8"),
+         "=(if agentContext instance of context then "
+         "if get value(agentContext, \"metrics\") instance of context then "
+         "if get value(agentContext.metrics, \"modelCalls\") instance of number "
+         "then agentContext.metrics.modelCalls else 0 else 0 else 0) + 8"),
         ("data.response.format.type", "text"),
         ("data.response.includeAgentContext", "true"),
         ("retries", "1"),

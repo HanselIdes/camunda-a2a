@@ -50,7 +50,7 @@
           <zeebe:input source="=clientAgent.context" target="agentContext" />
           <zeebe:input source="in-process" target="data.memory.storage.type" />
           <zeebe:input source="=20" target="data.memory.contextWindowSize" />
-          <zeebe:input source="=(if agentContext.metrics.modelCalls instance of number then agentContext.metrics.modelCalls else 0) + 8" target="data.limits.maxModelCalls" />
+          <zeebe:input source="=(if agentContext instance of context then if get value(agentContext, &quot;metrics&quot;) instance of context then if get value(agentContext.metrics, &quot;modelCalls&quot;) instance of number then agentContext.metrics.modelCalls else 0 else 0 else 0) + 8" target="data.limits.maxModelCalls" />
           <zeebe:input source="text" target="data.response.format.type" />
           <zeebe:input source="true" target="data.response.includeAgentContext" />
           <zeebe:input source="WAIT_FOR_TOOL_CALL_RESULTS" target="data.events.behavior" />

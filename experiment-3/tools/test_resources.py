@@ -247,8 +247,10 @@ class ResourceClosureTest(unittest.TestCase):
             f"{{{B}}}extensionElements/{{{Z}}}ioMapping/{{{Z}}}input")}
         self.assertEqual(inputs["agentContext"], "=clientAgent.context")
         self.assertEqual(inputs["data.limits.maxModelCalls"],
-                         "=(if agentContext.metrics.modelCalls instance of number "
-                         "then agentContext.metrics.modelCalls else 0) + 8")
+                         "=(if agentContext instance of context then "
+                         "if get value(agentContext, \"metrics\") instance of context then "
+                         "if get value(agentContext.metrics, \"modelCalls\") instance of number "
+                         "then agentContext.metrics.modelCalls else 0 else 0 else 0) + 8")
         self.assertEqual(inputs["data.response.includeAgentContext"], "true")
         template = json.loads(self.resources["blueprint/templates/12-client-agent-feedback.json"])
         limit = next(p for p in template["properties"] if p.get("id") == "data.limits.maxModelCalls")
